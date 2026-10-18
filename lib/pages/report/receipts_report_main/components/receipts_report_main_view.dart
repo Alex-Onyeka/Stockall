@@ -3,6 +3,7 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
@@ -415,35 +416,37 @@ class _ReceiptsReportMainViewState
         widget: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextButton.icon(
-              style: TextButton.styleFrom(
-                backgroundColor: theme
-                    .lightModeColor
-                    .prColor300
-                    .withAlpha(20),
-                foregroundColor:
-                    theme.lightModeColor.prColor300,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
+            if (screenWidth(context) > mobileScreen) ...[
+              TextButton.icon(
+                style: TextButton.styleFrom(
+                  backgroundColor: theme
+                      .lightModeColor
+                      .prColor300
+                      .withAlpha(20),
+                  foregroundColor:
+                      theme.lightModeColor.prColor300,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
+                onPressed: _loading ? null : _openSummary,
+                icon: const Icon(
+                  Icons.insights_rounded,
+                  size: 15,
+                ),
+                label: Text(
+                  'Summary',
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              onPressed: _loading ? null : _openSummary,
-              icon: const Icon(
-                Icons.insights_rounded,
-                size: 15,
-              ),
-              label: Text(
-                'Summary',
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            ],
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Material(

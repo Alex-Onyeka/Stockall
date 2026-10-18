@@ -7,6 +7,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/item_sales/item_sales_report.dart';
 import 'package:stockall/pages/report/receipts_report_main/receipts_report_main_page.dart';
+import 'package:stockall/pages/report/receipts_report_summary/receipts_report_summary_page.dart';
 
 class SalesReportDesktop extends StatelessWidget {
   const SalesReportDesktop({super.key});
@@ -21,7 +22,8 @@ class SalesReportDesktop extends StatelessWidget {
           children: [
             TopBanner(
               turnOnBackNavButton: true,
-              subTitle: 'View a breakdown of your sales reports',
+              subTitle:
+                  'View a breakdown of your sales reports',
               title: 'Sales Report',
               theme: theme,
               bottomSpace: 40,
@@ -32,7 +34,9 @@ class SalesReportDesktop extends StatelessWidget {
             const SizedBox(height: 20),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                ),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -41,7 +45,11 @@ class SalesReportDesktop extends StatelessWidget {
                           Text(
                             'Reports List:',
                             style: TextStyle(
-                              fontSize: theme.mobileTexts.b1.fontSize,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -51,10 +59,12 @@ class SalesReportDesktop extends StatelessWidget {
                       Column(
                         children: [
                           Visibility(
-                            visible: !isStoreKeeper() &&
+                            visible:
+                                !isStoreKeeper() &&
                                 authorization(
-                                  authorized: Authorizations()
-                                      .viewReceiptSalesReport,
+                                  authorized:
+                                      Authorizations()
+                                          .viewReceiptSalesReport,
                                 ),
                             child: ReportListTile(
                               isActive: true,
@@ -63,8 +73,9 @@ class SalesReportDesktop extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ReceiptsReportMainPage(),
+                                    builder:
+                                        (context) =>
+                                            const ReceiptsReportMainPage(),
                                   ),
                                 );
                               },
@@ -74,10 +85,12 @@ class SalesReportDesktop extends StatelessWidget {
                             ),
                           ),
                           Visibility(
-                            visible: !isStoreKeeper() &&
+                            visible:
+                                !isStoreKeeper() &&
                                 authorization(
                                   authorized:
-                                      Authorizations().viewItemSalesReport,
+                                      Authorizations()
+                                          .viewReceiptSalesReport,
                                 ),
                             child: ReportListTile(
                               isActive: true,
@@ -86,8 +99,36 @@ class SalesReportDesktop extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        ItemSalesReport(),
+                                    builder:
+                                        (context) =>
+                                            const ReceiptsReportSummaryPage(),
+                                  ),
+                                );
+                              },
+                              subText:
+                                  'Aggregated summary, sales channels, payment methods, and financial breakdown',
+                              title:
+                                  'Receipt Report Summary',
+                            ),
+                          ),
+                          Visibility(
+                            visible:
+                                !isStoreKeeper() &&
+                                authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .viewItemSalesReport,
+                                ),
+                            child: ReportListTile(
+                              isActive: true,
+                              theme: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            ItemSalesReport(),
                                   ),
                                 );
                               },
@@ -110,4 +151,3 @@ class SalesReportDesktop extends StatelessWidget {
     );
   }
 }
-

@@ -6,6 +6,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/item_sales/item_sales_report.dart';
 import 'package:stockall/pages/report/receipts_report_main/receipts_report_main_page.dart';
+import 'package:stockall/pages/report/receipts_report_summary/receipts_report_summary_page.dart';
 
 class SalesReportMobile extends StatelessWidget {
   const SalesReportMobile({super.key});
@@ -68,6 +69,29 @@ class SalesReportMobile extends StatelessWidget {
                             subText:
                                 'View a breakdown of your Receipt Sales, revenue and Profit',
                             title: 'Receipts Report',
+                          ),
+                        ),
+                        Visibility(
+                          visible: !isStoreKeeper() &&
+                              authorization(
+                                authorized: Authorizations()
+                                    .viewReceiptSalesReport,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReceiptsReportSummaryPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Aggregated summary, sales channels, payment methods, and financial breakdown',
+                            title: 'Receipt Report Summary',
                           ),
                         ),
                         Visibility(

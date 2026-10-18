@@ -63,7 +63,7 @@ bool receiptsPeriodIsToday(ReceiptsReportPeriod period) {
 }
 
 String receiptsPeriodLabel(ReceiptsReportPeriod period) {
-  if (period.isAllTime) return 'All time (loaded data)';
+  if (period.isAllTime) return 'All time';
   final s = period.start!;
   final e = period.end!;
   if (period.isSingleDay) {
@@ -167,11 +167,7 @@ class ReceiptsReportPeriodButton extends StatelessWidget {
                     'Pick a date or range',
                     !isToday && !period.isAllTime,
                   ),
-                  _item(
-                    2,
-                    'All time (loaded data)',
-                    period.isAllTime,
-                  ),
+                  _item(2, 'All time', period.isAllTime),
                 ],
             child: ReportPill(
               theme: theme,

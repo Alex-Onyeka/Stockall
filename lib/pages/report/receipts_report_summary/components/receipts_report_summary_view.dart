@@ -354,7 +354,7 @@ class _ReceiptsReportSummaryViewState
       }
     }
 
-    final accent = theme.lightModeColor.prColor300;
+    // final accent = theme.lightModeColor.prColor300;
     return Scaffold(
       appBar: appBar(
         context: context,
@@ -362,34 +362,34 @@ class _ReceiptsReportSummaryViewState
         widget: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextButton.icon(
-              style: TextButton.styleFrom(
-                backgroundColor: accent.withAlpha(20),
-                foregroundColor: accent,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              onPressed:
-                  _loading
-                      ? null
-                      : () => _openTable(_filters.copy()),
-              icon: const Icon(
-                Icons.table_chart_outlined,
-                size: 15,
-              ),
-              label: Text(
-                'View Table',
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            // TextButton.icon(
+            //   style: TextButton.styleFrom(
+            //     backgroundColor: accent.withAlpha(20),
+            //     foregroundColor: accent,
+            //     padding: const EdgeInsets.symmetric(
+            //       horizontal: 10,
+            //       vertical: 6,
+            //     ),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(6),
+            //     ),
+            //   ),
+            //   onPressed:
+            //       _loading
+            //           ? null
+            //           : () => _openTable(_filters.copy()),
+            //   icon: const Icon(
+            //     Icons.table_chart_outlined,
+            //     size: 15,
+            //   ),
+            //   label: Text(
+            //     'View Table',
+            //     style: TextStyle(
+            //       fontSize: theme.mobileTexts.b3.fontSize,
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // ),
             IconButton(
               tooltip: 'Refresh',
               icon: const Icon(
@@ -591,7 +591,9 @@ class _ReceiptsReportSummaryViewState
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 12,
-      children: [for (final c in children) Expanded(child: c)],
+      children: [
+        for (final c in children) Expanded(child: c),
+      ],
     );
   }
 
