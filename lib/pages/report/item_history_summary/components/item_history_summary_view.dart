@@ -267,6 +267,7 @@ class _ItemHistorySummaryViewState
   @override
   Widget build(BuildContext context) {
     final theme = returnTheme(context);
+    returnShopProvider(context: context);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(
@@ -697,7 +698,7 @@ class _ItemHistorySummaryViewState
       if (_manageProductions) ...[
         _buildMiniStatPill(
           theme: theme,
-          label: 'Total Produced',
+          label: 'Production',
           value: _formatQty(_stats.totalProduced),
           icon: Icons.precision_manufacturing_rounded,
           color: const Color(0xFF8B5CF6),
@@ -2240,10 +2241,11 @@ class _ItemHistorySummaryViewState
           theme,
         ),
         _dataCol(
-          'Return (Receipt)',
+          'Returned (Sales)',
           ItemHistorySummarySortField.returnedReceipt,
           theme,
-          tooltip: 'Customer returns from receipt/invoice',
+          tooltip:
+              'Customer returns from sales receipt/invoice',
         ),
         _dataCol(
           'Purchased',
@@ -2267,14 +2269,26 @@ class _ItemHistorySummaryViewState
           ItemHistorySummarySortField.transferredOut,
           theme,
         ),
+        _dataCol(
+          'Stock In (Updated)',
+          ItemHistorySummarySortField.stockInUpdated,
+          theme,
+          tooltip: 'Stock increased by manual updates',
+        ),
+        _dataCol(
+          'Stock Out (Updated)',
+          ItemHistorySummarySortField.stockOutUpdated,
+          theme,
+          tooltip: 'Stock decreased by manual updates',
+        ),
         if (showProd) ...[
           _dataCol(
-            'Produced',
+            'Production',
             ItemHistorySummarySortField.produced,
             theme,
           ),
           _dataCol(
-            'Production Del',
+            'Production Deleted',
             ItemHistorySummarySortField.productionDeleted,
             theme,
           ),
@@ -2451,7 +2465,7 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
-                // 8. Return (Receipt)
+                // 8. Returned (Sales)
                 DataCell(
                   Center(
                     child: Text(
@@ -2551,7 +2565,47 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
-                // 13 & 14. Produced & Production Del (if showProd)
+                // 13. Stock In (Updated)
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.stockInUpdatedText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.stockInUpdated > 0
+                                ? const Color(0xFF10B981)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.stockInUpdated > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 14. Stock Out (Updated)
+                DataCell(
+                  Center(
+                    child: Text(
+                      r.stockOutUpdatedText,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            r.stockOutUpdated > 0
+                                ? const Color(0xFF64748B)
+                                : Colors.grey.shade400,
+                        fontWeight:
+                            r.stockOutUpdated > 0
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                // 15 & 16. Production & Production Deleted (if showProd)
                 if (showProd) ...[
                   DataCell(
                     Center(

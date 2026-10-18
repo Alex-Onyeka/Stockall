@@ -77,6 +77,8 @@ enum ItemHistorySummarySortField {
   created,
   deleted,
   returned,
+  stockInUpdated,
+  stockOutUpdated,
 }
 
 /// Aggregated movement statistics according to Section 6.3.
@@ -190,6 +192,15 @@ class ItemHistorySummaryRow {
 
   double get returned => returnedReceipt;
 
+  double get stockInUpdated => quantityIncreased;
+  double get stockOutUpdated => quantityDecreased;
+  String get stockInUpdatedText => quantityIncreasedText;
+  String get stockInUpdatedDisplay =>
+      quantityIncreasedDisplay;
+  String get stockOutUpdatedText => quantityDecreasedText;
+  String get stockOutUpdatedDisplay =>
+      quantityDecreasedDisplay;
+
   ItemHistorySummaryRow({
     required this.index,
     required this.uuid,
@@ -276,10 +287,14 @@ class ItemHistorySummaryRow {
     final sign = netQuantityChange > 0 ? '+' : '-';
     return '$sign${formatLargeNumberDouble(netQuantityChange.abs())}$unitSuffix';
   }
-  String get netQuantityChangeDisplay => netQuantityChangeText;
+
+  String get netQuantityChangeDisplay =>
+      netQuantityChangeText;
 
   String get soldText =>
-      sold > 0 ? '-${formatLargeNumberDouble(sold)}$unitSuffix' : '—';
+      sold > 0
+          ? '-${formatLargeNumberDouble(sold)}$unitSuffix'
+          : '—';
   String get soldDisplay => soldText;
 
   String get returnedReceiptText =>
@@ -298,7 +313,8 @@ class ItemHistorySummaryRow {
       returnedPurchase > 0
           ? '-${formatLargeNumberDouble(returnedPurchase)}$unitSuffix'
           : '—';
-  String get returnedPurchaseDisplay => returnedPurchaseText;
+  String get returnedPurchaseDisplay =>
+      returnedPurchaseText;
 
   String get transferredInText =>
       transferredIn > 0
@@ -322,7 +338,8 @@ class ItemHistorySummaryRow {
       productionDeleted > 0
           ? '-${formatLargeNumberDouble(productionDeleted)}$unitSuffix'
           : '—';
-  String get productionDeletedDisplay => productionDeletedText;
+  String get productionDeletedDisplay =>
+      productionDeletedText;
 
   String get deliveredText =>
       delivered > 0
@@ -346,13 +363,15 @@ class ItemHistorySummaryRow {
       quantityIncreased > 0
           ? '+${formatLargeNumberDouble(quantityIncreased)}$unitSuffix'
           : '—';
-  String get quantityIncreasedDisplay => quantityIncreasedText;
+  String get quantityIncreasedDisplay =>
+      quantityIncreasedText;
 
   String get quantityDecreasedText =>
       quantityDecreased > 0
           ? '-${formatLargeNumberDouble(quantityDecreased)}$unitSuffix'
           : '—';
-  String get quantityDecreasedDisplay => quantityDecreasedText;
+  String get quantityDecreasedDisplay =>
+      quantityDecreasedText;
 
   String get totalAdditionsText =>
       '+${formatLargeNumberDouble(totalAdditions)}$unitSuffix';
@@ -795,7 +814,8 @@ class ItemHistorySummaryBuilder {
                   index: 1,
                   product: product,
                 );
-            openingStock = qtyDivided.isFinite ? qtyDivided : 0.0;
+            openingStock =
+                qtyDivided.isFinite ? qtyDivided : 0.0;
           }
         }
       }
@@ -1001,10 +1021,11 @@ class ItemHistorySummaryBuilder {
       // Current quantity is gotten from the actual product primary quantity divided,
       // reflecting the live current stock level in the item's primary unit.
       final primaryUnitObj = product.getPrimaryUnit();
-      double currentQuantity = primaryUnitObj.getQuantityEquivDivided(
-        index: 1,
-        product: product,
-      );
+      double currentQuantity = primaryUnitObj
+          .getQuantityEquivDivided(
+            index: 1,
+            product: product,
+          );
       if (!currentQuantity.isFinite) {
         currentQuantity = 0.0;
       }
@@ -1237,6 +1258,20 @@ class ItemHistorySummaryBuilder {
           break;
         case ItemHistorySummarySortField.deleted:
           c = cmp(a.deleted, b.deleted, ascending);
+          break;
+        case ItemHistorySummarySortField.stockInUpdated:
+          c = cmp(
+            a.quantityIncreased,
+            b.quantityIncreased,
+            ascending,
+          );
+          break;
+        case ItemHistorySummarySortField.stockOutUpdated:
+          c = cmp(
+            a.quantityDecreased,
+            b.quantityDecreased,
+            ascending,
+          );
           break;
         case ItemHistorySummarySortField.netQuantityChange:
           c = cmp(

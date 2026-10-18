@@ -331,6 +331,7 @@ class _ItemLevelStockMovementsViewState
   @override
   Widget build(BuildContext context) {
     final theme = returnTheme(context);
+    returnShopProvider(context: context);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(
@@ -1407,13 +1408,13 @@ class _ItemLevelStockMovementsViewState
               ),
             ),
       ),
-      // 8. Return (Receipt)
+      // 8. Returned (Sales)
       _MoveCol(
-        label: 'Return (Receipt)',
+        label: 'Returned (Sales)',
         width: 140,
         sort: ItemHistorySummarySortField.returnedReceipt,
         tooltip:
-            'Customer returns from receipts and invoices',
+            'Customer returns from sales receipts and invoices',
         cell:
             (r, i) => Text(
               r.returnedReceiptText,
@@ -1516,10 +1517,54 @@ class _ItemLevelStockMovementsViewState
               ),
             ),
       ),
-      // 13 & 14. Produced & Production Del (conditional)
+      // 13. Stock In (Updated)
+      _MoveCol(
+        label: 'Stock In (Updated)',
+        width: 145,
+        sort: ItemHistorySummarySortField.stockInUpdated,
+        tooltip: 'Stock increased by manual updates',
+        cell:
+            (r, i) => Text(
+              r.stockInUpdatedText,
+              style: TextStyle(
+                fontSize: theme.mobileTexts.b4.fontSize,
+                color:
+                    r.stockInUpdated > 0
+                        ? const Color(0xFF10B981)
+                        : Colors.grey.shade400,
+                fontWeight:
+                    r.stockInUpdated > 0
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+              ),
+            ),
+      ),
+      // 14. Stock Out (Updated)
+      _MoveCol(
+        label: 'Stock Out (Updated)',
+        width: 150,
+        sort: ItemHistorySummarySortField.stockOutUpdated,
+        tooltip: 'Stock decreased by manual updates',
+        cell:
+            (r, i) => Text(
+              r.stockOutUpdatedText,
+              style: TextStyle(
+                fontSize: theme.mobileTexts.b4.fontSize,
+                color:
+                    r.stockOutUpdated > 0
+                        ? const Color(0xFF64748B)
+                        : Colors.grey.shade400,
+                fontWeight:
+                    r.stockOutUpdated > 0
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+              ),
+            ),
+      ),
+      // 15 & 16. Production & Production Deleted (conditional)
       if (showProd) ...[
         _MoveCol(
-          label: 'Produced',
+          label: 'Production',
           width: 130,
           sort: ItemHistorySummarySortField.produced,
           cell:
@@ -1539,8 +1584,8 @@ class _ItemLevelStockMovementsViewState
               ),
         ),
         _MoveCol(
-          label: 'Production Del',
-          width: 135,
+          label: 'Production Deleted',
+          width: 145,
           sort:
               ItemHistorySummarySortField.productionDeleted,
           cell:
