@@ -1,34 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/pages/report/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/receipts_report_summary/platforms/receipts_report_summary_desktop.dart';
 import 'package:stockall/pages/report/receipts_report_summary/platforms/receipts_report_summary_mobile.dart';
 
-/// Without initial values: today's business day, no filters.
+/// Opens on today's business day with no filters. Reached only
+/// from its Sales Reports tile.
 class ReceiptsReportSummaryPage extends StatelessWidget {
-  final ReceiptsReportFilters? initialFilters;
-  final ReceiptsReportPeriod? initialPeriod;
-
-  const ReceiptsReportSummaryPage({
-    super.key,
-    this.initialFilters,
-    this.initialPeriod,
-  });
+  const ReceiptsReportSummaryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < tabletScreen) {
-          return ReceiptsReportSummaryMobile(
-            initialFilters: initialFilters,
-            initialPeriod: initialPeriod,
-          );
+          return const ReceiptsReportSummaryMobile();
         } else {
-          return ReceiptsReportSummaryDesktop(
-            initialFilters: initialFilters,
-            initialPeriod: initialPeriod,
-          );
+          return const ReceiptsReportSummaryDesktop();
         }
       },
     );

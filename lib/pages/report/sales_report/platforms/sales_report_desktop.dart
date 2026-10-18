@@ -5,7 +5,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
-import 'package:stockall/pages/report/item_sales/item_sales_report.dart';
+import 'package:stockall/pages/report/item_sales_report_main/item_sales_report_main_page.dart';
 import 'package:stockall/pages/report/receipts_report_main/receipts_report_main_page.dart';
 import 'package:stockall/pages/report/receipts_report_summary/receipts_report_summary_page.dart';
 
@@ -128,7 +128,7 @@ class SalesReportDesktop extends StatelessWidget {
                                   MaterialPageRoute(
                                     builder:
                                         (context) =>
-                                            ItemSalesReport(),
+                                            const ItemSalesReportMainPage(),
                                   ),
                                 );
                               },

@@ -7,13 +7,11 @@ import 'package:stockall/pages/report/receipts_report_main/platforms/receipts_re
 class ReceiptsReportMainPage extends StatelessWidget {
   final ReceiptsReportFilters? initialFilters;
   final ReceiptsReportPeriod? initialPeriod;
-  final bool openedFromSummary;
 
   const ReceiptsReportMainPage({
     super.key,
     this.initialFilters,
     this.initialPeriod,
-    this.openedFromSummary = false,
   });
 
   @override
@@ -24,13 +22,11 @@ class ReceiptsReportMainPage extends StatelessWidget {
           return ReceiptsReportMainMobile(
             initialFilters: initialFilters,
             initialPeriod: initialPeriod,
-            openedFromSummary: openedFromSummary,
           );
         } else {
           return ReceiptsReportMainDesktop(
             initialFilters: initialFilters,
             initialPeriod: initialPeriod,
-            openedFromSummary: openedFromSummary,
           );
         }
       },
