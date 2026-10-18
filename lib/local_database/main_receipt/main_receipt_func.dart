@@ -31,6 +31,12 @@ class MainReceiptFunc {
     return receipts;
   }
 
+  TempMainReceipt? getSingleReceipt({
+    required String uuid,
+  }) {
+    return receiptBox.get(uuid);
+  }
+
   Future<int> insertAllReceipts(
     List<TempMainReceipt> receipts,
   ) async {

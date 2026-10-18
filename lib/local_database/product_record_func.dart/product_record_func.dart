@@ -293,9 +293,8 @@ class ProductRecordFunc {
   }) async {
     await mainLocalLog('Deleting Records in Receipt 2');
     try {
-      List<TempProductSaleRecord> records =
-          (receipt.getItems()).toList();
-      if (records.isEmpty && receipt.uuid != null) {
+      List<TempProductSaleRecord> records = [];
+      if (receipt.uuid != null && receipt.uuid!.isNotEmpty) {
         records =
             productRecordBox.values
                 .where(
@@ -303,6 +302,10 @@ class ProductRecordFunc {
                       item.receiptUuid == receipt.uuid,
                 )
                 .toList();
+      }
+      if (records.isEmpty) {
+        records =
+            (receipt.tempItems ?? receipt.getItems()).toList();
       }
       await mainLocalLog(
         'Records Gotten: ${records.length}',
@@ -501,8 +504,20 @@ class ProductRecordFunc {
       'Deleting Records in Invoice Without Updating Products',
     );
     try {
-      List<TempProductSaleRecord> records =
-          (invoice.getItems()).toList();
+      List<TempProductSaleRecord> records = [];
+      if (invoice.uuid != null && invoice.uuid!.isNotEmpty) {
+        records =
+            productRecordBox.values
+                .where(
+                  (item) =>
+                      item.invoiceUuid == invoice.uuid,
+                )
+                .toList();
+      }
+      if (records.isEmpty) {
+        records =
+            (invoice.tempItems ?? invoice.getItems()).toList();
+      }
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );

@@ -138,6 +138,101 @@ class ReceiptsProvider extends ChangeNotifier {
     // }
   }
 
+  // UPDATE an existing receipt
+  Future<TempMainReceipt?> updateReceipt(
+    TempMainReceipt receipt,
+  ) async {
+    try {
+      await mainLocalLog('Inner Receipt Update Started');
+      await MainReceiptFunc().createReceipt(receipt);
+      var containsCreated =
+          CreatedReceiptsFunc()
+              .getReceipts()
+              .where(
+                (rec) => rec.receipt.uuid == receipt.uuid,
+              )
+              .toList();
+      if (containsCreated.isNotEmpty) {
+        await CreatedReceiptsFunc().createReceipts(
+          CreatedReceipts(receipt: receipt),
+        );
+      } else {
+        await UpdatedReceiptsFunc().createUpdatedReceipt(
+          receipt.uuid!,
+        );
+      }
+
+      // Re-evaluate customer rewards & accounts:
+      List<CustomerAccountReceipts> accountReceipts =
+          returnCustomerAccountReceiptsProvider()
+              .customerAccountReceipts
+              .where(
+                (item) => item.receiptUuid == receipt.uuid,
+              )
+              .toList();
+      if (accountReceipts.isNotEmpty) {
+        returnCustomerAccountReceiptsProvider()
+            .deleteCustomerAccountReceipts(
+              customerReceipts: accountReceipts,
+              updateCustomerBalance: true,
+            );
+      }
+
+      if (receipt.customerUuid != null) {
+        if (returnShopProvider()
+                    .userShop()
+                    ?.manageCustomerReward ==
+                true &&
+            !receipt.isInvoice) {
+          CustomerAccountReceipts customerAccountReceipt =
+              CustomerAccountReceipts(
+                receiptUuid: receipt.uuid,
+                isBalance: false,
+                isAdd: true,
+                amount: receipt.getCustomerReward(),
+                customerName: receipt.customerName,
+                customerUuid: receipt.customerUuid,
+              );
+          await returnCustomerAccountReceiptsProvider()
+              .createCustomerAccountReceipts(
+                customerAccountReceipt:
+                    customerAccountReceipt,
+              );
+        }
+
+        if (returnShopProvider()
+                    .userShop()
+                    ?.manageCustomerAccount ==
+                true &&
+            (receipt.customerAccount ?? 0) > 0) {
+          CustomerAccountReceipts customerAccountReceipt =
+              CustomerAccountReceipts(
+                receiptUuid: receipt.uuid,
+                isBalance: true,
+                isAdd: false,
+                amount: receipt.customerAccount ?? 0,
+                customerName: receipt.customerName,
+                customerUuid: receipt.customerUuid,
+              );
+          await returnCustomerAccountReceiptsProvider()
+              .createCustomerAccountReceipts(
+                customerAccountReceipt:
+                    customerAccountReceipt,
+              );
+        }
+      }
+
+      await loadReceiptsOffline(receipt.shopId);
+      notifyListeners();
+      return receipt;
+    } catch (e) {
+      await mainLocalLog(
+        'Error Updating Receipt: ${e.toString()}',
+      );
+      return null;
+    }
+  }
+
   Future<void> loadSingleReceipt({
     required String uuid,
   }) async {
@@ -590,11 +685,22 @@ class ReceiptsProvider extends ChangeNotifier {
         final tempReceipts =
             UpdatedReceiptsFunc().getReceiptIds().toList();
         for (var rec in tempReceipts) {
-          final updateData = {'is_invoice': false};
-          await supabase
-              .from('receipts')
-              .update(updateData)
-              .eq('uuid', rec.receiptUuid);
+          final localReceipt = MainReceiptFunc()
+              .getSingleReceipt(uuid: rec.receiptUuid);
+          if (localReceipt != null) {
+            await supabase
+                .from('receipts')
+                .upsert(
+                  localReceipt.toJson(),
+                  onConflict: 'uuid',
+                );
+          } else {
+            final updateData = {'is_invoice': false};
+            await supabase
+                .from('receipts')
+                .update(updateData)
+                .eq('uuid', rec.receiptUuid);
+          }
           await UpdatedReceiptsFunc().deleteUpdatedReceipt(
             rec.receiptUuid,
           );
