@@ -3,7 +3,6 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
@@ -12,7 +11,6 @@ import 'package:stockall/pages/report/components/report_range_fields.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/receipts_report_main/components/receipts_report_filter_widgets.dart';
-import 'package:stockall/pages/report/receipts_report_summary/receipts_report_summary_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -41,16 +39,11 @@ class ReceiptsReportMainView extends StatefulWidget {
   final ReceiptsReportFilters? initialFilters;
   final ReceiptsReportPeriod? initialPeriod;
 
-  /// Opened from the summary: its Summary button goes back
-  /// instead of opening another summary.
-  final bool openedFromSummary;
-
   const ReceiptsReportMainView({
     super.key,
     required this.isDesktop,
     this.initialFilters,
     this.initialPeriod,
-    this.openedFromSummary = false,
   });
 
   @override
@@ -351,24 +344,6 @@ class _ReceiptsReportMainViewState
     if (_filters.search.isEmpty) _searchCtrl.clear();
   }
 
-  /// The summary takes over the table's period and filters.
-  void _openSummary() {
-    if (widget.openedFromSummary) {
-      Navigator.pop(context);
-      return;
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => ReceiptsReportSummaryPage(
-              initialFilters: _filters.copy(),
-              initialPeriod: _period,
-            ),
-      ),
-    );
-  }
-
   // ---------------------------------------------------------------
   // formatting
   // ---------------------------------------------------------------
@@ -416,37 +391,6 @@ class _ReceiptsReportMainViewState
         widget: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (screenWidth(context) > mobileScreen) ...[
-              TextButton.icon(
-                style: TextButton.styleFrom(
-                  backgroundColor: theme
-                      .lightModeColor
-                      .prColor300
-                      .withAlpha(20),
-                  foregroundColor:
-                      theme.lightModeColor.prColor300,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-                onPressed: _loading ? null : _openSummary,
-                icon: const Icon(
-                  Icons.insights_rounded,
-                  size: 15,
-                ),
-                label: Text(
-                  'Summary',
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b3.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Material(

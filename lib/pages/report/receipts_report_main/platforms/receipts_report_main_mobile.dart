@@ -5,13 +5,11 @@ import 'package:stockall/pages/report/receipts_report_main/components/receipts_r
 class ReceiptsReportMainMobile extends StatelessWidget {
   final ReceiptsReportFilters? initialFilters;
   final ReceiptsReportPeriod? initialPeriod;
-  final bool openedFromSummary;
 
   const ReceiptsReportMainMobile({
     super.key,
     this.initialFilters,
     this.initialPeriod,
-    this.openedFromSummary = false,
   });
 
   @override
@@ -20,7 +18,6 @@ class ReceiptsReportMainMobile extends StatelessWidget {
       isDesktop: false,
       initialFilters: initialFilters,
       initialPeriod: initialPeriod,
-      openedFromSummary: openedFromSummary,
     );
   }
 }

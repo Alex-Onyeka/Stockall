@@ -306,26 +306,39 @@ class ReceiptsReportRowBuilder {
     TempProductSaleRecord line,
   ) => (line.costPrice ?? 0) <= 0;
 
+  /// The receipt's lines, void ones included: `items`, else its
+  /// product_sales rows. Null lines when there are neither.
+  static ({
+    List<TempProductSaleRecord>? lines,
+    ReceiptLineSource source,
+  })
+  linesFor(
+    TempMainReceipt receipt,
+    Map<String, List<TempProductSaleRecord>> legacyLines,
+  ) {
+    final embedded = receipt.items;
+    if (embedded != null && embedded.isNotEmpty) {
+      return (
+        lines: embedded,
+        source: ReceiptLineSource.embedded,
+      );
+    }
+    final legacy = legacyLines[receipt.uuid];
+    if (legacy != null && legacy.isNotEmpty) {
+      return (
+        lines: legacy,
+        source: ReceiptLineSource.legacy,
+      );
+    }
+    return (lines: null, source: ReceiptLineSource.none);
+  }
+
   static ReceiptsReportRow build({
     required TempMainReceipt receipt,
     required Map<String, List<TempProductSaleRecord>>
     legacyLines,
   }) {
-    List<TempProductSaleRecord>? lines;
-    ReceiptLineSource source;
-    final embedded = receipt.items;
-    if (embedded != null && embedded.isNotEmpty) {
-      lines = embedded;
-      source = ReceiptLineSource.embedded;
-    } else {
-      final legacy = legacyLines[receipt.uuid];
-      if (legacy != null && legacy.isNotEmpty) {
-        lines = legacy;
-        source = ReceiptLineSource.legacy;
-      } else {
-        source = ReceiptLineSource.none;
-      }
-    }
+    final (:lines, :source) = linesFor(receipt, legacyLines);
     // Void lines were removed from the cart, not sold.
     final sold =
         lines
@@ -612,7 +625,9 @@ class ReceiptsReportFilters {
     revenueMax = null;
   }
 
-  static bool _keyMatches(
+  /// Null [filterKey] matches all; [receiptsReportNoneKey]
+  /// matches a null [rowKey].
+  static bool keyMatches(
     String? filterKey,
     String? rowKey,
   ) {
@@ -623,7 +638,7 @@ class ReceiptsReportFilters {
     return rowKey == filterKey;
   }
 
-  static bool _inRange(
+  static bool inRange(
     double value,
     double? min,
     double? max,
@@ -663,16 +678,16 @@ class ReceiptsReportFilters {
     )) {
       return false;
     }
-    if (!_keyMatches(staffKey, r.staffKey)) return false;
-    if (!_keyMatches(customerKey, r.customerKey)) {
+    if (!keyMatches(staffKey, r.staffKey)) return false;
+    if (!keyMatches(customerKey, r.customerKey)) {
       return false;
     }
     if (subStaffEnabled &&
-        !_keyMatches(subStaffKey, r.subStaffKey)) {
+        !keyMatches(subStaffKey, r.subStaffKey)) {
       return false;
     }
     if (departmentsEnabled &&
-        !_keyMatches(departmentKey, r.departmentKey)) {
+        !keyMatches(departmentKey, r.departmentKey)) {
       return false;
     }
     if (channel != null && r.channel != channel) {
@@ -685,13 +700,13 @@ class ReceiptsReportFilters {
         profitRangeActive) {
       // Unknown or incomplete profit is never treated as 0.
       if (r.profit == null || r.costMissing) return false;
-      if (!_inRange(r.profit!, profitMin, profitMax)) {
+      if (!inRange(r.profit!, profitMin, profitMax)) {
         return false;
       }
     }
 
     if (revenueRangeActive &&
-        !_inRange(r.revenue, revenueMin, revenueMax)) {
+        !inRange(r.revenue, revenueMin, revenueMax)) {
       return false;
     }
     return true;

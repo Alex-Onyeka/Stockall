@@ -35,19 +35,14 @@ class _SCol<T> {
 
 /// Shared body of the Receipt Summary page (desktop + mobile).
 ///
-/// Opened from the table it takes over the table's [initialFilters]
-/// and [initialPeriod]; otherwise today's business day, no
-/// filters.
+/// Opens on today's business day with no filters. It is reached
+/// only from its Sales Reports tile, never from the table.
 class ReceiptsReportSummaryView extends StatefulWidget {
   final bool isDesktop;
-  final ReceiptsReportFilters? initialFilters;
-  final ReceiptsReportPeriod? initialPeriod;
 
   const ReceiptsReportSummaryView({
     super.key,
     required this.isDesktop,
-    this.initialFilters,
-    this.initialPeriod,
   });
 
   @override
@@ -93,12 +88,8 @@ class _ReceiptsReportSummaryViewState
   @override
   void initState() {
     super.initState();
-    _filters =
-        widget.initialFilters?.copy() ??
-        ReceiptsReportFilters();
-    _period =
-        widget.initialPeriod ??
-        ReceiptsReportPeriod.today();
+    _filters = ReceiptsReportFilters();
+    _period = ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
     });
@@ -268,7 +259,6 @@ class _ReceiptsReportSummaryViewState
             (context) => ReceiptsReportMainPage(
               initialFilters: filters,
               initialPeriod: _period,
-              openedFromSummary: true,
             ),
       ),
     );
