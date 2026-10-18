@@ -5,7 +5,8 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/item_sales/item_sales_report.dart';
-import 'package:stockall/pages/report/receipt_sales_report/receipt_sales_report.dart';
+import 'package:stockall/pages/report/receipts_report_main/receipts_report_main_page.dart';
+import 'package:stockall/pages/report/receipts_report_summary/receipts_report_summary_page.dart';
 
 class SalesReportMobile extends StatelessWidget {
   const SalesReportMobile({super.key});
@@ -61,13 +62,36 @@ class SalesReportMobile extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      ReceiptSalesReport(),
+                                      const ReceiptsReportMainPage(),
                                 ),
                               );
                             },
                             subText:
                                 'View a breakdown of your Receipt Sales, revenue and Profit',
-                            title: 'Receipt Sales Report',
+                            title: 'Receipts Report',
+                          ),
+                        ),
+                        Visibility(
+                          visible: !isStoreKeeper() &&
+                              authorization(
+                                authorized: Authorizations()
+                                    .viewReceiptSalesReport,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReceiptsReportSummaryPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Aggregated summary, sales channels, payment methods, and financial breakdown',
+                            title: 'Receipt Report Summary',
                           ),
                         ),
                         Visibility(
