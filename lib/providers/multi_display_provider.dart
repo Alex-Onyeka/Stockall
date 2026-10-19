@@ -12,21 +12,21 @@ class MultiDisplayProvider extends ChangeNotifier {
   MultiDisplayProvider._internal();
 
   Future<bool> isAllowed() async {
-    // if (returnShopProvider().isDesktop() &&
-    //     currentUser().role != 'Store Keeper') {
-    //   var screen = await getAltDisplay();
-    //   if (screen == null) {
-    //     return false;
-    //   }
-    //   for (var win in windows) {
-    //     await win.controller.setFrame(
-    //       screen.visiblePosition! & screen.visibleSize!,
-    //     );
-    //   }
-    //   return true;
-    // } else {
-    return false;
-    // }
+    if (returnShopProvider().isDesktop() &&
+        currentUser().role != 'Store Keeper') {
+      var screen = await getAltDisplay();
+      if (screen == null) {
+        return false;
+      }
+      for (var win in windows) {
+        await win.controller.setFrame(
+          screen.visiblePosition! & screen.visibleSize!,
+        );
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   List<WindowInfo> windows = [];
@@ -41,7 +41,8 @@ class MultiDisplayProvider extends ChangeNotifier {
   Future<void> getAllSubWindows() async {
     var yes = await isAllowed();
     if (yes) {
-      displayIds = await DesktopMultiWindow.getAllSubWindowIds();
+      displayIds =
+          await DesktopMultiWindow.getAllSubWindowIds();
       notifyListeners();
     }
   }
@@ -64,7 +65,9 @@ class MultiDisplayProvider extends ChangeNotifier {
     if (returnShopProvider().isDesktop()) {
       try {
         var displayId =
-            windows.where((win) => win.id == cartId).isNotEmpty
+            windows
+                    .where((win) => win.id == cartId)
+                    .isNotEmpty
                 ? windows
                     .firstWhere((win) => win.id == cartId)
                     .controller
@@ -82,15 +85,24 @@ class MultiDisplayProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createWindow({required String cartId, int? newCartIndex}) async {
+  Future<void> createWindow({
+    required String cartId,
+    int? newCartIndex,
+  }) async {
     var yes = await isAllowed();
     if (yes) {
       try {
-        final name = 'Cart ${newCartIndex ?? windows.length + 1}';
-        final windowConfig = {'name': name, 'type': 'alt', 'cart_id': cartId};
-        final windowController = await DesktopMultiWindow.createWindow(
-          jsonEncode(windowConfig),
-        );
+        final name =
+            'Cart ${newCartIndex ?? windows.length + 1}';
+        final windowConfig = {
+          'name': name,
+          'type': 'alt',
+          'cart_id': cartId,
+        };
+        final windowController =
+            await DesktopMultiWindow.createWindow(
+              jsonEncode(windowConfig),
+            );
 
         windowController
           ..setFrame(
@@ -107,16 +119,24 @@ class MultiDisplayProvider extends ChangeNotifier {
           ..show();
 
         windows.add(
-          WindowInfo(id: cartId, name: name, controller: windowController),
+          WindowInfo(
+            id: cartId,
+            name: name,
+            controller: windowController,
+          ),
         );
         notifyListeners();
         for (var win in windows.where(
-          (win) => win.controller.windowId != windowController.windowId,
+          (win) =>
+              win.controller.windowId !=
+              windowController.windowId,
         )) {
           await win.controller.hide();
         }
       } catch (e) {
-        await mainLocalLog('Failed to Create Window: ${e.toString()}');
+        await mainLocalLog(
+          'Failed to Create Window: ${e.toString()}',
+        );
       }
     }
     await getAllSubWindows();
@@ -129,9 +149,16 @@ class MultiDisplayProvider extends ChangeNotifier {
     var yes = await isAllowed();
     if (yes) {
       int? windowId =
-          windows.where((win) => win.id == cartClass.cartId).toList().isNotEmpty
+          windows
+                  .where(
+                    (win) => win.id == cartClass.cartId,
+                  )
+                  .toList()
+                  .isNotEmpty
               ? windows
-                  .where((win) => win.id == cartClass.cartId)
+                  .where(
+                    (win) => win.id == cartClass.cartId,
+                  )
                   .toList()
                   .first
                   .controller
@@ -153,10 +180,14 @@ class MultiDisplayProvider extends ChangeNotifier {
             );
           }
         } catch (e) {
-          await mainLocalLog('Error Updating Cart: ${e.toString()}');
+          await mainLocalLog(
+            'Error Updating Cart: ${e.toString()}',
+          );
         }
       } else {
-        await mainLocalLog('Error: Window Id does not exists');
+        await mainLocalLog(
+          'Error: Window Id does not exists',
+        );
       }
     }
   }
@@ -171,13 +202,18 @@ class MultiDisplayProvider extends ChangeNotifier {
     // await mainLocalLog(cartId);
     // await mainLocalLog(cartIndex);
     if (yes) {
-      var selWins = windows.where((win) => win.id == cartId);
+      var selWins = windows.where(
+        (win) => win.id == cartId,
+      );
       if (selWins.isEmpty) {
         await returnSalesProvider().createWindow();
       } else {
         var selWin = selWins.first;
-        if (cartIndex != int.parse(selWin.name.split(' ').last)) {
-          await selWin.controller.setTitle('Cart $cartIndex');
+        if (cartIndex !=
+            int.parse(selWin.name.split(' ').last)) {
+          await selWin.controller.setTitle(
+            'Cart $cartIndex',
+          );
           selWin.name = 'Cart $cartIndex';
           await mainLocalLog(
             'Updated Window Name and Title Numbers to $cartIndex',
@@ -200,7 +236,9 @@ class MultiDisplayProvider extends ChangeNotifier {
         await selWin.controller.show();
 
         for (var win in windows.where(
-          (win) => win.controller.windowId != selWin.controller.windowId,
+          (win) =>
+              win.controller.windowId !=
+              selWin.controller.windowId,
         )) {
           await win.controller.hide();
         }
@@ -215,7 +253,11 @@ class MultiDisplayProvider extends ChangeNotifier {
     await getAllSubWindows();
     if (yes) {
       await mainLocalLog(windows.length.toString());
-      await windows.where((win) => win.id == cartId).first.controller.close();
+      await windows
+          .where((win) => win.id == cartId)
+          .first
+          .controller
+          .close();
       windows.removeWhere((win) => win.id == cartId);
       notifyListeners();
     }
@@ -227,7 +269,11 @@ class WindowInfo {
   String name;
   WindowController controller;
 
-  WindowInfo({required this.id, required this.name, required this.controller});
+  WindowInfo({
+    required this.id,
+    required this.name,
+    required this.controller,
+  });
 }
 
 class UserClass {
