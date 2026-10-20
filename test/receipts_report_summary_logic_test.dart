@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/pages/report/receipts_report_main/class/receipts_report_main_logic.dart';
-import 'package:stockall/pages/report/receipts_report_summary/class/receipts_report_summary_logic.dart';
+import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
+import 'package:stockall/pages/report/sales_report_/receipts_report_summary/class/receipts_report_summary_logic.dart';
 
 const midnight = TimeOfDay(hour: 0, minute: 0);
 const four = TimeOfDay(hour: 4, minute: 0);

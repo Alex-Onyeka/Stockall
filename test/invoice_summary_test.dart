@@ -3,8 +3,8 @@ import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/pages/report/invoice_report_table/class/invoice_report_table_logic.dart';
-import 'package:stockall/pages/report/invoice_summary/class/invoice_summary_logic.dart';
+import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
+import 'package:stockall/pages/report/invoice_report/invoice_summary/class/invoice_summary_logic.dart';
 
 void main() {
   group('InvoiceSummaryBuilder Tests', () {
@@ -358,33 +358,60 @@ void main() {
       },
     );
 
-    test('Ranks Top Creditors and Least Creditors correctly by outstanding balance', () {
-      final res = InvoiceSummaryBuilder.build(
-        allRows: rows,
-        allReceipts: allReceipts,
-        period: InvoiceSummaryPeriod.allTime,
-        businessNow: now,
-        departmentsEnabled: true,
-        bulkSaleEnabled: true,
-      );
+    test(
+      'Ranks Top Creditors and Least Creditors correctly by outstanding balance',
+      () {
+        final res = InvoiceSummaryBuilder.build(
+          allRows: rows,
+          allReceipts: allReceipts,
+          period: InvoiceSummaryPeriod.allTime,
+          businessNow: now,
+          departmentsEnabled: true,
+          bulkSaleEnabled: true,
+        );
 
-      // In the sample dataset:
-      // Dan (inv2): total 20,000, paid 10,000 -> balance 10,000
-      // Walk-in (inv3): total 5,000, paid 0 -> balance 5,000
-      // Bob (inv1): total 10,000, paid 10,000 -> balance 0 (not a creditor)
-      expect(res.topCreditors.length, equals(2));
-      expect(res.topCreditors[0].customerName, equals('Dan'));
-      expect(res.topCreditors[0].outstandingBalance, equals(10000.0));
-      expect(res.topCreditors[1].customerName, contains('Walk-in'));
-      expect(res.topCreditors[1].outstandingBalance, equals(5000.0));
+        // In the sample dataset:
+        // Dan (inv2): total 20,000, paid 10,000 -> balance 10,000
+        // Walk-in (inv3): total 5,000, paid 0 -> balance 5,000
+        // Bob (inv1): total 10,000, paid 10,000 -> balance 0 (not a creditor)
+        expect(res.topCreditors.length, equals(2));
+        expect(
+          res.topCreditors[0].customerName,
+          equals('Dan'),
+        );
+        expect(
+          res.topCreditors[0].outstandingBalance,
+          equals(10000.0),
+        );
+        expect(
+          res.topCreditors[1].customerName,
+          contains('Walk-in'),
+        );
+        expect(
+          res.topCreditors[1].outstandingBalance,
+          equals(5000.0),
+        );
 
-      // Least Creditors: Lowest positive balance up to highest
-      expect(res.leastCreditors.length, equals(2));
-      expect(res.leastCreditors[0].customerName, contains('Walk-in'));
-      expect(res.leastCreditors[0].outstandingBalance, equals(5000.0));
-      expect(res.leastCreditors[1].customerName, equals('Dan'));
-      expect(res.leastCreditors[1].outstandingBalance, equals(10000.0));
-    });
+        // Least Creditors: Lowest positive balance up to highest
+        expect(res.leastCreditors.length, equals(2));
+        expect(
+          res.leastCreditors[0].customerName,
+          contains('Walk-in'),
+        );
+        expect(
+          res.leastCreditors[0].outstandingBalance,
+          equals(5000.0),
+        );
+        expect(
+          res.leastCreditors[1].customerName,
+          equals('Dan'),
+        );
+        expect(
+          res.leastCreditors[1].outstandingBalance,
+          equals(10000.0),
+        );
+      },
+    );
 
     test('Ranks Staff and groups Departments with Others', () {
       final res = InvoiceSummaryBuilder.build(

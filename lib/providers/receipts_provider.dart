@@ -18,7 +18,7 @@ import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/update
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
-import 'package:stockall/pages/report/receipt_sales_report/platforms/receipt_sales_report_desktop.dart';
+import 'package:stockall/pages/report/sales_report_/receipt_sales_report/platforms/receipt_sales_report_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

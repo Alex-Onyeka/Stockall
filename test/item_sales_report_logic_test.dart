@@ -4,8 +4,8 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/pages/report/item_sales_report_main/class/item_sales_report_logic.dart';
-import 'package:stockall/pages/report/receipts_report_main/class/receipts_report_main_logic.dart';
+import 'package:stockall/pages/report/sales_report_/item_sales_report_main/class/item_sales_report_logic.dart';
+import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 
 const midnight = TimeOfDay(hour: 0, minute: 0);
 
@@ -214,12 +214,9 @@ ItemSalesRow one(
   int? salesTypeIndex = 1,
   List<TempProductClass>? products,
 }) {
-  return build(
-    [
-      receipt(salesTypeIndex: salesTypeIndex, items: [l]),
-    ],
-    products: products,
-  ).single;
+  return build([
+    receipt(salesTypeIndex: salesTypeIndex, items: [l]),
+  ], products: products).single;
 }
 
 List<ItemSalesRow> run(
@@ -227,7 +224,8 @@ List<ItemSalesRow> run(
   ItemSalesFilters? filters,
   ReceiptsReportPeriod period =
       const ReceiptsReportPeriod.allTime(),
-  ItemSalesSortField sortField = ItemSalesSortField.createdAt,
+  ItemSalesSortField sortField =
+      ItemSalesSortField.createdAt,
   bool ascending = false,
   bool departmentsEnabled = true,
   bool subStaffEnabled = true,
@@ -264,60 +262,83 @@ void main() {
         ),
       ]);
       expect(rows.length, 3);
-      expect(
-        rows.map((r) => r.receiptId).toList(),
-        ['#111', '#111', '#222'],
-      );
-      expect(rows.map((r) => r.lineIndex).toList(), [0, 1, 0]);
-    });
-
-    test('lines of the same product stay separate rows', () {
-      final rows = build([
-        receipt(
-          items: [
-            line(uuid: 'a', quantity: 1),
-            line(uuid: 'b', quantity: 2),
-          ],
-        ),
+      expect(rows.map((r) => r.receiptId).toList(), [
+        '#111',
+        '#111',
+        '#222',
       ]);
-      expect(rows.length, 2);
-      expect(rows.map((r) => r.quantity).toList(), [1, 2]);
+      expect(rows.map((r) => r.lineIndex).toList(), [
+        0,
+        1,
+        0,
+      ]);
     });
 
-    test('falls back to product_sales lines of the receipt', () {
-      final rows = build(
-        [receipt(uuid: 'r-0000000000001')],
-        legacy: [
-          line(
-            uuid: 'old-1',
-            productRecordId: 42,
-            receiptUuid: 'r-0000000000001',
-          ),
-          line(uuid: 'other', receiptUuid: 'r-0000000000009'),
-        ],
-      );
-      expect(rows.length, 1);
-      expect(rows.single.recordId, '42');
-      expect(
-        rows.single.parent.lineSource,
-        ReceiptLineSource.legacy,
-      );
-    });
-
-    test('embedded lines win, so no line appears twice', () {
-      final rows = build(
-        [
+    test(
+      'lines of the same product stay separate rows',
+      () {
+        final rows = build([
           receipt(
-            uuid: 'r-0000000000001',
-            items: [line(uuid: 'new')],
+            items: [
+              line(uuid: 'a', quantity: 1),
+              line(uuid: 'b', quantity: 2),
+            ],
           ),
-        ],
-        legacy: [
-          line(uuid: 'old', receiptUuid: 'r-0000000000001'),
-        ],
-      );
-      expect(uuids(rows), ['new']);
-    });
+        ]);
+        expect(rows.length, 2);
+        expect(rows.map((r) => r.quantity).toList(), [
+          1,
+          2,
+        ]);
+      },
+    );
+
+    test(
+      'falls back to product_sales lines of the receipt',
+      () {
+        final rows = build(
+          [receipt(uuid: 'r-0000000000001')],
+          legacy: [
+            line(
+              uuid: 'old-1',
+              productRecordId: 42,
+              receiptUuid: 'r-0000000000001',
+            ),
+            line(
+              uuid: 'other',
+              receiptUuid: 'r-0000000000009',
+            ),
+          ],
+        );
+        expect(rows.length, 1);
+        expect(rows.single.recordId, '42');
+        expect(
+          rows.single.parent.lineSource,
+          ReceiptLineSource.legacy,
+        );
+      },
+    );
+
+    test(
+      'embedded lines win, so no line appears twice',
+      () {
+        final rows = build(
+          [
+            receipt(
+              uuid: 'r-0000000000001',
+              items: [line(uuid: 'new')],
+            ),
+          ],
+          legacy: [
+            line(
+              uuid: 'old',
+              receiptUuid: 'r-0000000000001',
+            ),
+          ],
+        );
+        expect(uuids(rows), ['new']);
+      },
+    );
 
     test('a receipt without lines has no rows', () {
       expect(build([receipt()]), isEmpty);
@@ -332,11 +353,14 @@ void main() {
   });
 
   group('identity', () {
-    test('record ID is the line uuid, shortened for the table', () {
-      final r = one(line(uuid: 'abcdef123456'));
-      expect(r.recordId, 'abcdef123456');
-      expect(r.recordLabel, 'abcdef12…');
-    });
+    test(
+      'record ID is the line uuid, shortened for the table',
+      () {
+        final r = one(line(uuid: 'abcdef123456'));
+        expect(r.recordId, 'abcdef123456');
+        expect(r.recordLabel, 'abcdef12…');
+      },
+    );
 
     test('old lines use the product_sales record id', () {
       final rows = build(
@@ -352,14 +376,19 @@ void main() {
       expect(rows.single.recordId, '7');
     });
 
-    test('no id at all stays null, nothing is invented', () {
-      final r = one(line(uuid: null));
-      expect(r.recordId, isNull);
-      expect(r.recordLabel, isNull);
-    });
+    test(
+      'no id at all stays null, nothing is invented',
+      () {
+        final r = one(line(uuid: null));
+        expect(r.recordId, isNull);
+        expect(r.recordLabel, isNull);
+      },
+    );
 
     test('blank product uuid and name are missing', () {
-      final r = one(line(productUuid: '  ', productName: ' '));
+      final r = one(
+        line(productUuid: '  ', productName: ' '),
+      );
       expect(r.productKey, isNull);
       expect(r.itemName, isNull);
       expect(r.itemLabel, 'Not Set');
@@ -384,36 +413,45 @@ void main() {
   });
 
   group('categories', () {
-    test('the Items Report rule: list plus the older single uuid', () {
-      final result = ItemSalesCategories.known(
-        product: product(
-          'p-1',
-          categories: ['c-snacks'],
-          categoryUuid: 'c-drinks',
-        ),
-        nameByUuid: categoryNames,
-      );
-      expect(result.uuids, ['c-snacks', 'c-drinks']);
-      expect(result.names, ['Snacks', 'Drinks']);
-    });
+    test(
+      'the Items Report rule: list plus the older single uuid',
+      () {
+        final result = ItemSalesCategories.known(
+          product: product(
+            'p-1',
+            categories: ['c-snacks'],
+            categoryUuid: 'c-drinks',
+          ),
+          nameByUuid: categoryNames,
+        );
+        expect(result.uuids, ['c-snacks', 'c-drinks']);
+        expect(result.names, ['Snacks', 'Drinks']);
+      },
+    );
 
-    test('duplicates and deleted categories are dropped', () {
-      final result = ItemSalesCategories.known(
-        product: product(
-          'p-1',
-          categories: ['c-drinks', 'c-gone', ''],
-          categoryUuid: 'c-drinks',
-        ),
-        nameByUuid: categoryNames,
-      );
-      expect(result.uuids, ['c-drinks']);
-    });
+    test(
+      'duplicates and deleted categories are dropped',
+      () {
+        final result = ItemSalesCategories.known(
+          product: product(
+            'p-1',
+            categories: ['c-drinks', 'c-gone', ''],
+            categoryUuid: 'c-drinks',
+          ),
+          nameByUuid: categoryNames,
+        );
+        expect(result.uuids, ['c-drinks']);
+      },
+    );
 
     test('several categories show as one label', () {
       final r = one(
         line(),
         products: [
-          product('p-1', categories: ['c-drinks', 'c-snacks']),
+          product(
+            'p-1',
+            categories: ['c-drinks', 'c-snacks'],
+          ),
         ],
       );
       expect(r.categoryLabel, 'Drinks, Snacks');
@@ -455,18 +493,21 @@ void main() {
       expect(r.discountPercent, 10);
     });
 
-    test('a fixed discount has no rate, even with an item rate', () {
-      final r = one(
-        line(
-          originalCost: 1000,
-          discount: 10,
-          fixedDiscount: 50,
-          discountedAmount: 50,
-        ),
-      );
-      expect(r.discount, 50);
-      expect(r.discountPercent, isNull);
-    });
+    test(
+      'a fixed discount has no rate, even with an item rate',
+      () {
+        final r = one(
+          line(
+            originalCost: 1000,
+            discount: 10,
+            fixedDiscount: 50,
+            discountedAmount: 50,
+          ),
+        );
+        expect(r.discount, 50);
+        expect(r.discountPercent, isNull);
+      },
+    );
 
     test('no discount data is unknown, not 0', () {
       final r = one(line(discountedAmount: null));
@@ -476,7 +517,9 @@ void main() {
 
     test('selling price is gross value per sale unit', () {
       expect(
-        one(line(quantity: 4, originalCost: 1000)).sellingPrice,
+        one(
+          line(quantity: 4, originalCost: 1000),
+        ).sellingPrice,
         250,
       );
     });
@@ -497,28 +540,38 @@ void main() {
 
     test('zero quantity has no selling price', () {
       expect(
-        one(line(quantity: 0, originalCost: 10)).sellingPrice,
+        one(
+          line(quantity: 0, originalCost: 10),
+        ).sellingPrice,
         isNull,
       );
     });
 
-    test('profit is revenue minus cost, margin over revenue', () {
-      final r = one(line(revenue: 1000, costPrice: 600));
-      expect(r.revenue, 1000);
-      expect(r.cost, 600);
-      expect(r.profit, 400);
-      expect(r.margin, 40);
-      expect(r.costMissing, isFalse);
-    });
+    test(
+      'profit is revenue minus cost, margin over revenue',
+      () {
+        final r = one(line(revenue: 1000, costPrice: 600));
+        expect(r.revenue, 1000);
+        expect(r.cost, 600);
+        expect(r.profit, 400);
+        expect(r.margin, 40);
+        expect(r.costMissing, isFalse);
+      },
+    );
 
-    test('missing or 0 cost counts as 0 and is flagged', () {
-      for (final cost in [null, 0.0]) {
-        final r = one(line(revenue: 100, costPrice: cost));
-        expect(r.cost, isNull);
-        expect(r.profit, 100);
-        expect(r.costMissing, isTrue);
-      }
-    });
+    test(
+      'missing or 0 cost counts as 0 and is flagged',
+      () {
+        for (final cost in [null, 0.0]) {
+          final r = one(
+            line(revenue: 100, costPrice: cost),
+          );
+          expect(r.cost, isNull);
+          expect(r.profit, 100);
+          expect(r.costMissing, isTrue);
+        }
+      },
+    );
 
     test('a loss is negative', () {
       final r = one(line(revenue: 100, costPrice: 150));
@@ -527,8 +580,14 @@ void main() {
     });
 
     test('margin is null without positive revenue', () {
-      expect(one(line(revenue: 0, costPrice: 5)).margin, isNull);
-      expect(one(line(revenue: -10, costPrice: 5)).margin, isNull);
+      expect(
+        one(line(revenue: 0, costPrice: 5)).margin,
+        isNull,
+      );
+      expect(
+        one(line(revenue: -10, costPrice: 5)).margin,
+        isNull,
+      );
     });
   });
 
@@ -558,40 +617,43 @@ void main() {
       expect(one(line()).unitName, isNull);
     });
 
-    test('2D pieces show their cut size, area units do not', () {
-      final sheet = one(
-        line(
-          quantityType: 2,
-          unitsList: [
-            unit(
-              'u-slab',
-              name: 'Slab',
-              dimensionType: ProductUnitsClass.sheetUnit,
-            ),
-          ],
-          unitUuid: 'u-slab',
-          width: 2,
-          height: 3,
-        ),
-      );
-      expect(sheet.unitName, 'Slab (2 x 3)');
-      final area = one(
-        line(
-          quantityType: 2,
-          unitsList: [
-            unit(
-              'u-m2',
-              name: 'm²',
-              dimensionType: ProductUnitsClass.areaUnit,
-            ),
-          ],
-          unitUuid: 'u-m2',
-          width: 2,
-          height: 3,
-        ),
-      );
-      expect(area.unitName, 'm²');
-    });
+    test(
+      '2D pieces show their cut size, area units do not',
+      () {
+        final sheet = one(
+          line(
+            quantityType: 2,
+            unitsList: [
+              unit(
+                'u-slab',
+                name: 'Slab',
+                dimensionType: ProductUnitsClass.sheetUnit,
+              ),
+            ],
+            unitUuid: 'u-slab',
+            width: 2,
+            height: 3,
+          ),
+        );
+        expect(sheet.unitName, 'Slab (2 x 3)');
+        final area = one(
+          line(
+            quantityType: 2,
+            unitsList: [
+              unit(
+                'u-m2',
+                name: 'm²',
+                dimensionType: ProductUnitsClass.areaUnit,
+              ),
+            ],
+            unitUuid: 'u-m2',
+            width: 2,
+            height: 3,
+          ),
+        );
+        expect(area.unitName, 'm²');
+      },
+    );
 
     test('the quantity is never converted', () {
       final r = one(
@@ -653,21 +715,24 @@ void main() {
       expect(area.baseQuantity, 6);
     });
 
-    test('an unresolvable unit gives an unknown base quantity', () {
-      expect(
-        one(
-          line(
-            unitsList: [unit('u-1')],
-            unitUuid: 'u-gone',
-          ),
-        ).baseQuantity,
-        isNull,
-      );
-      expect(
-        one(line(quantityType: 2)).baseQuantity,
-        isNull,
-      );
-    });
+    test(
+      'an unresolvable unit gives an unknown base quantity',
+      () {
+        expect(
+          one(
+            line(
+              unitsList: [unit('u-1')],
+              unitUuid: 'u-gone',
+            ),
+          ).baseQuantity,
+          isNull,
+        );
+        expect(
+          one(line(quantityType: 2)).baseQuantity,
+          isNull,
+        );
+      },
+    );
   });
 
   group('wastage', () {
@@ -713,11 +778,14 @@ void main() {
       expect(r.wastageSetting, isNull);
     });
 
-    test('older 2D lines (null setting) never applied it', () {
-      final r = one(slab(manage: null, amount: 10));
-      expect(r.wastage, 0);
-      expect(r.wastageSetting, isNull);
-    });
+    test(
+      'older 2D lines (null setting) never applied it',
+      () {
+        final r = one(slab(manage: null, amount: 10));
+        expect(r.wastage, 0);
+        expect(r.wastageSetting, isNull);
+      },
+    );
 
     test('a percentage is shown in the sale unit', () {
       final r = one(slab(percent: true, amount: 10));
@@ -725,13 +793,20 @@ void main() {
       expect(r.wastageSetting, '10%');
     });
 
-    test('a fixed amount uses the unit it was entered in', () {
-      final r = one(
-        slab(percent: false, amount: 0.6, wastageUnit: 'u-m2'),
-      );
-      expect(r.wastage, closeTo(0.1, 1e-9));
-      expect(r.wastageSetting, '0.6 m²');
-    });
+    test(
+      'a fixed amount uses the unit it was entered in',
+      () {
+        final r = one(
+          slab(
+            percent: false,
+            amount: 0.6,
+            wastageUnit: 'u-m2',
+          ),
+        );
+        expect(r.wastage, closeTo(0.1, 1e-9));
+        expect(r.wastageSetting, '0.6 m²');
+      },
+    );
 
     test('a fixed amount without a unit is base area', () {
       final r = one(slab(percent: false, amount: 1.2));
@@ -739,20 +814,26 @@ void main() {
       expect(r.wastageSetting, '1.2 m²');
     });
 
-    test('selling price divides by the quantity with wastage', () {
-      final r = one(slab(percent: true, amount: 10));
-      expect(r.sellingPrice, closeTo(1000, 1e-9));
-    });
+    test(
+      'selling price divides by the quantity with wastage',
+      () {
+        final r = one(slab(percent: true, amount: 10));
+        expect(r.sellingPrice, closeTo(1000, 1e-9));
+      },
+    );
 
     test('a custom total ignores wastage', () {
-      final l = slab(percent: true, amount: 10, originalCost: 900)
-        ..customPriceSet = true
-        ..setTotalPrice = true;
+      final l =
+          slab(percent: true, amount: 10, originalCost: 900)
+            ..customPriceSet = true
+            ..setTotalPrice = true;
       expect(one(l).sellingPrice, 900);
     });
 
     test('no unit list: unknown, never a crash', () {
-      final r = one(slab(percent: true, amount: 10, list: []));
+      final r = one(
+        slab(percent: true, amount: 10, list: []),
+      );
       expect(r.wastage, isNull);
       expect(r.sellingPrice, isNull);
       expect(r.wastageSetting, '10%');
@@ -760,13 +841,28 @@ void main() {
   });
 
   group('flags', () {
-    test('wholesale and managed keep unknown apart from No', () {
-      expect(one(line(useWholeSalePrice: true)).wholesale, true);
-      expect(one(line(useWholeSalePrice: false)).wholesale, false);
-      expect(one(line()).wholesale, isNull);
-      expect(one(line(isProductManaged: null)).managed, isNull);
-      expect(one(line(isProductManaged: false)).managed, false);
-    });
+    test(
+      'wholesale and managed keep unknown apart from No',
+      () {
+        expect(
+          one(line(useWholeSalePrice: true)).wholesale,
+          true,
+        );
+        expect(
+          one(line(useWholeSalePrice: false)).wholesale,
+          false,
+        );
+        expect(one(line()).wholesale, isNull);
+        expect(
+          one(line(isProductManaged: null)).managed,
+          isNull,
+        );
+        expect(
+          one(line(isProductManaged: false)).managed,
+          false,
+        );
+      },
+    );
 
     test('a custom unit price is not a custom total', () {
       final r = one(line(customPriceSet: true));
@@ -776,41 +872,58 @@ void main() {
   });
 
   group('transaction types', () {
-    test('part payments keep prorated amounts, no unit price', () {
-      final r = one(
-        line(quantity: 4, revenue: 250, originalCost: 250),
-        salesTypeIndex: 2,
-      );
-      expect(r.type, ReceiptType.invoicePayment);
-      expect(r.isPartPayment, isTrue);
-      expect(r.quantity, 4);
-      expect(r.revenue, 250);
-      expect(r.sellingPrice, isNull);
-    });
+    test(
+      'part payments keep prorated amounts, no unit price',
+      () {
+        final r = one(
+          line(
+            quantity: 4,
+            revenue: 250,
+            originalCost: 250,
+          ),
+          salesTypeIndex: 2,
+        );
+        expect(r.type, ReceiptType.invoicePayment);
+        expect(r.isPartPayment, isTrue);
+        expect(r.quantity, 4);
+        expect(r.revenue, 250);
+        expect(r.sellingPrice, isNull);
+      },
+    );
 
-    test('older invoice receipts are part payments too', () {
-      final r =
-          build([
-            receipt(
-              salesTypeIndex: null,
-              invoiceUuid: 'inv-1',
-              items: [line()],
-            ),
-          ]).single;
-      expect(r.isPartPayment, isTrue);
-    });
+    test(
+      'older invoice receipts are part payments too',
+      () {
+        final r =
+            build([
+              receipt(
+                salesTypeIndex: null,
+                invoiceUuid: 'inv-1',
+                items: [line()],
+              ),
+            ]).single;
+        expect(r.isPartPayment, isTrue);
+      },
+    );
 
-    test('order deliveries are rows with their own revenue', () {
-      final r = one(
-        line(quantity: 2, revenue: 300, discountedAmount: null),
-        salesTypeIndex: 3,
-      );
-      expect(r.type, ReceiptType.orderDelivery);
-      expect(r.isPartPayment, isFalse);
-      expect(r.revenue, 300);
-      expect(r.sellingPrice, 150);
-      expect(r.discount, isNull);
-    });
+    test(
+      'order deliveries are rows with their own revenue',
+      () {
+        final r = one(
+          line(
+            quantity: 2,
+            revenue: 300,
+            discountedAmount: null,
+          ),
+          salesTypeIndex: 3,
+        );
+        expect(r.type, ReceiptType.orderDelivery);
+        expect(r.isPartPayment, isFalse);
+        expect(r.revenue, 300);
+        expect(r.sellingPrice, 150);
+        expect(r.discount, isNull);
+      },
+    );
   });
 
   group('filters', () {
@@ -902,7 +1015,10 @@ void main() {
         ],
         products: [
           product('p-1', categories: ['c-drinks']),
-          product('p-2', categories: ['c-snacks', 'c-drinks']),
+          product(
+            'p-2',
+            categories: ['c-snacks', 'c-drinks'],
+          ),
           product('p-3'),
         ],
       );
@@ -913,22 +1029,24 @@ void main() {
       bool departmentsEnabled = true,
       bool subStaffEnabled = true,
       bool profitVisible = true,
-    }) =>
-        uuids(
-          run(
-            rows,
-            filters: filters,
-            departmentsEnabled: departmentsEnabled,
-            subStaffEnabled: subStaffEnabled,
-            profitVisible: profitVisible,
-          ),
-        )..sort();
+    }) => uuids(
+      run(
+        rows,
+        filters: filters,
+        departmentsEnabled: departmentsEnabled,
+        subStaffEnabled: subStaffEnabled,
+        profitVisible: profitVisible,
+      ),
+    )..sort();
 
     test('void lines are hidden by default', () {
-      expect(
-        ids(),
-        ['chips', 'cola', 'nocost', 'noid', 'part'],
-      );
+      expect(ids(), [
+        'chips',
+        'cola',
+        'nocost',
+        'noid',
+        'part',
+      ]);
       expect(
         ids(
           filters: ItemSalesFilters(
@@ -947,22 +1065,26 @@ void main() {
       );
     });
 
-    test('search covers item, receipt, category, people, IDs', () {
-      List<String?> find(String q, {bool deps = true}) => ids(
-        filters: ItemSalesFilters()..search = q,
-        departmentsEnabled: deps,
-      );
-      expect(find('CHIPS'), ['chips', 'part']);
-      expect(find('#222'), ['chips', 'nocost']);
-      expect(find('snacks'), ['chips', 'part']);
-      expect(find('bo'), ['chips', 'nocost']);
-      expect(find('cy'), ['cola']);
-      expect(find('p-3'), ['nocost']);
-      expect(find('loose'), ['noid']);
-      expect(find('noco'), ['nocost']);
-      expect(find('bar'), ['cola']);
-      expect(find('bar', deps: false), isEmpty);
-    });
+    test(
+      'search covers item, receipt, category, people, IDs',
+      () {
+        List<String?> find(String q, {bool deps = true}) =>
+            ids(
+              filters: ItemSalesFilters()..search = q,
+              departmentsEnabled: deps,
+            );
+        expect(find('CHIPS'), ['chips', 'part']);
+        expect(find('#222'), ['chips', 'nocost']);
+        expect(find('snacks'), ['chips', 'part']);
+        expect(find('bo'), ['chips', 'nocost']);
+        expect(find('cy'), ['cola']);
+        expect(find('p-3'), ['nocost']);
+        expect(find('loose'), ['noid']);
+        expect(find('noco'), ['nocost']);
+        expect(find('bar'), ['cola']);
+        expect(find('bar', deps: false), isEmpty);
+      },
+    );
 
     test('staff and customer use the receipt keys', () {
       final f = ItemSalesFilters();
@@ -970,23 +1092,31 @@ void main() {
       expect(ids(filters: f), ['chips', 'nocost']);
       final none = ItemSalesFilters();
       none.receipt.customerKey = receiptsReportNoneKey;
-      expect(ids(filters: none), ['chips', 'nocost', 'noid', 'part']);
+      expect(ids(filters: none), [
+        'chips',
+        'nocost',
+        'noid',
+        'part',
+      ]);
     });
 
-    test('hidden sub-staff and department filters do nothing', () {
-      final f = ItemSalesFilters();
-      f.receipt.subStaffKey = 'sub-1';
-      f.receipt.departmentKey = 'dep-1';
-      expect(ids(filters: f), ['cola']);
-      expect(
-        ids(
-          filters: f,
-          subStaffEnabled: false,
-          departmentsEnabled: false,
-        ).length,
-        5,
-      );
-    });
+    test(
+      'hidden sub-staff and department filters do nothing',
+      () {
+        final f = ItemSalesFilters();
+        f.receipt.subStaffKey = 'sub-1';
+        f.receipt.departmentKey = 'dep-1';
+        expect(ids(filters: f), ['cola']);
+        expect(
+          ids(
+            filters: f,
+            subStaffEnabled: false,
+            departmentsEnabled: false,
+          ).length,
+          5,
+        );
+      },
+    );
 
     test('type and channel come from the receipt', () {
       final type = ItemSalesFilters();
@@ -999,54 +1129,68 @@ void main() {
 
     test('category matches any of the item categories', () {
       expect(
-        ids(filters: ItemSalesFilters(categoryKey: 'c-drinks')),
+        ids(
+          filters: ItemSalesFilters(
+            categoryKey: 'c-drinks',
+          ),
+        ),
         ['chips', 'cola', 'part'],
       );
       expect(
-        ids(filters: ItemSalesFilters(categoryKey: 'c-snacks')),
+        ids(
+          filters: ItemSalesFilters(
+            categoryKey: 'c-snacks',
+          ),
+        ),
         ['chips', 'part'],
       );
     });
 
-    test('No Category and deleted items are separate buckets', () {
-      expect(
-        ids(
-          filters: ItemSalesFilters(
-            categoryKey: receiptsReportNoneKey,
+    test(
+      'No Category and deleted items are separate buckets',
+      () {
+        expect(
+          ids(
+            filters: ItemSalesFilters(
+              categoryKey: receiptsReportNoneKey,
+            ),
           ),
-        ),
-        ['nocost'],
-      );
-      expect(
-        ids(
-          filters: ItemSalesFilters(
-            categoryKey: itemSalesDeletedItemKey,
+          ['nocost'],
+        );
+        expect(
+          ids(
+            filters: ItemSalesFilters(
+              categoryKey: itemSalesDeletedItemKey,
+            ),
           ),
-        ),
-        ['noid'],
-      );
-      expect(
-        ItemSalesOptions.categories(
-          categoryNames,
-          rows,
-        ).map((o) => o.label).toList(),
-        [
-          'Drinks',
-          'Snacks',
-          'No Category',
-          'Unknown (deleted item)',
-        ],
-      );
-    });
+          ['noid'],
+        );
+        expect(
+          ItemSalesOptions.categories(
+            categoryNames,
+            rows,
+          ).map((o) => o.label).toList(),
+          [
+            'Drinks',
+            'Snacks',
+            'No Category',
+            'Unknown (deleted item)',
+          ],
+        );
+      },
+    );
 
-    test('choosing the deleted bucket clears a live item', () {
-      final f = ItemSalesFilters(productKey: 'p-1');
-      f.setCategory(itemSalesDeletedItemKey, rows);
-      expect(f.productKey, isNull);
-      f.productKey = receiptsReportNoneKey;
-      f.setCategory(itemSalesDeletedItemKey, rows);
-      expect(f.productKey, receiptsReportNoneKey);
-    });
+    test(
+      'choosing the deleted bucket clears a live item',
+      () {
+        final f = ItemSalesFilters(productKey: 'p-1');
+        f.setCategory(itemSalesDeletedItemKey, rows);
+        expect(f.productKey, isNull);
+        f.productKey = receiptsReportNoneKey;
+        f.setCategory(itemSalesDeletedItemKey, rows);
+        expect(f.productKey, receiptsReportNoneKey);
+      },
+    );
 
     test('item matches the product uuid, not the name', () {
       expect(
@@ -1063,20 +1207,23 @@ void main() {
       );
     });
 
-    test('custom price and wholesale; unknown matches neither', () {
-      expect(
-        ids(filters: ItemSalesFilters(customPrice: true)),
-        ['cola'],
-      );
-      expect(
-        ids(filters: ItemSalesFilters(wholesale: true)),
-        ['cola'],
-      );
-      expect(
-        ids(filters: ItemSalesFilters(wholesale: false)),
-        ['chips'],
-      );
-    });
+    test(
+      'custom price and wholesale; unknown matches neither',
+      () {
+        expect(
+          ids(filters: ItemSalesFilters(customPrice: true)),
+          ['cola'],
+        );
+        expect(
+          ids(filters: ItemSalesFilters(wholesale: true)),
+          ['cola'],
+        );
+        expect(
+          ids(filters: ItemSalesFilters(wholesale: false)),
+          ['chips'],
+        );
+      },
+    );
 
     test('revenue range uses line revenue', () {
       final f = ItemSalesFilters();
@@ -1117,11 +1264,17 @@ void main() {
       );
     });
 
-    test('the profit range is off when profit is hidden', () {
-      final f = ItemSalesFilters();
-      f.receipt.profitMax = -1;
-      expect(ids(filters: f, profitVisible: false).length, 5);
-    });
+    test(
+      'the profit range is off when profit is hidden',
+      () {
+        final f = ItemSalesFilters();
+        f.receipt.profitMax = -1;
+        expect(
+          ids(filters: f, profitVisible: false).length,
+          5,
+        );
+      },
+    );
 
     test('the quantity range needs one item', () {
       final f = ItemSalesFilters(quantityMin: 2);
@@ -1232,8 +1385,14 @@ void main() {
           uuid: 'r-0000000000001',
           createdAt: DateTime(2026, 10, 16),
           items: [
-            line(productUuid: 'p-1', productName: 'Old Cola'),
-            line(productUuid: 'p-9abcdefgh', productName: 'Cola'),
+            line(
+              productUuid: 'p-1',
+              productName: 'Old Cola',
+            ),
+            line(
+              productUuid: 'p-9abcdefgh',
+              productName: 'Cola',
+            ),
           ],
         ),
         receipt(
@@ -1252,36 +1411,44 @@ void main() {
       ],
     );
 
-    test('items use the latest name and tell twins apart', () {
-      final options = ItemSalesOptions.items(rows);
-      expect(options.map((o) => o.label).toList(), [
-        'Chips',
-        'Cola (p-1)',
-        'Cola (p-9abcde)',
-        'No item ID',
-      ]);
-      expect(options.last.key, receiptsReportNoneKey);
-    });
+    test(
+      'items use the latest name and tell twins apart',
+      () {
+        final options = ItemSalesOptions.items(rows);
+        expect(options.map((o) => o.label).toList(), [
+          'Chips',
+          'Cola (p-1)',
+          'Cola (p-9abcde)',
+          'No item ID',
+        ]);
+        expect(options.last.key, receiptsReportNoneKey);
+      },
+    );
 
     test('items narrow to the selected category', () {
       final options = ItemSalesOptions.items(
         rows,
-        categoryOf: ItemSalesFilters(categoryKey: 'c-snacks'),
+        categoryOf: ItemSalesFilters(
+          categoryKey: 'c-snacks',
+        ),
       );
       expect(options.map((o) => o.key).toList(), ['p-2']);
     });
 
-    test('categories: No Category only when an item has none', () {
-      final options = ItemSalesOptions.categories(
-        categoryNames,
-        rows,
-      );
-      expect(options.map((o) => o.label).toList(), [
-        'Drinks',
-        'Snacks',
-        'Unknown (deleted item)',
-      ]);
-    });
+    test(
+      'categories: No Category only when an item has none',
+      () {
+        final options = ItemSalesOptions.categories(
+          categoryNames,
+          rows,
+        );
+        expect(options.map((o) => o.label).toList(), [
+          'Drinks',
+          'Snacks',
+          'Unknown (deleted item)',
+        ]);
+      },
+    );
   });
 
   group('sorting', () {
@@ -1320,7 +1487,9 @@ void main() {
             ],
           ),
         ],
-        products: [product('p-$id', categories: categories)],
+        products: [
+          product('p-$id', categories: categories),
+        ],
       ).single;
     }
 
@@ -1336,51 +1505,59 @@ void main() {
         reason: '$field ascending',
       );
       expect(
-        uuids(run(rows, sortField: field, ascending: false)),
+        uuids(
+          run(rows, sortField: field, ascending: false),
+        ),
         descending,
         reason: '$field descending',
       );
     }
 
-    test('names are case-insensitive, missing names last', () {
-      check(
-        ItemSalesSortField.item,
-        [
-          sortRow('a', name: 'beta'),
-          sortRow('b', name: 'Alpha'),
-          sortRow('c'),
-        ],
-        ['b', 'a', 'c'],
-        ['a', 'b', 'c'],
-      );
-      check(
-        ItemSalesSortField.staff,
-        [
-          sortRow('a', staffName: 'bo'),
-          sortRow('b', staffName: 'Ada'),
-          sortRow('c', staffName: null),
-        ],
-        ['b', 'a', 'c'],
-        ['a', 'b', 'c'],
-      );
-      check(
-        ItemSalesSortField.customer,
-        [
-          sortRow('a', customerName: 'Zed'),
-          sortRow('b', customerName: 'amy'),
-          sortRow('c'),
-        ],
-        ['b', 'a', 'c'],
-        ['a', 'b', 'c'],
-      );
-    });
+    test(
+      'names are case-insensitive, missing names last',
+      () {
+        check(
+          ItemSalesSortField.item,
+          [
+            sortRow('a', name: 'beta'),
+            sortRow('b', name: 'Alpha'),
+            sortRow('c'),
+          ],
+          ['b', 'a', 'c'],
+          ['a', 'b', 'c'],
+        );
+        check(
+          ItemSalesSortField.staff,
+          [
+            sortRow('a', staffName: 'bo'),
+            sortRow('b', staffName: 'Ada'),
+            sortRow('c', staffName: null),
+          ],
+          ['b', 'a', 'c'],
+          ['a', 'b', 'c'],
+        );
+        check(
+          ItemSalesSortField.customer,
+          [
+            sortRow('a', customerName: 'Zed'),
+            sortRow('b', customerName: 'amy'),
+            sortRow('c'),
+          ],
+          ['b', 'a', 'c'],
+          ['a', 'b', 'c'],
+        );
+      },
+    );
 
     test('category uses the joined label, none last', () {
       check(
         ItemSalesSortField.category,
         [
           sortRow('a', categories: ['c-snacks']),
-          sortRow('b', categories: ['c-drinks', 'c-snacks']),
+          sortRow(
+            'b',
+            categories: ['c-drinks', 'c-snacks'],
+          ),
           sortRow('c'),
         ],
         ['b', 'a', 'c'],
@@ -1404,8 +1581,14 @@ void main() {
       check(
         ItemSalesSortField.createdAt,
         [
-          sortRow('a', createdAt: DateTime(2026, 10, 17, 9)),
-          sortRow('b', createdAt: DateTime(2026, 10, 17, 8)),
+          sortRow(
+            'a',
+            createdAt: DateTime(2026, 10, 17, 9),
+          ),
+          sortRow(
+            'b',
+            createdAt: DateTime(2026, 10, 17, 8),
+          ),
         ],
         ['b', 'a'],
         ['a', 'b'],
@@ -1485,10 +1668,7 @@ void main() {
       ]);
       expect(
         uuids(
-          run(
-            rows,
-            sortField: ItemSalesSortField.revenue,
-          ),
+          run(rows, sortField: ItemSalesSortField.revenue),
         ),
         ['r1-0', 'r2-0', 'r2-1'],
       );
@@ -1581,9 +1761,18 @@ void main() {
         subStaffEnabled: false,
         costVisible: false,
       );
-      expect(cols, isNot(contains(ItemSalesColumn.subStaff)));
-      expect(cols, isNot(contains(ItemSalesColumn.department)));
-      expect(cols, isNot(contains(ItemSalesColumn.costPrice)));
+      expect(
+        cols,
+        isNot(contains(ItemSalesColumn.subStaff)),
+      );
+      expect(
+        cols,
+        isNot(contains(ItemSalesColumn.department)),
+      );
+      expect(
+        cols,
+        isNot(contains(ItemSalesColumn.costPrice)),
+      );
       expect(cols, isNot(contains(ItemSalesColumn.profit)));
       expect(cols, isNot(contains(ItemSalesColumn.margin)));
       expect(cols, contains(ItemSalesColumn.grossValue));

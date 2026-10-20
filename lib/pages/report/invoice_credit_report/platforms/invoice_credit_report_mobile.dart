@@ -4,8 +4,8 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
-import 'package:stockall/pages/report/invoice_report_table/invoice_report_table_page.dart';
-import 'package:stockall/pages/report/invoice_summary/invoice_summary_page.dart';
+import 'package:stockall/pages/report/invoice_report/invoice_report_table/invoice_report_table_page.dart';
+import 'package:stockall/pages/report/invoice_report/invoice_summary/invoice_summary_page.dart';
 
 class InvoiceCreditReportMobile extends StatelessWidget {
   const InvoiceCreditReportMobile({super.key});

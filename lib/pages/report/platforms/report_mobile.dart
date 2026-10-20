@@ -10,8 +10,8 @@ import 'package:stockall/pages/report/customer_report/customer_report_page.dart'
 import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
-import 'package:stockall/pages/report/items_report/items_report_page.dart';
-import 'package:stockall/pages/report/sales_report/sales_report_page.dart';
+import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
+import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
 
 class ReportMobile extends StatelessWidget {
   const ReportMobile({super.key});

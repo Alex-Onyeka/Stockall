@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
-import 'package:stockall/pages/report/item_history_report/class/item_history_report_logic.dart';
+import 'package:stockall/pages/report/items_report_/item_history_report/class/item_history_report_logic.dart';
 
 void main() {
   ItemHistory makeRecord({
