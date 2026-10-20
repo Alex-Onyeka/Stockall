@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/report_list_tile.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_report_main/storage_report_main_page.dart';
 
 class StorageReportDesktop extends StatelessWidget {
   const StorageReportDesktop({super.key});
@@ -18,7 +21,7 @@ class StorageReportDesktop extends StatelessWidget {
             TopBanner(
               turnOnBackNavButton: true,
               subTitle:
-                  'View your inventory items, summary, analysis and history',
+                  'View your storage inventory items, summary, analysis and history',
               title: 'Storage Report',
               theme: theme,
               bottomSpace: 40,
@@ -53,6 +56,30 @@ class StorageReportDesktop extends StatelessWidget {
                       const SizedBox(height: 10),
                       Column(
                         children: [
+                          Visibility(
+                            visible: authorization(
+                              authorized:
+                                  Authorizations()
+                                      .viewStorageReport,
+                            ),
+                            child: ReportListTile(
+                              isActive: true,
+                              theme: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            const StorageReportMainPage(),
+                                  ),
+                                );
+                              },
+                              subText:
+                                  'Search, filter and sort a detailed table of your storage items',
+                              title: 'Storage Report Main',
+                            ),
+                          ),
                           const SizedBox(height: 30),
                         ],
                       ),

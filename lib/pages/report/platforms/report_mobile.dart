@@ -12,6 +12,7 @@ import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_report/storage_report_page.dart';
 
 class ReportMobile extends StatelessWidget {
   const ReportMobile({super.key});
@@ -80,6 +81,38 @@ class ReportMobile extends StatelessWidget {
                             subText:
                                 'View your stock summary, items main report, analysis and history',
                             title: 'Items Report',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewStorageReport,
+                              ) &&
+                              shop(
+                                    context,
+                                  )?.manageInventoryStorage ==
+                                  true,
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (
+                                        context,
+                                      ) =>
+                                          const StorageReportPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'View your Storage stock summary, items main report, analysis and history',
+                            title:
+                                'Storage Report',
                           ),
                         ),
                         Visibility(
