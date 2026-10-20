@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/storage_item_history_report_page.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_item_history_summary/storage_item_history_summary_page.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_report_analysis/storage_report_analysis_page.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report_main/storage_report_main_page.dart';
 
 class StorageReportMobile extends StatelessWidget {
@@ -75,6 +79,98 @@ class StorageReportMobile extends StatelessWidget {
                             subText:
                                 'Search, filter and sort a detailed table of your storage items',
                             title: 'Storage Report Main',
+                          ),
+                        ),
+                        Visibility(
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .viewStorageReport,
+                          ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const StorageReportAnalysisPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Aggregated storage position, stock cost value, and movement performance',
+                            title: 'Storage Report Analysis',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewStorageReport,
+                              ) &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewItemsHistory,
+                              ) &&
+                              ItemsAuthAction()
+                                  .trackItemHistoryAction(
+                                    context: null,
+                                  ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const StorageItemHistoryReportPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Search, filter and sort a detailed table of your storage history records',
+                            title: 'Storage Item History Table',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewStorageReport,
+                              ) &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewItemsHistory,
+                              ) &&
+                              ItemsAuthAction()
+                                  .trackItemHistoryAction(
+                                    context: null,
+                                  ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const StorageItemHistorySummaryPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Aggregated view of storage transfers, returns and restocks over a selected period',
+                            title: 'Storage Item History Summary',
                           ),
                         ),
                         const SizedBox(height: 30),
