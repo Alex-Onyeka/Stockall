@@ -54,7 +54,10 @@ void openWhatsApp() async {
   await launchUrlMain(url);
 }
 
-Future<void> launchUrlMain(url, {bool sameTab = false}) async {
+Future<void> launchUrlMain(
+  url, {
+  bool sameTab = false,
+}) async {
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(
       Uri.parse(url),
@@ -206,6 +209,7 @@ class Authorizations {
   String manageCostPrice = 'Manage Cost Price';
   String viewGeneralReport = 'View General Report';
   String viewItemsReport = 'View Items Report';
+  String viewStorageReport = 'View Storage Report';
   String viewReceiptSalesReport =
       'View Receipt Sales Report';
   String viewInvoiceSalesReport =
@@ -4444,7 +4448,8 @@ Future<Uint8List> _buildPdfSales(
                                       ),
                                       // 2D: sale units with wastage
                                       // (1.1), so not rounded.
-                                      record.quantityType == 2
+                                      record.quantityType ==
+                                              2
                                           ? formatLargeNumberDouble(
                                             record
                                                 .displayQuantity(),
