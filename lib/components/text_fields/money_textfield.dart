@@ -33,13 +33,11 @@ class MoneyTextfield extends StatefulWidget {
   });
 
   @override
-  State<MoneyTextfield> createState() =>
-      _MoneyTextfieldState();
+  State<MoneyTextfield> createState() => _MoneyTextfieldState();
 }
 
 class _MoneyTextfieldState extends State<MoneyTextfield> {
-  final NumberFormat _formatter =
-      NumberFormat.decimalPattern('en_NG');
+  final NumberFormat _formatter = NumberFormat.decimalPattern('en_NG');
 
   String _rawValue = '';
   bool _isEditing = false;
@@ -60,15 +58,13 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
       // prevent multiple dots
       final parts = normalized.split('.');
       if (parts.length > 2) {
-        normalized =
-            '${parts[0]}.${parts.sublist(1).join('')}';
+        normalized = '${parts[0]}.${parts.sublist(1).join('')}';
       }
       // await mainLocalLog('Raw: $_rawValue');
       // if (normalized != _rawValue) {
       _rawValue = normalized;
 
-      final String amount =
-          _rawValue.isEmpty ? '0' : _rawValue;
+      final String amount = _rawValue.isEmpty ? '0' : _rawValue;
       // await mainLocalLog('Amount: $amount');
       String formatted = '';
       if (amount == '0') {
@@ -76,17 +72,11 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
       } else {
         if (amount.contains('.')) {
           final part = amount.split('.');
-          if (part[1].isNotEmpty && part[1].length > 3) {
-            formatted =
-                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1].substring(0, (part[1].length - 1))}";
-          } else {
-            formatted =
-                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1]}";
-          }
+          formatted =
+              "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1]}";
         } else {
           formatted = _formatter.format(
-            (double.tryParse(amount.replaceAll(',', '')) ??
-                0),
+            (double.tryParse(amount.replaceAll(',', '')) ?? 0),
           );
         }
       }
@@ -96,9 +86,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
       _isEditing = true;
       widget.controller.value = TextEditingValue(
         text: formatted,
-        selection: TextSelection.collapsed(
-          offset: formatted.length,
-        ),
+        selection: TextSelection.collapsed(offset: formatted.length),
       );
       _isEditing = false;
       // }
@@ -117,12 +105,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
             children: [
               Text(
                 widget.title,
-                style:
-                    widget
-                        .theme
-                        .mobileTexts
-                        .b3
-                        .textStyleBold,
+                style: widget.theme.mobileTexts.b3.textStyleBold,
               ),
               SizedBox(height: 5),
             ],
@@ -131,15 +114,12 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
         TextFormField(
           autofocus:
               widget.autoFocus ??
-              (screenWidth(context) > mobileScreen
-                  ? true
-                  : false),
+              (screenWidth(context) > mobileScreen ? true : false),
           onTap: () {
             if (widget.onTap != null) {
               widget.onTap!();
             }
-            if (returnShopProvider()
-                .isOnScreenKeyboardOn()) {
+            if (returnShopProvider().isOnScreenKeyboardOn()) {
               showOnScreenKeyboard();
             }
           },
@@ -149,15 +129,11 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
             if (widget.controller.text == '.') {
               widget.controller.text = '';
             } else {
-              widget.onChanged != null
-                  ? widget.onChanged!(value)
-                  : {};
+              widget.onChanged != null ? widget.onChanged!(value) : {};
               setState(() {});
             }
           },
-          keyboardType: TextInputType.numberWithOptions(
-            decimal: true,
-          ),
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
           // inputFormatters: [
           //   FilteringTextInputFormatter.allow(
           //     RegExp(r'^\d*\.?\d*'),
@@ -173,10 +149,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
           decoration: InputDecoration(
             isCollapsed: true,
             prefixIcon: Padding(
-              padding: const EdgeInsets.only(
-                left: 10,
-                right: 2,
-              ),
+              padding: const EdgeInsets.only(left: 10, right: 2),
               child: Text(
                 currencySymbol(context: context),
                 style: TextStyle(
@@ -186,10 +159,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
                 ),
               ),
             ),
-            prefixIconConstraints: BoxConstraints(
-              minWidth: 0,
-              minHeight: 0,
-            ),
+            prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
 
             contentPadding: EdgeInsets.only(
               right: 15,
@@ -204,16 +174,12 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
             ),
             hintText: widget.hint,
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey,
-                width: 1,
-              ),
+              borderSide: BorderSide(color: Colors.grey, width: 1),
               borderRadius: BorderRadius.circular(5),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color:
-                    widget.theme.lightModeColor.prColor300,
+                color: widget.theme.lightModeColor.prColor300,
                 width: 1.3,
               ),
               borderRadius: BorderRadius.circular(7),

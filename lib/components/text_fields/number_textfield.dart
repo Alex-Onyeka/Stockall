@@ -33,13 +33,11 @@ class NumberTextField extends StatefulWidget {
   });
 
   @override
-  State<NumberTextField> createState() =>
-      _NumberTextFieldState();
+  State<NumberTextField> createState() => _NumberTextFieldState();
 }
 
 class _NumberTextFieldState extends State<NumberTextField> {
-  final NumberFormat _formatter =
-      NumberFormat.decimalPattern('en_NG');
+  final NumberFormat _formatter = NumberFormat.decimalPattern('en_NG');
 
   String _rawValue = '';
   bool _isEditing = false;
@@ -60,15 +58,13 @@ class _NumberTextFieldState extends State<NumberTextField> {
       // prevent multiple dots
       final parts = normalized.split('.');
       if (parts.length > 2) {
-        normalized =
-            '${parts[0]}.${parts.sublist(1).join('')}';
+        normalized = '${parts[0]}.${parts.sublist(1).join('')}';
       }
       // await mainLocalLog('Raw: $_rawValue');
       // if (normalized != _rawValue) {
       _rawValue = normalized;
 
-      final String amount =
-          _rawValue.isEmpty ? '' : _rawValue;
+      final String amount = _rawValue.isEmpty ? '' : _rawValue;
       // await mainLocalLog('Amount: $amount');
       String formatted = '';
       if (amount.isEmpty) {
@@ -83,17 +79,10 @@ class _NumberTextFieldState extends State<NumberTextField> {
 
       if (amount.contains('.')) {
         final part = amount.split('.');
-        if (part[1].isNotEmpty && part[1].length > 3) {
-          formatted =
-              "${_formatter.format((double.tryParse(part[0]) ?? 0))}.${part[1].substring(0, part[1].length - 1)}";
-        } else {
-          formatted =
-              "${_formatter.format((double.tryParse(part[0]) ?? 0))}.${part[1]}";
-        }
+        formatted =
+            "${_formatter.format((double.tryParse(part[0]) ?? 0))}.${part[1]}";
       } else {
-        formatted = _formatter.format(
-          double.tryParse(amount) ?? 0,
-        );
+        formatted = _formatter.format(double.tryParse(amount) ?? 0);
       }
 
       // await mainLocalLog('Formatted: $formatted');
@@ -101,9 +90,7 @@ class _NumberTextFieldState extends State<NumberTextField> {
       _isEditing = true;
       widget.controller.value = TextEditingValue(
         text: formatted,
-        selection: TextSelection.collapsed(
-          offset: formatted.length,
-        ),
+        selection: TextSelection.collapsed(offset: formatted.length),
       );
       _isEditing = false;
       // }
@@ -120,25 +107,21 @@ class _NumberTextFieldState extends State<NumberTextField> {
           visible: widget.showTitle != false,
           child: Text(
             widget.title,
-            style:
-                widget.theme.mobileTexts.b3.textStyleBold,
+            style: widget.theme.mobileTexts.b3.textStyleBold,
           ),
         ),
         SizedBox(height: 5),
         TextFormField(
           autofocus:
               widget.autoFocus ??
-              (screenWidth(context) > mobileScreen
-                  ? true
-                  : false),
+              (screenWidth(context) > mobileScreen ? true : false),
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
           onTap: () {
             if (widget.onTap != null) {
               widget.onTap!();
             }
-            if (returnShopProvider()
-                .isOnScreenKeyboardOn()) {
+            if (returnShopProvider().isOnScreenKeyboardOn()) {
               showOnScreenKeyboard();
             }
           },
@@ -146,15 +129,11 @@ class _NumberTextFieldState extends State<NumberTextField> {
             if (widget.controller.text == '.') {
               widget.controller.text = '';
             } else {
-              widget.onChanged != null
-                  ? widget.onChanged!(value)
-                  : {};
+              widget.onChanged != null ? widget.onChanged!(value) : {};
               setState(() {});
             }
           },
-          keyboardType: TextInputType.numberWithOptions(
-            decimal: true,
-          ),
+          keyboardType: TextInputType.numberWithOptions(decimal: true),
           autocorrect: false,
           enableSuggestions: false,
           style: TextStyle(
@@ -164,10 +143,7 @@ class _NumberTextFieldState extends State<NumberTextField> {
           ),
           decoration: InputDecoration(
             isCollapsed: true,
-            prefixIconConstraints: BoxConstraints(
-              minWidth: 0,
-              minHeight: 0,
-            ),
+            prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
 
             contentPadding: EdgeInsets.only(
               right: 5,
@@ -182,16 +158,12 @@ class _NumberTextFieldState extends State<NumberTextField> {
             ),
             hintText: widget.hint,
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey.shade200,
-                width: 1,
-              ),
+              borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
               borderRadius: BorderRadius.circular(3),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color:
-                    widget.theme.lightModeColor.prColor300,
+                color: widget.theme.lightModeColor.prColor300,
                 width: 1.3,
               ),
               borderRadius: BorderRadius.circular(5),
