@@ -3213,116 +3213,135 @@ void selectProductSales({
                                               context,
                                             ).pop();
                                           } else {
-                                            if (returnShopProvider()
-                                                        .userShop()
-                                                        ?.printSalesDocket ==
-                                                    true &&
-                                                returnCompProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).getContinuousPrintDocket() &&
-                                                screenWidth(
-                                                      context,
-                                                    ) >
-                                                    tabletScreenSmall) {
-                                              var tempCartItem =
-                                                  cartItem.copyWith(
-                                                    quantity:
-                                                        qqty.toDouble(),
-                                                  );
+                                            cartItem.useGroupQuantity = true;
 
-                                              var res =
-                                                  kIsWeb
-                                                      ? await downloadDocket(
-                                                        setTotal:
-                                                            false,
-                                                        items: [
-                                                          tempCartItem,
-                                                        ],
-                                                        cart:
-                                                            returnSalesProvider().currentCart(),
-                                                        // ignore: use_build_context_synchronously
-                                                        context:
-                                                            context,
-                                                        fileName:
-                                                            'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
-                                                        waiter:
-                                                            returnSalesProvider().currentMainCart().subStaff?.staffName ??
-                                                            'Not Set',
-                                                      )
-                                                      : await printDocket(
-                                                        setTotal:
-                                                            false,
-                                                        items: [
-                                                          tempCartItem,
-                                                        ],
-                                                        cart:
-                                                            returnSalesProvider().currentCart(),
-                                                        // ignore: use_build_context_synchronously
-                                                        context:
-                                                            context,
-                                                        fileName:
-                                                            'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
-                                                        waiter:
-                                                            returnSalesProvider().currentMainCart().subStaff?.staffName ??
-                                                            'Not Set',
-                                                      );
-                                              if (res) {
-                                                cartItem.useGroupQuantity =
-                                                    true;
-                                                returnSalesProvider().addItemToCart(
-                                                  // isEdit:
-                                                  //     isEdit,
-                                                  // ignore: use_build_context_synchronously
-                                                  context:
-                                                      context,
-                                                  newItem:
-                                                      cartItem,
-                                                  isCustomEdit:
-                                                      returnData()
-                                                          .productList()
-                                                          .where(
-                                                            (
-                                                              product,
-                                                            ) =>
-                                                                product.uuid ==
-                                                                cartItem.getItem()?.uuid,
-                                                          )
-                                                          .isEmpty,
-                                                );
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
+                                            Future<bool> handleDocketPrint(
+                                              TempCartItem itemToPrint,
+                                            ) async {
+                                              if (returnShopProvider()
+                                                          .userShop()
+                                                          ?.printSalesDocket ==
+                                                      true &&
+                                                  returnCompProvider(
+                                                    context,
+                                                    listen: false,
+                                                  ).getContinuousPrintDocket() &&
+                                                  screenWidth(context) >
+                                                      tabletScreenSmall) {
+                                                return kIsWeb
+                                                    ? await downloadDocket(
+                                                      setTotal: false,
+                                                      items: [itemToPrint],
+                                                      cart:
+                                                          returnSalesProvider()
+                                                              .currentCart(),
+                                                      context: context,
+                                                      fileName:
+                                                          'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                      waiter:
+                                                          returnSalesProvider()
+                                                              .currentMainCart()
+                                                              .subStaff
+                                                              ?.staffName ??
+                                                          'Not Set',
+                                                    )
+                                                    : await printDocket(
+                                                      setTotal: false,
+                                                      items: [itemToPrint],
+                                                      cart:
+                                                          returnSalesProvider()
+                                                              .currentCart(),
+                                                      context: context,
+                                                      fileName:
+                                                          'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                      waiter:
+                                                          returnSalesProvider()
+                                                              .currentMainCart()
+                                                              .subStaff
+                                                              ?.staffName ??
+                                                          'Not Set',
+                                                    );
+                                              }
+                                              return true;
+                                            }
+
+                                            var existingLine =
+                                                returnSalesProvider().findCartLine(
+                                              returnSalesProvider().currentCart(),
+                                              cartItem,
+                                            );
+
+                                            if (existingLine != null) {
+                                              // Item ALREADY EXISTS in cart:
+                                              // Show duplicate alert first via addItemToCart.
+                                              // If user chooses replace or add to quantity,
+                                              // onBeforeCommitDuplicate initiates docket printing
+                                              // BEFORE the cart is modified.
+                                              final result =
+                                                  await returnSalesProvider().addItemToCart(
+                                                context: context,
+                                                newItem: cartItem,
+                                                isCustomEdit:
+                                                    returnData().productList().where(
+                                                      (product) =>
+                                                          product.uuid ==
+                                                          cartItem.getItem()?.uuid,
+                                                    ).isEmpty,
+                                                onBeforeCommitDuplicate: (choice) async {
+                                                  var tempCartItem =
+                                                      cartItem.copyWith(
+                                                    quantity: qqty.toDouble(),
+                                                  );
+                                                  return await handleDocketPrint(
+                                                    tempCartItem,
+                                                  );
+                                                },
+                                              );
+
+                                              // If user selected Replace Item or Add to Quantity and print proceeded:
+                                              if (result ==
+                                                      'Item Replaced Successfully' ||
+                                                  result ==
+                                                      'Quantity Updated Successfully') {
+                                                if (context.mounted) {
+                                                  Navigator.of(context).pop();
+                                                }
                                                 closeAction();
                                               }
                                             } else {
-                                              cartItem.useGroupQuantity =
-                                                  true;
-                                              returnSalesProvider().addItemToCart(
-                                                // isEdit:
-                                                //     isEdit,
-                                                // ignore: use_build_context_synchronously
-                                                context:
-                                                    context,
-                                                newItem:
-                                                    cartItem,
-                                                isCustomEdit:
-                                                    returnData()
-                                                        .productList()
-                                                        .where(
-                                                          (
-                                                            product,
-                                                          ) =>
-                                                              product.uuid ==
-                                                              cartItem.getItem()?.uuid,
-                                                        )
-                                                        .isEmpty,
+                                              // Item DOES NOT EXIST in cart:
+                                              // Show docket print dialog first (if enabled), then add.
+                                              var tempCartItem =
+                                                  cartItem.copyWith(
+                                                quantity: qqty.toDouble(),
                                               );
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
-                                              closeAction();
+                                              var printRes =
+                                                  await handleDocketPrint(
+                                                tempCartItem,
+                                              );
+                                              if (printRes) {
+                                                final result =
+                                                    await returnSalesProvider().addItemToCart(
+                                                  context: context,
+                                                  newItem: cartItem,
+                                                  isCustomEdit:
+                                                      returnData().productList().where(
+                                                        (product) =>
+                                                            product.uuid ==
+                                                            cartItem.getItem()?.uuid,
+                                                      ).isEmpty,
+                                                );
+                                                if (result.isNotEmpty &&
+                                                    result !=
+                                                        'Quantity Limit Exceeded') {
+                                                  if (context.mounted) {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  }
+                                                  closeAction();
+                                                }
+                                              }
                                             }
                                           }
                                         }

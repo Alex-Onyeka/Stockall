@@ -20,6 +20,7 @@ import 'package:stockall/classes/temp_product_class/units_class/product_units_cl
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/duplicate_cart_item_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -1810,7 +1811,8 @@ class SalesProvider extends ChangeNotifier {
               var oldCartItems =
                   salesCartItem.tempCartItems?.toList() ??
                   [];
-              if (oldCartItems.isEmpty && existingReceipt != null) {
+              if (oldCartItems.isEmpty &&
+                  existingReceipt != null) {
                 oldCartItems = convertReceiptToCartItems(
                   receipt: existingReceipt,
                   saleRecords:
@@ -2201,7 +2203,8 @@ class SalesProvider extends ChangeNotifier {
       }
     } else if (currentCart().cartItemTypeIndex == 2) {
       await mainLocalLog('Current Sale is Invoice');
-      final isInvoiceEdit = currentCart().invoiceUuidEdit != null;
+      final isInvoiceEdit =
+          currentCart().invoiceUuidEdit != null;
       TempInvoice? existingInvoice;
       if (isInvoiceEdit) {
         existingInvoice =
@@ -2479,15 +2482,17 @@ class SalesProvider extends ChangeNotifier {
               var oldCartItems =
                   salesCartItem.tempCartItems?.toList() ??
                   [];
-              if (oldCartItems.isEmpty && existingInvoice != null) {
-                oldCartItems =
-                    returnInvoicesProvider().convertInvoiceToCartItems(
-                  invoice: existingInvoice,
-                  saleRecords:
-                      existingInvoice.getItemsNoVoid() ??
-                      [],
-                  context: context,
-                );
+              if (oldCartItems.isEmpty &&
+                  existingInvoice != null) {
+                oldCartItems = returnInvoicesProvider()
+                    .convertInvoiceToCartItems(
+                      invoice: existingInvoice,
+                      saleRecords:
+                          existingInvoice
+                              .getItemsNoVoid() ??
+                          [],
+                      context: context,
+                    );
               }
               await _applyReceiptInventoryUpdate(
                 oldCartItems: oldCartItems,
@@ -4143,7 +4148,20 @@ class SalesProvider extends ChangeNotifier {
         );
 
         if (existing != null) {
-          existing.quantity += newItem.quantity;
+          final oldUnit = existing.getSelectedUnit();
+          final newUnit = newItem.getSelectedUnit();
+          final double oldConversion =
+              (oldUnit.conversion <= 0)
+                  ? 1.0
+                  : oldUnit.conversion;
+          final double newConversion =
+              (newUnit.conversion <= 0)
+                  ? 1.0
+                  : newUnit.conversion;
+          final double addedQuantity =
+              (newItem.quantity * newConversion) /
+              oldConversion;
+          existing.quantity += addedQuantity;
         } else {
           currentCart().cartItems.add(newItem);
         }
@@ -4182,115 +4200,396 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  Future<String> replaceCartItem({
+    required TempCartItem existingLine,
+    required TempCartItem newItem,
+    required bool isCustomEdit,
+  }) async {
+    var item = existingLine;
+    var voidItem = findVoidLine(currentCart(), newItem);
+
+    final newUnit = newItem.getSelectedUnit();
+    final double newConversion =
+        (newUnit.conversion <= 0)
+            ? 1.0
+            : newUnit.conversion;
+
+    if (returnShopProvider().userShop()!.trackCart ==
+            true &&
+        item.getStockQuantity() >
+            newItem.getStockQuantity()) {
+      final diffStock =
+          item.getStockQuantity() -
+          newItem.getStockQuantity();
+      final diffInNewUnit =
+          (newConversion > 0)
+              ? diffStock / newConversion
+              : diffStock;
+      if (voidItem != null) {
+        voidItem.quantity += diffInNewUnit;
+      } else {
+        var deletedItem = newItem.copyWith(
+          quantity: diffInNewUnit,
+          isVoid: true,
+          uuid: uuidGen(),
+        );
+        currentCart().cartItems.add(deletedItem);
+      }
+    }
+
+    if (isCustomEdit) {
+      item.item.name = newItem.item.name;
+      item.item.sellingPrice = newItem.item.sellingPrice;
+      item.item.costPrice = newItem.item.costPrice;
+      item.item.setCustomPrice =
+          newItem.item.setCustomPrice;
+      item.addToStock = newItem.addToStock;
+      item.customPrice = newItem.customPrice;
+      item.quantity = newItem.quantity;
+      item.setCustomPrice = newItem.setCustomPrice;
+      item.setTotalPrice = newItem.setTotalPrice;
+      item.useWholeSalePrice = newItem.useWholeSalePrice;
+      item.useGroupQuantity = newItem.useGroupQuantity;
+      item.qttyPerGroup = newItem.qttyPerGroup;
+      item.item.unit = newItem.item.unit;
+      item.unitUuid = newItem.unitUuid;
+      item.priceUuid = newItem.priceUuid;
+    } else {
+      item.item = newItem.item;
+      item.itemUuid = newItem.itemUuid ?? newItem.item.uuid;
+      item.unitUuid = newItem.unitUuid;
+      item.priceUuid = newItem.priceUuid;
+      item.quantity = newItem.quantity;
+      item.addToStock = newItem.addToStock;
+      item.customPrice = newItem.customPrice;
+      item.discount = newItem.discount;
+      item.fixedDiscount = newItem.fixedDiscount;
+      item.isVoid = newItem.isVoid;
+      item.qttyPerGroup = newItem.qttyPerGroup;
+      item.salesRecordId = newItem.salesRecordId;
+      item.setCustomPrice = newItem.setCustomPrice;
+      item.setTotalPrice = newItem.setTotalPrice;
+      item.useWholeSalePrice = newItem.useWholeSalePrice;
+      item.useGroupQuantity = newItem.useGroupQuantity;
+      item.wastageAmount = newItem.wastageAmount;
+      item.wastageUnitUuid = newItem.wastageUnitUuid;
+      item.isPercentageWastage =
+          newItem.isPercentageWastage;
+      item.manageSalesWastage = newItem.manageSalesWastage;
+      item.widthDimension = newItem.widthDimension;
+      item.heightDimension = newItem.heightDimension;
+      item.quantityType = newItem.quantityType;
+    }
+
+    await returnMultiDisplayProvider().updateWindow(
+      cartClass: AltCartClass(
+        manageCustomerReward:
+            returnShopProvider()
+                .userShop()!
+                .manageCustomerReward ??
+            false,
+        cartId: currentCart().id!,
+        currency: returnShopProvider().userShop()!.currency,
+        cartItems:
+            currentCart()
+                .getCartItemsAll()
+                .reversed
+                .toList(),
+        cashBack:
+            returnShopProvider()
+                .userShop()!
+                .customerPercentageReward,
+        fixedDiscount: currentCart().fixedDiscount,
+        percentDiscount: currentCart().discount,
+        vat:
+            returnShopProvider().userShop()!.applyVAT!
+                ? vat
+                : 0,
+      ),
+    );
+    addAnyDiscount();
+    await CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+    return 'Item Replaced Successfully';
+  }
+
+  Future<String> addToCartItemQuantity({
+    required TempCartItem existingLine,
+    required double addedQuantityInOldUnit,
+  }) async {
+    existingLine.quantity += addedQuantityInOldUnit;
+
+    await returnMultiDisplayProvider().updateWindow(
+      cartClass: AltCartClass(
+        manageCustomerReward:
+            returnShopProvider()
+                .userShop()!
+                .manageCustomerReward ??
+            false,
+        cartId: currentCart().id!,
+        currency: returnShopProvider().userShop()!.currency,
+        cartItems:
+            currentCart()
+                .getCartItemsAll()
+                .reversed
+                .toList(),
+        cashBack:
+            returnShopProvider()
+                .userShop()!
+                .customerPercentageReward,
+        fixedDiscount: currentCart().fixedDiscount,
+        percentDiscount: currentCart().discount,
+        vat:
+            returnShopProvider().userShop()!.applyVAT!
+                ? vat
+                : 0,
+      ),
+    );
+    addAnyDiscount();
+    await CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+    return 'Quantity Updated Successfully';
+  }
+
+  bool isOnlyQuantityDifference(
+    TempCartItem a,
+    TempCartItem b,
+  ) {
+    // 1. Unit comparison: match unit UUID if set, or unit name and conversion
+    final unitA = a.getSelectedUnit();
+    final unitB = b.getSelectedUnit();
+    final bool sameUnit =
+        (unitA.uuid == unitB.uuid) ||
+        (unitA.name.trim().toLowerCase() ==
+                unitB.name.trim().toLowerCase() &&
+            unitA.conversion == unitB.conversion);
+    if (!sameUnit) return false;
+
+    // 2. Price tier comparison: match price UUID if set, or price name, value, and price type
+    final priceA = a.getSelectedPrice();
+    final priceB = b.getSelectedPrice();
+    final bool samePriceTier =
+        (a.priceUuid != null &&
+            b.priceUuid != null &&
+            a.priceUuid == b.priceUuid) ||
+        (priceA.name?.trim().toLowerCase() ==
+                priceB.name?.trim().toLowerCase() &&
+            priceA.priceValue == priceB.priceValue &&
+            priceA.priceType == priceB.priceType);
+    if (!samePriceTier) return false;
+
+    // 3. Custom price comparison
+    final bool aHasCustom =
+        (a.setCustomPrice == true) &&
+        a.customPrice != null &&
+        a.customPrice! > 0;
+    final bool bHasCustom =
+        (b.setCustomPrice == true) &&
+        b.customPrice != null &&
+        b.customPrice! > 0;
+    if (aHasCustom != bHasCustom) return false;
+    if (aHasCustom) {
+      if (a.customPrice != b.customPrice) return false;
+      if (a.setTotalPrice != b.setTotalPrice) return false;
+    }
+
+    // 4. Wholesale price toggle
+    if ((a.useWholeSalePrice == true) !=
+        (b.useWholeSalePrice == true))
+      return false;
+
+    // 5. Discount comparison
+    final double discountA = a.discount ?? 0.0;
+    final double discountB = b.discount ?? 0.0;
+    if (discountA != discountB) return false;
+
+    final double fixedDiscountA = a.fixedDiscount ?? 0.0;
+    final double fixedDiscountB = b.fixedDiscount ?? 0.0;
+    if (fixedDiscountA != fixedDiscountB) return false;
+
+    // 6. 2D Item attributes (dimensions and wastage)
+    if (a.item.quantityType == 2 ||
+        b.item.quantityType == 2) {
+      if (a.item.quantityType != b.item.quantityType)
+        return false;
+      if (a.widthDimension != b.widthDimension)
+        return false;
+      if (a.heightDimension != b.heightDimension)
+        return false;
+      final double wastageA = a.wastageAmount ?? 0.0;
+      final double wastageB = b.wastageAmount ?? 0.0;
+      if (wastageA != wastageB) return false;
+      if (a.wastageUnitUuid != b.wastageUnitUuid)
+        return false;
+      if ((a.isPercentageWastage == true) !=
+          (b.isPercentageWastage == true)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   Future<String> addItemToCart({
     required BuildContext context,
     required TempCartItem newItem,
     required bool isCustomEdit,
-    // required bool isEdit,
+    Future<bool> Function(DuplicateCartItemChoice choice)?
+    onBeforeCommitDuplicate,
   }) async {
     applyDefaultDimensions(newItem);
-    if (canAddProductToCart(
-      isEdit: false,
-      newCartItem: newItem,
-      quantityToAdd: newItem.getStockQuantity(),
-    )) {
-      String result = '';
-      var existingLine = findCartLine(
-        currentCart(),
-        newItem,
-      );
+    var existingLine = findCartLine(currentCart(), newItem);
 
-      var voidItem = findVoidLine(currentCart(), newItem);
+    if (existingLine != null) {
+      final oldUnit = existingLine.getSelectedUnit();
+      final newUnit = newItem.getSelectedUnit();
+      final double oldConversion =
+          (oldUnit.conversion <= 0)
+              ? 1.0
+              : oldUnit.conversion;
+      final double newConversion =
+          (newUnit.conversion <= 0)
+              ? 1.0
+              : newUnit.conversion;
 
-      if (existingLine != null) {
-        var item = existingLine;
-
-        if (returnShopProvider().userShop()!.trackCart ==
-                true &&
-            item.quantity > newItem.quantity) {
-          if (voidItem != null) {
-            var beanItem = voidItem;
-            beanItem.quantity +=
-                item.quantity - newItem.quantity;
-          } else {
-            var deletedItem = newItem.copyWith(
-              quantity: item.quantity - newItem.quantity,
-              isVoid: true,
-              uuid: uuidGen(),
+      double addedQuantityInOldUnit;
+      if (existingLine.item.quantityType == 2) {
+        final double newRealQty = newItem.getRealQuantity();
+        addedQuantityInOldUnit = oldUnit
+            .getQuantityEquivDivided(
+              newQuantity: newRealQty,
+              index: 1,
+              product: existingLine.item,
             );
-            currentCart().cartItems.add(deletedItem);
+      } else {
+        addedQuantityInOldUnit =
+            (newItem.quantity * newConversion) /
+            oldConversion;
+      }
+
+      final double finalQuantityAfterAdd =
+          existingLine.quantity + addedQuantityInOldUnit;
+
+      final bool onlyQuantityDiff =
+          isOnlyQuantityDifference(existingLine, newItem);
+
+      DuplicateCartItemChoice choice;
+
+      if (onlyQuantityDiff) {
+        // If the only difference is the quantity, directly add to quantity without alert
+        choice = DuplicateCartItemChoice.addToQuantity;
+      } else {
+        // Show Duplicate Cart Item Alert when other properties differ (unit, price, dimensions, etc.)
+        final dialogChoice =
+            await showDialog<DuplicateCartItemChoice>(
+              context: context,
+              builder:
+                  (_) => DuplicateCartItemAlert(
+                    theme: returnTheme(
+                      context,
+                      listen: false,
+                    ),
+                    existingItem: existingLine,
+                    newItem: newItem,
+                    addedQuantityInOldUnit:
+                        addedQuantityInOldUnit,
+                    finalQuantityAfterAdd:
+                        finalQuantityAfterAdd,
+                  ),
+            );
+
+        if (dialogChoice == null ||
+            dialogChoice ==
+                DuplicateCartItemChoice.cancel) {
+          return '';
+        }
+        choice = dialogChoice;
+      }
+
+      if (choice == DuplicateCartItemChoice.replace) {
+        if (!canAddProductToCart(
+          isEdit: true,
+          newCartItem: existingLine,
+          quantityToAdd: newItem.getStockQuantity(),
+        )) {
+          showDialog(
+            context: context,
+            builder:
+                (_) => InfoAlert(
+                  title: "Quantity Limit Reached",
+                  message:
+                      "Only ${newItem.getItem()?.getActualQuantity() ?? 0} available in stock.",
+                  theme: returnTheme(
+                    context,
+                    listen: false,
+                  ),
+                ),
+          );
+          return "Quantity Limit Exceeded";
+        }
+
+        if (onBeforeCommitDuplicate != null) {
+          final proceed = await onBeforeCommitDuplicate(
+            choice,
+          );
+          if (!proceed) {
+            return '';
           }
         }
 
-        if (isCustomEdit) {
-          item.item.name = newItem.item.name;
-          item.item.sellingPrice =
-              newItem.item.sellingPrice;
-          item.item.costPrice = newItem.item.costPrice;
-          item.item.setCustomPrice =
-              newItem.item.setCustomPrice;
-          item.addToStock = newItem.addToStock;
-          item.customPrice = newItem.customPrice;
-          item.quantity = newItem.quantity;
-          item.setCustomPrice = newItem.setCustomPrice;
-          item.setTotalPrice = newItem.setTotalPrice;
-          item.useWholeSalePrice =
-              newItem.useWholeSalePrice;
-          item.useGroupQuantity = newItem.useGroupQuantity;
-          item.qttyPerGroup = newItem.qttyPerGroup;
-          item.item.unit = newItem.item.unit;
-        } else {
-          item.addToStock = newItem.addToStock;
-          item.customPrice = newItem.customPrice;
-          item.discount = newItem.discount;
-          item.fixedDiscount = newItem.fixedDiscount;
-          item.isVoid = newItem.isVoid;
-          item.itemUuid = newItem.itemUuid;
-          item.quantity = newItem.quantity;
-          item.qttyPerGroup = newItem.qttyPerGroup;
-          item.salesRecordId = newItem.salesRecordId;
-          item.setCustomPrice = newItem.setCustomPrice;
-          item.setTotalPrice = newItem.setTotalPrice;
-          item.useWholeSalePrice =
-              newItem.useWholeSalePrice;
-          item.useGroupQuantity = newItem.useGroupQuantity;
-          item.uuid = newItem.uuid;
-          item.wastageAmount = newItem.wastageAmount;
-          item.wastageUnitUuid = newItem.wastageUnitUuid;
-          item.isPercentageWastage =
-              newItem.isPercentageWastage;
-          item.manageSalesWastage =
-              newItem.manageSalesWastage;
-        }
-        await returnMultiDisplayProvider().updateWindow(
-          cartClass: AltCartClass(
-            manageCustomerReward:
-                returnShopProvider()
-                    .userShop()!
-                    .manageCustomerReward ??
-                false,
-            cartId: currentCart().id!,
-            currency:
-                returnShopProvider().userShop()!.currency,
-            cartItems:
-                currentCart()
-                    .getCartItemsAll()
-                    .reversed
-                    .toList(),
-            cashBack:
-                returnShopProvider()
-                    .userShop()!
-                    .customerPercentageReward,
-            fixedDiscount: currentCart().fixedDiscount,
-            percentDiscount: currentCart().discount,
-            vat:
-                returnShopProvider().userShop()!.applyVAT!
-                    ? vat
-                    : 0,
-          ),
+        return await replaceCartItem(
+          existingLine: existingLine,
+          newItem: newItem,
+          isCustomEdit: isCustomEdit,
         );
-        notifyListeners();
-      } else {
+      } else if (choice ==
+          DuplicateCartItemChoice.addToQuantity) {
+        final double totalStockNeeded =
+            existingLine.getStockQuantity() +
+            newItem.getStockQuantity();
+
+        if (!canAddProductToCart(
+          isEdit: true,
+          newCartItem: existingLine,
+          quantityToAdd: totalStockNeeded,
+        )) {
+          showDialog(
+            context: context,
+            builder:
+                (_) => InfoAlert(
+                  title: "Quantity Limit Reached",
+                  message:
+                      "Only ${newItem.getItem()?.getActualQuantity() ?? 0} available in stock.",
+                  theme: returnTheme(
+                    context,
+                    listen: false,
+                  ),
+                ),
+          );
+          return "Quantity Limit Exceeded";
+        }
+
+        if (onBeforeCommitDuplicate != null) {
+          final proceed = await onBeforeCommitDuplicate(
+            choice,
+          );
+          if (!proceed) {
+            return '';
+          }
+        }
+
+        return await addToCartItemQuantity(
+          existingLine: existingLine,
+          addedQuantityInOldUnit: addedQuantityInOldUnit,
+        );
+      }
+      return '';
+    } else {
+      if (canAddProductToCart(
+        isEdit: false,
+        newCartItem: newItem,
+        quantityToAdd: newItem.getStockQuantity(),
+      )) {
         currentCart().cartItems.add(newItem);
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
@@ -4319,27 +4618,23 @@ class SalesProvider extends ChangeNotifier {
                     : 0,
           ),
         );
+        addAnyDiscount();
+        await CartFunc().updateMainCart(currentMainCart());
         notifyListeners();
-        result = 'Item Added Successfully';
-        // }
+        return 'Item Added Successfully';
+      } else {
+        showDialog(
+          context: context,
+          builder:
+              (_) => InfoAlert(
+                title: "Quantity Limit Reached",
+                message:
+                    "Only ${newItem.getItem()?.getActualQuantity() ?? 0} available in stock.",
+                theme: returnTheme(context, listen: false),
+              ),
+        );
+        return "Quantity Limit Exceeded";
       }
-      addAnyDiscount();
-      await CartFunc().updateMainCart(currentMainCart());
-
-      notifyListeners();
-      return result;
-    } else {
-      showDialog(
-        context: context,
-        builder:
-            (_) => InfoAlert(
-              title: "Quantity Limit Reached",
-              message:
-                  "Only ${newItem.getItem()?.getActualQuantity() ?? 0} available in stock.",
-              theme: returnTheme(context, listen: false),
-            ),
-      );
-      return "Quantity Limit Exceeded";
     }
   }
 
