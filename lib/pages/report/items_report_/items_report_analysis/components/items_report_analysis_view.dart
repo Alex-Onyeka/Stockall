@@ -2371,7 +2371,7 @@ class _ItemsReportAnalysisViewState
                     ),
                   ),
                   Text(
-                    'Latest additions to your catalog',
+                    'Latest additions in the past 7 days',
                     style: TextStyle(
                       fontSize:
                           theme.mobileTexts.b4.fontSize,
@@ -2390,7 +2390,9 @@ class _ItemsReportAnalysisViewState
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'Top ${recentItems.length}',
+                  recentItems.isEmpty
+                      ? '0 items'
+                      : 'Top ${recentItems.length}',
                   style: TextStyle(
                     fontSize: theme.mobileTexts.b4.fontSize,
                     fontWeight: FontWeight.bold,
@@ -2409,7 +2411,7 @@ class _ItemsReportAnalysisViewState
               ),
               child: Center(
                 child: Text(
-                  'No items created yet',
+                  'No items created within the past week',
                   style: TextStyle(
                     color: Colors.grey.shade500,
                     fontSize: theme.mobileTexts.b3.fontSize,

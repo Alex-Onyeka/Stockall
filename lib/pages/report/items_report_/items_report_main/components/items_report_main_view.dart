@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
@@ -11,6 +13,7 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_main_logic.dart';
+import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_pos_print.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class _Col {
@@ -66,6 +69,7 @@ class _ItemsReportMainViewState
   bool _ascending = true;
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
 
   late DateTimeRange _range;
 
@@ -78,6 +82,179 @@ class _ItemsReportMainViewState
 
   /// uuid -> stock movement (opening, closing, change).
   final Map<String, ItemStockMovement> _movements = {};
+
+  String? _selectedPrintOption = 'all';
+
+  List<ItemsReportRow> get _filteredRows {
+    final sortByMovement =
+        _sortField == ItemsSortField.openingStock ||
+        _sortField == ItemsSortField.closingStock ||
+        _sortField == ItemsSortField.stockChange;
+    if (sortByMovement) _ensureStockMovements(_baseRows);
+
+    return ItemsReportQuery.filterAndSort(
+      rows: _baseRows,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
+      departmentsEnabled: _departmentsEnabled,
+      costFilterAllowed: _canSeeCost,
+      opening:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.opening
+              : null,
+      closing:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.closing
+              : null,
+      stockChange:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.change
+              : null,
+    );
+  }
+
+  List<ItemsReportRow> get _sortedAllRows {
+    final sortByMovement =
+        _sortField == ItemsSortField.openingStock ||
+        _sortField == ItemsSortField.closingStock ||
+        _sortField == ItemsSortField.stockChange;
+    if (sortByMovement) _ensureStockMovements(_baseRows);
+
+    return ItemsReportQuery.filterAndSort(
+      rows: _baseRows,
+      filters: ItemsReportFilters(),
+      sortField: _sortField,
+      ascending: _ascending,
+      departmentsEnabled: _departmentsEnabled,
+      costFilterAllowed: _canSeeCost,
+      opening:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.opening
+              : null,
+      closing:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.closing
+              : null,
+      stockChange:
+          sortByMovement
+              ? (r) => _movements[r.uuid]?.change
+              : null,
+    );
+  }
+
+  void _confirmAndPrintFiltered(ThemeProvider theme) {
+    final rows = _filteredRows;
+    if (rows.isEmpty) {
+      showDialog(
+        context: context,
+        builder:
+            (ctx) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('No Matching Items'),
+              content: const Text(
+                'There are no filtered records to print.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+      return;
+    }
+
+    final filterLabels = getFilterCombinationLabels(
+      filters: _filters,
+      categories:
+          returnCategoriesProvider().categoriesMain
+              .toList(),
+      departments:
+          returnDepartmentProvider().departments.toList(),
+      departmentsEnabled: _departmentsEnabled,
+    );
+
+    showDialog(
+      context: context,
+      builder: (confirmCtx) {
+        return ConfirmationAlert(
+          theme: theme,
+          title: 'Print Records',
+          message:
+              'You are about to print ${rows.length} filtered records in POS roll format. Are you sure you want to proceed?',
+          action: () {
+            Navigator.of(confirmCtx).pop();
+            executeItemsReportPosPrint(
+              context: context,
+              rows: rows,
+              mode: ItemsReportPrintMode.filtered,
+              departmentsEnabled: _departmentsEnabled,
+              filterLabels: filterLabels,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _confirmAndPrintUnfiltered(
+    String option,
+    ThemeProvider theme,
+  ) {
+    String title;
+    String message;
+    ItemsReportPrintMode mode;
+
+    switch (option) {
+      case 'categories':
+        title = 'Print Items in Categories';
+        message =
+            'You are about to print items grouped by categories in POS roll format. Are you sure you want to proceed?';
+        mode = ItemsReportPrintMode.categories;
+        break;
+      case 'departments':
+        title = 'Print Items In Departments';
+        message =
+            'You are about to print items grouped by departments in POS roll format. Are you sure you want to proceed?';
+        mode = ItemsReportPrintMode.departments;
+        break;
+      case 'breakdown':
+        title = 'Print Full Breakdown';
+        message =
+            'You are about to print the full breakdown (all items, departments, and categories) in POS roll format. Are you sure you want to proceed?';
+        mode = ItemsReportPrintMode.fullBreakdown;
+        break;
+      case 'all':
+      default:
+        title = 'Print All Items';
+        message =
+            'You are about to print all ${_baseRows.length} items in POS roll format. Are you sure you want to proceed?';
+        mode = ItemsReportPrintMode.all;
+        break;
+    }
+
+    showDialog(
+      context: context,
+      builder: (confirmCtx) {
+        return ConfirmationAlert(
+          theme: theme,
+          title: title,
+          message: message,
+          action: () {
+            Navigator.of(confirmCtx).pop();
+            executeItemsReportPosPrint(
+              context: context,
+              rows: _sortedAllRows,
+              mode: mode,
+              departmentsEnabled: _departmentsEnabled,
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -366,6 +543,52 @@ class _ItemsReportMainViewState
     );
   }
 
+  void _pickExpiryRange() {
+    final theme = returnTheme(context, listen: false);
+    mainDatePicker(
+      context: context,
+      theme: theme,
+      singleDate: (date) {
+        if (date == null) return;
+        final day = DateTime(date.year, date.month, date.day);
+        _apply(() {
+          _filters.expiryStart = day;
+          _filters.expiryEnd = day;
+        });
+      },
+      rangeDate: (firstDate, lastDate) {
+        if (firstDate == null) return;
+        DateTime s = DateTime(
+          firstDate.year,
+          firstDate.month,
+          firstDate.day,
+        );
+        final endBase = lastDate ?? firstDate;
+        DateTime e = DateTime(
+          endBase.year,
+          endBase.month,
+          endBase.day,
+        );
+        if (e.isBefore(s)) {
+          final temp = s;
+          s = e;
+          e = temp;
+        }
+        _apply(() {
+          _filters.expiryStart = s;
+          _filters.expiryEnd = e;
+        });
+      },
+    );
+  }
+
+  void _clearExpiryRange() {
+    _apply(() {
+      _filters.expiryStart = null;
+      _filters.expiryEnd = null;
+    });
+  }
+
   DateTime get _businessToday {
     final t = resolveBusinessDate(DateTime.now());
     return DateTime(t.year, t.month, t.day);
@@ -588,168 +811,327 @@ class _ItemsReportMainViewState
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 6.0),
-          child: SizedBox(
-            width: widget.isDesktop ? 320 : double.infinity,
-            height: 38,
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged:
-                  (v) => _apply(() => _filters.search = v),
-              decoration: InputDecoration(
-                hintText:
-                    _departmentsEnabled
-                        ? 'Search name, category or department'
-                        : 'Search name or category',
-                hintStyle: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  size: 20,
-                ),
-                suffixIcon:
-                    _searchCtrl.text.isEmpty
-                        ? null
-                        : IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
+              Padding(
+                padding: const EdgeInsets.only(right: 6.0),
+                child: SizedBox(
+                  width:
+                      widget.isDesktop
+                          ? 320
+                          : double.infinity,
+                  height: 38,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _searchCtrl,
+                          onChanged:
+                              (v) => _apply(
+                                () => _filters.search = v,
+                              ),
+                          decoration: InputDecoration(
+                            hintText:
+                                _departmentsEnabled
+                                    ? 'Search name, category or department'
+                                    : 'Search name or category',
+                            hintStyle: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              size: 20,
+                            ),
+                            suffixIcon:
+                                _searchCtrl.text.isEmpty
+                                    ? null
+                                    : IconButton(
+                                      icon: const Icon(
+                                        Icons.close,
+                                        size: 18,
+                                      ),
+                                      onPressed: () {
+                                        _searchCtrl.clear();
+                                        _apply(
+                                          () =>
+                                              _filters.search =
+                                                  '',
+                                        );
+                                      },
+                                    ),
+                            contentPadding: EdgeInsets.zero,
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              borderSide: BorderSide.none,
+                            ),
                           ),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _apply(
-                              () => _filters.search = '',
-                            );
+                        ),
+                      ),
+                      if (screenWidth(context) <
+                          mobileScreen) ...[
+                        SizedBox(width: 5),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _toolbarIsOpen = !_toolbarIsOpen;
+                            });
                           },
-                        ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-        ),
-        _pill(
-          theme: theme,
-          icon: Icons.event_rounded,
-          label: 'Date: $_rangeLabel',
-          highlighted: !_isDateToday,
-          onTap: _pickRange,
-        ),
-        if (!_isDateToday)
-          Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: Material(
-              color: Colors.transparent,
-              child: Ink(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: Colors.grey.shade100,
-                ),
-                child: InkWell(
-                  onTap: _clearDate,
-                  mouseCursor: SystemMouseCursors.click,
-                  borderRadius: BorderRadius.circular(5),
-                  child: Padding(
-                    padding: EdgeInsetsGeometry.fromLTRB(
-                      10,
-                      12,
-                      10,
-                      12,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.close,
-                          size: 16,
-                          color: accent,
-                        ),
-                        Text(
-                          'Clear',
-                          style: TextStyle(
-                            color: accent,
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(
+                                  10.0,
+                                  6,
+                                  6,
+                                  6,
+                                ),
+                            child: Row(
+                              spacing: 1,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                  ),
+                                  _toolbarIsOpen ? 'Hide' : 'View',
+                                ),
+                                Icon(
+                                  _toolbarIsOpen
+                                      ? Icons
+                                          .keyboard_arrow_up
+                                      : Icons
+                                          .keyboard_arrow_down,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        Padding(
-          padding: const EdgeInsets.only(left: 6.0),
-          child: _pill(
-            theme: theme,
-            icon: Icons.tune_rounded,
-            label:
-                active == 0
-                    ? 'Filters'
-                    : 'Filters ($active)',
-            highlighted: _showFilters || active > 0,
-            onTap:
-                () => setState(
-                  () => _showFilters = !_showFilters,
-                ),
-          ),
-        ),
-        if (_filters.hasAnything)
-          Material(
-            color: Colors.transparent,
-            child: Ink(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.grey.shade100,
-              ),
-              child: InkWell(
-                onTap: _resetAll,
-                mouseCursor: SystemMouseCursors.click,
-                borderRadius: BorderRadius.circular(5),
-                child: Padding(
-                  padding: EdgeInsetsGeometry.fromLTRB(
-                    10,
-                    12,
-                    10,
-                    12,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.filter_alt_off,
-                        size: 16,
-                        color: accent,
-                      ),
-                      Text(
-                        'Reset Filter',
-                        style: TextStyle(
-                          color: accent,
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ),
-      ],
-    );
+              if (_toolbarIsOpen ||
+                  screenWidth(context) > mobileScreen) ...[
+                _pill(
+                  theme: theme,
+                  icon: Icons.event_rounded,
+                  label: 'Date: $_rangeLabel',
+                  highlighted: !_isDateToday,
+                  onTap: _pickRange,
+                ),
+                if (!_isDateToday)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 5.0,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          color: Colors.grey.shade100,
+                        ),
+                        child: InkWell(
+                          onTap: _clearDate,
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          child: Padding(
+                            padding:
+                                EdgeInsetsGeometry.fromLTRB(
+                                  10,
+                                  12,
+                                  10,
+                                  12,
+                                ),
+                            child: Row(
+                              mainAxisSize:
+                                  MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.close,
+                                  size: 16,
+                                  color: accent,
+                                ),
+                                Text(
+                                  'Clear',
+                                  style: TextStyle(
+                                    color: accent,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: _pill(
+                    theme: theme,
+                    icon: Icons.tune_rounded,
+                    label:
+                        active == 0
+                            ? 'Filters'
+                            : 'Filters ($active)',
+                    highlighted: _showFilters || active > 0,
+                    onTap:
+                        () => setState(() {
+                          _showFilters = !_showFilters;
+                        }),
+                  ),
+                ),
+                if (_filters.hasAnything) ...[
+                  Material(
+                    color: Colors.transparent,
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
+                        color: Colors.grey.shade100,
+                      ),
+                      child: InkWell(
+                        onTap: _resetAll,
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(
+                                10,
+                                12,
+                                10,
+                                12,
+                              ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.filter_alt_off,
+                                size: 16,
+                                color: accent,
+                              ),
+                              Text(
+                                'Reset Filter',
+                                style: TextStyle(
+                                  color: accent,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 6.0,
+                    ),
+                    child: _pill(
+                      theme: theme,
+                      icon: Icons.print_rounded,
+                      label: 'Print Records',
+                      highlighted: true,
+                      onTap:
+                          () => _confirmAndPrintFiltered(
+                            theme,
+                          ),
+                    ),
+                  ),
+                ],
+                if (!_filters.hasAnything)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 6.0,
+                    ),
+                    child: _labeled(
+                      null,
+                      _SearchableDropdown<String?>(
+                        title: 'Print Records',
+                        value: _selectedPrintOption,
+                        options: [
+                          const _SearchableOption(
+                            value: 'all',
+                            label: 'Print All Items',
+                          ),
+                          const _SearchableOption(
+                            value: 'categories',
+                            label:
+                                'Print Items in Categories',
+                          ),
+                          if (_departmentsEnabled)
+                            const _SearchableOption(
+                              value: 'departments',
+                              label:
+                                  'Print Items In Departments',
+                            ),
+                          const _SearchableOption(
+                            value: 'breakdown',
+                            label: 'Print Full Breakdown',
+                          ),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setState(() {
+                              _selectedPrintOption = v;
+                            });
+                            _confirmAndPrintUnfiltered(
+                              v,
+                              theme,
+                            );
+                          }
+                        },
+                        theme: theme,
+                        showSearch: false,
+                      ),
+                      190,
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: _pill(
+                    theme: theme,
+                    icon: Icons.print_outlined,
+                    label: 'Printer Settings',
+                    onTap:
+                        () => openPrinterAndPaperSizeDialog(
+                          context,
+                        ),
+                  ),
+                ),
+              ],
+            ],
+          );
   }
 
   Widget _pill({
@@ -802,7 +1184,7 @@ class _ItemsReportMainViewState
   }
 
   Widget _labeled(
-    String label,
+    String? label,
     Widget child,
     double width,
   ) {
@@ -812,12 +1194,15 @@ class _ItemsReportMainViewState
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 4,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 10,
-              color: Colors.grey,
-              fontWeight: FontWeight.bold,
+          Visibility(
+            visible: label != null,
+            child: Text(
+              label ?? '',
+              style: const TextStyle(
+                fontSize: 10,
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           child,
@@ -879,6 +1264,94 @@ class _ItemsReportMainViewState
         ],
       ),
       240,
+    );
+  }
+
+  Widget _expiryDateRangeField(ThemeProvider theme) {
+    final accent = theme.lightModeColor.prColor300;
+    final hasExpiryFilter =
+        _filters.expiryStart != null || _filters.expiryEnd != null;
+    String label = 'All expiry dates';
+    if (hasExpiryFilter) {
+      final s = _filters.expiryStart;
+      final e = _filters.expiryEnd;
+      if (s != null && e != null) {
+        final same =
+            s.year == e.year && s.month == e.month && s.day == e.day;
+        label =
+            same
+                ? formatDateTime(s)
+                : '${formatDateTime(s)} - ${formatDateTime(e)}';
+      } else if (s != null) {
+        label = 'From ${formatDateTime(s)}';
+      } else if (e != null) {
+        label = 'Up to ${formatDateTime(e)}';
+      }
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+            color:
+                hasExpiryFilter
+                    ? accent.withAlpha(90)
+                    : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
+          borderRadius: BorderRadius.circular(5),
+          onTap: _pickExpiryRange,
+          child: Container(
+            height: 38,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.event_outlined,
+                  size: 16,
+                  color: hasExpiryFilter ? accent : Colors.black54,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight:
+                          hasExpiryFilter
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                      color:
+                          hasExpiryFilter ? accent : Colors.black87,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (hasExpiryFilter)
+                  GestureDetector(
+                    onTap: _clearExpiryRange,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Icon(Icons.close, size: 16, color: accent),
+                    ),
+                  )
+                else
+                  const Icon(
+                    Icons.arrow_drop_down_rounded,
+                    size: 20,
+                    color: Colors.black54,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1075,6 +1548,11 @@ class _ItemsReportMainViewState
                   _filters.quantityMax = b;
                 }),
           ),
+          _labeled(
+            'Expiry date range',
+            _expiryDateRangeField(theme),
+            220,
+          ),
         ],
       ),
     );
@@ -1214,6 +1692,24 @@ class _ItemsReportMainViewState
           },
         ),
       );
+    }
+    if (_filters.expiryStart != null || _filters.expiryEnd != null) {
+      final s = _filters.expiryStart;
+      final e = _filters.expiryEnd;
+      String text = 'Expiry: ';
+      if (s != null && e != null) {
+        final same =
+            s.year == e.year && s.month == e.month && s.day == e.day;
+        text +=
+            same
+                ? formatDateTime(s)
+                : '${formatDateTime(s)} - ${formatDateTime(e)}';
+      } else if (s != null) {
+        text += 'From ${formatDateTime(s)}';
+      } else if (e != null) {
+        text += 'Up to ${formatDateTime(e)}';
+      }
+      chips.add(chip(text, _clearExpiryRange));
     }
     if (chips.isEmpty) return const SizedBox.shrink();
     return Padding(

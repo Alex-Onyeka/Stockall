@@ -124,7 +124,8 @@ class ItemsReportRowBuilder {
     final unit = p.getPrimaryUnit();
     final factor =
         p.quantityType == 2 &&
-                unit.dimensionType == ProductUnitsClass.sheetUnit
+                unit.dimensionType ==
+                    ProductUnitsClass.sheetUnit
             ? unit.conversion * p.dimensionArea()
             : unit.conversion;
     return factor.isFinite && factor > 0 ? factor : 1;
@@ -145,9 +146,14 @@ class ItemsReportRowBuilder {
 
   /// Expired when the expiry day is today (business date) or earlier;
   /// same convention as the existing items report.
-  static bool isExpired(DateTime? expiry, DateTime businessNow) {
+  static bool isExpired(
+    DateTime? expiry,
+    DateTime businessNow,
+  ) {
     if (expiry == null) return false;
-    return !_dateOnly(expiry).isAfter(_dateOnly(businessNow));
+    return !_dateOnly(
+      expiry,
+    ).isAfter(_dateOnly(businessNow));
   }
 
   static ItemsReportRow build({
@@ -181,12 +187,14 @@ class ItemsReportRowBuilder {
             : totalSelling - totalCost;
     final margin =
         sellingPrice > 0
-            ? ((sellingPrice - costPrice) / sellingPrice) * 100
+            ? ((sellingPrice - costPrice) / sellingPrice) *
+                100
             : null;
 
     final uuids = <String>{
       ...?product.categories,
-      if (product.categoryUuid != null) product.categoryUuid!,
+      if (product.categoryUuid != null)
+        product.categoryUuid!,
     }..removeWhere((e) => e.isEmpty);
     final names = <String>[];
     final knownUuids = <String>[];
@@ -227,7 +235,9 @@ class ItemsReportRowBuilder {
     required List<TempProductClass> products,
     required List<CategoryClass> categories,
   }) {
-    final map = {for (final c in categories) c.uuid: c.name};
+    final map = {
+      for (final c in categories) c.uuid: c.name,
+    };
     final now = resolveBusinessDate(DateTime.now());
     final rows = <ItemsReportRow>[];
     for (final p in products) {
@@ -267,6 +277,9 @@ class ItemsReportFilters {
   /// null = all, true = managed, false = un-managed.
   bool? managed;
 
+  DateTime? expiryStart;
+  DateTime? expiryEnd;
+
   int get activeCount =>
       (categoryKey != null ? 1 : 0) +
       (departmentKey != null ? 1 : 0) +
@@ -274,7 +287,8 @@ class ItemsReportFilters {
       (costMin != null || costMax != null ? 1 : 0) +
       (quantityMin != null || quantityMax != null ? 1 : 0) +
       (stockLevel != StockLevelFilter.all ? 1 : 0) +
-      (managed != null ? 1 : 0);
+      (managed != null ? 1 : 0) +
+      (expiryStart != null || expiryEnd != null ? 1 : 0);
 
   bool get hasAnything =>
       activeCount > 0 || search.trim().isNotEmpty;
@@ -295,6 +309,8 @@ class ItemsReportFilters {
     quantityMax = null;
     stockLevel = StockLevelFilter.all;
     managed = null;
+    expiryStart = null;
+    expiryEnd = null;
   }
 
   bool matches(
@@ -328,10 +344,12 @@ class ItemsReportFilters {
       }
     }
 
-    if (sellingMin != null && r.sellingPrice < sellingMin!) {
+    if (sellingMin != null &&
+        r.sellingPrice < sellingMin!) {
       return false;
     }
-    if (sellingMax != null && r.sellingPrice > sellingMax!) {
+    if (sellingMax != null &&
+        r.sellingPrice > sellingMax!) {
       return false;
     }
 
@@ -345,11 +363,13 @@ class ItemsReportFilters {
     }
 
     if (quantityMin != null &&
-        (r.quantity == null || r.quantity! < quantityMin!)) {
+        (r.quantity == null ||
+            r.quantity! < quantityMin!)) {
       return false;
     }
     if (quantityMax != null &&
-        (r.quantity == null || r.quantity! > quantityMax!)) {
+        (r.quantity == null ||
+            r.quantity! > quantityMax!)) {
       return false;
     }
 
@@ -359,7 +379,34 @@ class ItemsReportFilters {
       if (r.stockLevel != stockLevel) return false;
     }
 
-    if (managed != null && r.isManaged != managed) return false;
+    if (managed != null && r.isManaged != managed)
+      return false;
+
+    if (expiryStart != null || expiryEnd != null) {
+      final exp = r.expiryDate;
+      if (exp == null) return false;
+      if (expiryStart != null) {
+        final start = DateTime(
+          expiryStart!.year,
+          expiryStart!.month,
+          expiryStart!.day,
+        );
+        if (exp.isBefore(start)) return false;
+      }
+      if (expiryEnd != null) {
+        final end = DateTime(
+          expiryEnd!.year,
+          expiryEnd!.month,
+          expiryEnd!.day,
+          23,
+          59,
+          59,
+          999,
+        );
+        if (exp.isAfter(end)) return false;
+      }
+    }
+
     return true;
   }
 }
@@ -416,9 +463,13 @@ class StockMovementCalculator {
   }
 
   /// Whether [h] is a usable stock-balance record for [row].
-  static bool isApplicable(ItemHistory h, ItemsReportRow row) {
+  static bool isApplicable(
+    ItemHistory h,
+    ItemsReportRow row,
+  ) {
     if (h.createdAt == null) return false;
-    if (h.event == null || !_stockEvents.contains(h.event)) {
+    if (h.event == null ||
+        !_stockEvents.contains(h.event)) {
       return false;
     }
     if (_parse(h.oldValue) == null ||
@@ -437,29 +488,32 @@ class StockMovementCalculator {
     return true;
   }
 
-  static DateTime _alignCutoff(DateTime dt, DateTime cutoff) {
+  static DateTime _alignCutoff(
+    DateTime dt,
+    DateTime cutoff,
+  ) {
     if (dt.isUtc == cutoff.isUtc) return cutoff;
     return dt.isUtc
         ? DateTime.utc(
-            cutoff.year,
-            cutoff.month,
-            cutoff.day,
-            cutoff.hour,
-            cutoff.minute,
-            cutoff.second,
-            cutoff.millisecond,
-            cutoff.microsecond,
-          )
+          cutoff.year,
+          cutoff.month,
+          cutoff.day,
+          cutoff.hour,
+          cutoff.minute,
+          cutoff.second,
+          cutoff.millisecond,
+          cutoff.microsecond,
+        )
         : DateTime(
-            cutoff.year,
-            cutoff.month,
-            cutoff.day,
-            cutoff.hour,
-            cutoff.minute,
-            cutoff.second,
-            cutoff.millisecond,
-            cutoff.microsecond,
-          );
+          cutoff.year,
+          cutoff.month,
+          cutoff.day,
+          cutoff.hour,
+          cutoff.minute,
+          cutoff.second,
+          cutoff.millisecond,
+          cutoff.microsecond,
+        );
   }
 
   /// Calculates opening stock, closing stock, and stock change for [row] over
@@ -471,12 +525,19 @@ class StockMovementCalculator {
     required DateTime endCutoff,
   }) {
     if (!row.isManaged) {
-      return const ItemStockMovement(opening: null, closing: null);
+      return const ItemStockMovement(
+        opening: null,
+        closing: null,
+      );
     }
 
     final usable =
-        histories.where((h) => isApplicable(h, row)).toList()
-          ..sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+        histories
+            .where((h) => isApplicable(h, row))
+            .toList()
+          ..sort(
+            (a, b) => a.createdAt!.compareTo(b.createdAt!),
+          );
 
     // 1) Opening Stock: balance immediately before startCutoff
     double? opening;
@@ -494,7 +555,10 @@ class StockMovementCalculator {
         opening = _parse(usable.last.newValue);
       } else {
         final created = row.createdAt;
-        final start = created != null ? _alignCutoff(created, startCutoff) : startCutoff;
+        final start =
+            created != null
+                ? _alignCutoff(created, startCutoff)
+                : startCutoff;
         if (created != null && !created.isBefore(start)) {
           opening = 0;
         } else {
@@ -505,11 +569,16 @@ class StockMovementCalculator {
 
     // 2) Closing Stock: newValue of the last item history recorded in [startCutoff, endCutoff]
     double? closing;
-    final inRange = usable.where((h) {
-      final start = _alignCutoff(h.createdAt!, startCutoff);
-      final end = _alignCutoff(h.createdAt!, endCutoff);
-      return !h.createdAt!.isBefore(start) && !h.createdAt!.isAfter(end);
-    }).toList();
+    final inRange =
+        usable.where((h) {
+          final start = _alignCutoff(
+            h.createdAt!,
+            startCutoff,
+          );
+          final end = _alignCutoff(h.createdAt!, endCutoff);
+          return !h.createdAt!.isBefore(start) &&
+              !h.createdAt!.isAfter(end);
+        }).toList();
 
     if (inRange.isNotEmpty) {
       closing = _parse(inRange.last.newValue);
@@ -518,7 +587,10 @@ class StockMovementCalculator {
       closing = opening;
     }
 
-    return ItemStockMovement(opening: opening, closing: closing);
+    return ItemStockMovement(
+      opening: opening,
+      closing: closing,
+    );
   }
 
   /// Balance immediately before [cutoff] (the business start of the
@@ -554,10 +626,11 @@ class ItemsReportPage {
   });
 
   int get firstIndex =>
-      totalCount == 0 ? 0 : (page - 1) * itemsReportPageSize + 1;
-  int get lastIndex => firstIndex == 0
-      ? 0
-      : firstIndex + rows.length - 1;
+      totalCount == 0
+          ? 0
+          : (page - 1) * itemsReportPageSize + 1;
+  int get lastIndex =>
+      firstIndex == 0 ? 0 : firstIndex + rows.length - 1;
 }
 
 class ItemsReportQuery {
@@ -613,7 +686,11 @@ class ItemsReportQuery {
           c = _cmp(a.quantity, b.quantity, ascending);
           break;
         case ItemsSortField.sellingPrice:
-          c = _cmp(a.sellingPrice, b.sellingPrice, ascending);
+          c = _cmp(
+            a.sellingPrice,
+            b.sellingPrice,
+            ascending,
+          );
           break;
         case ItemsSortField.costPrice:
           c = _cmp(a.costPrice, b.costPrice, ascending);
@@ -706,7 +783,9 @@ class ItemsReportQuery {
   ) {
     final total = sorted.length;
     final pages =
-        total == 0 ? 1 : (total / itemsReportPageSize).ceil();
+        total == 0
+            ? 1
+            : (total / itemsReportPageSize).ceil();
     final page = requestedPage.clamp(1, pages);
     final start = (page - 1) * itemsReportPageSize;
     final end =
@@ -714,11 +793,13 @@ class ItemsReportQuery {
             ? total
             : start + itemsReportPageSize;
     return ItemsReportPage(
-      rows: total == 0 ? const [] : sorted.sublist(start, end),
+      rows:
+          total == 0
+              ? const []
+              : sorted.sublist(start, end),
       totalCount: total,
       page: page,
       totalPages: pages,
     );
   }
 }
-

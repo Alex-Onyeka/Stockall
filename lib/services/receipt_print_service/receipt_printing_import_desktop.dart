@@ -54,6 +54,8 @@ Future<bool> checkPrint({
 
 Future<bool> printerSelectionDialog({
   required BuildContext context,
+  String? title,
+  String? message,
 }) async {
   var theme = returnTheme(context, listen: false);
   return showDialog(
@@ -62,8 +64,9 @@ Future<bool> printerSelectionDialog({
       return DialogTemplate(
         theme: theme,
         message:
+            message ??
             'You have not Selected Any Printer for this action. Please Proceed to Select the List of Installed Printers from the List.',
-        title: 'Printer Not Selected',
+        title: title ?? 'Printer Not Selected',
         action: () {},
         showBottomActionButtons: false,
         topRightWidget: IconButton(
