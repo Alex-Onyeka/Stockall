@@ -640,20 +640,24 @@ class ItemsReportAnalysisBuilder {
   }
 
   /// Newly created items (Section 4.9).
+  /// Only includes items created within a week's time ([within], defaults to 7 days).
+  /// If no items were created within the past week, returns an empty list.
   static List<ItemsReportRow> getNewlyCreatedItems(
     List<ItemsReportRow> rows, {
     int limit = 10,
+    Duration within = const Duration(days: 7),
   }) {
-    final copy = List<ItemsReportRow>.from(rows);
-    copy.sort((a, b) {
-      final dateA =
-          a.createdAt ??
-          DateTime.fromMillisecondsSinceEpoch(0);
-      final dateB =
-          b.createdAt ??
-          DateTime.fromMillisecondsSinceEpoch(0);
-      return dateB.compareTo(dateA);
+    final cutoff = DateTime.now().subtract(within);
+    final weekItems =
+        rows.where((r) {
+          final created = r.createdAt;
+          return created != null && created.isAfter(cutoff);
+        }).toList();
+
+    weekItems.sort((a, b) {
+      return b.createdAt!.compareTo(a.createdAt!);
     });
-    return copy.take(limit).toList();
+
+    return weekItems.take(limit).toList();
   }
 }

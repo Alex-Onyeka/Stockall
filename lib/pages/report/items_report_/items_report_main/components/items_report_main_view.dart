@@ -69,6 +69,7 @@ class _ItemsReportMainViewState
   bool _ascending = true;
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
 
   late DateTimeRange _range;
 
@@ -542,6 +543,52 @@ class _ItemsReportMainViewState
     );
   }
 
+  void _pickExpiryRange() {
+    final theme = returnTheme(context, listen: false);
+    mainDatePicker(
+      context: context,
+      theme: theme,
+      singleDate: (date) {
+        if (date == null) return;
+        final day = DateTime(date.year, date.month, date.day);
+        _apply(() {
+          _filters.expiryStart = day;
+          _filters.expiryEnd = day;
+        });
+      },
+      rangeDate: (firstDate, lastDate) {
+        if (firstDate == null) return;
+        DateTime s = DateTime(
+          firstDate.year,
+          firstDate.month,
+          firstDate.day,
+        );
+        final endBase = lastDate ?? firstDate;
+        DateTime e = DateTime(
+          endBase.year,
+          endBase.month,
+          endBase.day,
+        );
+        if (e.isBefore(s)) {
+          final temp = s;
+          s = e;
+          e = temp;
+        }
+        _apply(() {
+          _filters.expiryStart = s;
+          _filters.expiryEnd = e;
+        });
+      },
+    );
+  }
+
+  void _clearExpiryRange() {
+    _apply(() {
+      _filters.expiryStart = null;
+      _filters.expiryEnd = null;
+    });
+  }
+
   DateTime get _businessToday {
     final t = resolveBusinessDate(DateTime.now());
     return DateTime(t.year, t.month, t.day);
@@ -759,14 +806,11 @@ class _ItemsReportMainViewState
   Widget _toolbar(ThemeProvider theme) {
     final active = _filters.activeCount;
     final accent = theme.lightModeColor.prColor300;
-    bool isOpen = false;
-    return StatefulBuilder(
-      builder:
-          (context, setState) => Wrap(
-            spacing: 2,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
+    return Wrap(
+      spacing: 2,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
               Padding(
                 padding: const EdgeInsets.only(right: 6.0),
                 child: SizedBox(
@@ -834,7 +878,7 @@ class _ItemsReportMainViewState
                         InkWell(
                           onTap: () {
                             setState(() {
-                              isOpen = !isOpen;
+                              _toolbarIsOpen = !_toolbarIsOpen;
                             });
                           },
                           mouseCursor:
@@ -858,10 +902,10 @@ class _ItemsReportMainViewState
                                             .b4
                                             .fontSize,
                                   ),
-                                  isOpen ? 'Hide' : 'View',
+                                  _toolbarIsOpen ? 'Hide' : 'View',
                                 ),
                                 Icon(
-                                  isOpen
+                                  _toolbarIsOpen
                                       ? Icons
                                           .keyboard_arrow_up
                                       : Icons
@@ -876,7 +920,7 @@ class _ItemsReportMainViewState
                   ),
                 ),
               ),
-              if (isOpen ||
+              if (_toolbarIsOpen ||
                   screenWidth(context) > mobileScreen) ...[
                 _pill(
                   theme: theme,
@@ -952,10 +996,9 @@ class _ItemsReportMainViewState
                             : 'Filters ($active)',
                     highlighted: _showFilters || active > 0,
                     onTap:
-                        () => setState(
-                          () =>
-                              _showFilters = !_showFilters,
-                        ),
+                        () => setState(() {
+                          _showFilters = !_showFilters;
+                        }),
                   ),
                 ),
                 if (_filters.hasAnything) ...[
@@ -1088,8 +1131,7 @@ class _ItemsReportMainViewState
                 ),
               ],
             ],
-          ),
-    );
+          );
   }
 
   Widget _pill({
@@ -1222,6 +1264,94 @@ class _ItemsReportMainViewState
         ],
       ),
       240,
+    );
+  }
+
+  Widget _expiryDateRangeField(ThemeProvider theme) {
+    final accent = theme.lightModeColor.prColor300;
+    final hasExpiryFilter =
+        _filters.expiryStart != null || _filters.expiryEnd != null;
+    String label = 'All expiry dates';
+    if (hasExpiryFilter) {
+      final s = _filters.expiryStart;
+      final e = _filters.expiryEnd;
+      if (s != null && e != null) {
+        final same =
+            s.year == e.year && s.month == e.month && s.day == e.day;
+        label =
+            same
+                ? formatDateTime(s)
+                : '${formatDateTime(s)} - ${formatDateTime(e)}';
+      } else if (s != null) {
+        label = 'From ${formatDateTime(s)}';
+      } else if (e != null) {
+        label = 'Up to ${formatDateTime(e)}';
+      }
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+            color:
+                hasExpiryFilter
+                    ? accent.withAlpha(90)
+                    : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
+          borderRadius: BorderRadius.circular(5),
+          onTap: _pickExpiryRange,
+          child: Container(
+            height: 38,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.event_outlined,
+                  size: 16,
+                  color: hasExpiryFilter ? accent : Colors.black54,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight:
+                          hasExpiryFilter
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                      color:
+                          hasExpiryFilter ? accent : Colors.black87,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (hasExpiryFilter)
+                  GestureDetector(
+                    onTap: _clearExpiryRange,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Icon(Icons.close, size: 16, color: accent),
+                    ),
+                  )
+                else
+                  const Icon(
+                    Icons.arrow_drop_down_rounded,
+                    size: 20,
+                    color: Colors.black54,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1418,6 +1548,11 @@ class _ItemsReportMainViewState
                   _filters.quantityMax = b;
                 }),
           ),
+          _labeled(
+            'Expiry date range',
+            _expiryDateRangeField(theme),
+            220,
+          ),
         ],
       ),
     );
@@ -1557,6 +1692,24 @@ class _ItemsReportMainViewState
           },
         ),
       );
+    }
+    if (_filters.expiryStart != null || _filters.expiryEnd != null) {
+      final s = _filters.expiryStart;
+      final e = _filters.expiryEnd;
+      String text = 'Expiry: ';
+      if (s != null && e != null) {
+        final same =
+            s.year == e.year && s.month == e.month && s.day == e.day;
+        text +=
+            same
+                ? formatDateTime(s)
+                : '${formatDateTime(s)} - ${formatDateTime(e)}';
+      } else if (s != null) {
+        text += 'From ${formatDateTime(s)}';
+      } else if (e != null) {
+        text += 'Up to ${formatDateTime(e)}';
+      }
+      chips.add(chip(text, _clearExpiryRange));
     }
     if (chips.isEmpty) return const SizedBox.shrink();
     return Padding(

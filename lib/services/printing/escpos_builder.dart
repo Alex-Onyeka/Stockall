@@ -189,6 +189,13 @@ class EscPosBuilder {
     }
   }
 
+  /// Feeds paper by [dots] vertical dots (ESC J n: 0x1B, 0x4A, n).
+  /// Standard font line height is ~24-30 dots, so 6-8 dots creates subtle
+  /// sub-line spacing between rows without inserting a full blank line.
+  void feedDots([int dots = 6]) {
+    _cmd([0x1B, 0x4A, dots.clamp(0, 255)]);
+  }
+
   // EAN-13 with the digits printed below, centred. The printer adds the
   // check digit. Anything that isn't 12 or 13 digits prints as text.
   void ean13(String value) {

@@ -40,7 +40,7 @@ String _itemRightText(ItemsReportRow row) {
   final unit = row.primaryUnit.trim();
   return unit.isEmpty
       ? qtyStr
-      : '$qtyStr${unit.length > 6 ? unit.substring(0, 6) : unit}';
+      : '$qtyStr ${unit.length > 6 ? unit.substring(0, 6) : unit}';
 }
 
 List<String> getFilterCombinationLabels({
@@ -116,6 +116,10 @@ List<String> getFilterCombinationLabels({
     labels.add('Qty Range');
   }
 
+  if (filters.expiryStart != null || filters.expiryEnd != null) {
+    labels.add('Expiry Range');
+  }
+
   return labels;
 }
 
@@ -132,6 +136,7 @@ void _writeEscPosItemRow(
       align: EscAlign.right,
     ),
   ]);
+  b.feedDots(6);
 }
 
 /// Builds direct ESC/POS byte chunks for thermal receipt roll printing.
@@ -290,8 +295,10 @@ List<Uint8List> buildItemsReportEscPos({
       break;
   }
 
-  // Feed lines so paper clears the tear-bar / cutter
-  b.feed(3);
+  // Feed lines so paper clears the tear-bar / cutter.
+  // 80mm printers have a greater distance between print head and auto-cutter blade,
+  // so feed 2 extra lines (6 lines total) to ensure bottom content isn't clipped.
+  b.feed(printerType == 2 ? 6 : 3);
 
   final chunks = b.build();
 
@@ -418,7 +425,7 @@ pw.Widget _buildPdfItemRow(
   double textSize,
 ) {
   return pw.Padding(
-    padding: const pw.EdgeInsets.symmetric(vertical: 4.0),
+    padding: const pw.EdgeInsets.symmetric(vertical: 2.0),
     child: pw.Row(
       children: [
         pw.Expanded(
@@ -737,6 +744,11 @@ Future<Uint8List> buildItemsReportPdfRoll({
       );
       break;
   }
+
+  // Trailing space at the bottom of the roll to avoid cutting into content
+  contentWidgets.add(
+    pw.SizedBox(height: printerType == 2 ? 24 : 12),
+  );
 
   pdf.addPage(
     pw.Page(
