@@ -8,7 +8,9 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/item_history_page/components/item_history_item_summary.dart';
 import 'package:stockall/pages/products/item_history_page/components/item_history_tile.dart';
+import 'package:stockall/pages/report/items_report_/item_history_report/components/item_history_report_view.dart';
 
 class ItemHistoryDesktop extends StatefulWidget {
   final String? productUuid;
@@ -29,6 +31,7 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
+  ItemHistoryViewMode _mode = ItemHistoryViewMode.list;
 
   TextEditingController searchController = TextEditingController();
 
@@ -119,38 +122,41 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                   widget: Row(
                     spacing: 3,
                     children: [
-                      InkWell(
-                        mouseCursor: SystemMouseCursors.click,
-                        onTap: () {
-                          returnItemHistoryProvider().getItemHistories();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            right: 10,
-                            left: 10,
-                            top: 5,
-                            bottom: 5,
-                          ),
-                          decoration: BoxDecoration(),
-                          child: Row(
-                            spacing: 3,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: theme.mobileTexts.b3.fontSize,
+                      if (_mode == ItemHistoryViewMode.list)
+                        InkWell(
+                          mouseCursor: SystemMouseCursors.click,
+                          onTap: () {
+                            returnItemHistoryProvider().getItemHistories();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.only(
+                              right: 10,
+                              left: 10,
+                              top: 5,
+                              bottom: 5,
+                            ),
+                            decoration: BoxDecoration(),
+                            child: Row(
+                              spacing: 3,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                  ),
+                                  'Refresh',
                                 ),
-                                'Refresh',
-                              ),
-                              Icon(size: 17, Icons.refresh),
-                            ],
+                                Icon(size: 17, Icons.refresh),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
                       Visibility(
-                        visible: authorization(
-                          authorized: Authorizations().viewDate,
-                        ),
+                        visible:
+                            _mode == ItemHistoryViewMode.list &&
+                            authorization(
+                              authorized: Authorizations().viewDate,
+                            ),
                         child: InkWell(
                           mouseCursor: SystemMouseCursors.click,
                           onTap: () {
@@ -220,10 +226,35 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                           ),
                         ),
                       ),
+                      if (widget.productUuid != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 5),
+                          child: ItemHistoryViewSwitch(
+                            mode: _mode,
+                            compact: false,
+                            onChanged: (mode) {
+                              setState(() {
+                                _mode = mode;
+                              });
+                            },
+                          ),
+                        ),
                     ],
                   ),
                 ),
-                body: Padding(
+                body:
+                    _mode == ItemHistoryViewMode.table
+                        ? ItemHistoryReportView(
+                          isDesktop: true,
+                          lockedItemUuid: widget.productUuid,
+                          embedded: true,
+                        )
+                        : _mode == ItemHistoryViewMode.summary
+                        ? ItemHistoryItemSummary(
+                          productUuid: widget.productUuid!,
+                          isDesktop: true,
+                        )
+                        : Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: Column(
                     children: [
@@ -290,6 +321,100 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
 }
 
 // }
+
+enum ItemHistoryViewMode { list, table, summary }
+
+/// List / Table / Summary switch shown on an item's history page.
+class ItemHistoryViewSwitch extends StatelessWidget {
+  final ItemHistoryViewMode mode;
+  final Function(ItemHistoryViewMode mode) onChanged;
+
+  /// Icons only (mobile), instead of icon + label.
+  final bool compact;
+  const ItemHistoryViewSwitch({
+    super.key,
+    required this.mode,
+    required this.onChanged,
+    required this.compact,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    final accent = theme.lightModeColor.prColor300;
+
+    Widget segment(ItemHistoryViewMode value, String label, IconData icon) {
+      final selected = mode == value;
+      return Tooltip(
+        message: label,
+        child: InkWell(
+          mouseCursor: SystemMouseCursors.click,
+          borderRadius: BorderRadius.circular(5),
+          onTap: () {
+            if (!selected) onChanged(value);
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 7 : 10,
+              vertical: 5,
+            ),
+            decoration: BoxDecoration(
+              color: selected ? accent.withAlpha(30) : Colors.transparent,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Row(
+              spacing: 3,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  size: 16,
+                  color: selected ? accent : Colors.grey.shade700,
+                  icon,
+                ),
+                if (!compact)
+                  Text(
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: theme.mobileTexts.b3.fontSize,
+                      color: selected ? accent : Colors.grey.shade700,
+                    ),
+                    label,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Container(
+        padding: EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            segment(ItemHistoryViewMode.list, 'List', Icons.list_rounded),
+            segment(
+              ItemHistoryViewMode.table,
+              'Table',
+              Icons.table_chart_outlined,
+            ),
+            segment(
+              ItemHistoryViewMode.summary,
+              'Summary',
+              Icons.summarize_outlined,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class SearchFilterWidgetHistory extends StatefulWidget {
   final TextEditingController searchController;

@@ -35,9 +35,17 @@ class _Col {
 /// Shared body of the "Item History Table" page (desktop + mobile).
 class ItemHistoryReportView extends StatefulWidget {
   final bool isDesktop;
+
+  /// When set, the table only shows this item's records and hides the Item filter.
+  final String? lockedItemUuid;
+
+  /// When true, renders without its own Scaffold/appBar (used inside another page).
+  final bool embedded;
   const ItemHistoryReportView({
     super.key,
     required this.isDesktop,
+    this.lockedItemUuid,
+    this.embedded = false,
   });
 
   @override
@@ -150,9 +158,15 @@ class _ItemHistoryReportViewState
     final all = returnItemHistoryProvider().itemHistories;
 
     // 1. Scoped strictly to the current shop using shopId
+    //    (and to the locked item, when opened from an item's history)
     final shopRecords =
         all
-            .where((h) => h.shopId == currentShopId)
+            .where(
+              (h) =>
+                  h.shopId == currentShopId &&
+                  (widget.lockedItemUuid == null ||
+                      h.itemUuid == widget.lockedItemUuid),
+            )
             .toList();
 
     // 2. Department access rules
@@ -473,7 +487,8 @@ class _ItemHistoryReportViewState
               history: row,
               theme: theme,
               onViewItem:
-                  (row.itemUuid != null &&
+                  (widget.lockedItemUuid == null &&
+                          row.itemUuid != null &&
                           row.itemUuid!.isNotEmpty)
                       ? () {
                         Navigator.of(context).pop();
@@ -518,6 +533,26 @@ class _ItemHistoryReportViewState
       }
     }
 
+    final body = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          _toolbar(theme),
+          if (_showFilters) _filterPanel(theme),
+          _activeChips(theme),
+          Expanded(child: _content(theme)),
+          if (!_loading &&
+              _error == null &&
+              _result != null)
+            _pager(theme),
+          const SizedBox(height: 6),
+        ],
+      ),
+    );
+
+    if (widget.embedded) return body;
+
     return Scaffold(
       appBar: appBar(
         context: context,
@@ -558,23 +593,7 @@ class _ItemHistoryReportViewState
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            const SizedBox(height: 8),
-            _toolbar(theme),
-            if (_showFilters) _filterPanel(theme),
-            _activeChips(theme),
-            Expanded(child: _content(theme)),
-            if (!_loading &&
-                _error == null &&
-                _result != null)
-              _pager(theme),
-            const SizedBox(height: 6),
-          ],
-        ),
-      ),
+      body: body,
     );
   }
 
@@ -815,6 +834,18 @@ class _ItemHistoryReportViewState
               ),
             ),
           ),
+        if (widget.embedded)
+          Padding(
+            padding: const EdgeInsets.only(left: 6.0),
+            child: _pill(
+              theme: theme,
+              icon: Icons.refresh_rounded,
+              label: 'Refresh',
+              onTap: () {
+                if (!_loading) _load(refreshFromStore: true);
+              },
+            ),
+          ),
       ],
     );
   }
@@ -936,31 +967,32 @@ class _ItemHistoryReportViewState
         spacing: 8,
         runSpacing: 12,
         children: [
-          _labeled(
-            'Item',
-            _SearchableDropdown<String?>(
-              title: 'Item',
-              value: _filters.itemUuid,
-              options: [
-                const _SearchableOption(
-                  value: null,
-                  label: 'All items',
-                ),
-                ...itemsList.map(
-                  (e) => _SearchableOption(
-                    value: e.key,
-                    label: e.value,
+          if (widget.lockedItemUuid == null)
+            _labeled(
+              'Item',
+              _SearchableDropdown<String?>(
+                title: 'Item',
+                value: _filters.itemUuid,
+                options: [
+                  const _SearchableOption(
+                    value: null,
+                    label: 'All items',
                   ),
-                ),
-              ],
-              onChanged:
-                  (v) =>
-                      _apply(() => _filters.itemUuid = v),
-              theme: theme,
-              searchHint: 'Search items...',
+                  ...itemsList.map(
+                    (e) => _SearchableOption(
+                      value: e.key,
+                      label: e.value,
+                    ),
+                  ),
+                ],
+                onChanged:
+                    (v) =>
+                        _apply(() => _filters.itemUuid = v),
+                theme: theme,
+                searchHint: 'Search items...',
+              ),
+              220,
             ),
-            220,
-          ),
           _labeled(
             'Event',
             _SearchableDropdown<String?>(
@@ -1184,7 +1216,8 @@ class _ItemHistoryReportViewState
           side: BorderSide.none,
         );
 
-    if (_filters.itemUuid != null) {
+    if (widget.lockedItemUuid == null &&
+        _filters.itemUuid != null) {
       final name = _itemsMap[_filters.itemUuid!] ?? 'Item';
       chips.add(
         chip(
