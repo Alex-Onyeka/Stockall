@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/class/storage_item_history_report_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_summary/class/storage_item_history_summary_logic.dart';
@@ -793,6 +794,156 @@ void main() {
         ),
         isTrue,
       );
+    });
+  });
+
+  group('Legacy records without an event', () {
+    StorageItemHistory legacy({
+      required String uuid,
+      required String title,
+      required String? event,
+      required DateTime createdAt,
+      required String oldValue,
+      required String newValue,
+      bool? isIncreased,
+    }) {
+      return StorageItemHistory(
+        uuid: uuid,
+        createdAt: createdAt,
+        shopId: 1,
+        title: title,
+        storageItemName: 'Water Store',
+        storageItemUuid: 'water',
+        storageItemNewValue: newValue,
+        storageItemOldValue: oldValue,
+        quantityChange: null,
+        desc: null,
+        isIncreased: isIncreased,
+        storagePrimaryUnit: 'Pcs',
+        event: event,
+        source: null,
+      );
+    }
+
+    test('eventOf infers the event of legacy titles', () {
+      StorageItemHistory bare(String title, {bool? isIncreased}) => legacy(
+        uuid: title,
+        title: title,
+        event: null,
+        createdAt: oct(1, 9),
+        oldValue: '0',
+        newValue: '0',
+        isIncreased: isIncreased,
+      );
+      final cases = <String, String?>{
+        'Stock In From Purchase': StorageItemHistoryEventClass.purchase,
+        'Purchase Deleted': StorageItemHistoryEventClass.purchaseDeleted,
+        'Return Item': StorageItemHistoryEventClass.returnEvent,
+        'Stock In': StorageItemHistoryEventClass.stockIn,
+        'Stock Out': StorageItemHistoryEventClass.stockOut,
+        'Item Created': StorageItemHistoryEventClass.itemCreated,
+        'Item Deleted': StorageItemHistoryEventClass.itemDeleted,
+        'Price Updated': null,
+      };
+      cases.forEach((title, expected) {
+        expect(
+          StorageItemHistoryEventClass.eventOf(bare(title)),
+          expected,
+          reason: title,
+        );
+      });
+      expect(
+        StorageItemHistoryEventClass.eventOf(
+          bare('Stock Updated', isIncreased: true),
+        ),
+        StorageItemHistoryEventClass.quantityUpdatedIncrease,
+      );
+      expect(
+        StorageItemHistoryEventClass.eventOf(
+          bare('Stock Updated', isIncreased: false),
+        ),
+        StorageItemHistoryEventClass.quantityUpdatedDecrease,
+      );
+      expect(
+        StorageItemHistoryEventClass.eventOf(bare('Stock Updated')),
+        isNull,
+      );
+      final tagged = bare('Stock In')..event = 'stock_out';
+      expect(StorageItemHistoryEventClass.eventOf(tagged), 'stock_out');
+    });
+
+    test('legacy records give the same summary as tagged ones', () {
+      final water = storageItem(
+        uuid: 'water',
+        name: 'Water Store',
+        quantity: 8,
+        units: [unit('Pcs')],
+        createdAt: DateTime(2026, 9, 1),
+      );
+
+      List<StorageItemHistory> build({required bool tagged}) => [
+        legacy(
+          uuid: 'in',
+          title: 'Stock In',
+          event: tagged ? StorageItemHistoryEventClass.stockIn : null,
+          createdAt: DateTime(2026, 9, 28, 10),
+          oldValue: '0',
+          newValue: '10',
+          isIncreased: true,
+        ),
+        legacy(
+          uuid: 'out',
+          title: 'Stock Out',
+          event: tagged ? StorageItemHistoryEventClass.stockOut : null,
+          createdAt: DateTime(2026, 9, 29, 10),
+          oldValue: '10',
+          newValue: '6',
+          isIncreased: false,
+        ),
+        legacy(
+          uuid: 'up',
+          title: 'Stock Updated',
+          event:
+              tagged
+                  ? StorageItemHistoryEventClass.quantityUpdatedIncrease
+                  : null,
+          createdAt: DateTime(2026, 9, 30, 10),
+          oldValue: '6',
+          newValue: '8',
+          isIncreased: true,
+        ),
+      ];
+
+      for (final tagged in [false, true]) {
+        final res = StorageHistorySummaryBuilder.buildSummaryAndRows(
+          storageProducts: [water],
+          salesProducts: const [],
+          histories: build(tagged: tagged),
+          period: StorageHistoryPeriod.allTime,
+          businessNow: businessNow,
+        );
+        final r = res.rows.firstWhere((r) => r.uuid == 'water');
+        final s = res.stats;
+        final reason = 'tagged: $tagged';
+        expect(r.openingStock, 0, reason: reason);
+        expect(r.closingStock, 8, reason: reason);
+        expect(r.netQuantityChange, 8, reason: reason);
+        expect(
+          s.quantityByUnit(StorageMovementKind.stockIn),
+          {'Pcs': 10},
+          reason: reason,
+        );
+        expect(
+          s.quantityByUnit(StorageMovementKind.transferredOut),
+          {'Pcs': 4},
+          reason: reason,
+        );
+        expect(
+          s.quantityByUnit(StorageMovementKind.adjustedUp),
+          {'Pcs': 2},
+          reason: reason,
+        );
+      }
     });
   });
 

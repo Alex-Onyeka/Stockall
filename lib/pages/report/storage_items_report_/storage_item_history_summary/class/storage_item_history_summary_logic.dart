@@ -251,7 +251,8 @@ class StorageMovementNormaliser {
   ///    when that names one of the storage item's units. Return records
   ///    can hold a sales unit name there; those are not converted.
   static double? quantity(StorageItemHistory h, StorageUnitContext ctx) {
-    if (!storageMovementKindOf(h.event).isQuantityEvent) return 0;
+    final kind = storageMovementKindOf(StorageItemHistoryEventClass.eventOf(h));
+    if (!kind.isQuantityEvent) return 0;
 
     final oldV = parse(h.storageItemOldValue);
     final newV = parse(h.storageItemNewValue);
@@ -679,7 +680,7 @@ class StorageHistorySummaryBuilder {
       final ctx = id == null ? null : contexts[id];
       if (ctx == null) continue;
       (out[id!] ??= StorageMovementTotals()).add(
-        storageMovementKindOf(h.event),
+        storageMovementKindOf(StorageItemHistoryEventClass.eventOf(h)),
         StorageMovementNormaliser.quantity(h, ctx),
       );
     }
@@ -818,7 +819,9 @@ class StorageHistorySummaryBuilder {
       final id = h.storageItemUuid;
       final ctx = id == null ? null : contexts[id];
       if (ctx == null) continue;
-      final kind = storageMovementKindOf(h.event);
+      final kind = storageMovementKindOf(
+        StorageItemHistoryEventClass.eventOf(h),
+      );
       final qty = StorageMovementNormaliser.quantity(h, ctx);
       final unit = reportRows[id]?.primaryUnit ?? ctx.primaryUnitName;
       (byUnit[unit] ??= StorageMovementTotals()).add(kind, qty);
@@ -885,7 +888,9 @@ class StorageHistorySummaryBuilder {
 
     for (final h in histories) {
       if (!isInPeriod(h, period: period, range: range)) continue;
-      final kind = storageMovementKindOf(h.event);
+      final kind = storageMovementKindOf(
+        StorageItemHistoryEventClass.eventOf(h),
+      );
       if (!kind.isQuantityEvent) continue;
       final id = h.storageItemUuid;
       final ctx = id == null ? null : contexts[id];

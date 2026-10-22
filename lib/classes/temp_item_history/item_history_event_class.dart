@@ -1,4 +1,45 @@
+import 'package:stockall/classes/temp_item_history/item_history.dart';
+
 class ItemHistoryEventClass {
+  /// The event of [h]. Records written before events were added
+  /// (10 Oct 2026), or by older app versions, have no event, so it is
+  /// inferred from the title they were written with. Read-time only.
+  static String? eventOf(ItemHistory h) {
+    final event = h.event?.trim();
+    if (event != null && event.isNotEmpty) return event;
+
+    final t = h.title.trim().toLowerCase();
+    if (t.contains('sold') || t == 'order created') return sold;
+    if (t.contains('purchase deleted') ||
+        t.contains('purchased deleted') ||
+        t.contains('receipt deleted') ||
+        t.contains('invoice deleted') ||
+        t.contains('return')) {
+      return returnEvent;
+    }
+    if (t.contains('purchase')) return purchase;
+    if (t.startsWith('transfered in') ||
+        t.startsWith('transferred in')) {
+      return transferedIn;
+    }
+    if (t.startsWith('transfered out') ||
+        t.startsWith('transferred out')) {
+      return transferedOut;
+    }
+    if (t.contains('delivered')) return delivered;
+    if (t.contains('production record deleted')) {
+      return productionDeleted;
+    }
+    if (t.contains('produced')) return produced;
+    if (t.contains('item deleted')) return itemDeleted;
+    if (t.contains('created')) return itemCreated;
+    if (t.contains('quantity')) {
+      if (h.isIncreased == true) return quantityUpdatedIncrease;
+      if (h.isIncreased == false) return quantityUpdatedDecrease;
+    }
+    return null;
+  }
+
   static String returnEvent = 'return';
   static String sold = 'sale';
   static String delivered = 'deliver';

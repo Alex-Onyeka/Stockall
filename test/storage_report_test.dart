@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report_main/class/storage_report_main_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report_main/storage_report_main_page.dart';
@@ -126,6 +129,88 @@ void main() {
     // Ensure StorageReportMainPage widget constructor works
     const pageWidget = StorageReportMainPage();
     expect(pageWidget.initialSearch, null);
+  });
+
+  test('legacy storage records without an event move stock', () {
+    final storage = TempStorageProducts(
+      uuid: 'water',
+      shopId: 1,
+      name: 'Water Store',
+      quantity: 6,
+      costPrice: null,
+      sellingPrice: null,
+      useGroupUnit: false,
+      unitsList: [
+        ProductUnitsClass(
+          uuid: 'pcs',
+          staffUuid: null,
+          createdAt: DateTime.utc(2026),
+          staffName: null,
+          conversion: 1,
+          name: 'Pcs',
+          isPrimary: true,
+          productUuid: 'water',
+        ),
+      ],
+      createdAt: DateTime(2026, 9, 1),
+    );
+    final row = StorageReportRowBuilder.build(
+      storage: storage,
+      allSalesProducts: const [],
+    );
+
+    StorageItemHistory record(String title, String? event, String o, String n) {
+      return StorageItemHistory(
+        uuid: title,
+        createdAt: title == 'Stock In'
+            ? DateTime(2026, 9, 29, 10)
+            : DateTime(2026, 9, 29, 12),
+        shopId: 1,
+        title: title,
+        storageItemName: 'Water Store',
+        storageItemUuid: 'water',
+        storageItemNewValue: n,
+        storageItemOldValue: o,
+        quantityChange: null,
+        desc: null,
+        isIncreased: null,
+        storagePrimaryUnit: 'Pcs',
+        event: event,
+        source: null,
+      );
+    }
+
+    for (final tagged in [false, true]) {
+      final histories = [
+        record(
+          'Stock In',
+          tagged ? StorageItemHistoryEventClass.stockIn : null,
+          '0',
+          '10',
+        ),
+        record(
+          'Stock Out',
+          tagged ? StorageItemHistoryEventClass.stockOut : null,
+          '10',
+          '6',
+        ),
+      ];
+      for (final h in histories) {
+        expect(
+          StorageStockMovementCalculator.isApplicable(h, row),
+          isTrue,
+          reason: '${h.title}, tagged: $tagged',
+        );
+      }
+      final m = StorageStockMovementCalculator.calculate(
+        row: row,
+        histories: histories,
+        startCutoff: DateTime(2026, 9, 29, 4),
+        endCutoff: DateTime(2026, 9, 30, 4),
+      );
+      expect(m.opening, 0, reason: 'tagged: $tagged');
+      expect(m.closing, 6, reason: 'tagged: $tagged');
+    }
   });
 }
 
