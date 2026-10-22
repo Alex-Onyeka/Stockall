@@ -12,6 +12,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
+import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/on_screen_keyboard_pin.dart/on_screen_keyboard_pin.dart';
 import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
@@ -1875,6 +1876,98 @@ void selectProductSales({
     return previewLine().totalCost().toString();
   }
 
+  // Enter Price mode: the seller types an amount and the
+  // quantity for it is worked out in the selected unit. Only for
+  // 1D items that turn it on and have a price to divide by.
+  bool isPriceEntry = false;
+  final amountController = TextEditingController();
+  final amountNode = FocusNode();
+
+  bool canEnterPrice() {
+    return cartItem.item.deriveQuantityFromPrice == true &&
+        !is2DItem &&
+        (cartItem.getItem()?.getPrimaryPrice().priceValue ??
+                0) !=
+            0;
+  }
+
+  // Cost of one selected unit at the selected price, from the
+  // same totalCost() the cart line uses.
+  double pricePerSelectedUnit() {
+    return cartItem
+        .previewWith(
+          quantity: 1,
+          unitUuid: unitUuid,
+          priceUuid: priceUuid,
+          units: tempUnitList,
+          prices: tempPriceList,
+          width: null,
+          height: null,
+          customPrice: null,
+          setTotalPrice: false,
+          wastageAmount: null,
+          isPercentageWastage: null,
+          wastageUnitUuid: null,
+        )
+        .totalCost();
+  }
+
+  // Unit name shown next to quantities.
+  String selectedUnitName() {
+    final name = getPrimaryUnit().name;
+    return name == 'Others' ? 'Unit(s)' : name;
+  }
+
+  // Sets qqty from the amount entered, kept unrounded so the
+  // line total equals the amount. quantityController follows
+  // so Add To Cart reads it as if it was typed.
+  void deriveQuantityFromAmount(
+    BuildContext context,
+    StateSetter setState,
+  ) {
+    final amount =
+        double.tryParse(
+          amountController.text.replaceAll(',', '').trim(),
+        ) ??
+        0;
+    final perUnit = pricePerSelectedUnit();
+    final double derived = perUnit > 0 ? amount / perUnit : 0;
+    if ((cartItem.getItem()?.isManaged ?? false) &&
+        !returnSalesProvider().canAddProductToCart(
+          isEdit: isEdit,
+          newCartItem: cartItem,
+          quantityToAdd: getPrimaryUnitQuantityMultiplied(
+            newQuantity: derived,
+          ),
+        )) {
+      showDialog(
+        context: context,
+        builder:
+            (_) => InfoAlert(
+              title: "Quantity Limit Reached",
+              message:
+                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+              theme: theme,
+            ),
+      ).then((_) {
+        amountNode.requestFocus();
+      });
+
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          qqty = 0;
+          quantityController.text = '0';
+          amountController.clear();
+        });
+      });
+      return;
+    }
+    setState(() {
+      qqty = derived;
+      quantityController.text = derived.toString();
+    });
+  }
+
   showDialog(
     context: context,
     builder: (context) {
@@ -1923,105 +2016,226 @@ void selectProductSales({
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            EditCartTextField(
-                              onTap: () {
-                                setState(() {
-                                  currentFocus = 1;
-                                  isOnscreenKeyboardClicked =
-                                      false;
-                                });
-                              },
-                              focusNode: qttyNode,
-                              onChanged: (value) {
-                                double entered =
-                                    getPrimaryUnitQuantityMultiplied(
-                                      newQuantity:
-                                          double.tryParse(
-                                            value
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0,
-                                    );
-                                if (cartItem
-                                        .getItem()
-                                        ?.isManaged ??
-                                    false) {
-                                  // In custom dimensions mode, do not prematurely wipe out
-                                  // quantity while custom width/height are still being entered.
-                                  // Final check is performed when adding to cart.
-                                  if (quantityTypeTemp !=
-                                          2 &&
-                                      !returnSalesProvider()
-                                          .canAddProductToCart(
-                                            isEdit: isEdit,
-                                            newCartItem:
-                                                cartItem,
-                                            quantityToAdd:
-                                                entered,
-                                            // useGroupUnit:
-                                            //     useGroupQuantityTemp,
-                                          )) {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (_) => InfoAlert(
-                                            title:
-                                                "Quantity Limit Reached",
-                                            message:
-                                                "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
-                                            theme: theme,
-                                          ),
-                                    ).then((_) {
-                                      qttyNode
-                                          .requestFocus();
-                                    });
-
-                                    Future.delayed(
-                                      Duration(
-                                        milliseconds: 300,
+                            Visibility(
+                              visible: canEnterPrice(),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(
+                                      bottom: 10.0,
+                                    ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: DiscountSelectionTab(
+                                        genNum:
+                                            isPriceEntry
+                                                ? 1
+                                                : 0,
+                                        title:
+                                            'Enter Quantity',
+                                        action: () {
+                                          if (!isPriceEntry) {
+                                            return;
+                                          }
+                                          // Keeps the worked
+                                          // out quantity so it
+                                          // can be adjusted.
+                                          setState(() {
+                                            isPriceEntry =
+                                                false;
+                                            amountController
+                                                .clear();
+                                            currentFocus = 1;
+                                            isOnscreenKeyboardClicked =
+                                                false;
+                                          });
+                                          qttyNode
+                                              .requestFocus();
+                                        },
+                                        myNum: 0,
+                                        theme: theme,
                                       ),
-                                      () {
-                                        setState(() {
-                                          qqty = 0;
-                                          quantityController
-                                              .text = '0';
-                                        });
-                                      },
-                                    );
-
-                                    return;
-                                  }
-                                }
-
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    quantityController
-                                        .text = '0';
-                                  });
-                                }
-
-                                setState(() {
-                                  qqty =
-                                      (double.tryParse(
-                                            value
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0);
-                                });
-                              },
-
-                              title: 'Enter Item Quantity',
-                              hint: 'Quantity',
-                              controller:
-                                  quantityController,
-                              theme: theme,
+                                    ),
+                                    Expanded(
+                                      child: DiscountSelectionTab(
+                                        genNum:
+                                            isPriceEntry
+                                                ? 1
+                                                : 0,
+                                        title: 'Enter Price',
+                                        action: () {
+                                          if (isPriceEntry) {
+                                            return;
+                                          }
+                                          // Works from the
+                                          // primary price, with
+                                          // no custom price.
+                                          setState(() {
+                                            isPriceEntry =
+                                                true;
+                                            final primary =
+                                                tempPriceList
+                                                    .where(
+                                                      (item) =>
+                                                          item.isPrimary,
+                                                    )
+                                                    .firstOrNull;
+                                            if (primary !=
+                                                null) {
+                                              priceUuid =
+                                                  primary
+                                                      .uuid;
+                                            }
+                                            priceController
+                                                .clear();
+                                            amountController
+                                                .clear();
+                                            qqty = 0;
+                                            quantityController
+                                                .text = '0';
+                                            currentFocus = 6;
+                                            isOnscreenKeyboardClicked =
+                                                false;
+                                          });
+                                          returnSalesProvider()
+                                              .closeCustomPrice();
+                                          returnSalesProvider()
+                                              .toggleSetTotalPrice(
+                                                false,
+                                              );
+                                          amountNode
+                                              .requestFocus();
+                                        },
+                                        myNum: 1,
+                                        theme: theme,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
+                            if (isPriceEntry)
+                              MoneyTextfield(
+                                onTap: () {
+                                  setState(() {
+                                    currentFocus = 6;
+                                    isOnscreenKeyboardClicked =
+                                        false;
+                                  });
+                                },
+                                focusNode: amountNode,
+                                onChanged: (value) {
+                                  deriveQuantityFromAmount(
+                                    context,
+                                    setState,
+                                  );
+                                },
+                                title: 'Enter Price',
+                                hint: 'Price',
+                                controller:
+                                    amountController,
+                                theme: theme,
+                              )
+                            else
+                              EditCartTextField(
+                                onTap: () {
+                                  setState(() {
+                                    currentFocus = 1;
+                                    isOnscreenKeyboardClicked =
+                                        false;
+                                  });
+                                },
+                                focusNode: qttyNode,
+                                onChanged: (value) {
+                                  double entered =
+                                      getPrimaryUnitQuantityMultiplied(
+                                        newQuantity:
+                                            double.tryParse(
+                                              value
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ) ??
+                                            0,
+                                      );
+                                  if (cartItem
+                                          .getItem()
+                                          ?.isManaged ??
+                                      false) {
+                                    // In custom dimensions mode, do not prematurely wipe out
+                                    // quantity while custom width/height are still being entered.
+                                    // Final check is performed when adding to cart.
+                                    if (quantityTypeTemp !=
+                                            2 &&
+                                        !returnSalesProvider()
+                                            .canAddProductToCart(
+                                              isEdit: isEdit,
+                                              newCartItem:
+                                                  cartItem,
+                                              quantityToAdd:
+                                                  entered,
+                                              // useGroupUnit:
+                                              //     useGroupQuantityTemp,
+                                            )) {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (_) => InfoAlert(
+                                              title:
+                                                  "Quantity Limit Reached",
+                                              message:
+                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+                                              theme: theme,
+                                            ),
+                                      ).then((_) {
+                                        qttyNode
+                                            .requestFocus();
+                                      });
+
+                                      Future.delayed(
+                                        Duration(
+                                          milliseconds: 300,
+                                        ),
+                                        () {
+                                          setState(() {
+                                            qqty = 0;
+                                            quantityController
+                                                .text = '0';
+                                          });
+                                        },
+                                      );
+
+                                      return;
+                                    }
+                                  }
+
+                                  if (value.isEmpty) {
+                                    setState(() {
+                                      quantityController
+                                          .text = '0';
+                                    });
+                                  }
+
+                                  setState(() {
+                                    qqty =
+                                        (double.tryParse(
+                                              value
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ) ??
+                                            0);
+                                  });
+                                },
+
+                                title: 'Enter Item Quantity',
+                                hint: 'Quantity',
+                                controller:
+                                    quantityController,
+                                theme: theme,
+                              ),
                             Padding(
                               padding:
                                   const EdgeInsets.only(
@@ -2309,6 +2523,15 @@ void selectProductSales({
                                         .clear();
                                   }
                                 });
+                                // Same amount, quantity in
+                                // the new unit.
+                                if (isPriceEntry) {
+                                  deriveQuantityFromAmount(
+                                    context,
+                                    setState,
+                                  );
+                                  return;
+                                }
                                 if (getPrimaryUnitQuantityMultiplied(
                                       newQuantity:
                                           (double.tryParse(
@@ -2333,6 +2556,7 @@ void selectProductSales({
 
                             Visibility(
                               visible:
+                                  !isPriceEntry &&
                                   cartItemTemp
                                           .getPrimaryPrice()
                                           .priceValue !=
@@ -2371,7 +2595,8 @@ void selectProductSales({
                             ),
                             Visibility(
                               visible:
-                                  cartItem
+                                  !isPriceEntry &&
+                                  (cartItem
                                               .getItem()
                                               ?.getPrimaryPrice()
                                               .priceValue ==
@@ -2383,7 +2608,7 @@ void selectProductSales({
                                           (cartItem
                                                   .getItem()
                                                   ?.setCustomPrice ??
-                                              false),
+                                              false)),
                               child: Column(
                                 children: [
                                   SizedBox(height: 20),
@@ -2443,6 +2668,7 @@ void selectProductSales({
                             SizedBox(height: 10),
                             Visibility(
                               visible:
+                                  !isPriceEntry &&
                                   (cartItem
                                           .getItem()
                                           ?.setCustomPrice ??
@@ -2693,232 +2919,270 @@ void selectProductSales({
                                     horizontal: 20.0,
                                     vertical: 10,
                                   ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                              child: Column(
+                                spacing: 5,
                                 children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b1
-                                              .fontSize,
-                                    ),
-                                    'Total',
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                        ),
+                                        'Total Quantity',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontWeightBold,
+                                        ),
+                                        '${formatLargeNumberDouble(qqty)} ${selectedUnitName()}',
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b1
-                                              .fontSize,
-                                      fontWeight:
-                                          theme
-                                              .mobileTexts
-                                              .b1
-                                              .fontWeightBold,
-                                    ),
-                                    formatMoneyMid(
-                                      amount: double.parse(
-                                        formatSellingPrice(
-                                          cartItem,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                        ),
+                                        'Total Price',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontWeightBold,
+                                        ),
+                                        formatMoneyMid(
+                                          amount: double.parse(
+                                            formatSellingPrice(
+                                              cartItem,
+                                            ),
+                                          ),
+                                          context: context,
                                         ),
                                       ),
-                                      context: context,
-                                    ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
                             SizedBox(height: 20),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                spacing: 15,
-                                children: [
-                                  Ink(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade100,
+                            if (!isPriceEntry)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 20.0,
                                     ),
-                                    child: InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  spacing: 15,
+                                  children: [
+                                    Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade100,
+                                      ),
+                                      child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        onTap: () {
+                                          setState(() {
+                                            if (qqty > 0) {
+                                              qqty--;
+                                              quantityController
+                                                      .text =
+                                                  qqty.toString();
+                                              isOnscreenKeyboardClicked =
+                                                  false;
+                                            }
+                                          });
+                                        },
+                                        child: SizedBox(
+                                          height: 30,
+                                          width: 50,
+                                          child: Icon(
+                                            Icons.remove,
                                           ),
-                                      onTap: () {
-                                        setState(() {
-                                          if (qqty > 0) {
-                                            qqty--;
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      formatLargeNumberDouble(
+                                        qqty,
+                                      ),
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .h4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                    ),
+                                    Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade100,
+                                      ),
+                                      child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        onTap: () {
+                                          setState(() {
+                                            qqty++;
                                             quantityController
                                                     .text =
                                                 qqty.toString();
                                             isOnscreenKeyboardClicked =
                                                 false;
-                                          }
-                                        });
-                                      },
-                                      child: SizedBox(
-                                        height: 30,
-                                        width: 50,
-                                        child: Icon(
-                                          Icons.remove,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    formatLargeNumberDouble(
-                                      qqty,
-                                    ),
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .h4
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                  ),
-                                  Ink(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade100,
-                                    ),
-                                    child: InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      onTap: () {
-                                        setState(() {
-                                          qqty++;
-                                          quantityController
-                                                  .text =
-                                              qqty.toString();
-                                          isOnscreenKeyboardClicked =
-                                              false;
-                                        });
-                                        double entered =
-                                            double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0;
-                                        if (cartItem
-                                                .getItem()
-                                                ?.isManaged ??
-                                            false) {
-                                          if (!returnSalesProvider().canAddProductToCart(
-                                            isEdit: isEdit,
-                                            newCartItem:
-                                                cartItem,
-                                            quantityToAdd:
-                                                getPrimaryUnitQuantityMultiplied(
-                                                  newQuantity:
-                                                      entered,
-                                                ),
-                                            // useGroupUnit:
-                                            //     useGroupQuantityTemp,
-                                          )) {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder:
-                                                  (
-                                                    _,
-                                                  ) => InfoAlert(
-                                                    title:
-                                                        "Quantity Limit Reached",
-                                                    message:
-                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
-                                                    theme:
-                                                        theme,
-                                                  ),
-                                            ).then((_) {
-                                              qttyNode
-                                                  .requestFocus();
-                                            });
-
-                                            Future.delayed(
-                                              Duration(
-                                                milliseconds:
-                                                    300,
-                                              ),
-                                              () {
-                                                setState(() {
-                                                  qqty = 0;
-                                                  quantityController
-                                                          .text =
-                                                      '0';
-                                                });
-                                              },
-                                            );
-
-                                            return;
-                                          }
-                                        }
-
-                                        if (quantityController
-                                            .text
-                                            .isEmpty) {
-                                          setState(() {
-                                            quantityController
-                                                .text = '0';
                                           });
-                                        }
+                                          double entered =
+                                              double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0;
+                                          if (cartItem
+                                                  .getItem()
+                                                  ?.isManaged ??
+                                              false) {
+                                            if (!returnSalesProvider().canAddProductToCart(
+                                              isEdit: isEdit,
+                                              newCartItem:
+                                                  cartItem,
+                                              quantityToAdd:
+                                                  getPrimaryUnitQuantityMultiplied(
+                                                    newQuantity:
+                                                        entered,
+                                                  ),
+                                              // useGroupUnit:
+                                              //     useGroupQuantityTemp,
+                                            )) {
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder:
+                                                    (
+                                                      _,
+                                                    ) => InfoAlert(
+                                                      title:
+                                                          "Quantity Limit Reached",
+                                                      message:
+                                                          "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                              ).then((_) {
+                                                qttyNode
+                                                    .requestFocus();
+                                              });
 
-                                        setState(() {
-                                          qqty = entered;
-                                        });
-                                      },
+                                              Future.delayed(
+                                                Duration(
+                                                  milliseconds:
+                                                      300,
+                                                ),
+                                                () {
+                                                  setState(() {
+                                                    qqty = 0;
+                                                    quantityController
+                                                            .text =
+                                                        '0';
+                                                  });
+                                                },
+                                              );
 
-                                      child: SizedBox(
-                                        height: 30,
-                                        width: 50,
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.add,
+                                              return;
+                                            }
+                                          }
+
+                                          if (quantityController
+                                              .text
+                                              .isEmpty) {
+                                            setState(() {
+                                              quantityController
+                                                  .text = '0';
+                                            });
+                                          }
+
+                                          setState(() {
+                                            qqty = entered;
+                                          });
+                                        },
+
+                                        child: SizedBox(
+                                          height: 30,
+                                          width: 50,
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.add,
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
                             SizedBox(height: 20),
                             Row(
                               mainAxisAlignment:
@@ -3413,6 +3677,16 @@ void selectProductSales({
                                           !showWastage()) {
                                         currentFocus = 1;
                                       }
+                                      // Quantity and price share
+                                      // one spot; type into the
+                                      // one shown.
+                                      if (isPriceEntry &&
+                                          currentFocus == 1) {
+                                        currentFocus = 6;
+                                      } else if (!isPriceEntry &&
+                                          currentFocus == 6) {
+                                        currentFocus = 1;
+                                      }
 
                                       TextEditingController
                                       currentController() {
@@ -3427,6 +3701,8 @@ void selectProductSales({
                                             return heightController;
                                           case 5:
                                             return wastageController;
+                                          case 6:
+                                            return amountController;
                                           default:
                                             return quantityController;
                                         }
@@ -3656,6 +3932,33 @@ void selectProductSales({
                                                       .length,
                                             ),
                                           );
+                                        } else if (currentFocus ==
+                                            6) {
+                                          if (isOnscreenKeyboardClicked ==
+                                              false) {
+                                            controller
+                                                    .text =
+                                                digit;
+                                            isOnscreenKeyboardClicked =
+                                                true;
+                                          } else {
+                                            controller
+                                                    .text +=
+                                                digit;
+                                          }
+                                          controller
+                                              .selection = TextSelection.fromPosition(
+                                            TextPosition(
+                                              offset:
+                                                  controller
+                                                      .text
+                                                      .length,
+                                            ),
+                                          );
+                                          deriveQuantityFromAmount(
+                                            context,
+                                            setState,
+                                          );
                                         } else {
                                           controller.text +=
                                               digit;
@@ -3699,6 +4002,12 @@ void selectProductSales({
                                             setState(() {
                                               qqty = newVal;
                                             });
+                                          } else if (currentFocus ==
+                                              6) {
+                                            deriveQuantityFromAmount(
+                                              context,
+                                              setState,
+                                            );
                                           }
 
                                           controller

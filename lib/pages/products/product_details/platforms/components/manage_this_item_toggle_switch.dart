@@ -57,6 +57,8 @@ class _ManageThisItemToggleSwitchState
                         quantityChange: null,
                         product: TempProductClass(
                           manageSalesWastage: widget.product.manageSalesWastage,
+                          deriveQuantityFromPrice:
+                              widget.product.deriveQuantityFromPrice,
                           heightDimension: widget.product.heightDimension,
                           widthDimension: widget.product.widthDimension,
                           quantityType: widget.product.quantityType,

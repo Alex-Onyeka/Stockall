@@ -2987,6 +2987,7 @@ class DataProvider extends ChangeNotifier {
   bool setCustomPrice = false;
   bool isManaged = true;
   bool manageWastage = false;
+  bool deriveQuantityFromPrice = false;
   bool useGroupUnit = false;
   String sizeType = '';
   String size = '';
@@ -3014,6 +3015,7 @@ class DataProvider extends ChangeNotifier {
       isManaged = true;
     }
     manageWastage = false;
+    deriveQuantityFromPrice = false;
     useGroupUnit = false;
     isOpen = false;
     unitValueSet = false;
@@ -3074,6 +3076,11 @@ class DataProvider extends ChangeNotifier {
 
   void toggleManageWastage() {
     manageWastage = !manageWastage;
+    notifyListeners();
+  }
+
+  void toggleDeriveQuantityFromPrice() {
+    deriveQuantityFromPrice = !deriveQuantityFromPrice;
     notifyListeners();
   }
 

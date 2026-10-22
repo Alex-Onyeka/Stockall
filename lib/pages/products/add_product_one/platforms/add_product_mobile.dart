@@ -176,6 +176,8 @@ class _AddProductMobileState
                 product: TempProductClass(
                   manageSalesWastage:
                       dataProvider.manageWastage,
+                  deriveQuantityFromPrice:
+                      dataProvider.deriveQuantityFromPrice,
                   quantityType: quantityType,
                   heightDimension: double.tryParse(
                     widget.heightController.text.replaceAll(
@@ -361,6 +363,8 @@ class _AddProductMobileState
                 product: TempProductClass(
                   manageSalesWastage:
                       provider.manageWastage,
+                  deriveQuantityFromPrice:
+                      provider.deriveQuantityFromPrice,
                   quantityType: quantityType,
                   heightDimension: double.tryParse(
                     widget.heightController.text.replaceAll(
@@ -535,6 +539,8 @@ class _AddProductMobileState
     if (widget.product != null && context.mounted) {
       returnData().manageWastage =
           widget.product?.manageSalesWastage ?? false;
+      returnData().deriveQuantityFromPrice =
+          widget.product?.deriveQuantityFromPrice ?? false;
       barcode = widget.product!.barcode;
       barCodeSet =
           widget.product!.barcode != null ? true : false;
@@ -1766,6 +1772,34 @@ class _AddProductMobileState
                                                       ),
                                             ),
                                           ],
+                                        ),
+                                      ),
+                                    ),
+                                    // Price entry only works out
+                                    // quantity for 1D items.
+                                    Visibility(
+                                      visible:
+                                          quantityType != 2,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              top: 10.0,
+                                            ),
+                                        child: UseMultipleToggleAddItemPage(
+                                          theme: theme,
+                                          title:
+                                              'Derive Quantity From Price',
+                                          description:
+                                              'Turn on to let sellers enter a price during sale; the app works out the quantity for that price.',
+                                          value:
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).deriveQuantityFromPrice,
+                                          onTap: () {
+                                            returnData()
+                                                .toggleDeriveQuantityFromPrice();
+                                          },
                                         ),
                                       ),
                                     ),

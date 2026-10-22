@@ -58,13 +58,14 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       heightDimension: fields[38] as double?,
       quantityType: fields[39] as int?,
       manageSalesWastage: fields[40] as bool?,
+      deriveQuantityFromPrice: fields[41] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductClass obj) {
     writer
-      ..writeByte(41)
+      ..writeByte(42)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -146,7 +147,9 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       ..writeByte(39)
       ..write(obj.quantityType)
       ..writeByte(40)
-      ..write(obj.manageSalesWastage);
+      ..write(obj.manageSalesWastage)
+      ..writeByte(41)
+      ..write(obj.deriveQuantityFromPrice);
   }
 
   @override

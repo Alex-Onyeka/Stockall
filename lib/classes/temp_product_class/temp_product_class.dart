@@ -133,6 +133,11 @@ class TempProductClass {
   @HiveField(40)
   bool? manageSalesWastage;
 
+  // Lets the sale dialog take a price and work out the
+  // quantity for it (1D items only).
+  @HiveField(41)
+  bool? deriveQuantityFromPrice;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -175,6 +180,7 @@ class TempProductClass {
     required this.heightDimension,
     this.quantityType = 1,
     required this.manageSalesWastage,
+    this.deriveQuantityFromPrice,
   });
 
   factory TempProductClass.fromJson(Map<String, dynamic> json) {
@@ -252,6 +258,8 @@ class TempProductClass {
       heightDimension: (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int? ?? 1,
       manageSalesWastage: json['manage_sales_wastage'] as bool? ?? false,
+      deriveQuantityFromPrice:
+          json['derive_quantity_from_price'] as bool? ?? false,
     );
   }
 
@@ -304,6 +312,7 @@ class TempProductClass {
         'height_dimension': heightDimension,
         'quantity_type': quantityType ?? 1,
         'manage_sales_wastage': manageSalesWastage,
+        'derive_quantity_from_price': deriveQuantityFromPrice,
       };
     } else {
       return {
@@ -353,6 +362,7 @@ class TempProductClass {
         'height_dimension': heightDimension,
         'quantity_type': quantityType ?? 1,
         'manage_sales_wastage': manageSalesWastage,
+        'derive_quantity_from_price': deriveQuantityFromPrice,
       };
     }
   }
@@ -399,6 +409,7 @@ class TempProductClass {
     double? heightDimension,
     int? quantityType,
     bool? manageSalesWastage,
+    bool? deriveQuantityFromPrice,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -443,6 +454,8 @@ class TempProductClass {
       heightDimension: heightDimension ?? this.heightDimension,
       quantityType: quantityType ?? this.quantityType,
       manageSalesWastage: manageSalesWastage ?? this.manageSalesWastage,
+      deriveQuantityFromPrice:
+          deriveQuantityFromPrice ?? this.deriveQuantityFromPrice,
     );
   }
 
