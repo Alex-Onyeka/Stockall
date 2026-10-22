@@ -1291,3 +1291,294 @@ class ItemSalesQuery {
     );
   }
 }
+
+/// Table columns when grouped by item, in display order.
+enum ItemSalesGroupColumn {
+  item,
+  quantity,
+  unit,
+  revenue,
+  profit,
+  margin,
+}
+
+extension ItemSalesGroupColumnInfo on ItemSalesGroupColumn {
+  String get label {
+    switch (this) {
+      case ItemSalesGroupColumn.item:
+        return 'Item';
+      case ItemSalesGroupColumn.quantity:
+        return 'Total Quantity';
+      case ItemSalesGroupColumn.unit:
+        return 'Unit';
+      case ItemSalesGroupColumn.revenue:
+        return 'Total Revenue';
+      case ItemSalesGroupColumn.profit:
+        return 'Total Profit/Loss';
+      case ItemSalesGroupColumn.margin:
+        return 'Profit Margin';
+    }
+  }
+
+  ItemSalesSortField? get sort {
+    switch (this) {
+      case ItemSalesGroupColumn.item:
+        return ItemSalesSortField.item;
+      case ItemSalesGroupColumn.quantity:
+        return ItemSalesSortField.quantity;
+      case ItemSalesGroupColumn.unit:
+        return null;
+      case ItemSalesGroupColumn.revenue:
+        return ItemSalesSortField.revenue;
+      case ItemSalesGroupColumn.profit:
+        return ItemSalesSortField.profit;
+      case ItemSalesGroupColumn.margin:
+        return ItemSalesSortField.margin;
+    }
+  }
+
+  /// Cost data, hidden without the Manage Cost Price permission.
+  bool get needsCost =>
+      this == ItemSalesGroupColumn.profit ||
+      this == ItemSalesGroupColumn.margin;
+
+  static List<ItemSalesGroupColumn> visible({
+    required bool costVisible,
+  }) {
+    return ItemSalesGroupColumn.values
+        .where((c) => costVisible || !c.needsCost)
+        .toList();
+  }
+}
+
+/// One table row when grouped by item: every line of one item
+/// sold in one sale unit. Values are raw, as on [ItemSalesRow].
+class ItemSalesGroupRow {
+  final String key;
+
+  /// `productUuid`, null for lines without one.
+  final String? productKey;
+
+  /// Most recent name of the item.
+  final String? itemName;
+  final bool productExists;
+
+  /// Plain name of the sale unit, without a cut size. Null when
+  /// unknown.
+  final String? unitName;
+
+  /// Sum of the line quantities, in [unitName]. Part payments are
+  /// not in it.
+  double quantity = 0;
+  int lineCount = 0;
+
+  /// Invoice part-payment lines, left out of [quantity]: they
+  /// repeat the invoice's full quantity.
+  int quantityExcludedCount = 0;
+  double revenue = 0;
+
+  /// revenue - cost, missing costs counted as 0.
+  double profit = 0;
+  int costMissingCount = 0;
+
+  ItemSalesGroupRow({
+    required this.key,
+    required this.productKey,
+    required this.itemName,
+    required this.productExists,
+    required this.unitName,
+  });
+
+  String get itemLabel => itemName ?? 'Not Set';
+
+  /// No line's quantity could be counted.
+  bool get quantityUnknown =>
+      lineCount > 0 && quantityExcludedCount == lineCount;
+
+  /// profit / revenue * 100. Null when revenue is not above 0.
+  double? get margin =>
+      revenue > 0 ? (profit / revenue) * 100 : null;
+
+  void add(ItemSalesRow r) {
+    lineCount++;
+    if (r.isPartPayment) {
+      quantityExcludedCount++;
+    } else {
+      quantity += r.quantity;
+    }
+    revenue += r.revenue;
+    profit += r.profit;
+    if (r.costMissing) costMissingCount++;
+  }
+}
+
+/// Result of [ItemSalesGrouping.paginate].
+class ItemSalesGroupPage {
+  final List<ItemSalesGroupRow> rows;
+  final int totalCount;
+  final int page; // 1-based, already clamped
+  final int totalPages;
+
+  const ItemSalesGroupPage({
+    required this.rows,
+    required this.totalCount,
+    required this.page,
+    required this.totalPages,
+  });
+
+  int get firstIndex =>
+      totalCount == 0
+          ? 0
+          : (page - 1) * itemSalesReportPageSize + 1;
+  int get lastIndex =>
+      firstIndex == 0 ? 0 : firstIndex + rows.length - 1;
+}
+
+/// "Group by item": one row per item and sale unit, so quantities
+/// in different units are never added up. All cut sizes of a 2D
+/// unit share a row.
+class ItemSalesGrouping {
+  /// Plain name of the line's sale unit, as [ItemSalesRowBuilder.
+  /// unitName] without the cut size.
+  static String? unitName(TempProductSaleRecord line) {
+    final unit = ItemSalesRowBuilder._unit(
+      line,
+      line.unitUuid,
+    );
+    if (unit != null) {
+      return unit.name == 'Others' ? 'Unit(s)' : unit.name;
+    }
+    final stored = ItemSalesRowBuilder._text(line.unit);
+    if (stored == null) return null;
+    return stored == 'Others' ? 'Unit(s)' : stored;
+  }
+
+  /// The sale unit's uuid, else its plain name.
+  static String unitKey(TempProductSaleRecord line) {
+    final uuid = ItemSalesRowBuilder._text(line.unitUuid);
+    if (uuid != null) return uuid;
+    return 'name:${unitName(line)?.toLowerCase() ?? ''}';
+  }
+
+  /// The product uuid (else the item name) and [unitKey].
+  static String keyOf(ItemSalesRow r) {
+    final item =
+        r.productKey ??
+        'name:${r.itemName?.toLowerCase() ?? ''}';
+    return '$item|${unitKey(r.line)}';
+  }
+
+  /// Groups [rows] that already passed the period and filters
+  /// (`ItemSalesQuery.filterAndSort`). Each group shows the most
+  /// recent item and unit name.
+  static List<ItemSalesGroupRow> build(
+    List<ItemSalesRow> rows,
+  ) {
+    final newestFirst = List<ItemSalesRow>.from(rows)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final groups = <String, ItemSalesGroupRow>{};
+    for (final r in newestFirst) {
+      final k = keyOf(r);
+      groups
+          .putIfAbsent(
+            k,
+            () => ItemSalesGroupRow(
+              key: k,
+              productKey: r.productKey,
+              itemName: r.itemName,
+              productExists: r.productExists,
+              unitName: unitName(r.line),
+            ),
+          )
+          .add(r);
+    }
+    return groups.values.toList();
+  }
+
+  /// Sorted copy, by item, quantity, revenue, profit or margin
+  /// (any other field sorts by revenue). Nulls always sink to the
+  /// bottom; ties: item name, unit name, then key.
+  static List<ItemSalesGroupRow> sort(
+    List<ItemSalesGroupRow> groups, {
+    required ItemSalesSortField field,
+    required bool ascending,
+  }) {
+    int compare(ItemSalesGroupRow a, ItemSalesGroupRow b) {
+      int c;
+      switch (field) {
+        case ItemSalesSortField.item:
+          c = ItemSalesQuery._cmp(
+            a.itemName?.toLowerCase(),
+            b.itemName?.toLowerCase(),
+            ascending,
+          );
+          break;
+        case ItemSalesSortField.quantity:
+          c = ItemSalesQuery._cmp(
+            a.quantityUnknown ? null : a.quantity,
+            b.quantityUnknown ? null : b.quantity,
+            ascending,
+          );
+          break;
+        case ItemSalesSortField.profit:
+          c = ItemSalesQuery._cmp(
+            a.profit,
+            b.profit,
+            ascending,
+          );
+          break;
+        case ItemSalesSortField.margin:
+          c = ItemSalesQuery._cmp(
+            a.margin,
+            b.margin,
+            ascending,
+          );
+          break;
+        default:
+          c = ItemSalesQuery._cmp(
+            a.revenue,
+            b.revenue,
+            ascending,
+          );
+      }
+      if (c != 0) return c;
+      final n = a.itemLabel.toLowerCase().compareTo(
+        b.itemLabel.toLowerCase(),
+      );
+      if (n != 0) return n;
+      final u = (a.unitName ?? '').toLowerCase().compareTo(
+        (b.unitName ?? '').toLowerCase(),
+      );
+      return u != 0 ? u : a.key.compareTo(b.key);
+    }
+
+    return List<ItemSalesGroupRow>.from(groups)
+      ..sort(compare);
+  }
+
+  static ItemSalesGroupPage paginate(
+    List<ItemSalesGroupRow> sorted,
+    int requestedPage,
+  ) {
+    final total = sorted.length;
+    final pages =
+        total == 0
+            ? 1
+            : (total / itemSalesReportPageSize).ceil();
+    final page = requestedPage.clamp(1, pages);
+    final start = (page - 1) * itemSalesReportPageSize;
+    final end =
+        (start + itemSalesReportPageSize) > total
+            ? total
+            : start + itemSalesReportPageSize;
+    return ItemSalesGroupPage(
+      rows:
+          total == 0
+              ? const []
+              : sorted.sublist(start, end),
+      totalCount: total,
+      page: page,
+      totalPages: pages,
+    );
+  }
+}

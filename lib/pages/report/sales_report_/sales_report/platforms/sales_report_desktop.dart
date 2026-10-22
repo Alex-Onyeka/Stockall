@@ -5,6 +5,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
+import 'package:stockall/pages/report/sales_report_/item_sales_analysis/item_sales_analysis_page.dart';
 import 'package:stockall/pages/report/sales_report_/item_sales_report_main/item_sales_report_main_page.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/receipts_report_main_page.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_summary/receipts_report_summary_page.dart';
@@ -135,6 +136,32 @@ class SalesReportDesktop extends StatelessWidget {
                               subText:
                                   'View a breakdown of your Items Sales, revenue and Profit',
                               title: 'Item Sales Report',
+                            ),
+                          ),
+                          Visibility(
+                            visible:
+                                !isStoreKeeper() &&
+                                authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .viewItemSalesReport,
+                                ),
+                            child: ReportListTile(
+                              isActive: true,
+                              theme: theme,
+                              action: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            const ItemSalesAnalysisPage(),
+                                  ),
+                                );
+                              },
+                              subText:
+                                  'Aggregated item sales, top items, categories and financial breakdown',
+                              title: 'Item Sales Analysis',
                             ),
                           ),
                           const SizedBox(height: 30),
