@@ -708,6 +708,10 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                                 widget
                                                     .product
                                                     .manageSalesWastage,
+                                            deriveQuantityFromPrice:
+                                                widget
+                                                    .product
+                                                    .deriveQuantityFromPrice,
                                             heightDimension:
                                                 widget.product.heightDimension,
                                             widthDimension:

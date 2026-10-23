@@ -12,6 +12,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
+import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/on_screen_keyboard_pin.dart/on_screen_keyboard_pin.dart';
 import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
@@ -36,17 +37,12 @@ import 'package:stockall/pages/sales/make_sales/page1/platforms/components/right
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-void unitsBottomSheet(
-  BuildContext context,
-  Function()? action,
-) async {
+void unitsBottomSheet(BuildContext context, Function()? action) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext sheetContext) {
@@ -66,8 +62,7 @@ class _UnitsBottomSheetContent extends StatefulWidget {
       _UnitsBottomSheetContentState();
 }
 
-class _UnitsBottomSheetContentState
-    extends State<_UnitsBottomSheetContent> {
+class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
   late final TextEditingController searchController;
 
   @override
@@ -94,29 +89,18 @@ class _UnitsBottomSheetContentState
           returnData(context: context).units,
         )..sort();
 
-        final query =
-            searchController.text.trim().toLowerCase();
+        final query = searchController.text.trim().toLowerCase();
         final filteredUnits =
             query.isEmpty
                 ? units
                 : units
-                    .where(
-                      (item) => item.toLowerCase().contains(
-                        query,
-                      ),
-                    )
+                    .where((item) => item.toLowerCase().contains(query))
                     .toList();
 
-        final selectedUnit =
-            returnData(context: context).selectedUnit;
+        final selectedUnit = returnData(context: context).selectedUnit;
 
         return Container(
-          padding: const EdgeInsets.fromLTRB(
-            30,
-            15,
-            30,
-            45,
-          ),
+          padding: const EdgeInsets.fromLTRB(30, 15, 30, 45),
           child: Column(
             children: [
               Center(
@@ -131,20 +115,16 @@ class _UnitsBottomSheetContentState
               ),
               const SizedBox(height: 30),
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Units',
                         style: TextStyle(
                           fontSize:
-                              returnTheme(
-                                context,
-                              ).mobileTexts.b1.fontSize,
+                              returnTheme(context).mobileTexts.b1.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -152,9 +132,7 @@ class _UnitsBottomSheetContentState
                         'Select Item Unit',
                         style: TextStyle(
                           fontSize:
-                              returnTheme(
-                                context,
-                              ).mobileTexts.b2.fontSize,
+                              returnTheme(context).mobileTexts.b2.fontSize,
                         ),
                       ),
                     ],
@@ -171,8 +149,7 @@ class _UnitsBottomSheetContentState
                           child: const Text('Clear'),
                         ),
                       IconButton(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -195,8 +172,7 @@ class _UnitsBottomSheetContentState
                     setState(() {});
                   },
                   onTap: () {
-                    if (returnShopProvider()
-                        .isOnScreenKeyboardOn()) {
+                    if (returnShopProvider().isOnScreenKeyboardOn()) {
                       showOnScreenKeyboard();
                     }
                   },
@@ -226,8 +202,7 @@ class _UnitsBottomSheetContentState
                     suffixIcon:
                         searchController.text.isNotEmpty
                             ? InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
+                              mouseCursor: SystemMouseCursors.click,
                               onTap: () {
                                 searchController.clear();
                                 setState(() {});
@@ -241,15 +216,12 @@ class _UnitsBottomSheetContentState
                             : null,
                     filled: true,
                     fillColor: Colors.grey.shade100,
-                    contentPadding:
-                        const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 10,
-                        ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        8,
-                      ),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -272,12 +244,9 @@ class _UnitsBottomSheetContentState
                                 color: Colors.grey.shade600,
                                 fontSize:
                                     returnTheme(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
+                                      context,
+                                      listen: false,
+                                    ).mobileTexts.b3.fontSize,
                               ),
                             ),
                           )
@@ -285,95 +254,61 @@ class _UnitsBottomSheetContentState
                             controller: scrollController,
                             itemCount: filteredUnits.length,
                             itemBuilder: (context, index) {
-                              String unit =
-                                  filteredUnits[index];
-                              final isSelected =
-                                  selectedUnit == unit;
+                              String unit = filteredUnits[index];
+                              final isSelected = selectedUnit == unit;
                               return Padding(
-                                padding:
-                                    const EdgeInsets.only(
-                                      bottom: 2,
-                                    ),
+                                padding: const EdgeInsets.only(bottom: 2),
                                 child: Material(
                                   color:
                                       isSelected
-                                          ? returnTheme(
-                                                context,
-                                              )
+                                          ? returnTheme(context)
                                               .lightModeColor
                                               .prColor250
                                               .withAlpha(20)
-                                          : Colors
-                                              .transparent,
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        10,
-                                      ),
-                                  clipBehavior:
-                                      Clip.antiAlias,
+                                          : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10),
+                                  clipBehavior: Clip.antiAlias,
                                   child: ListTile(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            10,
-                                          ),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    contentPadding:
-                                        const EdgeInsets.only(
-                                          left: 20,
-                                          right: 5,
-                                        ),
+                                    contentPadding: const EdgeInsets.only(
+                                      left: 20,
+                                      right: 5,
+                                    ),
                                     title: Text(
                                       style: TextStyle(
                                         fontWeight:
                                             isSelected
-                                                ? FontWeight
-                                                    .bold
-                                                : FontWeight
-                                                    .normal,
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
                                         fontSize:
                                             returnTheme(
-                                                  context,
-                                                )
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
+                                              context,
+                                            ).mobileTexts.b2.fontSize,
                                       ),
                                       unit,
                                     ),
                                     onTap: () {
-                                      returnData()
-                                          .selectUnit(unit);
+                                      returnData().selectUnit(unit);
                                       setState(() {});
                                     },
                                     trailing: Checkbox(
-                                      shape:
-                                          const CircleBorder(
-                                            side:
-                                                BorderSide(),
-                                          ),
+                                      shape: const CircleBorder(
+                                        side: BorderSide(),
+                                      ),
                                       side: BorderSide(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade400,
+                                        color: Colors.grey.shade400,
                                         width: 1.2,
                                       ),
                                       activeColor:
                                           returnTheme(
-                                                context,
-                                              )
-                                              .lightModeColor
-                                              .prColor250,
+                                            context,
+                                          ).lightModeColor.prColor250,
                                       value: isSelected,
                                       onChanged: (value) {
-                                        returnData()
-                                            .selectUnit(
-                                              unit,
-                                            );
+                                        returnData().selectUnit(unit);
                                         setState(() {});
                                       },
                                     ),
@@ -392,17 +327,12 @@ class _UnitsBottomSheetContentState
   }
 }
 
-void dimensionUnitsBottomSheet(
-  BuildContext context,
-  Function()? action,
-) async {
+void dimensionUnitsBottomSheet(BuildContext context, Function()? action) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext sheetContext) {
@@ -414,8 +344,7 @@ void dimensionUnitsBottomSheet(
   }
 }
 
-class _DimensionUnitsBottomSheetContent
-    extends StatefulWidget {
+class _DimensionUnitsBottomSheetContent extends StatefulWidget {
   const _DimensionUnitsBottomSheetContent();
 
   @override
@@ -456,42 +385,27 @@ class _DimensionUnitsBottomSheetContentState
       maxChildSize: 0.9,
       minChildSize: 0.3,
       builder: (context, scrollController) {
-        final allUnits = List<String>.from(
-          returnData(context: context).units,
-        )..sort();
+        final allUnits = List<String>.from(returnData(context: context).units)
+          ..sort();
 
         final orderedUnits = <String>[
           ...commonDimensionUnits.where(allUnits.contains),
-          ...allUnits.where(
-            (u) => !commonDimensionUnits.contains(u),
-          ),
+          ...allUnits.where((u) => !commonDimensionUnits.contains(u)),
         ];
 
-        final query =
-            searchController.text.trim().toLowerCase();
+        final query = searchController.text.trim().toLowerCase();
         final filteredUnits =
             query.isEmpty
                 ? orderedUnits
                 : orderedUnits
-                    .where(
-                      (item) => item.toLowerCase().contains(
-                        query,
-                      ),
-                    )
+                    .where((item) => item.toLowerCase().contains(query))
                     .toList();
 
         final selectedDimensionUnit =
-            returnData(
-              context: context,
-            ).selectedDimensionUnit;
+            returnData(context: context).selectedDimensionUnit;
 
         return Container(
-          padding: const EdgeInsets.fromLTRB(
-            30,
-            15,
-            30,
-            45,
-          ),
+          padding: const EdgeInsets.fromLTRB(30, 15, 30, 45),
           child: Column(
             children: [
               Center(
@@ -506,20 +420,16 @@ class _DimensionUnitsBottomSheetContentState
               ),
               const SizedBox(height: 30),
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Dimension Units',
                         style: TextStyle(
                           fontSize:
-                              returnTheme(
-                                context,
-                              ).mobileTexts.b1.fontSize,
+                              returnTheme(context).mobileTexts.b1.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -527,9 +437,7 @@ class _DimensionUnitsBottomSheetContentState
                         'Select Unit for Dimensions',
                         style: TextStyle(
                           fontSize:
-                              returnTheme(
-                                context,
-                              ).mobileTexts.b2.fontSize,
+                              returnTheme(context).mobileTexts.b2.fontSize,
                         ),
                       ),
                     ],
@@ -540,15 +448,13 @@ class _DimensionUnitsBottomSheetContentState
                       if (selectedDimensionUnit != null)
                         TextButton(
                           onPressed: () {
-                            returnData()
-                                .clearDimensionUnit();
+                            returnData().clearDimensionUnit();
                             setState(() {});
                           },
                           child: const Text('Clear'),
                         ),
                       IconButton(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -571,8 +477,7 @@ class _DimensionUnitsBottomSheetContentState
                     setState(() {});
                   },
                   onTap: () {
-                    if (returnShopProvider()
-                        .isOnScreenKeyboardOn()) {
+                    if (returnShopProvider().isOnScreenKeyboardOn()) {
                       showOnScreenKeyboard();
                     }
                   },
@@ -602,8 +507,7 @@ class _DimensionUnitsBottomSheetContentState
                     suffixIcon:
                         searchController.text.isNotEmpty
                             ? InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
+                              mouseCursor: SystemMouseCursors.click,
                               onTap: () {
                                 searchController.clear();
                                 setState(() {});
@@ -617,15 +521,12 @@ class _DimensionUnitsBottomSheetContentState
                             : null,
                     filled: true,
                     fillColor: Colors.grey.shade100,
-                    contentPadding:
-                        const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 10,
-                        ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        8,
-                      ),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide.none,
                     ),
                   ),
@@ -648,12 +549,9 @@ class _DimensionUnitsBottomSheetContentState
                                 color: Colors.grey.shade600,
                                 fontSize:
                                     returnTheme(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
+                                      context,
+                                      listen: false,
+                                    ).mobileTexts.b3.fontSize,
                               ),
                             ),
                           )
@@ -661,98 +559,61 @@ class _DimensionUnitsBottomSheetContentState
                             controller: scrollController,
                             itemCount: filteredUnits.length,
                             itemBuilder: (context, index) {
-                              String unit =
-                                  filteredUnits[index];
-                              final isSelected =
-                                  selectedDimensionUnit ==
-                                  unit;
+                              String unit = filteredUnits[index];
+                              final isSelected = selectedDimensionUnit == unit;
                               return Padding(
-                                padding:
-                                    const EdgeInsets.only(
-                                      bottom: 2,
-                                    ),
+                                padding: const EdgeInsets.only(bottom: 2),
                                 child: Material(
                                   color:
                                       isSelected
-                                          ? returnTheme(
-                                                context,
-                                              )
+                                          ? returnTheme(context)
                                               .lightModeColor
                                               .prColor250
                                               .withAlpha(20)
-                                          : Colors
-                                              .transparent,
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        10,
-                                      ),
-                                  clipBehavior:
-                                      Clip.antiAlias,
+                                          : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10),
+                                  clipBehavior: Clip.antiAlias,
                                   child: ListTile(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            10,
-                                          ),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
-                                    contentPadding:
-                                        const EdgeInsets.only(
-                                          left: 20,
-                                          right: 5,
-                                        ),
+                                    contentPadding: const EdgeInsets.only(
+                                      left: 20,
+                                      right: 5,
+                                    ),
                                     title: Text(
                                       style: TextStyle(
                                         fontWeight:
                                             isSelected
-                                                ? FontWeight
-                                                    .bold
-                                                : FontWeight
-                                                    .normal,
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
                                         fontSize:
                                             returnTheme(
-                                                  context,
-                                                )
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
+                                              context,
+                                            ).mobileTexts.b2.fontSize,
                                       ),
                                       unit,
                                     ),
                                     onTap: () {
-                                      returnData()
-                                          .selectDimensionUnit(
-                                            unit,
-                                          );
+                                      returnData().selectDimensionUnit(unit);
                                       setState(() {});
                                     },
                                     trailing: Checkbox(
-                                      shape:
-                                          const CircleBorder(
-                                            side:
-                                                BorderSide(),
-                                          ),
+                                      shape: const CircleBorder(
+                                        side: BorderSide(),
+                                      ),
                                       side: BorderSide(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade400,
+                                        color: Colors.grey.shade400,
                                         width: 1.2,
                                       ),
                                       activeColor:
                                           returnTheme(
-                                                context,
-                                              )
-                                              .lightModeColor
-                                              .prColor250,
+                                            context,
+                                          ).lightModeColor.prColor250,
                                       value: isSelected,
                                       onChanged: (value) {
-                                        returnData()
-                                            .selectDimensionUnit(
-                                              unit,
-                                            );
+                                        returnData().selectDimensionUnit(unit);
                                         setState(() {});
                                       },
                                     ),
@@ -771,17 +632,12 @@ class _DimensionUnitsBottomSheetContentState
   }
 }
 
-void groupUnitsBottomSheet(
-  BuildContext context,
-  Function()? action,
-) async {
+void groupUnitsBottomSheet(BuildContext context, Function()? action) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext context) {
@@ -791,17 +647,11 @@ void groupUnitsBottomSheet(
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<String> units =
-              returnData(context: context).units;
+          List<String> units = returnData(context: context).units;
           units.sort();
 
           return Container(
-            padding: const EdgeInsets.fromLTRB(
-              30,
-              15,
-              30,
-              45,
-            ),
+            padding: const EdgeInsets.fromLTRB(30, 15, 30, 45),
             child: Column(
               children: [
                 Center(
@@ -809,29 +659,23 @@ void groupUnitsBottomSheet(
                     height: 4,
                     width: 70,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
+                      borderRadius: BorderRadius.circular(5),
                       color: Colors.grey.shade400,
                     ),
                   ),
                 ),
                 SizedBox(height: 30),
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Group Units',
                           style: TextStyle(
                             fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b1.fontSize,
+                                returnTheme(context).mobileTexts.b1.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -839,9 +683,7 @@ void groupUnitsBottomSheet(
                           'Select Item Group Unit',
                           style: TextStyle(
                             fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b2.fontSize,
+                                returnTheme(context).mobileTexts.b2.fontSize,
                           ),
                         ),
                       ],
@@ -853,9 +695,7 @@ void groupUnitsBottomSheet(
                         FocusScope.of(context).unfocus();
                       },
                       icon: Icon(
-                        returnData(
-                              context: context,
-                            ).groupUnitValueSet
+                        returnData(context: context).groupUnitValueSet
                             ? Icons.check
                             : Icons.clear_rounded,
                       ),
@@ -866,12 +706,8 @@ void groupUnitsBottomSheet(
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300),
                     ),
                     child: ListView.builder(
                       controller: scrollController,
@@ -881,9 +717,7 @@ void groupUnitsBottomSheet(
                         return Container(
                           decoration: BoxDecoration(
                             border: Border(
-                              top: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
+                              top: BorderSide(color: Colors.grey.shade300),
                             ),
                           ),
                           child: Material(
@@ -893,46 +727,33 @@ void groupUnitsBottomSheet(
                                 style: TextStyle(
                                   fontSize:
                                       returnTheme(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                        context,
+                                        listen: false,
+                                      ).mobileTexts.b2.fontSize,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 units[index],
                               ),
                               onTap: () {
-                                returnData()
-                                    .selectGroupUnit(
-                                      unit: unit,
-                                    );
+                                returnData().selectGroupUnit(unit: unit);
                               },
                               trailing: Checkbox(
-                                shape: CircleBorder(
-                                  side: BorderSide(),
-                                ),
+                                shape: CircleBorder(side: BorderSide()),
                                 side: BorderSide(
-                                  color:
-                                      Colors.grey.shade400,
+                                  color: Colors.grey.shade400,
                                   width: 1.2,
                                 ),
                                 activeColor:
-                                    returnTheme(context)
-                                        .lightModeColor
-                                        .prColor250,
+                                    returnTheme(
+                                      context,
+                                    ).lightModeColor.prColor250,
                                 value:
                                     returnData(
                                       context: context,
                                     ).selectedGroupUnit ==
                                     unit,
                                 onChanged: (value) {
-                                  returnData()
-                                      .selectGroupUnit(
-                                        unit: unit,
-                                      );
+                                  returnData().selectGroupUnit(unit: unit);
                                 },
                               ),
                             ),
@@ -959,10 +780,7 @@ late Future<List<String>> categoriesFuture;
 //
 // U N I T S  B O T T O M  S H E E T
 
-void categoriesBottomSheet(
-  BuildContext context,
-  Function()? action,
-) async {
+void categoriesBottomSheet(BuildContext context, Function()? action) async {
   var shopCat = returnCategoriesProvider().categories();
 
   // getCategories();
@@ -971,9 +789,7 @@ void categoriesBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext context) {
@@ -984,12 +800,7 @@ void categoriesBottomSheet(
         minChildSize: 0.3,
         builder: (context, scrollController) {
           return Container(
-            padding: const EdgeInsets.fromLTRB(
-              30,
-              15,
-              30,
-              45,
-            ),
+            padding: const EdgeInsets.fromLTRB(30, 15, 30, 45),
             child: Material(
               color: Colors.white,
               child: Ink(
@@ -1001,29 +812,25 @@ void categoriesBottomSheet(
                         height: 4,
                         width: 80,
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(5),
                           color: Colors.grey.shade400,
                         ),
                       ),
                     ),
                     SizedBox(height: 30),
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Category',
                               style: TextStyle(
                                 fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
+                                    returnTheme(
+                                      context,
+                                    ).mobileTexts.b1.fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -1031,27 +838,21 @@ void categoriesBottomSheet(
                               'Select Item Category(s)',
                               style: TextStyle(
                                 fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
+                                    returnTheme(
+                                      context,
+                                    ).mobileTexts.b2.fontSize,
                               ),
                             ),
                           ],
                         ),
                         IconButton(
-                          mouseCursor:
-                              SystemMouseCursors.click,
+                          mouseCursor: SystemMouseCursors.click,
                           onPressed: () {
                             Navigator.of(context).pop();
-                            FocusScope.of(
-                              context,
-                            ).unfocus();
+                            FocusScope.of(context).unfocus();
                           },
                           icon: Icon(
-                            returnData(
-                                  context: context,
-                                ).catValueSet
+                            returnData(context: context).catValueSet
                                 ? Icons.check
                                 : Icons.clear_rounded,
                           ),
@@ -1062,11 +863,8 @@ void categoriesBottomSheet(
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade300),
                         ),
                         child: Builder(
                           builder: (context) {
@@ -1077,17 +875,12 @@ void categoriesBottomSheet(
                                   title: 'No Categories',
                                   subText:
                                       'You currently do not have any categories set, click to create category for your store.',
-                                  buttonText:
-                                      'Create Category',
-                                  theme: returnTheme(
-                                    context,
-                                  ),
+                                  buttonText: 'Create Category',
+                                  theme: returnTheme(context),
                                   height: 30,
                                   icon: Icons.book_outlined,
                                   action: () {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
+                                    Navigator.of(context).pop();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -1099,9 +892,7 @@ void categoriesBottomSheet(
                                   },
                                   altAction: () async {
                                     await returnCategoriesProvider()
-                                        .getCategories(
-                                          shopId(),
-                                        );
+                                        .getCategories(shopId());
                                   },
                                   altActionText: 'Refresh',
                                   altIcon: Icons.refresh,
@@ -1109,23 +900,15 @@ void categoriesBottomSheet(
                               );
                             } else {
                               return ListView.builder(
-                                controller:
-                                    scrollController,
+                                controller: scrollController,
                                 itemCount: shopCat.length,
-                                itemBuilder: (
-                                  context,
-                                  index,
-                                ) {
-                                  CategoryClass category =
-                                      shopCat[index];
+                                itemBuilder: (context, index) {
+                                  CategoryClass category = shopCat[index];
                                   return Container(
                                     decoration: BoxDecoration(
                                       border: Border(
                                         top: BorderSide(
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade300,
+                                          color: Colors.grey.shade300,
                                         ),
                                       ),
                                     ),
@@ -1136,64 +919,38 @@ void categoriesBottomSheet(
                                           style: TextStyle(
                                             fontSize:
                                                 returnTheme(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    )
-                                                    .mobileTexts
-                                                    .b2
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .w600,
+                                                  context,
+                                                  listen: false,
+                                                ).mobileTexts.b2.fontSize,
+                                            fontWeight: FontWeight.w600,
                                           ),
-                                          shopCat[index]
-                                              .name,
+                                          shopCat[index].name,
                                         ),
                                         onTap: () {
-                                          returnData()
-                                              .selectCategories(
-                                                category,
-                                              );
+                                          returnData().selectCategories(
+                                            category,
+                                          );
                                         },
                                         trailing: Checkbox(
                                           shape: CircleBorder(
-                                            side:
-                                                BorderSide(),
+                                            side: BorderSide(),
                                           ),
                                           side: BorderSide(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade400,
+                                            color: Colors.grey.shade400,
                                             width: 1.2,
                                           ),
                                           activeColor:
                                               returnTheme(
-                                                    context,
-                                                  )
-                                                  .lightModeColor
-                                                  .prColor250,
-                                          value: returnData(
-                                                context:
-                                                    context,
-                                              )
+                                                context,
+                                              ).lightModeColor.prColor250,
+                                          value: returnData(context: context)
                                               .selectedCategories
-                                              .contains(
-                                                category
-                                                    .uuid,
-                                              ),
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            Provider.of<
-                                              DataProvider
-                                            >(
+                                              .contains(category.uuid),
+                                          onChanged: (value) {
+                                            Provider.of<DataProvider>(
                                               context,
                                               listen: false,
-                                            ).selectCategories(
-                                              category,
-                                            );
+                                            ).selectCategories(category);
                                           },
                                         ),
                                       ),
@@ -1210,8 +967,7 @@ void categoriesBottomSheet(
                     Visibility(
                       visible: shopCat.isNotEmpty,
                       child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         spacing: 10,
                         children: [
                           Expanded(
@@ -1219,23 +975,16 @@ void categoriesBottomSheet(
                               color: Colors.transparent,
                               child: Ink(
                                 decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
+                                  borderRadius: BorderRadius.circular(5),
                                   color:
-                                      returnTheme(context)
-                                          .lightModeColor
-                                          .prColor300,
+                                      returnTheme(
+                                        context,
+                                      ).lightModeColor.prColor300,
                                 ),
                                 child: InkWell(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
+                                  mouseCursor: SystemMouseCursors.click,
                                   onTap: () {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
+                                    Navigator.of(context).pop();
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -1245,58 +994,38 @@ void categoriesBottomSheet(
                                       ),
                                     );
                                   },
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
+                                  borderRadius: BorderRadius.circular(5),
                                   child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          vertical: 7,
-                                          horizontal: 10,
-                                        ),
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 7,
+                                      horizontal: 10,
+                                    ),
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            3,
-                                          ),
+                                      borderRadius: BorderRadius.circular(3),
                                       border: Border.all(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade400,
+                                        color: Colors.grey.shade400,
                                       ),
                                     ),
                                     child: Center(
                                       child: Row(
                                         spacing: 5,
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             style: TextStyle(
-                                              color:
-                                                  Colors
-                                                      .white,
+                                              color: Colors.white,
                                               fontSize:
                                                   returnTheme(
-                                                        context,
-                                                      )
-                                                      .mobileTexts
-                                                      .b2
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                                    context,
+                                                  ).mobileTexts.b2.fontSize,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             'Add New',
                                           ),
                                           Icon(
                                             size: 25,
-                                            color:
-                                                Colors
-                                                    .white,
+                                            color: Colors.white,
 
                                             Icons.add,
                                           ),
@@ -1312,71 +1041,48 @@ void categoriesBottomSheet(
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
+                                  Navigator.of(context).pop();
                                 },
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
+                                borderRadius: BorderRadius.circular(5),
                                 child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 7,
-                                        horizontal: 10,
-                                      ),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 7,
+                                    horizontal: 10,
+                                  ),
                                   decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          3,
-                                        ),
+                                    borderRadius: BorderRadius.circular(3),
                                     border: Border.all(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade400,
+                                      color: Colors.grey.shade400,
                                     ),
                                   ),
                                   child: Center(
                                     child: Row(
                                       spacing: 8,
                                       mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize:
                                                 returnTheme(
-                                                      context,
-                                                    )
-                                                    .mobileTexts
-                                                    .b2
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                                  context,
+                                                ).mobileTexts.b2.fontSize,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           returnData(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).catValueSet
                                               ? 'Select'
                                               : 'Cancel',
                                         ),
                                         Icon(
                                           size: 25,
-                                          color:
-                                              Colors.grey,
+                                          color: Colors.grey,
 
                                           returnData(
-                                                context:
-                                                    context,
+                                                context: context,
                                               ).catValueSet
                                               ? Icons.check
                                               : Icons.clear,
@@ -1398,9 +1104,7 @@ void categoriesBottomSheet(
                           SmallButtonMain(
                             theme: returnTheme(context),
                             action: () {
-                              if (returnData()
-                                      .catValueSet ==
-                                  true) {
+                              if (returnData().catValueSet == true) {
                                 Navigator.of(context).pop();
                               } else {
                                 Navigator.of(context).pop();
@@ -1415,27 +1119,19 @@ void categoriesBottomSheet(
                               }
                             },
                             buttonText:
-                                returnData(
-                                          context: context,
-                                        ).catValueSet ==
-                                        true
+                                returnData(context: context).catValueSet == true
                                     ? 'Save Category'
                                     : 'Add New Category',
                           ),
                           SmallButtonMain(
                             theme: returnTheme(context),
                             action: () {
-                              if (returnData()
-                                      .catValueSet ==
-                                  true) {
+                              if (returnData().catValueSet == true) {
                                 Navigator.of(context).pop();
                               } else {}
                             },
                             buttonText:
-                                returnData(
-                                          context: context,
-                                        ).catValueSet ==
-                                        true
+                                returnData(context: context).catValueSet == true
                                     ? 'Save Category'
                                     : 'Add New Category',
                           ),
@@ -1460,17 +1156,12 @@ void categoriesBottomSheet(
 //
 // C O L O R S   B O T T O M  S H E E T
 
-void colorsBottomSheet(
-  BuildContext context,
-  Function()? action,
-) async {
+void colorsBottomSheet(BuildContext context, Function()? action) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext context) {
@@ -1484,12 +1175,7 @@ void colorsBottomSheet(
           colors.sort();
 
           return Container(
-            padding: const EdgeInsets.fromLTRB(
-              30,
-              15,
-              30,
-              45,
-            ),
+            padding: const EdgeInsets.fromLTRB(30, 15, 30, 45),
             child: Column(
               children: [
                 Center(
@@ -1497,29 +1183,23 @@ void colorsBottomSheet(
                     height: 4,
                     width: 70,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
+                      borderRadius: BorderRadius.circular(5),
                       color: Colors.grey.shade400,
                     ),
                   ),
                 ),
                 SizedBox(height: 30),
                 Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Colors',
                           style: TextStyle(
                             fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b1.fontSize,
+                                returnTheme(context).mobileTexts.b1.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1527,9 +1207,7 @@ void colorsBottomSheet(
                           'Select Item Colors',
                           style: TextStyle(
                             fontSize:
-                                returnTheme(
-                                  context,
-                                ).mobileTexts.b2.fontSize,
+                                returnTheme(context).mobileTexts.b2.fontSize,
                           ),
                         ),
                       ],
@@ -1552,12 +1230,8 @@ void colorsBottomSheet(
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        10,
-                      ),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300),
                     ),
                     child: ListView.builder(
                       controller: scrollController,
@@ -1567,9 +1241,7 @@ void colorsBottomSheet(
                         return Container(
                           decoration: BoxDecoration(
                             border: Border(
-                              top: BorderSide(
-                                color: Colors.grey.shade300,
-                              ),
+                              top: BorderSide(color: Colors.grey.shade300),
                             ),
                           ),
                           child: ListTile(
@@ -1581,21 +1253,16 @@ void colorsBottomSheet(
                               ).selectColor(color);
                             },
                             trailing: Checkbox(
-                              shape: CircleBorder(
-                                side: BorderSide(),
-                              ),
+                              shape: CircleBorder(side: BorderSide()),
                               side: BorderSide(
                                 color: Colors.grey.shade400,
                                 width: 1.2,
                               ),
                               activeColor:
-                                  returnTheme(context)
-                                      .lightModeColor
-                                      .prColor250,
-                              value:
-                                  returnData()
-                                      .selectedColor ==
-                                  color,
+                                  returnTheme(
+                                    context,
+                                  ).lightModeColor.prColor250,
+                              value: returnData().selectedColor == color,
                               onChanged: (value) {
                                 Provider.of<DataProvider>(
                                   context,
@@ -1629,17 +1296,12 @@ void colorsBottomSheet(
 //
 // S I Z E  T Y P E   B O T T O M  S H E E T
 
-void sizeTypeBottomSheet(
-  BuildContext context,
-  Function()? action,
-) async {
+void sizeTypeBottomSheet(BuildContext context, Function()? action) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext context) {
@@ -1649,17 +1311,11 @@ void sizeTypeBottomSheet(
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<String> sizes =
-              returnData(context: context).sizes;
+          List<String> sizes = returnData(context: context).sizes;
           // sizes.sort();
 
           return Container(
-            padding: const EdgeInsets.fromLTRB(
-              30,
-              15,
-              30,
-              45,
-            ),
+            padding: const EdgeInsets.fromLTRB(30, 15, 30, 45),
             child: Material(
               color: Colors.white,
               child: Ink(
@@ -1671,29 +1327,25 @@ void sizeTypeBottomSheet(
                         height: 4,
                         width: 70,
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(5),
                           color: Colors.grey.shade400,
                         ),
                       ),
                     ),
                     SizedBox(height: 30),
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Sizes - Name',
                               style: TextStyle(
                                 fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
+                                    returnTheme(
+                                      context,
+                                    ).mobileTexts.b1.fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -1701,27 +1353,21 @@ void sizeTypeBottomSheet(
                               'Select Item Size Name',
                               style: TextStyle(
                                 fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
+                                    returnTheme(
+                                      context,
+                                    ).mobileTexts.b2.fontSize,
                               ),
                             ),
                           ],
                         ),
                         IconButton(
-                          mouseCursor:
-                              SystemMouseCursors.click,
+                          mouseCursor: SystemMouseCursors.click,
                           onPressed: () {
                             Navigator.of(context).pop();
-                            FocusScope.of(
-                              context,
-                            ).unfocus();
+                            FocusScope.of(context).unfocus();
                           },
                           icon: Icon(
-                            returnData(
-                                  context: context,
-                                ).sizeValueSet
+                            returnData(context: context).sizeValueSet
                                 ? Icons.check
                                 : Icons.clear_rounded,
                           ),
@@ -1732,11 +1378,8 @@ void sizeTypeBottomSheet(
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade300),
                         ),
                         child: ListView.builder(
                           controller: scrollController,
@@ -1746,12 +1389,7 @@ void sizeTypeBottomSheet(
                             return Container(
                               decoration: BoxDecoration(
                                 border: Border(
-                                  top: BorderSide(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade300,
-                                  ),
+                                  top: BorderSide(color: Colors.grey.shade300),
                                 ),
                               ),
                               child: ListTile(
@@ -1763,29 +1401,22 @@ void sizeTypeBottomSheet(
                                   ).selectSize(size);
                                 },
                                 trailing: Checkbox(
-                                  shape: CircleBorder(
-                                    side: BorderSide(),
-                                  ),
+                                  shape: CircleBorder(side: BorderSide()),
                                   side: BorderSide(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade400,
+                                    color: Colors.grey.shade400,
                                     width: 1.2,
                                   ),
                                   activeColor:
-                                      returnTheme(context)
-                                          .lightModeColor
-                                          .prColor250,
+                                      returnTheme(
+                                        context,
+                                      ).lightModeColor.prColor250,
                                   value:
                                       returnData(
                                         context: context,
                                       ).selectedSize ==
                                       size,
                                   onChanged: (value) {
-                                    Provider.of<
-                                      DataProvider
-                                    >(
+                                    Provider.of<DataProvider>(
                                       context,
                                       listen: false,
                                     ).selectSize(size);
@@ -1841,16 +1472,12 @@ void selectProductSales({
   final heightController = TextEditingController();
   final wastageController = TextEditingController();
   final bool is2DItem = cartItem.item.quantityType == 2;
-  final double? originalWidth =
-      cartItem.item.widthDimension;
-  final double? originalHeight =
-      cartItem.item.heightDimension;
+  final double? originalWidth = cartItem.item.widthDimension;
+  final double? originalHeight = cartItem.item.heightDimension;
   bool isAreaUnit = false;
 
   double? parseDimension(TextEditingController controller) {
-    return double.tryParse(
-      controller.text.replaceAll(',', '').trim(),
-    );
+    return double.tryParse(controller.text.replaceAll(',', '').trim());
   }
 
   // Width/height used for this line: the entered value in
@@ -1858,8 +1485,7 @@ void selectProductSales({
   // in whole mode, and null for non-2D items.
   double? resolvedWidth() {
     if (!is2DItem || isAreaUnit) return null;
-    if (quantityTypeTemp == 2 &&
-        widthController.text.trim().isNotEmpty) {
+    if (quantityTypeTemp == 2 && widthController.text.trim().isNotEmpty) {
       return parseDimension(widthController);
     }
     return originalWidth;
@@ -1867,8 +1493,7 @@ void selectProductSales({
 
   double? resolvedHeight() {
     if (!is2DItem || isAreaUnit) return null;
-    if (quantityTypeTemp == 2 &&
-        heightController.text.trim().isNotEmpty) {
+    if (quantityTypeTemp == 2 && heightController.text.trim().isNotEmpty) {
       return parseDimension(heightController);
     }
     return originalHeight;
@@ -1882,9 +1507,7 @@ void selectProductSales({
     double? original,
   ) {
     if (controller.text.trim().isEmpty) {
-      return original == null
-          ? '$label is required for this item.'
-          : null;
+      return original == null ? '$label is required for this item.' : null;
     }
     final value = parseDimension(controller);
     if (value == null || value <= 0) {
@@ -1900,16 +1523,8 @@ void selectProductSales({
     if (!is2DItem || isAreaUnit || quantityTypeTemp != 2) {
       return null;
     }
-    return checkDimension(
-          widthController,
-          'Width',
-          originalWidth,
-        ) ??
-        checkDimension(
-          heightController,
-          'Height',
-          originalHeight,
-        );
+    return checkDimension(widthController, 'Width', originalWidth) ??
+        checkDimension(heightController, 'Height', originalHeight);
   }
 
   // Wastage is entered for 2D items that manage it.
@@ -1931,8 +1546,7 @@ void selectProductSales({
   String areaUnitLabel() {
     final areaUnits = cartItem.getUnitsList().where(
       (item) =>
-          item.dimensionType ==
-              ProductUnitsClass.areaUnit &&
+          item.dimensionType == ProductUnitsClass.areaUnit &&
           item.conversion == 1,
     );
     if (areaUnits.isNotEmpty) {
@@ -1945,8 +1559,7 @@ void selectProductSales({
   }
 
   String? wastageError() {
-    if (!showWastage() ||
-        wastageController.text.trim().isEmpty) {
+    if (!showWastage() || wastageController.text.trim().isEmpty) {
       return null;
     }
     final value = double.tryParse(
@@ -1965,17 +1578,12 @@ void selectProductSales({
     unitUuid = unit;
   }
 
-  List<ProductUnitsClass> tempUnitList =
-      cartItem.getUnitListFinal();
+  List<ProductUnitsClass> tempUnitList = cartItem.getUnitListFinal();
 
   ProductUnitsClass getPrimaryUnit() {
-    var items = tempUnitList.where(
-      (item) => item.uuid == unitUuid,
-    );
+    var items = tempUnitList.where((item) => item.uuid == unitUuid);
     if (items.isEmpty) {
-      var items = tempUnitList.where(
-        (item) => item.isPrimary,
-      );
+      var items = tempUnitList.where((item) => item.isPrimary);
       if (items.isNotEmpty) {
         return items.first;
       } else {
@@ -1985,10 +1593,7 @@ void selectProductSales({
           createdAt: DateTime.now(),
           staffName: currentUser().name,
           conversion: 1,
-          name:
-              cartItem.item.unit == 'Others'
-                  ? 'Unit(s)'
-                  : cartItem.item.unit,
+          name: cartItem.item.unit == 'Others' ? 'Unit(s)' : cartItem.item.unit,
           isPrimary: true,
           productUuid: cartItem.item.uuid!,
         );
@@ -2000,9 +1605,7 @@ void selectProductSales({
 
   unitUuid = cartItem.unitUuid ?? getPrimaryUnit().uuid;
   isAreaUnit =
-      is2DItem &&
-      getPrimaryUnit().dimensionType ==
-          ProductUnitsClass.areaUnit;
+      is2DItem && getPrimaryUnit().dimensionType == ProductUnitsClass.areaUnit;
 
   // Editing a line sold at a custom size reopens it in
   // dimensions mode with the values filled in.
@@ -2035,14 +1638,13 @@ void selectProductSales({
     );
   }
 
-  double existingQtty = getPrimaryUnit()
-      .getQuantityEquivMultiplied(
-        index: 1,
-        product: cartItem.item,
-        newQuantity: cartItem.quantity,
-        customWidth: cartItem.widthDimension,
-        customHeight: cartItem.heightDimension,
-      );
+  double existingQtty = getPrimaryUnit().getQuantityEquivMultiplied(
+    index: 1,
+    product: cartItem.item,
+    newQuantity: cartItem.quantity,
+    customWidth: cartItem.widthDimension,
+    customHeight: cartItem.heightDimension,
+  );
   void setUnitListFinal() {
     cartItem.getItem()?.unitsList?.clear();
     cartItem.getItem()?.unitsList?.addAll(
@@ -2055,9 +1657,7 @@ void selectProductSales({
         wastageController.text.replaceAll(',', '').trim(),
       );
       cartItem.wastageAmount =
-          (parsedWastage != null && parsedWastage > 0)
-              ? parsedWastage
-              : null;
+          (parsedWastage != null && parsedWastage > 0) ? parsedWastage : null;
       cartItem.isPercentageWastage = isPercentageWastage;
       cartItem.wastageUnitUuid = selectedWastageUnit();
       cartItem.manageSalesWastage = true;
@@ -2080,17 +1680,12 @@ void selectProductSales({
     priceUuid = price;
   }
 
-  List<ProductPricesClass> tempPriceList =
-      cartItem.getPriceListFinal();
+  List<ProductPricesClass> tempPriceList = cartItem.getPriceListFinal();
 
   ProductPricesClass getPrimaryPrice() {
-    var items = tempPriceList.where(
-      (item) => item.uuid == priceUuid,
-    );
+    var items = tempPriceList.where((item) => item.uuid == priceUuid);
     if (items.isEmpty) {
-      var items = tempPriceList.where(
-        (item) => item.isPrimary,
-      );
+      var items = tempPriceList.where((item) => item.isPrimary);
       if (items.isNotEmpty) {
         return items.first;
       } else {
@@ -2117,8 +1712,7 @@ void selectProductSales({
     var tempPrice = getPrimaryPrice().priceValue;
     var tempQty =
         is2DItem && !isAreaUnit
-            ? getPrimaryUnit().conversion *
-                cartItem.item.dimensionArea()
+            ? getPrimaryUnit().conversion * cartItem.item.dimensionArea()
             : getPrimaryUnit().conversion;
     return tempPrice * tempQty;
   }
@@ -2146,23 +1740,19 @@ void selectProductSales({
 
   if (isEdit) {
     // useWholeSalePriceTemp = cartItem.useWholeSalePrice;
-    isPercentageWastage =
-        cartItemTemp.isPercentageWastage ?? false;
-    wastageController.text =
-        cartItem.wastageAmount?.toString() ?? '';
+    isPercentageWastage = cartItemTemp.isPercentageWastage ?? false;
+    wastageController.text = cartItem.wastageAmount?.toString() ?? '';
     // Reopen in the unit the wastage was entered in. Older lines
     // kept a fixed amount in area: show it in the item's area
     // unit, or converted to the sale unit if there is none.
     if (cartItem.wastageUnitUuid != null) {
       wastageUnitUuid = cartItem.wastageUnitUuid;
-    } else if (!isPercentageWastage &&
-        cartItem.wastageAmount != null) {
+    } else if (!isPercentageWastage && cartItem.wastageAmount != null) {
       final areaUnit =
           tempUnitList
               .where(
                 (unit) =>
-                    unit.dimensionType ==
-                        ProductUnitsClass.areaUnit &&
+                    unit.dimensionType == ProductUnitsClass.areaUnit &&
                     unit.conversion == 1,
               )
               .firstOrNull;
@@ -2170,9 +1760,7 @@ void selectProductSales({
         wastageUnitUuid = areaUnit.uuid;
       } else {
         final areaPerSaleUnit =
-            cartItem
-                .copyWith(wastageUnitUuid: unitUuid)
-                .wastageAreaPerUnit();
+            cartItem.copyWith(wastageUnitUuid: unitUuid).wastageAreaPerUnit();
         if (areaPerSaleUnit > 0) {
           wastageController.text = formatDimension(
             cartItem.wastageAmount! / areaPerSaleUnit,
@@ -2185,16 +1773,13 @@ void selectProductSales({
     quantityController.text = cartItem.quantity.toString();
     qqty = cartItem.quantity.toDouble();
     if (cartItem.setCustomPrice) {
-      priceController.text =
-          cartItem.customPrice.toString();
+      priceController.text = cartItem.customPrice.toString();
       returnSalesProvider().toggleSetCustomPrice();
     } else {
       priceController.text = "";
     }
 
-    returnSalesProvider().toggleSetTotalPrice(
-      cartItem.setTotalPrice,
-    );
+    returnSalesProvider().toggleSetTotalPrice(cartItem.setTotalPrice);
   }
   qttyNode.requestFocus();
 
@@ -2212,53 +1797,121 @@ void selectProductSales({
       height: resolvedHeight(),
       customPrice:
           priceController.text.isNotEmpty
-              ? double.tryParse(
-                priceController.text.replaceAll(',', ''),
-              )
+              ? double.tryParse(priceController.text.replaceAll(',', ''))
               : null,
       setTotalPrice: returnSalesProvider().setTotalPrice,
       wastageAmount:
           showWastage()
               ? double.tryParse(
-                wastageController.text
-                    .replaceAll(',', '')
-                    .trim(),
+                wastageController.text.replaceAll(',', '').trim(),
               )
               : cartItem.wastageAmount,
       isPercentageWastage:
-          showWastage()
-              ? isPercentageWastage
-              : cartItem.isPercentageWastage,
+          showWastage() ? isPercentageWastage : cartItem.isPercentageWastage,
       wastageUnitUuid:
-          showWastage()
-              ? selectedWastageUnit()
-              : cartItem.wastageUnitUuid,
+          showWastage() ? selectedWastageUnit() : cartItem.wastageUnitUuid,
     );
   }
 
   // Quantity taken from stock and billed: area + wastage.
-  double billedQuantity() =>
-      previewLine().getStockQuantity();
+  double billedQuantity() => previewLine().getStockQuantity();
 
   // Priced by the same totalCost() the cart line will use.
   String formatSellingPrice(TempCartItem cartItem) {
     return previewLine().totalCost().toString();
   }
 
+  // Enter Price mode: the seller types an amount and the
+  // quantity for it is worked out in the selected unit. Only for
+  // 1D items that turn it on and have a price to divide by.
+  bool isPriceEntry = false;
+  final amountController = TextEditingController();
+  final amountNode = FocusNode();
+
+  bool canEnterPrice() {
+    return cartItem.item.deriveQuantityFromPrice == true &&
+        !is2DItem &&
+        (cartItem.getItem()?.getPrimaryPrice().priceValue ?? 0) != 0;
+  }
+
+  // Cost of one selected unit at the selected price, from the
+  // same totalCost() the cart line uses.
+  double pricePerSelectedUnit() {
+    return cartItem
+        .previewWith(
+          quantity: 1,
+          unitUuid: unitUuid,
+          priceUuid: priceUuid,
+          units: tempUnitList,
+          prices: tempPriceList,
+          width: null,
+          height: null,
+          customPrice: null,
+          setTotalPrice: false,
+          wastageAmount: null,
+          isPercentageWastage: null,
+          wastageUnitUuid: null,
+        )
+        .totalCost();
+  }
+
+  // Unit name shown next to quantities.
+  String selectedUnitName() {
+    final name = getPrimaryUnit().name;
+    return name == 'Others' ? 'Unit(s)' : name;
+  }
+
+  // Sets qqty from the amount entered, kept unrounded so the
+  // line total equals the amount. quantityController follows
+  // so Add To Cart reads it as if it was typed.
+  void deriveQuantityFromAmount(BuildContext context, StateSetter setState) {
+    final amount =
+        double.tryParse(amountController.text.replaceAll(',', '').trim()) ?? 0;
+    final perUnit = pricePerSelectedUnit();
+    final double derived = perUnit > 0 ? amount / perUnit : 0;
+    if ((cartItem.getItem()?.isManaged ?? false) &&
+        !returnSalesProvider().canAddProductToCart(
+          isEdit: isEdit,
+          newCartItem: cartItem,
+          quantityToAdd: getPrimaryUnitQuantityMultiplied(newQuantity: derived),
+        )) {
+      showDialog(
+        context: context,
+        builder:
+            (_) => InfoAlert(
+              title: "Quantity Limit Reached",
+              message:
+                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+              theme: theme,
+            ),
+      ).then((_) {
+        amountNode.requestFocus();
+      });
+
+      Future.delayed(Duration(milliseconds: 300), () {
+        setState(() {
+          qqty = 0;
+          quantityController.text = '0';
+          amountController.clear();
+        });
+      });
+      return;
+    }
+    setState(() {
+      qqty = derived;
+      quantityController.text = derived.toString();
+    });
+  }
+
   showDialog(
     context: context,
     builder: (context) {
       return GestureDetector(
-        onTap:
-            () =>
-                FocusManager.instance.primaryFocus
-                    ?.unfocus(),
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              insetPadding: EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
+              insetPadding: EdgeInsets.symmetric(horizontal: 15),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 15,
                 vertical: 20,
@@ -2271,8 +1924,7 @@ void selectProductSales({
                     'Enter Item Sales',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.h4.fontSize,
+                      fontSize: theme.mobileTexts.h4.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -2283,8 +1935,7 @@ void selectProductSales({
               content: SingleChildScrollView(
                 child: SizedBox(
                   width:
-                      screenWidth(context) >
-                              tabletScreenSmall
+                      screenWidth(context) > tabletScreenSmall
                           ? screenWidth(context) * 0.7
                           : screenWidth(context) * 0.85,
                   child: Row(
@@ -2293,114 +1944,178 @@ void selectProductSales({
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            EditCartTextField(
-                              onTap: () {
-                                setState(() {
-                                  currentFocus = 1;
-                                  isOnscreenKeyboardClicked =
-                                      false;
-                                });
-                              },
-                              focusNode: qttyNode,
-                              onChanged: (value) {
-                                double entered =
-                                    getPrimaryUnitQuantityMultiplied(
-                                      newQuantity:
-                                          double.tryParse(
-                                            value
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0,
-                                    );
-                                if (cartItem
-                                        .getItem()
-                                        ?.isManaged ??
-                                    false) {
-                                  // In custom dimensions mode, do not prematurely wipe out
-                                  // quantity while custom width/height are still being entered.
-                                  // Final check is performed when adding to cart.
-                                  if (quantityTypeTemp !=
-                                          2 &&
-                                      !returnSalesProvider()
-                                          .canAddProductToCart(
-                                            isEdit: isEdit,
-                                            newCartItem:
-                                                cartItem,
-                                            quantityToAdd:
-                                                entered,
-                                            // useGroupUnit:
-                                            //     useGroupQuantityTemp,
-                                          )) {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (_) => InfoAlert(
-                                            title:
-                                                "Quantity Limit Reached",
-                                            message:
-                                                "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
-                                            theme: theme,
-                                          ),
-                                    ).then((_) {
-                                      qttyNode
-                                          .requestFocus();
-                                    });
-
-                                    Future.delayed(
-                                      Duration(
-                                        milliseconds: 300,
+                            Visibility(
+                              visible: canEnterPrice(),
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: DiscountSelectionTab(
+                                        genNum: isPriceEntry ? 1 : 0,
+                                        title: 'Enter Quantity',
+                                        action: () {
+                                          if (!isPriceEntry) {
+                                            return;
+                                          }
+                                          // Keeps the worked
+                                          // out quantity so it
+                                          // can be adjusted.
+                                          setState(() {
+                                            isPriceEntry = false;
+                                            amountController.clear();
+                                            currentFocus = 1;
+                                            isOnscreenKeyboardClicked = false;
+                                          });
+                                          qttyNode.requestFocus();
+                                        },
+                                        myNum: 0,
+                                        theme: theme,
                                       ),
-                                      () {
-                                        setState(() {
-                                          qqty = 0;
-                                          quantityController
-                                              .text = '0';
-                                        });
-                                      },
-                                    );
-
-                                    return;
-                                  }
-                                }
-
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    quantityController
-                                        .text = '0';
-                                  });
-                                }
-
-                                setState(() {
-                                  qqty =
-                                      (double.tryParse(
-                                            value
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0);
-                                });
-                              },
-
-                              title: 'Enter Item Quantity',
-                              hint: 'Quantity',
-                              controller:
-                                  quantityController,
-                              theme: theme,
+                                    ),
+                                    Expanded(
+                                      child: DiscountSelectionTab(
+                                        genNum: isPriceEntry ? 1 : 0,
+                                        title: 'Enter Price',
+                                        action: () {
+                                          if (isPriceEntry) {
+                                            return;
+                                          }
+                                          // Works from the
+                                          // primary price, with
+                                          // no custom price.
+                                          setState(() {
+                                            isPriceEntry = true;
+                                            final primary =
+                                                tempPriceList
+                                                    .where(
+                                                      (item) => item.isPrimary,
+                                                    )
+                                                    .firstOrNull;
+                                            if (primary != null) {
+                                              priceUuid = primary.uuid;
+                                            }
+                                            priceController.clear();
+                                            amountController.clear();
+                                            qqty = 0;
+                                            quantityController.text = '0';
+                                            currentFocus = 6;
+                                            isOnscreenKeyboardClicked = false;
+                                          });
+                                          returnSalesProvider()
+                                              .closeCustomPrice();
+                                          returnSalesProvider()
+                                              .toggleSetTotalPrice(false);
+                                          amountNode.requestFocus();
+                                        },
+                                        myNum: 1,
+                                        theme: theme,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
+                            if (isPriceEntry)
+                              MoneyTextfield(
+                                onTap: () {
+                                  setState(() {
+                                    currentFocus = 6;
+                                    isOnscreenKeyboardClicked = false;
+                                  });
+                                },
+                                focusNode: amountNode,
+                                onChanged: (value) {
+                                  deriveQuantityFromAmount(context, setState);
+                                },
+                                title: 'Enter Price',
+                                hint: 'Price',
+                                controller: amountController,
+                                theme: theme,
+                              )
+                            else
+                              EditCartTextField(
+                                onTap: () {
+                                  setState(() {
+                                    currentFocus = 1;
+                                    isOnscreenKeyboardClicked = false;
+                                  });
+                                },
+                                focusNode: qttyNode,
+                                onChanged: (value) {
+                                  double entered =
+                                      getPrimaryUnitQuantityMultiplied(
+                                        newQuantity:
+                                            double.tryParse(
+                                              value.replaceAll(',', ''),
+                                            ) ??
+                                            0,
+                                      );
+                                  if (cartItem.getItem()?.isManaged ?? false) {
+                                    // In custom dimensions mode, do not prematurely wipe out
+                                    // quantity while custom width/height are still being entered.
+                                    // Final check is performed when adding to cart.
+                                    if (quantityTypeTemp != 2 &&
+                                        !returnSalesProvider()
+                                            .canAddProductToCart(
+                                              isEdit: isEdit,
+                                              newCartItem: cartItem,
+                                              quantityToAdd: entered,
+                                              // useGroupUnit:
+                                              //     useGroupQuantityTemp,
+                                            )) {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (_) => InfoAlert(
+                                              title: "Quantity Limit Reached",
+                                              message:
+                                                  "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+                                              theme: theme,
+                                            ),
+                                      ).then((_) {
+                                        qttyNode.requestFocus();
+                                      });
+
+                                      Future.delayed(
+                                        Duration(milliseconds: 300),
+                                        () {
+                                          setState(() {
+                                            qqty = 0;
+                                            quantityController.text = '0';
+                                          });
+                                        },
+                                      );
+
+                                      return;
+                                    }
+                                  }
+
+                                  if (value.isEmpty) {
+                                    setState(() {
+                                      quantityController.text = '0';
+                                    });
+                                  }
+
+                                  setState(() {
+                                    qqty =
+                                        (double.tryParse(
+                                              value.replaceAll(',', ''),
+                                            ) ??
+                                            0);
+                                  });
+                                },
+
+                                title: 'Enter Item Quantity',
+                                hint: 'Quantity',
+                                controller: quantityController,
+                                theme: theme,
+                              ),
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    top: 10.0,
-                                  ),
+                              padding: const EdgeInsets.only(top: 10.0),
                               child: Builder(
                                 builder: (context) {
-                                  if (quantityTypeTemp ==
-                                      1) {
+                                  if (quantityTypeTemp == 1) {
                                     return Container();
                                   } else {
                                     return Row(
@@ -2410,42 +2125,35 @@ void selectProductSales({
                                           child: EditCartTextField(
                                             onTap: () {
                                               setState(() {
-                                                currentFocus =
-                                                    3;
+                                                currentFocus = 3;
                                                 isOnscreenKeyboardClicked =
                                                     false;
                                               });
                                             },
                                             // Empty uses the item's
                                             // original width.
-                                            onChanged: (
-                                              value,
-                                            ) {
+                                            onChanged: (value) {
                                               setState(() {
                                                 if ((double.tryParse(
-                                                          widthController.text.replaceAll(
-                                                            ',',
-                                                            '',
-                                                          ),
+                                                          widthController.text
+                                                              .replaceAll(
+                                                                ',',
+                                                                '',
+                                                              ),
                                                         ) ??
                                                         0) >
-                                                    (originalWidth ??
-                                                        0)) {
-                                                  widthController
-                                                          .text =
-                                                      '0';
+                                                    (originalWidth ?? 0)) {
+                                                  widthController.text = '0';
                                                 }
                                               });
                                             },
                                             title:
                                                 '${cartItem.item.dimensionUnit ?? getPrimaryUnit().name} Width',
                                             hint:
-                                                originalWidth !=
-                                                        null
+                                                originalWidth != null
                                                     ? 'Max ${formatDimension(originalWidth)}${cartItem.item.dimensionUnit != null ? ' ${cartItem.item.dimensionUnit}' : ''}'
                                                     : 'Enter Width',
-                                            controller:
-                                                widthController,
+                                            controller: widthController,
                                             theme: theme,
                                           ),
                                         ),
@@ -2453,42 +2161,35 @@ void selectProductSales({
                                           child: EditCartTextField(
                                             onTap: () {
                                               setState(() {
-                                                currentFocus =
-                                                    4;
+                                                currentFocus = 4;
                                                 isOnscreenKeyboardClicked =
                                                     false;
                                               });
                                             },
                                             // Empty uses the item's
                                             // original height.
-                                            onChanged: (
-                                              value,
-                                            ) {
+                                            onChanged: (value) {
                                               setState(() {
                                                 if ((double.tryParse(
-                                                          heightController.text.replaceAll(
-                                                            ',',
-                                                            '',
-                                                          ),
+                                                          heightController.text
+                                                              .replaceAll(
+                                                                ',',
+                                                                '',
+                                                              ),
                                                         ) ??
                                                         0) >
-                                                    (originalHeight ??
-                                                        0)) {
-                                                  heightController
-                                                          .text =
-                                                      '0';
+                                                    (originalHeight ?? 0)) {
+                                                  heightController.text = '0';
                                                 }
                                               });
                                             },
                                             title:
                                                 '${cartItem.item.dimensionUnit ?? getPrimaryUnit().name} Height',
                                             hint:
-                                                originalHeight !=
-                                                        null
+                                                originalHeight != null
                                                     ? 'Max ${formatDimension(originalHeight)}${cartItem.item.dimensionUnit != null ? ' ${cartItem.item.dimensionUnit}' : ''}'
                                                     : 'Enter Height',
-                                            controller:
-                                                heightController,
+                                            controller: heightController,
                                             theme: theme,
                                           ),
                                         ),
@@ -2501,40 +2202,28 @@ void selectProductSales({
                             SizedBox(height: 15),
                             Visibility(
                               visible:
-                                  cartItemTemp
-                                          .item
-                                          .quantityType ==
-                                      2 &&
+                                  cartItemTemp.item.quantityType == 2 &&
                                   !isAreaUnit,
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 spacing: 5,
                                 children: [
                                   Material(
-                                    color:
-                                        Colors.transparent,
+                                    color: Colors.transparent,
                                     child: InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
+                                      mouseCursor: SystemMouseCursors.click,
                                       onTap: () {
                                         setState(() {
-                                          quantityTypeTemp =
-                                              1;
-                                          widthController
-                                              .clear();
-                                          heightController
-                                              .clear();
+                                          quantityTypeTemp = 1;
+                                          widthController.clear();
+                                          heightController.clear();
                                         });
                                       },
                                       child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 6,
-                                            ),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 6,
+                                        ),
                                         child: Row(
                                           spacing: 6,
                                           children: [
@@ -2542,25 +2231,21 @@ void selectProductSales({
                                               decoration: BoxDecoration(
                                                 border: Border.all(
                                                   color:
-                                                      quantityTypeTemp !=
-                                                              1
+                                                      quantityTypeTemp != 1
                                                           ? Colors.grey
                                                           : Colors.transparent,
                                                 ),
                                                 color:
-                                                    quantityTypeTemp ==
-                                                            1
-                                                        ? theme.lightModeColor.prColor250
+                                                    quantityTypeTemp == 1
+                                                        ? theme
+                                                            .lightModeColor
+                                                            .prColor250
                                                         : Colors.transparent,
-                                                shape:
-                                                    BoxShape
-                                                        .circle,
+                                                shape: BoxShape.circle,
                                               ),
                                               child: Icon(
                                                 size: 14,
-                                                color:
-                                                    Colors
-                                                        .white,
+                                                color: Colors.white,
                                                 Icons.check,
                                               ),
                                             ),
@@ -2571,9 +2256,7 @@ void selectProductSales({
                                                         .mobileTexts
                                                         .b4
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               'Enter Whole',
                                             ),
@@ -2583,26 +2266,21 @@ void selectProductSales({
                                     ),
                                   ),
                                   Material(
-                                    color:
-                                        Colors.transparent,
+                                    color: Colors.transparent,
                                     child: InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
+                                      mouseCursor: SystemMouseCursors.click,
                                       onTap: () {
                                         setState(() {
-                                          quantityTypeTemp =
-                                              2;
+                                          quantityTypeTemp = 2;
                                           // quantityController
                                           //     .clear();
                                         });
                                       },
                                       child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(
-                                              vertical: 6,
-                                              horizontal: 6,
-                                            ),
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 6,
+                                          horizontal: 6,
+                                        ),
                                         child: Row(
                                           spacing: 5,
                                           children: [
@@ -2610,25 +2288,21 @@ void selectProductSales({
                                               decoration: BoxDecoration(
                                                 border: Border.all(
                                                   color:
-                                                      quantityTypeTemp !=
-                                                              2
+                                                      quantityTypeTemp != 2
                                                           ? Colors.grey
                                                           : Colors.transparent,
                                                 ),
                                                 color:
-                                                    quantityTypeTemp ==
-                                                            2
-                                                        ? theme.lightModeColor.prColor250
+                                                    quantityTypeTemp == 2
+                                                        ? theme
+                                                            .lightModeColor
+                                                            .prColor250
                                                         : Colors.transparent,
-                                                shape:
-                                                    BoxShape
-                                                        .circle,
+                                                shape: BoxShape.circle,
                                               ),
                                               child: Icon(
                                                 size: 14,
-                                                color:
-                                                    Colors
-                                                        .white,
+                                                color: Colors.white,
                                                 Icons.check,
                                               ),
                                             ),
@@ -2639,9 +2313,7 @@ void selectProductSales({
                                                         .mobileTexts
                                                         .b4
                                                         .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                               'Enter Dimensions',
                                             ),
@@ -2661,41 +2333,37 @@ void selectProductSales({
                               productionItem: null,
                               material: null,
                               theme: theme,
-                              unitUuid:
-                                  getPrimaryUnit().uuid,
+                              unitUuid: getPrimaryUnit().uuid,
                               setUnitUuid: (d) {
                                 setState(() {
                                   selectUnit(d ?? '');
                                   isAreaUnit =
                                       is2DItem &&
-                                      getPrimaryUnit()
-                                              .dimensionType ==
-                                          ProductUnitsClass
-                                              .areaUnit;
+                                      getPrimaryUnit().dimensionType ==
+                                          ProductUnitsClass.areaUnit;
                                   if (isAreaUnit) {
                                     quantityTypeTemp = 1;
                                     widthController.clear();
-                                    heightController
-                                        .clear();
+                                    heightController.clear();
                                   }
                                 });
+                                // Same amount, quantity in
+                                // the new unit.
+                                if (isPriceEntry) {
+                                  deriveQuantityFromAmount(context, setState);
+                                  return;
+                                }
                                 if (getPrimaryUnitQuantityMultiplied(
                                       newQuantity:
                                           (double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
+                                                quantityController.text
+                                                    .replaceAll(',', ''),
                                               ) ??
                                               0),
                                     ) >
-                                    (cartItemTemp.item
-                                            .getActualQuantity() ??
+                                    (cartItemTemp.item.getActualQuantity() ??
                                         0)) {
-                                  quantityController.text =
-                                      '0';
+                                  quantityController.text = '0';
                                   qqty = 0;
                                 }
                               },
@@ -2703,13 +2371,10 @@ void selectProductSales({
 
                             Visibility(
                               visible:
-                                  cartItemTemp
-                                          .getPrimaryPrice()
-                                          .priceValue !=
+                                  !isPriceEntry &&
+                                  cartItemTemp.getPrimaryPrice().priceValue !=
                                       0 &&
-                                  priceController
-                                      .text
-                                      .isEmpty &&
+                                  priceController.text.isEmpty &&
                                   !returnSalesProviderContext(
                                     context,
                                   ).isSetCustomPrice() &&
@@ -2723,15 +2388,11 @@ void selectProductSales({
                                 // product: cartItem.item,
                                 conversion:
                                     is2DItem && !isAreaUnit
-                                        ? getPrimaryUnit()
-                                                .conversion *
-                                            cartItem.item
-                                                .dimensionArea()
-                                        : getPrimaryUnit()
-                                            .conversion,
+                                        ? getPrimaryUnit().conversion *
+                                            cartItem.item.dimensionArea()
+                                        : getPrimaryUnit().conversion,
                                 theme: theme,
-                                priceUuid:
-                                    getPrimaryPrice().uuid,
+                                priceUuid: getPrimaryPrice().uuid,
                                 setPriceUuid: (d) {
                                   setState(() {
                                     selectPrice(d ?? '');
@@ -2741,7 +2402,8 @@ void selectProductSales({
                             ),
                             Visibility(
                               visible:
-                                  cartItem
+                                  !isPriceEntry &&
+                                  (cartItem
                                               .getItem()
                                               ?.getPrimaryPrice()
                                               .priceValue ==
@@ -2750,49 +2412,38 @@ void selectProductSales({
                                       : returnSalesProviderContext(
                                             context,
                                           ).isSetCustomPrice() &&
-                                          (cartItem
-                                                  .getItem()
-                                                  ?.setCustomPrice ??
-                                              false),
+                                          (cartItem.getItem()?.setCustomPrice ??
+                                              false)),
                               child: Column(
                                 children: [
                                   SizedBox(height: 20),
                                   Row(
                                     spacing: 10,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Expanded(
-                                        child:
-                                            ToggleTotalPriceWidget(
-                                              theme: theme,
-                                            ),
+                                        child: ToggleTotalPriceWidget(
+                                          theme: theme,
+                                        ),
                                       ),
                                       Expanded(
                                         child: MoneyTextfield(
                                           onTap: () async {
                                             setState(() {
-                                              currentFocus =
-                                                  2;
+                                              currentFocus = 2;
                                             });
                                           },
-                                          focusNode:
-                                              priceNode,
+                                          focusNode: priceNode,
                                           title:
                                               returnSalesProviderContext(
                                                     context,
                                                   ).setTotalPrice
                                                   ? 'Total Price'
                                                   : 'Individual Price',
-                                          hint:
-                                              'Enter Price',
-                                          controller:
-                                              priceController,
+                                          hint: 'Enter Price',
+                                          controller: priceController,
                                           theme: theme,
-                                          onChanged: (
-                                            value,
-                                          ) {
+                                          onChanged: (value) {
                                             // if (value
                                             //     .isNotEmpty) {
                                             //   cartItem.setCustomPrice =
@@ -2813,9 +2464,8 @@ void selectProductSales({
                             SizedBox(height: 10),
                             Visibility(
                               visible:
-                                  (cartItem
-                                          .getItem()
-                                          ?.setCustomPrice ??
+                                  !isPriceEntry &&
+                                  (cartItem.getItem()?.setCustomPrice ??
                                       false) &&
                                   authorization(
                                     authorized:
@@ -2825,41 +2475,29 @@ void selectProductSales({
                               child: Column(
                                 children: [
                                   InkWell(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     onTap: () {
                                       returnSalesProvider()
                                           .toggleSetCustomPrice();
-                                      priceController
-                                          .clear();
+                                      priceController.clear();
                                     },
                                     child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            vertical: 5,
-                                            horizontal: 10,
-                                          ),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 10,
+                                      ),
                                       child: Row(
-                                        mainAxisSize:
-                                            MainAxisSize
-                                                .min,
+                                        mainAxisSize: MainAxisSize.min,
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
+                                            MainAxisAlignment.center,
                                         spacing: 5,
                                         children: [
                                           Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
+                                                  theme.mobileTexts.b1.fontSize,
 
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             returnSalesProviderContext(
                                                   context,
@@ -2881,8 +2519,7 @@ void selectProductSales({
                                                           .lightModeColor
                                                           .secColor200,
                                                   editIconSvg,
-                                                  height:
-                                                      20,
+                                                  height: 20,
                                                 ),
                                               ),
                                               Visibility(
@@ -2896,8 +2533,7 @@ void selectProductSales({
                                                       theme
                                                           .lightModeColor
                                                           .secColor200,
-                                                  Icons
-                                                      .clear,
+                                                  Icons.clear,
                                                 ),
                                               ),
                                             ],
@@ -2916,80 +2552,64 @@ void selectProductSales({
                                 vertical: 10,
                                 horizontal: 10,
                               ),
-                              margin: EdgeInsets.only(
-                                bottom: 10,
-                              ),
+                              margin: EdgeInsets.only(bottom: 10),
                               child: Visibility(
                                 visible: showWastage(),
                                 child: SizedBox(
                                   height: 38,
                                   child: Row(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
+                                        CrossAxisAlignment.start,
                                     spacing: 10,
                                     children: [
                                       Expanded(
                                         child: EditCartTextField(
-                                          discount:
-                                              isPercentageWastage,
+                                          discount: isPercentageWastage,
                                           showTitle: false,
                                           onTap: () {
                                             setState(() {
-                                              currentFocus =
-                                                  5;
-                                              isOnscreenKeyboardClicked =
-                                                  false;
+                                              currentFocus = 5;
+                                              isOnscreenKeyboardClicked = false;
                                             });
                                           },
                                           // focusNode: qttyNode,
-                                          onChanged: (
-                                            value,
-                                          ) {
+                                          onChanged: (value) {
                                             setState(() {});
                                           },
 
                                           title: '',
                                           hint:
                                               'Enter Wastage ${isPercentageWastage ? 'Percent' : 'Amount'}',
-                                          controller:
-                                              wastageController,
+                                          controller: wastageController,
                                           theme: theme,
                                         ),
                                       ),
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment
-                                                .center,
+                                            CrossAxisAlignment.center,
                                         spacing: 5,
                                         children: [
                                           WastageTypeButton(
-                                            myBoolValue:
-                                                true,
+                                            myBoolValue: true,
                                             isPercentageWastage:
                                                 isPercentageWastage,
                                             symbol: '%',
                                             toggleIsPercentageWastage: () {
                                               setState(() {
-                                                isPercentageWastage =
-                                                    true;
-                                                wastageController
-                                                    .clear();
+                                                isPercentageWastage = true;
+                                                wastageController.clear();
                                               });
                                             },
                                           ),
                                           WastageTypeButton(
-                                            myBoolValue:
-                                                false,
+                                            myBoolValue: false,
                                             isPercentageWastage:
                                                 isPercentageWastage,
                                             symbol: '#',
                                             toggleIsPercentageWastage: () {
                                               setState(() {
-                                                isPercentageWastage =
-                                                    false;
-                                                wastageController
-                                                    .clear();
+                                                isPercentageWastage = false;
+                                                wastageController.clear();
                                               });
                                             },
                                           ),
@@ -3004,44 +2624,31 @@ void selectProductSales({
                             // A fixed amount can be entered in any
                             // of the item's units.
                             Visibility(
-                              visible:
-                                  showWastage() &&
-                                  !isPercentageWastage,
+                              visible: showWastage() && !isPercentageWastage,
                               child: Padding(
-                                padding: EdgeInsets.only(
-                                  bottom: 10,
-                                ),
+                                padding: EdgeInsets.only(bottom: 10),
                                 child: Column(
                                   spacing: 5,
                                   children: [
                                     Text(
                                       style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                        fontSize: theme.mobileTexts.b4.fontSize,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                       'Wastage Unit:',
                                     ),
                                     UnitSelectionWidget(
-                                      unitList:
-                                          tempUnitList,
+                                      unitList: tempUnitList,
                                       product: null,
                                       storageProduct: null,
                                       productionItem: null,
                                       material: null,
                                       theme: theme,
-                                      showSelectUnitText:
-                                          false,
-                                      unitUuid:
-                                          selectedWastageUnit(),
+                                      showSelectUnitText: false,
+                                      unitUuid: selectedWastageUnit(),
                                       setUnitUuid: (d) {
                                         setState(() {
-                                          wastageUnitUuid =
-                                              d;
+                                          wastageUnitUuid = d;
                                         });
                                       },
                                     ),
@@ -3052,93 +2659,79 @@ void selectProductSales({
 
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      10,
-                                    ),
+                                borderRadius: BorderRadius.circular(10),
                                 color: Colors.grey.shade100,
                               ),
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                    vertical: 10,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                                vertical: 10,
+                              ),
                               child: Column(
                                 children: [
                                   Row(
-                                     mainAxisAlignment:
-                                         MainAxisAlignment
-                                             .spaceBetween,
-                                     children: [
-                                       Text(
-                                         style: TextStyle(
-                                           fontSize:
-                                               theme
-                                                   .mobileTexts
-                                                   .b3
-                                                   .fontSize,
-                                         ),
-                                         'Total Quantity:',
-                                       ),
-                                       Text(
-                                         style: TextStyle(
-                                           fontSize:
-                                               theme
-                                                   .mobileTexts
-                                                   .b2
-                                                   .fontSize,
-                                           fontWeight:
-                                               theme
-                                                   .mobileTexts
-                                                   .b2
-                                                   .fontWeightBold,
-                                         ),
-                                         '${formatLargeNumberDouble(previewLine().displayQuantity())}${previewLine().displayUnitName().isNotEmpty ? ' ${previewLine().displayUnitName()}' : ''}',
-                                        ),
-                                      ],
-                                    ),
-                                    if (previewLine().wastageArea() > 0)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 2.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize: theme.mobileTexts.b4.fontSize,
-                                                color: Colors.grey.shade600,
-                                              ),
-                                              previewLine().item.quantityType == 2 && previewLine().hasCustomDimensions
-                                                  ? '(${formatLargeNumberDouble(previewLine().getRealQuantity())} + ${formatLargeNumberDouble(previewLine().wastageArea())} wastage)'
-                                                  : '(${formatLargeNumberDouble(previewLine().quantity)} + ${formatLargeNumberDouble(previewLine().wastageInSaleUnit())} wastage)',
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    Divider(height: 5),
-                                  Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize:
+                                              theme.mobileTexts.b3.fontSize,
+                                        ),
+                                        'Total Quantity:',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme.mobileTexts.b2.fontSize,
+                                          fontWeight:
                                               theme
                                                   .mobileTexts
-                                                  .b3
-                                                  .fontSize,
+                                                  .b2
+                                                  .fontWeightBold,
+                                        ),
+                                        '${formatLargeNumberDouble(previewLine().displayQuantity())}${previewLine().displayUnitName().isNotEmpty ? ' ${previewLine().displayUnitName()}' : ''}',
+                                      ),
+                                    ],
+                                  ),
+                                  if (previewLine().wastageArea() > 0)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme.mobileTexts.b4.fontSize,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                            previewLine().item.quantityType ==
+                                                        2 &&
+                                                    previewLine()
+                                                        .hasCustomDimensions
+                                                ? '(${formatLargeNumberDouble(previewLine().getRealQuantity())} + ${formatLargeNumberDouble(previewLine().wastageArea())} wastage)'
+                                                : '(${formatLargeNumberDouble(previewLine().quantity)} + ${formatLargeNumberDouble(previewLine().wastageInSaleUnit())} wastage)',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  Divider(height: 5),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme.mobileTexts.b3.fontSize,
                                         ),
                                         'Total Price',
                                       ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
+                                              theme.mobileTexts.b2.fontSize,
                                           fontWeight:
                                               theme
                                                   .mobileTexts
@@ -3147,9 +2740,7 @@ void selectProductSales({
                                         ),
                                         formatMoneyMid(
                                           amount: double.parse(
-                                            formatSellingPrice(
-                                              cartItem,
-                                            ),
+                                            formatSellingPrice(cartItem),
                                           ),
                                           context: context,
                                         ),
@@ -3160,207 +2751,141 @@ void selectProductSales({
                               ),
                             ),
                             SizedBox(height: 20),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                spacing: 15,
-                                children: [
-                                  Ink(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade100,
-                                    ),
-                                    child: InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      onTap: () {
-                                        setState(() {
-                                          if (qqty > 0) {
-                                            qqty--;
-                                            quantityController
-                                                    .text =
-                                                qqty.toString();
-                                            isOnscreenKeyboardClicked =
-                                                false;
-                                          }
-                                        });
-                                      },
-                                      child: SizedBox(
-                                        height: 30,
-                                        width: 50,
-                                        child: Icon(
-                                          Icons.remove,
-                                        ),
+                            if (!isPriceEntry)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  spacing: 15,
+                                  children: [
+                                    Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: Colors.grey.shade100,
                                       ),
-                                    ),
-                                  ),
-                                  Text(
-                                    formatLargeNumberDouble(
-                                      qqty,
-                                    ),
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .h4
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                  ),
-                                  Ink(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade100,
-                                    ),
-                                    child: InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      onTap: () {
-                                        setState(() {
-                                          qqty++;
-                                          quantityController
-                                                  .text =
-                                              qqty.toString();
-                                          isOnscreenKeyboardClicked =
-                                              false;
-                                        });
-                                        double entered =
-                                            double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0;
-                                        if (cartItem
-                                                .getItem()
-                                                ?.isManaged ??
-                                            false) {
-                                          if (!returnSalesProvider().canAddProductToCart(
-                                            isEdit: isEdit,
-                                            newCartItem:
-                                                cartItem,
-                                            quantityToAdd:
-                                                getPrimaryUnitQuantityMultiplied(
-                                                  newQuantity:
-                                                      entered,
-                                                ),
-                                            // useGroupUnit:
-                                            //     useGroupQuantityTemp,
-                                          )) {
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder:
-                                                  (
-                                                    _,
-                                                  ) => InfoAlert(
-                                                    title:
-                                                        "Quantity Limit Reached",
-                                                    message:
-                                                        "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
-                                                    theme:
-                                                        theme,
-                                                  ),
-                                            ).then((_) {
-                                              qttyNode
-                                                  .requestFocus();
-                                            });
-
-                                            Future.delayed(
-                                              Duration(
-                                                milliseconds:
-                                                    300,
-                                              ),
-                                              () {
-                                                setState(() {
-                                                  qqty = 0;
-                                                  quantityController
-                                                          .text =
-                                                      '0';
-                                                });
-                                              },
-                                            );
-
-                                            return;
-                                          }
-                                        }
-
-                                        if (quantityController
-                                            .text
-                                            .isEmpty) {
+                                      child: InkWell(
+                                        mouseCursor: SystemMouseCursors.click,
+                                        borderRadius: BorderRadius.circular(5),
+                                        onTap: () {
                                           setState(() {
-                                            quantityController
-                                                .text = '0';
+                                            if (qqty > 0) {
+                                              qqty--;
+                                              quantityController.text =
+                                                  qqty.toString();
+                                              isOnscreenKeyboardClicked = false;
+                                            }
                                           });
-                                        }
-
-                                        setState(() {
-                                          qqty = entered;
-                                        });
-                                      },
-
-                                      child: SizedBox(
-                                        height: 30,
-                                        width: 50,
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.add,
-                                          ),
+                                        },
+                                        child: SizedBox(
+                                          height: 30,
+                                          width: 50,
+                                          child: Icon(Icons.remove),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      formatLargeNumberDouble(qqty),
+                                      style: TextStyle(
+                                        fontSize: theme.mobileTexts.h4.fontSize,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: Colors.grey.shade100,
+                                      ),
+                                      child: InkWell(
+                                        mouseCursor: SystemMouseCursors.click,
+                                        borderRadius: BorderRadius.circular(5),
+                                        onTap: () {
+                                          setState(() {
+                                            qqty++;
+                                            quantityController.text =
+                                                qqty.toString();
+                                            isOnscreenKeyboardClicked = false;
+                                          });
+                                          double entered =
+                                              double.tryParse(
+                                                quantityController.text
+                                                    .replaceAll(',', ''),
+                                              ) ??
+                                              0;
+                                          if (cartItem.getItem()?.isManaged ??
+                                              false) {
+                                            if (!returnSalesProvider()
+                                                .canAddProductToCart(
+                                                  isEdit: isEdit,
+                                                  newCartItem: cartItem,
+                                                  quantityToAdd:
+                                                      getPrimaryUnitQuantityMultiplied(
+                                                        newQuantity: entered,
+                                                      ),
+                                                  // useGroupUnit:
+                                                  //     useGroupQuantityTemp,
+                                                )) {
+                                              showDialog(
+                                                context: context,
+                                                builder:
+                                                    (_) => InfoAlert(
+                                                      title:
+                                                          "Quantity Limit Reached",
+                                                      message:
+                                                          "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+                                                      theme: theme,
+                                                    ),
+                                              ).then((_) {
+                                                qttyNode.requestFocus();
+                                              });
+
+                                              Future.delayed(
+                                                Duration(milliseconds: 300),
+                                                () {
+                                                  setState(() {
+                                                    qqty = 0;
+                                                    quantityController.text =
+                                                        '0';
+                                                  });
+                                                },
+                                              );
+
+                                              return;
+                                            }
+                                          }
+
+                                          if (quantityController.text.isEmpty) {
+                                            setState(() {
+                                              quantityController.text = '0';
+                                            });
+                                          }
+
+                                          setState(() {
+                                            qqty = entered;
+                                          });
+                                        },
+
+                                        child: SizedBox(
+                                          height: 30,
+                                          width: 50,
+                                          child: Center(child: Icon(Icons.add)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
                             SizedBox(height: 20),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               spacing: 5,
                               children: [
                                 MaterialButton(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
+                                  mouseCursor: SystemMouseCursors.click,
                                   onPressed: () {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                    quantityController
-                                        .clear();
+                                    Navigator.of(context).pop();
+                                    quantityController.clear();
                                     qqty = 0;
                                   },
                                   child: Text('Cancel'),
@@ -3373,9 +2898,7 @@ void selectProductSales({
                                                 ?.getPrimaryPrice()
                                                 .priceValue ==
                                             0 &&
-                                        priceController
-                                            .text
-                                            .isEmpty) {
+                                        priceController.text.isEmpty) {
                                       showDialog(
                                         context: context,
                                         builder: (context) {
@@ -3383,8 +2906,7 @@ void selectProductSales({
                                             theme: theme,
                                             message:
                                                 'Custom Price Must be set before Item can be added to cart.',
-                                            title:
-                                                'Custom Price Not Set',
+                                            title: 'Custom Price Not Set',
                                           );
                                         },
                                       );
@@ -3398,127 +2920,93 @@ void selectProductSales({
                                             ) &
                                             (getCurrentSellingPrice() >
                                                 (double.tryParse(
-                                                      priceController.text.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
+                                                      priceController.text
+                                                          .replaceAll(',', ''),
                                                     ) ??
                                                     0))) {
                                       showDialog(
                                         context: context,
-                                        builder: (
-                                          errorContext,
-                                        ) {
+                                        builder: (errorContext) {
                                           return InfoAlert(
                                             theme: theme,
                                             message:
                                                 'You are not allowed to Sell This Item below the Currently Selected Selling Price (${getCurrentSellingPrice()}). Please Adjust Custom Price.',
-                                            title:
-                                                'Custom Price Not Allowed',
+                                            title: 'Custom Price Not Allowed',
                                           );
                                         },
                                       );
                                     } else {
-                                      if (quantityController
-                                              .text
-                                              .isEmpty ||
+                                      if (quantityController.text.isEmpty ||
                                           qqty == 0) {
                                         showDialog(
                                           context: context,
-                                          builder: (
-                                            context,
-                                          ) {
+                                          builder: (context) {
                                             return InfoAlert(
                                               theme: theme,
                                               message:
                                                   'Item quantity cannot be set to (0)',
-                                              title:
-                                                  'Invalid Quantity',
+                                              title: 'Invalid Quantity',
                                             );
                                           },
                                         );
-                                      } else if (dimensionsError() !=
-                                          null) {
+                                      } else if (dimensionsError() != null) {
                                         showDialog(
                                           context: context,
-                                          builder: (
-                                            context,
-                                          ) {
+                                          builder: (context) {
                                             return InfoAlert(
                                               theme: theme,
-                                              message:
-                                                  dimensionsError()!,
-                                              title:
-                                                  'Invalid Dimensions',
+                                              message: dimensionsError()!,
+                                              title: 'Invalid Dimensions',
                                             );
                                           },
                                         );
-                                      } else if (wastageError() !=
-                                          null) {
+                                      } else if (wastageError() != null) {
                                         showDialog(
                                           context: context,
-                                          builder: (
-                                            context,
-                                          ) {
+                                          builder: (context) {
                                             return InfoAlert(
                                               theme: theme,
-                                              message:
-                                                  wastageError()!,
-                                              title:
-                                                  'Invalid Wastage',
+                                              message: wastageError()!,
+                                              title: 'Invalid Wastage',
                                             );
                                           },
                                         );
                                       } else if (is2DItem &&
-                                          (cartItem
-                                                  .getItem()
-                                                  ?.isManaged ??
+                                          (cartItem.getItem()?.isManaged ??
                                               false) &&
                                           !returnSalesProvider()
                                               .canAddProductToCart(
-                                                isEdit:
-                                                    isEdit,
-                                                newCartItem:
-                                                    cartItem,
-                                                quantityToAdd:
-                                                    billedQuantity(),
+                                                isEdit: isEdit,
+                                                newCartItem: cartItem,
+                                                quantityToAdd: billedQuantity(),
                                               )) {
                                         // Dimensions and wastage can
                                         // change after the quantity
                                         // was checked.
-                                        final preview =
-                                            previewLine();
+                                        final preview = previewLine();
                                         final cutArea =
-                                            preview
-                                                .getRealQuantity();
-                                        final wastage =
-                                            preview
-                                                .wastageArea();
+                                            preview.getRealQuantity();
+                                        final wastage = preview.wastageArea();
                                         showDialog(
                                           context: context,
-                                          builder: (
-                                            context,
-                                          ) {
+                                          builder: (context) {
                                             return InfoAlert(
                                               theme: theme,
-                                              title:
-                                                  'Quantity Limit Reached',
+                                              title: 'Quantity Limit Reached',
                                               message:
-                                                  wastage >
-                                                          0
+                                                  wastage > 0
                                                       ? wastageStockMessage(
-                                                        cutArea:
-                                                            cutArea,
-                                                        wastageArea:
-                                                            wastage,
-                                                        availableArea: returnSalesProvider().remainingQttyInAllCarts(
-                                                          newCartItem:
-                                                              cartItem,
-                                                          isEdit:
-                                                              isEdit,
-                                                        ),
-                                                        unit:
-                                                            areaUnitLabel(),
+                                                        cutArea: cutArea,
+                                                        wastageArea: wastage,
+                                                        availableArea:
+                                                            returnSalesProvider()
+                                                                .remainingQttyInAllCarts(
+                                                                  newCartItem:
+                                                                      cartItem,
+                                                                  isEdit:
+                                                                      isEdit,
+                                                                ),
+                                                        unit: areaUnitLabel(),
                                                       )
                                                       : "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
                                             );
@@ -3542,13 +3030,13 @@ void selectProductSales({
                                             priceController.text.isNotEmpty;
                                         double getQtty() {
                                           return getPrimaryUnitQuantityMultiplied(
-                                            newQuantity:
-                                                qqty,
+                                            newQuantity: qqty,
                                           );
                                         }
 
                                         if (isEdit) {
-                                          Future<void> saveEditedCartItem() async {
+                                          Future<void>
+                                          saveEditedCartItem() async {
                                             final success =
                                                 await returnSalesProvider()
                                                     .editCartItemQuantity(
@@ -3563,13 +3051,14 @@ void selectProductSales({
                                                               '',
                                                             ),
                                                       ),
-                                                      customPrice: double.tryParse(
-                                                        priceController.text
-                                                            .replaceAll(
-                                                              ',',
-                                                              '',
-                                                            ),
-                                                      ),
+                                                      customPrice:
+                                                          double.tryParse(
+                                                            priceController.text
+                                                                .replaceAll(
+                                                                  ',',
+                                                                  '',
+                                                                ),
+                                                          ),
                                                       setCustomPrice:
                                                           priceController
                                                               .text
@@ -3598,53 +3087,38 @@ void selectProductSales({
                                                       .userShop()
                                                       ?.trackCart ==
                                                   true &&
-                                              existingQtty >
-                                                  getQtty()) {
-                                            var res =
-                                                await pinCodeAction(
-                                                  context:
-                                                      context,
-                                                  isMain:
-                                                      false,
-                                                );
+                                              existingQtty > getQtty()) {
+                                            var res = await pinCodeAction(
+                                              context: context,
+                                              isMain: false,
+                                            );
                                             if (res) {
-                                              cartItem.useGroupQuantity =
-                                                  true;
+                                              cartItem.useGroupQuantity = true;
                                               await saveEditedCartItem();
                                             }
                                           } else {
-                                            cartItem.useGroupQuantity =
-                                                true;
+                                            cartItem.useGroupQuantity = true;
                                             await saveEditedCartItem();
                                           }
                                         } else {
                                           cartItem.setTotalPrice =
                                               returnSalesProvider()
                                                   .setTotalPrice;
-                                          cartItem.quantity =
-                                              qqty.toDouble();
+                                          cartItem.quantity = qqty.toDouble();
                                           if (returnSalesProvider()
                                                   .isAddMultipleItemsToCart &&
-                                              useTempCart ==
-                                                  true) {
-                                            cartItem.useGroupQuantity =
-                                                true;
+                                              useTempCart == true) {
+                                            cartItem.useGroupQuantity = true;
                                             returnSalesProvider()
                                                 .addItemToTempCart(
-                                                  item:
-                                                      cartItem,
+                                                  item: cartItem,
                                                 );
-                                            Navigator.of(
-                                              context,
-                                            ).pop();
+                                            Navigator.of(context).pop();
                                           } else {
-                                            cartItem.useGroupQuantity =
-                                                true;
+                                            cartItem.useGroupQuantity = true;
 
-                                            Future<bool>
-                                            handleDocketPrint(
-                                              TempCartItem
-                                              itemToPrint,
+                                            Future<bool> handleDocketPrint(
+                                              TempCartItem itemToPrint,
                                             ) async {
                                               if (returnShopProvider()
                                                           .userShop()
@@ -3652,44 +3126,41 @@ void selectProductSales({
                                                       true &&
                                                   returnCompProvider(
                                                     context,
-                                                    listen:
-                                                        false,
+                                                    listen: false,
                                                   ).getContinuousPrintDocket() &&
-                                                  screenWidth(
-                                                        context,
-                                                      ) >
+                                                  screenWidth(context) >
                                                       tabletScreenSmall) {
                                                 return kIsWeb
                                                     ? await downloadDocket(
-                                                      setTotal:
-                                                          false,
-                                                      items: [
-                                                        itemToPrint,
-                                                      ],
+                                                      setTotal: false,
+                                                      items: [itemToPrint],
                                                       cart:
-                                                          returnSalesProvider().currentCart(),
-                                                      context:
-                                                          context,
+                                                          returnSalesProvider()
+                                                              .currentCart(),
+                                                      context: context,
                                                       fileName:
                                                           'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
                                                       waiter:
-                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                          returnSalesProvider()
+                                                              .currentMainCart()
+                                                              .subStaff
+                                                              ?.staffName ??
                                                           'Not Set',
                                                     )
                                                     : await printDocket(
-                                                      setTotal:
-                                                          false,
-                                                      items: [
-                                                        itemToPrint,
-                                                      ],
+                                                      setTotal: false,
+                                                      items: [itemToPrint],
                                                       cart:
-                                                          returnSalesProvider().currentCart(),
-                                                      context:
-                                                          context,
+                                                          returnSalesProvider()
+                                                              .currentCart(),
+                                                      context: context,
                                                       fileName:
                                                           'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
                                                       waiter:
-                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                          returnSalesProvider()
+                                                              .currentMainCart()
+                                                              .subStaff
+                                                              ?.staffName ??
                                                           'Not Set',
                                                     );
                                               }
@@ -3697,100 +3168,93 @@ void selectProductSales({
                                             }
 
                                             var existingLine =
-                                                returnSalesProvider().findCartLine(
-                                                  returnSalesProvider()
-                                                      .currentCart(),
-                                                  cartItem,
-                                                );
+                                                returnSalesProvider()
+                                                    .findCartLine(
+                                                      returnSalesProvider()
+                                                          .currentCart(),
+                                                      cartItem,
+                                                    );
 
-                                            if (existingLine !=
-                                                null) {
+                                            if (existingLine != null) {
                                               // Item ALREADY EXISTS in cart:
                                               // Show duplicate alert first via addItemToCart.
                                               // If user chooses replace or add to quantity,
                                               // onBeforeCommitDuplicate initiates docket printing
                                               // BEFORE the cart is modified.
-                                              final result = await returnSalesProvider().addItemToCart(
-                                                context:
-                                                    context,
-                                                newItem:
-                                                    cartItem,
-                                                isCustomEdit:
-                                                    returnData()
-                                                        .productList()
-                                                        .where(
-                                                          (
-                                                            product,
-                                                          ) =>
-                                                              product.uuid ==
-                                                              cartItem.getItem()?.uuid,
-                                                        )
-                                                        .isEmpty,
-                                                onBeforeCommitDuplicate: (
-                                                  choice,
-                                                ) async {
-                                                  var tempCartItem = cartItem.copyWith(
-                                                    quantity:
-                                                        qqty.toDouble(),
+                                              final result = await returnSalesProvider()
+                                                  .addItemToCart(
+                                                    context: context,
+                                                    newItem: cartItem,
+                                                    isCustomEdit:
+                                                        returnData()
+                                                            .productList()
+                                                            .where(
+                                                              (product) =>
+                                                                  product
+                                                                      .uuid ==
+                                                                  cartItem
+                                                                      .getItem()
+                                                                      ?.uuid,
+                                                            )
+                                                            .isEmpty,
+                                                    onBeforeCommitDuplicate: (
+                                                      choice,
+                                                    ) async {
+                                                      var tempCartItem =
+                                                          cartItem.copyWith(
+                                                            quantity:
+                                                                qqty.toDouble(),
+                                                          );
+                                                      return await handleDocketPrint(
+                                                        tempCartItem,
+                                                      );
+                                                    },
                                                   );
-                                                  return await handleDocketPrint(
-                                                    tempCartItem,
-                                                  );
-                                                },
-                                              );
 
                                               // If user selected Replace Item or Add to Quantity and print proceeded:
                                               if (result ==
                                                       'Item Replaced Successfully' ||
                                                   result ==
                                                       'Quantity Updated Successfully') {
-                                                if (context
-                                                    .mounted) {
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pop();
+                                                if (context.mounted) {
+                                                  Navigator.of(context).pop();
                                                 }
                                                 closeAction();
                                               }
                                             } else {
                                               // Item DOES NOT EXIST in cart:
                                               // Show docket print dialog first (if enabled), then add.
-                                              var tempCartItem =
-                                                  cartItem.copyWith(
-                                                    quantity:
-                                                        qqty.toDouble(),
+                                              var tempCartItem = cartItem
+                                                  .copyWith(
+                                                    quantity: qqty.toDouble(),
                                                   );
                                               var printRes =
                                                   await handleDocketPrint(
                                                     tempCartItem,
                                                   );
                                               if (printRes) {
-                                                final result = await returnSalesProvider().addItemToCart(
-                                                  context:
-                                                      context,
-                                                  newItem:
-                                                      cartItem,
-                                                  isCustomEdit:
-                                                      returnData()
-                                                          .productList()
-                                                          .where(
-                                                            (
-                                                              product,
-                                                            ) =>
-                                                                product.uuid ==
-                                                                cartItem.getItem()?.uuid,
-                                                          )
-                                                          .isEmpty,
-                                                );
-                                                if (result
-                                                        .isNotEmpty &&
+                                                final result = await returnSalesProvider()
+                                                    .addItemToCart(
+                                                      context: context,
+                                                      newItem: cartItem,
+                                                      isCustomEdit:
+                                                          returnData()
+                                                              .productList()
+                                                              .where(
+                                                                (product) =>
+                                                                    product
+                                                                        .uuid ==
+                                                                    cartItem
+                                                                        .getItem()
+                                                                        ?.uuid,
+                                                              )
+                                                              .isEmpty,
+                                                    );
+                                                if (result.isNotEmpty &&
                                                     result !=
                                                         'Quantity Limit Exceeded') {
-                                                  if (context
-                                                      .mounted) {
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
+                                                  if (context.mounted) {
+                                                    Navigator.of(context).pop();
                                                   }
                                                   closeAction();
                                                 }
@@ -3809,40 +3273,37 @@ void selectProductSales({
                         ),
                       ),
                       Visibility(
-                        visible:
-                            screenWidth(context) >
-                            tabletScreenSmall,
+                        visible: screenWidth(context) > tabletScreenSmall,
                         child: Expanded(
                           child: Row(
                             children: [
                               Container(
-                                margin:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 15,
-                                    ),
+                                margin: EdgeInsets.symmetric(horizontal: 15),
                                 color: Colors.grey.shade400,
                                 width: 1,
                                 height: 400,
                               ),
                               Expanded(
                                 child: Container(
-                                  padding: EdgeInsets.all(
-                                    15,
-                                  ),
+                                  padding: EdgeInsets.all(15),
                                   decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          10,
-                                        ),
+                                    borderRadius: BorderRadius.circular(10),
                                     color: Colors.white,
                                   ),
                                   child: OnScreenKeyboardPin(
                                     action: (value) {
                                       // Wastage is only a target
                                       // while its field is shown.
-                                      if (currentFocus ==
-                                              5 &&
-                                          !showWastage()) {
+                                      if (currentFocus == 5 && !showWastage()) {
+                                        currentFocus = 1;
+                                      }
+                                      // Quantity and price share
+                                      // one spot; type into the
+                                      // one shown.
+                                      if (isPriceEntry && currentFocus == 1) {
+                                        currentFocus = 6;
+                                      } else if (!isPriceEntry &&
+                                          currentFocus == 6) {
                                         currentFocus = 1;
                                       }
 
@@ -3859,6 +3320,8 @@ void selectProductSales({
                                             return heightController;
                                           case 5:
                                             return wastageController;
+                                          case 6:
+                                            return amountController;
                                           default:
                                             return quantityController;
                                         }
@@ -3866,80 +3329,55 @@ void selectProductSales({
 
                                       void addDigit(
                                         String digit,
-                                        TextEditingController
-                                        controller,
+                                        TextEditingController controller,
                                       ) {
-                                        if (currentFocus ==
-                                            1) {
+                                        if (currentFocus == 1) {
                                           if (isOnscreenKeyboardClicked ==
                                               false) {
-                                            controller
-                                                    .text =
-                                                digit;
-                                            isOnscreenKeyboardClicked =
-                                                true;
+                                            controller.text = digit;
+                                            isOnscreenKeyboardClicked = true;
                                           } else {
-                                            controller
-                                                    .text +=
-                                                digit;
+                                            controller.text += digit;
                                           }
-                                          double
-                                          entered = getPrimaryUnitQuantityMultiplied(
-                                            newQuantity:
-                                                double.tryParse(
-                                                  controller
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                ) ??
-                                                0,
-                                          );
-                                          if (cartItem
-                                                  .getItem()
-                                                  ?.isManaged ??
+                                          double entered =
+                                              getPrimaryUnitQuantityMultiplied(
+                                                newQuantity:
+                                                    double.tryParse(
+                                                      controller.text
+                                                          .replaceAll(',', ''),
+                                                    ) ??
+                                                    0,
+                                              );
+                                          if (cartItem.getItem()?.isManaged ??
                                               false) {
-                                            if (quantityTypeTemp !=
-                                                    2 &&
-                                                !returnSalesProvider().canAddProductToCart(
-                                                  isEdit:
-                                                      isEdit,
-                                                  newCartItem:
-                                                      cartItem,
-                                                  quantityToAdd:
-                                                      entered,
-                                                  // useGroupUnit:
-                                                  //     useGroupQuantityTemp,
-                                                )) {
+                                            if (quantityTypeTemp != 2 &&
+                                                !returnSalesProvider()
+                                                    .canAddProductToCart(
+                                                      isEdit: isEdit,
+                                                      newCartItem: cartItem,
+                                                      quantityToAdd: entered,
+                                                      // useGroupUnit:
+                                                      //     useGroupQuantityTemp,
+                                                    )) {
                                               showDialog(
-                                                context:
-                                                    context,
+                                                context: context,
                                                 builder:
-                                                    (
-                                                      _,
-                                                    ) => InfoAlert(
+                                                    (_) => InfoAlert(
                                                       title:
                                                           "Quantity Limit Reached",
                                                       message:
                                                           "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
-                                                      theme:
-                                                          theme,
+                                                      theme: theme,
                                                     ),
                                               ).then((_) {
-                                                qttyNode
-                                                    .requestFocus();
+                                                qttyNode.requestFocus();
                                               });
 
                                               Future.delayed(
-                                                Duration(
-                                                  milliseconds:
-                                                      100,
-                                                ),
+                                                Duration(milliseconds: 100),
                                                 () {
                                                   setState(() {
-                                                    qqty =
-                                                        0;
+                                                    qqty = 0;
                                                     quantityController.text =
                                                         '0';
                                                   });
@@ -3948,48 +3386,37 @@ void selectProductSales({
 
                                               return;
                                             } else {
-                                              if (controller
-                                                  .text
-                                                  .isEmpty) {
+                                              if (controller.text.isEmpty) {
                                                 setState(() {
-                                                  quantityController
-                                                          .text =
-                                                      '0';
+                                                  quantityController.text = '0';
                                                 });
                                               }
 
                                               // controller
                                               //         .text +=
                                               //     digit;
-                                              double
-                                              newVal =
+                                              double newVal =
                                                   double.tryParse(
-                                                    controller
-                                                        .text,
+                                                    controller.text,
                                                   ) ??
                                                   0;
                                               setState(() {
-                                                qqty =
-                                                    newVal;
+                                                qqty = newVal;
                                               });
-                                              controller
-                                                  .selection = TextSelection.fromPosition(
-                                                TextPosition(
-                                                  offset:
-                                                      controller
-                                                          .text
-                                                          .length,
-                                                ),
-                                              );
+                                              controller.selection =
+                                                  TextSelection.fromPosition(
+                                                    TextPosition(
+                                                      offset:
+                                                          controller
+                                                              .text
+                                                              .length,
+                                                    ),
+                                                  );
                                             }
                                           } else {
-                                            if (controller
-                                                .text
-                                                .isEmpty) {
+                                            if (controller.text.isEmpty) {
                                               setState(() {
-                                                quantityController
-                                                        .text =
-                                                    '0';
+                                                quantityController.text = '0';
                                               });
                                             }
 
@@ -3998,162 +3425,140 @@ void selectProductSales({
                                             //     digit;
                                             double newVal =
                                                 double.tryParse(
-                                                  controller
-                                                      .text,
+                                                  controller.text,
                                                 ) ??
                                                 0;
                                             setState(() {
                                               qqty = newVal;
                                             });
 
-                                            controller
-                                                .selection = TextSelection.fromPosition(
-                                              TextPosition(
-                                                offset:
-                                                    controller
-                                                        .text
-                                                        .length,
-                                              ),
-                                            );
+                                            controller.selection =
+                                                TextSelection.fromPosition(
+                                                  TextPosition(
+                                                    offset:
+                                                        controller.text.length,
+                                                  ),
+                                                );
                                           }
-                                        } else if (currentFocus ==
-                                                3 ||
-                                            currentFocus ==
-                                                4) {
+                                        } else if (currentFocus == 3 ||
+                                            currentFocus == 4) {
                                           if (isOnscreenKeyboardClicked ==
                                               false) {
-                                            controller
-                                                    .text =
-                                                digit;
-                                            isOnscreenKeyboardClicked =
-                                                true;
+                                            controller.text = digit;
+                                            isOnscreenKeyboardClicked = true;
                                           } else {
-                                            controller
-                                                    .text +=
-                                                digit;
+                                            controller.text += digit;
                                           }
                                           double? maxDim =
-                                              currentFocus ==
-                                                      3
+                                              currentFocus == 3
                                                   ? originalWidth
                                                   : originalHeight;
                                           double parsedDim =
                                               double.tryParse(
-                                                controller
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
+                                                controller.text.replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
                                               ) ??
                                               0;
-                                          if (maxDim !=
-                                                  null &&
-                                              parsedDim >
-                                                  maxDim) {
-                                            controller
-                                                .text = '0';
+                                          if (maxDim != null &&
+                                              parsedDim > maxDim) {
+                                            controller.text = '0';
                                           }
-                                          controller
-                                              .selection = TextSelection.fromPosition(
-                                            TextPosition(
-                                              offset:
-                                                  controller
-                                                      .text
-                                                      .length,
-                                            ),
-                                          );
-                                        } else if (currentFocus ==
-                                            5) {
+                                          controller.selection =
+                                              TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset:
+                                                      controller.text.length,
+                                                ),
+                                              );
+                                        } else if (currentFocus == 5) {
                                           // Validated on Add to Cart,
                                           // same as typed input.
                                           if (isOnscreenKeyboardClicked ==
                                               false) {
-                                            controller
-                                                    .text =
-                                                digit;
-                                            isOnscreenKeyboardClicked =
-                                                true;
+                                            controller.text = digit;
+                                            isOnscreenKeyboardClicked = true;
                                           } else {
-                                            controller
-                                                    .text +=
-                                                digit;
+                                            controller.text += digit;
                                           }
-                                          controller
-                                              .selection = TextSelection.fromPosition(
-                                            TextPosition(
-                                              offset:
-                                                  controller
-                                                      .text
-                                                      .length,
-                                            ),
+                                          controller.selection =
+                                              TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset:
+                                                      controller.text.length,
+                                                ),
+                                              );
+                                        } else if (currentFocus == 6) {
+                                          if (isOnscreenKeyboardClicked ==
+                                              false) {
+                                            controller.text = digit;
+                                            isOnscreenKeyboardClicked = true;
+                                          } else {
+                                            controller.text += digit;
+                                          }
+                                          controller.selection =
+                                              TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset:
+                                                      controller.text.length,
+                                                ),
+                                              );
+                                          deriveQuantityFromAmount(
+                                            context,
+                                            setState,
                                           );
                                         } else {
-                                          controller.text +=
-                                              digit;
-                                          controller
-                                              .selection = TextSelection.fromPosition(
-                                            TextPosition(
-                                              offset:
-                                                  controller
-                                                      .text
-                                                      .length,
-                                            ),
-                                          );
+                                          controller.text += digit;
+                                          controller.selection =
+                                              TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset:
+                                                      controller.text.length,
+                                                ),
+                                              );
                                         }
                                       }
 
                                       void removeDigit(
-                                        TextEditingController
-                                        controller,
+                                        TextEditingController controller,
                                       ) {
-                                        if (controller
-                                            .text
-                                            .isNotEmpty) {
-                                          controller
-                                              .text = controller
-                                              .text
+                                        if (controller.text.isNotEmpty) {
+                                          controller.text = controller.text
                                               .substring(
                                                 0,
-                                                controller
-                                                        .text
-                                                        .length -
-                                                    1,
+                                                controller.text.length - 1,
                                               );
-                                          if (currentFocus ==
-                                              1) {
+                                          if (currentFocus == 1) {
                                             double newVal =
                                                 double.tryParse(
-                                                  controller
-                                                      .text,
+                                                  controller.text,
                                                 ) ??
                                                 0;
                                             setState(() {
                                               qqty = newVal;
                                             });
+                                          } else if (currentFocus == 6) {
+                                            deriveQuantityFromAmount(
+                                              context,
+                                              setState,
+                                            );
                                           }
 
-                                          controller
-                                              .selection = TextSelection.fromPosition(
-                                            TextPosition(
-                                              offset:
-                                                  controller
-                                                      .text
-                                                      .length,
-                                            ),
-                                          );
+                                          controller.selection =
+                                              TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset:
+                                                      controller.text.length,
+                                                ),
+                                              );
                                         }
                                       }
 
                                       if (value != '00') {
-                                        addDigit(
-                                          value,
-                                          currentController(),
-                                        );
+                                        addDigit(value, currentController());
                                       } else {
-                                        removeDigit(
-                                          currentController(),
-                                        );
+                                        removeDigit(currentController());
                                       }
                                       setState(() {});
                                     },
@@ -4221,8 +3626,7 @@ class WastageTypeButton extends StatelessWidget {
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                      fontSize: theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     symbol,
@@ -4232,14 +3636,10 @@ class WastageTypeButton extends StatelessWidget {
                     decoration: BoxDecoration(
                       color:
                           isPercentageWastage == myBoolValue
-                              ? theme
-                                  .lightModeColor
-                                  .prColor250
+                              ? theme.lightModeColor.prColor250
                               : null,
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.grey.shade400,
-                      ),
+                      border: Border.all(color: Colors.grey.shade400),
                     ),
                   ),
                 ],
@@ -4266,12 +3666,10 @@ class CustomBottomPanel extends StatefulWidget {
   });
 
   @override
-  State<CustomBottomPanel> createState() =>
-      _CustomBottomPanelState();
+  State<CustomBottomPanel> createState() => _CustomBottomPanelState();
 }
 
-class _CustomBottomPanelState
-    extends State<CustomBottomPanel> {
+class _CustomBottomPanelState extends State<CustomBottomPanel> {
   FocusNode qttyNode = FocusNode();
   FocusNode priceNode = FocusNode();
 
@@ -4280,10 +3678,8 @@ class _CustomBottomPanelState
   //
   //
 
-  TextEditingController quantityController =
-      TextEditingController(text: '');
-  TextEditingController priceController =
-      TextEditingController();
+  TextEditingController quantityController = TextEditingController(text: '');
+  TextEditingController priceController = TextEditingController();
   FocusNode mainSearchNode = FocusNode();
 
   CategoryClass? selectedCat;
@@ -4296,34 +3692,24 @@ class _CustomBottomPanelState
       // elevation: 1,
       child: Ink(
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-        ),
+        decoration: BoxDecoration(color: Colors.grey.shade100),
         child: SafeArea(
           child: Container(
             // height: MediaQuery.of(context).size.height * 0.99,
             padding:
                 screenWidth(context) < mobileScreen
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(
-                      10,
-                      10,
-                      10,
-                      10,
-                    ),
+                    : const EdgeInsets.fromLTRB(10, 10, 10, 10),
             child: Column(
               children: [
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal:
-                          screenWidth(context) <
-                                  mobileScreen
+                          screenWidth(context) < mobileScreen
                               ? 0
-                              : screenWidth(context) >
-                                      mobileScreen &&
-                                  screenWidth(context) <
-                                      tabletScreen
+                              : screenWidth(context) > mobileScreen &&
+                                  screenWidth(context) < tabletScreen
                               ? 20
                               : returnCategoriesProvider()
                                   .categoriesMain
@@ -4337,18 +3723,12 @@ class _CustomBottomPanelState
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius:
-                            screenWidth(context) <
-                                    mobileScreen
+                            screenWidth(context) < mobileScreen
                                 ? null
                                 : BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color.fromARGB(
-                              39,
-                              4,
-                              1,
-                              41,
-                            ),
+                            color: const Color.fromARGB(39, 4, 1, 41),
                             blurRadius: 10,
                           ),
                         ],
@@ -4356,24 +3736,17 @@ class _CustomBottomPanelState
                       child: Column(
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 15.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15.0,
+                            ),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     InkWell(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
+                                      mouseCursor: SystemMouseCursors.click,
                                       onTap: () {
                                         setState(() {});
                                       },
@@ -4382,14 +3755,9 @@ class _CustomBottomPanelState
                                         style: TextStyle(
                                           fontSize:
                                               returnTheme(
-                                                    context,
-                                                  )
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                                context,
+                                              ).mobileTexts.b1.fontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
@@ -4398,39 +3766,25 @@ class _CustomBottomPanelState
                                       style: TextStyle(
                                         fontSize:
                                             returnTheme(
-                                                  context,
-                                                )
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
+                                              context,
+                                            ).mobileTexts.b2.fontSize,
                                       ),
                                     ),
                                   ],
                                 ),
                                 InkWell(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
+                                  mouseCursor: SystemMouseCursors.click,
                                   onTap: () {
                                     widget.close();
-                                    widget.searchController
-                                        .clear();
+                                    widget.searchController.clear();
                                     // clear();
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.all(
-                                      10,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.grey.shade800,
                                     ),
-                                    decoration:
-                                        BoxDecoration(
-                                          shape:
-                                              BoxShape
-                                                  .circle,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade800,
-                                        ),
                                     child: Icon(
                                       color: Colors.white,
                                       Icons.clear_rounded,
@@ -4442,10 +3796,9 @@ class _CustomBottomPanelState
                           ),
                           SizedBox(height: 10),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20.0,
+                            ),
                             child: Row(
                               children: [
                                 Expanded(
@@ -4454,33 +3807,24 @@ class _CustomBottomPanelState
                                     clearTextField: () {
                                       setState(() {});
                                     },
-                                    searchController:
-                                        widget
-                                            .searchController,
-                                    onChanged: (
-                                      value,
-                                    ) async {
+                                    searchController: widget.searchController,
+                                    onChanged: (value) async {
                                       var items = returnData()
                                           .productList()
                                           .where(
                                             (product) =>
-                                                product
-                                                    .barcode
+                                                product.barcode
                                                     ?.toLowerCase() ==
-                                                value
-                                                    .toLowerCase(),
+                                                value.toLowerCase(),
                                           );
-                                      if (items
-                                          .isNotEmpty) {
+                                      if (items.isNotEmpty) {
                                         SalesAuthAction().useBarcodeAction(
                                           context: context,
                                           action: () async {
                                             await playBeep();
                                           },
                                           failAction: () {
-                                            widget
-                                                .searchController
-                                                .clear();
+                                            widget.searchController.clear();
                                           },
                                         );
                                       }
@@ -4494,28 +3838,22 @@ class _CustomBottomPanelState
                                           //     .clear();
                                           // searchResult =
                                           //     null;
-                                          String? result =
-                                              await scanCode(
-                                                context,
-                                                'Failed',
-                                              );
+                                          String? result = await scanCode(
+                                            context,
+                                            'Failed',
+                                          );
                                           setState(() {});
-                                          if (result !=
-                                              null) {
-                                            widget
-                                                .searchController
-                                                .text = result;
+                                          if (result != null) {
+                                            widget.searchController.text =
+                                                result;
                                           }
                                           var items = returnData()
                                               .productList()
                                               .where(
                                                 (product) =>
-                                                    product
-                                                        .barcode ==
-                                                    result,
+                                                    product.barcode == result,
                                               );
-                                          if (items
-                                              .isNotEmpty) {
+                                          if (items.isNotEmpty) {
                                             await playBeep();
                                           }
                                           setState(() {});
@@ -4527,28 +3865,20 @@ class _CustomBottomPanelState
                                 Builder(
                                   builder: (context) {
                                     if (!kIsWeb &&
-                                        screenWidth(
-                                              context,
-                                            ) >
-                                            mobileScreen) {
+                                        screenWidth(context) > mobileScreen) {
                                       return Row(
                                         children: [
-                                          SizedBox(
-                                            width: 2,
-                                          ),
+                                          SizedBox(width: 2),
                                           IconButton(
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             onPressed: () async {
-                                              mainSearchNode
-                                                  .requestFocus();
+                                              mainSearchNode.requestFocus();
                                               await showOnScreenKeyboard();
                                             },
                                             icon: Icon(
                                               size: 25,
-                                              Icons
-                                                  .keyboard_alt_outlined,
+                                              Icons.keyboard_alt_outlined,
                                             ),
                                           ),
                                         ],
@@ -4560,31 +3890,19 @@ class _CustomBottomPanelState
                                 ),
                                 Visibility(
                                   visible:
-                                      screenWidth(
-                                        context,
-                                      ) <=
-                                      tabletScreenSmall,
+                                      screenWidth(context) <= tabletScreenSmall,
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          left: 10.0,
-                                        ),
+                                    padding: const EdgeInsets.only(left: 10.0),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .center,
+                                          CrossAxisAlignment.center,
                                       spacing: 3,
                                       children: [
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
+                                                theme.mobileTexts.b4.fontSize,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           'Add List',
                                         ),
@@ -4608,133 +3926,115 @@ class _CustomBottomPanelState
                           ),
                           Visibility(
                             visible:
-                                screenWidth(context) <=
-                                    tabletScreenSmall &&
+                                screenWidth(context) <= tabletScreenSmall &&
                                 returnCategoriesProvider()
                                     .categoriesMain
                                     .isNotEmpty,
                             child: Container(
-                              margin: EdgeInsets.fromLTRB(
-                                5,
-                                8,
-                                5,
-                                0,
-                              ),
-                              padding: EdgeInsets.only(
-                                bottom: 8,
-                                top: 8,
-                              ),
+                              margin: EdgeInsets.fromLTRB(5, 8, 5, 0),
+                              padding: EdgeInsets.only(bottom: 8, top: 8),
                               height: 40,
-                              width:
-                                  screenWidth(context) - 30,
+                              width: screenWidth(context) - 30,
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade300,
+                                    color: Colors.grey.shade300,
                                   ),
-                                  top: BorderSide(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade300,
-                                  ),
+                                  top: BorderSide(color: Colors.grey.shade300),
                                 ),
                               ),
                               child: Center(
                                 child: ListView(
                                   shrinkWrap: true,
-                                  scrollDirection:
-                                      Axis.horizontal,
+                                  scrollDirection: Axis.horizontal,
                                   children:
-                                      returnCategoriesProvider().categoriesMain.map((
-                                        cat,
-                                      ) {
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal:
-                                                    3,
-                                              ),
-                                          child: Material(
-                                            color:
-                                                Colors
-                                                    .transparent,
-                                            child: Ink(
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    selectedCat ==
-                                                            cat
-                                                        ? theme.lightModeColor.tertColor200
-                                                        : theme.lightModeColor.tertColor100,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      2,
-                                                    ),
-                                              ),
-                                              child: InkWell(
-                                                mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      5,
-                                                    ),
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (selectedCat ==
-                                                        cat) {
-                                                      selectedCat =
-                                                          null;
-                                                    } else {
-                                                      selectedCat =
-                                                          cat;
-                                                    }
-                                                  });
-                                                },
-                                                child: Container(
-                                                  // constraints: BoxConstraints(
-                                                  //   maxWidth:
-                                                  //       250,
-                                                  //   minWidth:
-                                                  //       50,
-                                                  // ),
-                                                  padding: EdgeInsets.symmetric(
-                                                    vertical:
-                                                        5,
-                                                    horizontal:
-                                                        10,
+                                      returnCategoriesProvider().categoriesMain
+                                          .map((cat) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 3,
                                                   ),
-                                                  child: Text(
-                                                    textAlign:
-                                                        TextAlign.center,
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          selectedCat ==
-                                                                  cat
-                                                              ? FontWeight.bold
-                                                              : FontWeight.normal,
-                                                      fontSize:
-                                                          theme.mobileTexts.b4.fontSize,
-                                                      color:
-                                                          selectedCat ==
-                                                                  cat
-                                                              ? Colors.white
-                                                              : Colors.black,
-                                                    ),
-                                                    cutLongText(
-                                                      cat.name,
-                                                      20,
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: Ink(
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        selectedCat == cat
+                                                            ? theme
+                                                                .lightModeColor
+                                                                .tertColor200
+                                                            : theme
+                                                                .lightModeColor
+                                                                .tertColor100,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          2,
+                                                        ),
+                                                  ),
+                                                  child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors
+                                                            .click,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                    onTap: () {
+                                                      setState(() {
+                                                        if (selectedCat ==
+                                                            cat) {
+                                                          selectedCat = null;
+                                                        } else {
+                                                          selectedCat = cat;
+                                                        }
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      // constraints: BoxConstraints(
+                                                      //   maxWidth:
+                                                      //       250,
+                                                      //   minWidth:
+                                                      //       50,
+                                                      // ),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 5,
+                                                            horizontal: 10,
+                                                          ),
+                                                      child: Text(
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              selectedCat == cat
+                                                                  ? FontWeight
+                                                                      .bold
+                                                                  : FontWeight
+                                                                      .normal,
+                                                          fontSize:
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b4
+                                                                  .fontSize,
+                                                          color:
+                                                              selectedCat == cat
+                                                                  ? Colors.white
+                                                                  : Colors
+                                                                      .black,
+                                                        ),
+                                                        cutLongText(
+                                                          cat.name,
+                                                          20,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
+                                            );
+                                          })
+                                          .toList(),
                                 ),
                               ),
                             ),
@@ -4744,62 +4044,68 @@ class _CustomBottomPanelState
                               children: [
                                 Expanded(
                                   child: Stack(
-                                    alignment: Alignment(
-                                      0,
-                                      1,
-                                    ),
+                                    alignment: Alignment(0, 1),
                                     children: [
                                       Builder(
                                         builder: (context) {
                                           var products =
-                                              selectedCat ==
-                                                      null
+                                              selectedCat == null
                                                   ? returnData().productList().where(
-                                                    (
-                                                      item,
-                                                    ) =>
+                                                    (item) =>
                                                         item.barcode ==
-                                                            widget.searchController.text ||
-                                                        item.name.toLowerCase().contains(
-                                                          widget.searchController.text.toLowerCase(),
-                                                        ),
+                                                            widget
+                                                                .searchController
+                                                                .text ||
+                                                        item.name
+                                                            .toLowerCase()
+                                                            .contains(
+                                                              widget
+                                                                  .searchController
+                                                                  .text
+                                                                  .toLowerCase(),
+                                                            ),
                                                   )
                                                   : returnData().productList().where(
-                                                    (
-                                                      itemm,
-                                                    ) =>
-                                                        itemm.categories?.contains(
-                                                              selectedCat?.uuid,
-                                                            ) ==
+                                                    (itemm) =>
+                                                        itemm.categories
+                                                                ?.contains(
+                                                                  selectedCat
+                                                                      ?.uuid,
+                                                                ) ==
                                                             true &&
                                                         (itemm.barcode ==
-                                                                widget.searchController.text ||
-                                                            itemm.name.toLowerCase().contains(
-                                                              widget.searchController.text.toLowerCase(),
-                                                            )),
+                                                                widget
+                                                                    .searchController
+                                                                    .text ||
+                                                            itemm.name
+                                                                .toLowerCase()
+                                                                .contains(
+                                                                  widget
+                                                                      .searchController
+                                                                      .text
+                                                                      .toLowerCase(),
+                                                                )),
                                                   );
 
-                                          if (products
-                                              .isEmpty) {
+                                          if (products.isEmpty) {
                                             return Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    top:
-                                                        20.0,
-                                                    left:
-                                                        30,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                top: 20.0,
+                                                left: 30,
+                                              ),
                                               child: Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Row(
                                                     children: [
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              theme.mobileTexts.b1.fontSize,
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b1
+                                                                  .fontSize,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
@@ -4818,65 +4124,47 @@ class _CustomBottomPanelState
                                                       .userShop()!
                                                       .shopId!,
                                                 );
-                                                setState(
-                                                  () {},
-                                                );
+                                                setState(() {});
                                               },
-                                              backgroundColor:
-                                                  Colors
-                                                      .white,
+                                              backgroundColor: Colors.white,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
-                                              displacement:
-                                                  15,
+                                              displacement: 15,
                                               child: ListView.builder(
-                                                padding:
-                                                    EdgeInsets.only(
-                                                      top:
-                                                          10,
-                                                    ),
-                                                itemCount:
-                                                    products
-                                                        .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
+                                                padding: EdgeInsets.only(
+                                                  top: 10,
+                                                ),
+                                                itemCount: products.length,
+                                                itemBuilder: (context, index) {
                                                   final product =
-                                                      products
-                                                          .toList()[index];
+                                                      products.toList()[index];
                                                   return ProductTileCartSearch(
                                                     action: () {
                                                       addItemToCartFromCartItemList(
-                                                        useTempCart:
-                                                            true,
+                                                        useTempCart: true,
                                                         closeAction: () {
                                                           Navigator.of(
                                                             context,
                                                           ).pop();
                                                         },
-                                                        context:
-                                                            context,
+                                                        context: context,
                                                         priceController:
                                                             priceController,
-                                                        priceNode:
-                                                            priceNode,
+                                                        priceNode: priceNode,
                                                         product:
                                                             product.copyWith(),
-                                                        qttyNode:
-                                                            qttyNode,
+                                                        qttyNode: qttyNode,
                                                         quantityController:
                                                             quantityController,
                                                         searchController:
-                                                            widget.searchController,
+                                                            widget
+                                                                .searchController,
                                                       );
                                                     },
-                                                    theme:
-                                                        theme,
-                                                    product:
-                                                        product,
+                                                    theme: theme,
+                                                    product: product,
                                                   );
                                                 },
                                               ),
@@ -4889,27 +4177,19 @@ class _CustomBottomPanelState
                                             returnSalesProviderContext(
                                               context,
                                             ).isAddMultipleItemsToCart &&
-                                            screenWidth(
-                                                  context,
-                                                ) <=
+                                            screenWidth(context) <=
                                                 tabletScreenSmall,
                                         child: SizedBox(
                                           height:
-                                              screenHeight(
-                                                context,
-                                              ) *
-                                              (isExpanded
-                                                  ? 0.7
-                                                  : 0.4),
+                                              screenHeight(context) *
+                                              (isExpanded ? 0.7 : 0.4),
                                           child: MultipleTemporaryCartItems(
                                             expandAction: () {
                                               setState(() {
-                                                isExpanded =
-                                                    !isExpanded;
+                                                isExpanded = !isExpanded;
                                               });
                                             },
-                                            isExpanded:
-                                                isExpanded,
+                                            isExpanded: isExpanded,
                                           ),
                                         ),
                                       ),
@@ -4918,83 +4198,82 @@ class _CustomBottomPanelState
                                 ),
                                 Visibility(
                                   visible:
-                                      screenWidth(context) >
-                                      tabletScreenSmall,
+                                      screenWidth(context) > tabletScreenSmall,
                                   child: Expanded(
                                     child: Row(
                                       children: [
                                         Container(
-                                          margin:
-                                              EdgeInsets.symmetric(
-                                                horizontal:
-                                                    20,
-                                              ),
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade300,
+                                          margin: EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                          ),
+                                          color: Colors.grey.shade300,
                                           width: 2,
-                                          height:
-                                              double
-                                                  .infinity,
+                                          height: double.infinity,
                                         ),
                                         Expanded(
                                           child: Container(
-                                            height:
-                                                double
-                                                    .infinity,
-                                            padding:
-                                                EdgeInsets.all(
-                                                  10,
-                                                ),
+                                            height: double.infinity,
+                                            padding: EdgeInsets.all(10),
                                             child: Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(
-                                                        5.0,
-                                                      ),
+                                                  padding: const EdgeInsets.all(
+                                                    5.0,
+                                                  ),
                                                   child: Row(
                                                     children: [
                                                       Visibility(
                                                         visible:
-                                                            returnCategoriesProvider().categoriesMain.isNotEmpty,
+                                                            returnCategoriesProvider()
+                                                                .categoriesMain
+                                                                .isNotEmpty,
                                                         child: Expanded(
                                                           child: Row(
-                                                            spacing:
-                                                                3,
+                                                            spacing: 3,
                                                             children: [
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      theme.mobileTexts.b4.fontSize,
+                                                                      theme
+                                                                          .mobileTexts
+                                                                          .b4
+                                                                          .fontSize,
                                                                   fontWeight:
-                                                                      FontWeight.bold,
+                                                                      FontWeight
+                                                                          .bold,
                                                                 ),
                                                                 'Selected Category:',
                                                               ),
                                                               Container(
-                                                                padding: EdgeInsets.fromLTRB(
-                                                                  7,
-                                                                  3,
-                                                                  7,
-                                                                  5,
-                                                                ),
-                                                                decoration: BoxDecoration(
-                                                                  color:
-                                                                      Colors.grey.shade200,
-                                                                ),
+                                                                padding:
+                                                                    EdgeInsets.fromLTRB(
+                                                                      7,
+                                                                      3,
+                                                                      7,
+                                                                      5,
+                                                                    ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                      color:
+                                                                          Colors
+                                                                              .grey
+                                                                              .shade200,
+                                                                    ),
                                                                 child: Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme.mobileTexts.b3.fontSize,
+                                                                        theme
+                                                                            .mobileTexts
+                                                                            .b3
+                                                                            .fontSize,
                                                                     fontWeight:
-                                                                        FontWeight.bold,
+                                                                        FontWeight
+                                                                            .bold,
                                                                   ),
-                                                                  selectedCat?.name ??
+                                                                  selectedCat
+                                                                          ?.name ??
                                                                       'None',
                                                                 ),
                                                               ),
@@ -5004,17 +4283,17 @@ class _CustomBottomPanelState
                                                                     null,
                                                                 child: Material(
                                                                   color:
-                                                                      Colors.transparent,
+                                                                      Colors
+                                                                          .transparent,
                                                                   child: InkWell(
                                                                     mouseCursor:
-                                                                        SystemMouseCursors.click,
+                                                                        SystemMouseCursors
+                                                                            .click,
                                                                     onTap: () {
-                                                                      setState(
-                                                                        () {
-                                                                          selectedCat =
-                                                                              null;
-                                                                        },
-                                                                      );
+                                                                      setState(() {
+                                                                        selectedCat =
+                                                                            null;
+                                                                      });
                                                                     },
                                                                     child: Padding(
                                                                       padding: const EdgeInsets.symmetric(
@@ -5026,7 +4305,8 @@ class _CustomBottomPanelState
                                                                       child: Icon(
                                                                         size:
                                                                             15,
-                                                                        Icons.clear,
+                                                                        Icons
+                                                                            .clear,
                                                                       ),
                                                                     ),
                                                                   ),
@@ -5039,23 +4319,26 @@ class _CustomBottomPanelState
                                                       Row(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
-                                                        spacing:
-                                                            5,
+                                                        spacing: 5,
                                                         children: [
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
+                                                                  theme
+                                                                      .mobileTexts
+                                                                      .b3
+                                                                      .fontSize,
                                                               fontWeight:
-                                                                  FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                             'Add Multiple',
                                                           ),
                                                           MyToggleButton(
-                                                            theme:
-                                                                theme,
+                                                            theme: theme,
                                                             toggle: () {
-                                                              returnSalesProvider().toggleAddMultipleItemsToCart();
+                                                              returnSalesProvider()
+                                                                  .toggleAddMultipleItemsToCart();
                                                             },
                                                             boolValue:
                                                                 returnSalesProviderContext(
@@ -5079,17 +4362,16 @@ class _CustomBottomPanelState
                                                       child: Wrap(
                                                         alignment:
                                                             WrapAlignment.start,
-                                                        runSpacing:
-                                                            10,
-                                                        spacing:
-                                                            10,
+                                                        runSpacing: 10,
+                                                        spacing: 10,
                                                         children:
                                                             returnCategoriesProvider().categoriesMain.map((
                                                               cat,
                                                             ) {
                                                               return Material(
                                                                 color:
-                                                                    Colors.transparent,
+                                                                    Colors
+                                                                        .transparent,
                                                                 child: Ink(
                                                                   decoration: BoxDecoration(
                                                                     color:
@@ -5097,29 +4379,30 @@ class _CustomBottomPanelState
                                                                                 cat
                                                                             ? theme.lightModeColor.tertColor200
                                                                             : theme.lightModeColor.tertColor100,
-                                                                    borderRadius: BorderRadius.circular(
-                                                                      2,
-                                                                    ),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                          2,
+                                                                        ),
                                                                   ),
                                                                   child: InkWell(
                                                                     mouseCursor:
-                                                                        SystemMouseCursors.click,
-                                                                    borderRadius: BorderRadius.circular(
-                                                                      5,
-                                                                    ),
+                                                                        SystemMouseCursors
+                                                                            .click,
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                          5,
+                                                                        ),
                                                                     onTap: () {
-                                                                      setState(
-                                                                        () {
-                                                                          if (selectedCat ==
-                                                                              cat) {
-                                                                            selectedCat =
-                                                                                null;
-                                                                          } else {
-                                                                            selectedCat =
-                                                                                cat;
-                                                                          }
-                                                                        },
-                                                                      );
+                                                                      setState(() {
+                                                                        if (selectedCat ==
+                                                                            cat) {
+                                                                          selectedCat =
+                                                                              null;
+                                                                        } else {
+                                                                          selectedCat =
+                                                                              cat;
+                                                                        }
+                                                                      });
                                                                     },
                                                                     child: Container(
                                                                       constraints: BoxConstraints(
@@ -5166,29 +4449,24 @@ class _CustomBottomPanelState
                                                   ),
                                                 ),
                                                 Builder(
-                                                  builder: (
-                                                    context,
-                                                  ) {
+                                                  builder: (context) {
                                                     if (returnSalesProviderContext(
                                                       context,
                                                     ).isAddMultipleItemsToCart) {
                                                       return Expanded(
                                                         flex:
-                                                            isExpanded
-                                                                ? 7
-                                                                : 1,
-                                                        child: MultipleTemporaryCartItems(
-                                                          expandAction: () {
-                                                            setState(
-                                                              () {
-                                                                isExpanded =
-                                                                    !isExpanded;
+                                                            isExpanded ? 7 : 1,
+                                                        child:
+                                                            MultipleTemporaryCartItems(
+                                                              expandAction: () {
+                                                                setState(() {
+                                                                  isExpanded =
+                                                                      !isExpanded;
+                                                                });
                                                               },
-                                                            );
-                                                          },
-                                                          isExpanded:
-                                                              isExpanded,
-                                                        ),
+                                                              isExpanded:
+                                                                  isExpanded,
+                                                            ),
                                                       );
                                                     } else {
                                                       return SizedBox();
@@ -5239,8 +4517,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
           Divider(),
           SizedBox(height: 10),
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 style: TextStyle(
@@ -5253,9 +4530,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                 visible:
                     screenWidth(context) < tabletScreenSmall
                         ? true
-                        : returnCategoriesProvider()
-                            .categoriesMain
-                            .isNotEmpty,
+                        : returnCategoriesProvider().categoriesMain.isNotEmpty,
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -5271,23 +4546,15 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                         children: [
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b4.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            isExpanded
-                                ? 'Colapse'
-                                : 'Expand',
+                            isExpanded ? 'Colapse' : 'Expand',
                           ),
                           Icon(
                             !isExpanded
-                                ? Icons
-                                    .keyboard_double_arrow_up_rounded
-                                : Icons
-                                    .keyboard_double_arrow_down_rounded,
+                                ? Icons.keyboard_double_arrow_up_rounded
+                                : Icons.keyboard_double_arrow_down_rounded,
                           ),
                         ],
                       ),
@@ -5304,16 +4571,12 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                     context,
                   ).tempCartItems.reversed.map((item) {
                     return Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 4,
-                      ),
+                      margin: EdgeInsets.symmetric(vertical: 4),
                       padding: EdgeInsets.symmetric(
                         vertical: 6,
                         horizontal: 10,
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                      ),
+                      decoration: BoxDecoration(color: Colors.grey.shade100),
                       child: Row(
                         spacing: 5,
                         children: [
@@ -5323,29 +4586,18 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   "${formatLargeNumberDouble(item.quantity)} - ",
                                 ),
                                 Flexible(
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    item.getItem()?.name ??
-                                        'Item Name',
+                                    item.getItem()?.name ?? 'Item Name',
                                   ),
                                 ),
                               ],
@@ -5353,11 +4605,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                           ),
                           Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                             formatMoneyBig(
@@ -5368,43 +4616,31 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                           Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
+                              mouseCursor: SystemMouseCursors.click,
                               onTap: () {
                                 showDialog(
                                   context: context,
-                                  builder: (
-                                    confirmContext,
-                                  ) {
+                                  builder: (confirmContext) {
                                     return ConfirmationAlert(
                                       theme: theme,
                                       message:
                                           'Are you sure you want to remove this item from Temporary Selected?',
-                                      title:
-                                          'Remove Item From List',
+                                      title: 'Remove Item From List',
                                       action: () {
-                                        Navigator.of(
-                                          confirmContext,
-                                        ).pop();
+                                        Navigator.of(confirmContext).pop();
                                         returnSalesProvider()
-                                            .deleteItemFromTempCart(
-                                              item: item,
-                                            );
+                                            .deleteItemFromTempCart(item: item);
                                       },
                                     );
                                   },
                                 );
                               },
                               child: Padding(
-                                padding:
-                                    EdgeInsetsGeometry.symmetric(
-                                      vertical: 5,
-                                      horizontal: 10,
-                                    ),
-                                child: Icon(
-                                  size: 20,
-                                  Icons.clear,
+                                padding: EdgeInsetsGeometry.symmetric(
+                                  vertical: 5,
+                                  horizontal: 10,
                                 ),
+                                child: Icon(size: 20, Icons.clear),
                               ),
                             ),
                           ),
@@ -5424,17 +4660,13 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                 Expanded(
                   child: Ink(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
+                      borderRadius: BorderRadius.circular(5),
                       color: Colors.grey.shade200,
                     ),
                     child: InkWell(
                       mouseCursor: SystemMouseCursors.click,
                       onTap: () {
-                        if (returnSalesProvider()
-                            .tempCartItems
-                            .isNotEmpty) {
+                        if (returnSalesProvider().tempCartItems.isNotEmpty) {
                           showDialog(
                             context: context,
                             builder: (confirmContext) {
@@ -5444,11 +4676,8 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                                     'You are about to clear Temporary Cart List. Are you sure you want to proceed?',
                                 title: 'Clear List',
                                 action: () {
-                                  Navigator.of(
-                                    confirmContext,
-                                  ).pop();
-                                  returnSalesProvider()
-                                      .clearTempCartList();
+                                  Navigator.of(confirmContext).pop();
+                                  returnSalesProvider().clearTempCartList();
                                 },
                               );
                             },
@@ -5463,11 +4692,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                         child: Center(
                           child: Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey.shade800,
                             ),
@@ -5481,20 +4706,13 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                 Expanded(
                   child: Ink(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color:
-                          theme
-                              .lightModeColor
-                              .errorColor200,
+                      borderRadius: BorderRadius.circular(5),
+                      color: theme.lightModeColor.errorColor200,
                     ),
                     child: InkWell(
                       mouseCursor: SystemMouseCursors.click,
                       onTap: () async {
-                        if (returnSalesProvider()
-                            .tempCartItems
-                            .isNotEmpty) {
+                        if (returnSalesProvider().tempCartItems.isNotEmpty) {
                           if (returnShopProvider()
                                       .userShop()
                                       ?.printSalesDocket ==
@@ -5503,18 +4721,14 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                                 context,
                                 listen: false,
                               ).getContinuousPrintDocket() &&
-                              screenWidth(context) >
-                                  tabletScreenSmall) {
+                              screenWidth(context) > tabletScreenSmall) {
                             var res =
                                 kIsWeb
                                     ? await downloadDocket(
                                       setTotal: false,
                                       items:
-                                          returnSalesProvider()
-                                              .tempCartItems,
-                                      cart:
-                                          returnSalesProvider()
-                                              .currentCart(),
+                                          returnSalesProvider().tempCartItems,
+                                      cart: returnSalesProvider().currentCart(),
                                       // ignore: use_build_context_synchronously
                                       context: context,
                                       fileName:
@@ -5529,11 +4743,8 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                                     : await printDocket(
                                       setTotal: false,
                                       items:
-                                          returnSalesProvider()
-                                              .tempCartItems,
-                                      cart:
-                                          returnSalesProvider()
-                                              .currentCart(),
+                                          returnSalesProvider().tempCartItems,
+                                      cart: returnSalesProvider().currentCart(),
                                       // ignore: use_build_context_synchronously
                                       context: context,
                                       fileName:
@@ -5559,14 +4770,12 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                                 // ignore: use_build_context_synchronously
                                 context,
                               ).pop();
-                              returnSalesProvider()
-                                  .clearTempCartList();
+                              returnSalesProvider().clearTempCartList();
                             }
                           } else {
-                            await returnSalesProvider()
-                                .addMultipleItemsToCart(
-                                  context: context,
-                                );
+                            await returnSalesProvider().addMultipleItemsToCart(
+                              context: context,
+                            );
                             // Navigator.of(
                             //   confirmContext,
                             // ).pop();
@@ -5574,8 +4783,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                               // ignore: use_build_context_synchronously
                               context,
                             ).pop();
-                            returnSalesProvider()
-                                .clearTempCartList();
+                            returnSalesProvider().clearTempCartList();
                           }
                           //     },
                           //   );
@@ -5592,11 +4800,7 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                         child: Center(
                           child: Text(
                             style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                              fontSize: theme.mobileTexts.b3.fontSize,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -5628,9 +4832,7 @@ Future<void> showOnScreenKeyboard() async {
       ], mode: ProcessStartMode.detached);
     }
   } catch (e) {
-    await mainLocalLog(
-      'Error Opening Keyboard: ${e.toString()}',
-    );
+    await mainLocalLog('Error Opening Keyboard: ${e.toString()}');
   }
 }
 
@@ -5656,12 +4858,10 @@ class CountryBottomSheet extends StatefulWidget {
   });
 
   @override
-  State<CountryBottomSheet> createState() =>
-      _CountryBottomSheetState();
+  State<CountryBottomSheet> createState() => _CountryBottomSheetState();
 }
 
-class _CountryBottomSheetState
-    extends State<CountryBottomSheet> {
+class _CountryBottomSheetState extends State<CountryBottomSheet> {
   //
   //
   //
@@ -5684,20 +4884,12 @@ class _CountryBottomSheetState
                 blurRadius: 5,
               ),
             ],
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20),
-            ),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Container(
-            height:
-                MediaQuery.of(context).size.height * 0.9,
+            height: MediaQuery.of(context).size.height * 0.9,
 
-            padding: const EdgeInsets.fromLTRB(
-              15,
-              15,
-              15,
-              45,
-            ),
+            padding: const EdgeInsets.fromLTRB(15, 15, 15, 45),
             child: Column(
               children: [
                 Center(
@@ -5705,33 +4897,25 @@ class _CountryBottomSheetState
                     height: 4,
                     width: 70,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ),
+                      borderRadius: BorderRadius.circular(15),
                       color: Colors.grey.shade400,
                     ),
                   ),
                 ),
                 SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
                   child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Select Your ${widget.currentSetting}',
                             style: TextStyle(
                               fontSize:
-                                  returnTheme(
-                                    context,
-                                  ).mobileTexts.b1.fontSize,
+                                  returnTheme(context).mobileTexts.b1.fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -5739,16 +4923,13 @@ class _CountryBottomSheetState
                             'Search For ${widget.currentSetting} to Select',
                             style: TextStyle(
                               fontSize:
-                                  returnTheme(
-                                    context,
-                                  ).mobileTexts.b2.fontSize,
+                                  returnTheme(context).mobileTexts.b2.fontSize,
                             ),
                           ),
                         ],
                       ),
                       InkWell(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onTap: () {
                           widget.close();
                         },
@@ -5758,10 +4939,7 @@ class _CountryBottomSheetState
                             shape: BoxShape.circle,
                             color: Colors.grey.shade800,
                           ),
-                          child: Icon(
-                            color: Colors.white,
-                            Icons.clear_rounded,
-                          ),
+                          child: Icon(color: Colors.white, Icons.clear_rounded),
                         ),
                       ),
                     ],
@@ -5769,9 +4947,7 @@ class _CountryBottomSheetState
                 ),
                 SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: GeneralTextfieldOnly(
                     hint:
                         'Search for ${widget.currentSetting.toLowerCase()} names',
@@ -5787,8 +4963,7 @@ class _CountryBottomSheetState
                   child: FutureBuilder(
                     future: widget.future,
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState ==
-                          ConnectionState.waiting) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return Scaffold(
                           body: returnCompProvider(
                             context,
@@ -5834,8 +5009,7 @@ class _CountryBottomSheetState
                               },
                               icon: Icons.clear,
                               altAction: () async {
-                                await returnData()
-                                    .getProducts(shopId());
+                                await returnData().getProducts(shopId());
                               },
                               altActionText: 'Refresh',
                               altIcon: Icons.refresh,
@@ -5849,10 +5023,7 @@ class _CountryBottomSheetState
                                 decoration: BoxDecoration(
                                   border: Border(
                                     top: BorderSide(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade300,
+                                      color: Colors.grey.shade300,
                                     ),
                                   ),
                                 ),
@@ -5862,22 +5033,15 @@ class _CountryBottomSheetState
                                     title: Text(item),
                                     onTap: () {},
                                     trailing: Checkbox(
-                                      shape: CircleBorder(
-                                        side: BorderSide(),
-                                      ),
+                                      shape: CircleBorder(side: BorderSide()),
                                       side: BorderSide(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade400,
+                                        color: Colors.grey.shade400,
                                         width: 1.2,
                                       ),
                                       activeColor:
                                           returnTheme(
-                                                context,
-                                              )
-                                              .lightModeColor
-                                              .prColor250,
+                                            context,
+                                          ).lightModeColor.prColor250,
                                       value: true,
                                       onChanged: (value) {},
                                     ),

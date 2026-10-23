@@ -59,12 +59,10 @@ class AddProductDesktop extends StatefulWidget {
   });
 
   @override
-  State<AddProductDesktop> createState() =>
-      _AddProductDesktopState();
+  State<AddProductDesktop> createState() => _AddProductDesktopState();
 }
 
-class _AddProductDesktopState
-    extends State<AddProductDesktop> {
+class _AddProductDesktopState extends State<AddProductDesktop> {
   bool barCodeSet = false;
   bool isLoading = false;
   bool showSuccess = false;
@@ -80,11 +78,9 @@ class _AddProductDesktopState
   bool isOpenGroupUnit = false;
   bool isSizedTypeOpen = false;
 
-  TextEditingController expiryDateC =
-      TextEditingController();
+  TextEditingController expiryDateC = TextEditingController();
 
-  TextEditingController barcodeController =
-      TextEditingController();
+  TextEditingController barcodeController = TextEditingController();
 
   int quantityType = 1;
 
@@ -109,8 +105,7 @@ class _AddProductDesktopState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Item Name Must be set before item can be created',
+            message: 'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
@@ -134,8 +129,7 @@ class _AddProductDesktopState
       final safeContext = context;
       var samePro = returnData().productList().where(
         (pr) =>
-            pr.name.toLowerCase() ==
-            widget.nameController.text.toLowerCase(),
+            pr.name.toLowerCase() == widget.nameController.text.toLowerCase(),
       );
       showDialog(
         context: safeContext,
@@ -146,10 +140,7 @@ class _AddProductDesktopState
                 samePro.isNotEmpty
                     ? 'Item with the name  ${widget.nameController.text.toUpperCase()}  already Exists in your Inventory. Are you sure you want to proceed to create a duplicate Item?'
                     : 'You are about to add a new item to your stock, are you sure you want to proceed?',
-            title:
-                samePro.isNotEmpty
-                    ? 'Item Already Exists'
-                    : 'Are you sure?',
+            title: samePro.isNotEmpty ? 'Item Already Exists' : 'Are you sure?',
             action: () async {
               Navigator.of(confirmDialog).pop();
 
@@ -161,9 +152,7 @@ class _AddProductDesktopState
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.itemCreated,
                 source: ItemHistoryEventClass.manualSource,
-                destination:
-                    ItemHistoryEventClass
-                        .productDestination,
+                destination: ItemHistoryEventClass.productDestination,
                 unit: 'Not Set',
                 shopId: shopId(),
                 title: 'Item Created',
@@ -179,20 +168,14 @@ class _AddProductDesktopState
                 isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
-                  manageSalesWastage:
-                      dataProvider.manageWastage,
+                  manageSalesWastage: dataProvider.manageWastage,
+                  deriveQuantityFromPrice: dataProvider.deriveQuantityFromPrice,
                   quantityType: quantityType,
                   heightDimension: double.tryParse(
-                    widget.heightController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.heightController.text.replaceAll(',', ''),
                   ),
                   widthDimension: double.tryParse(
-                    widget.widthController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.widthController.text.replaceAll(',', ''),
                   ),
                   dimensionUnit: dataProvider.selectedDimensionUnit,
                   dimensionUnitConversion:
@@ -203,9 +186,7 @@ class _AddProductDesktopState
                     sellingText: widget.sellingController.text,
                   ),
                   useGroupUnit: dataProvider.useGroupUnit,
-                  categories:
-                      dataProvider.selectedCategories
-                          .toList(),
+                  categories: dataProvider.selectedCategories.toList(),
                   storageUuid: null,
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
@@ -214,52 +195,36 @@ class _AddProductDesktopState
                           ? dataProvider.selectedUnit
                           : dataProvider.singleUnitName()) ??
                       'Unit(s)',
-                  groupUnit:
-                      dataProvider.selectedGroupUnit ??
-                      'Group(s)',
+                  groupUnit: dataProvider.selectedGroupUnit ?? 'Group(s)',
                   qttyPerGroup:
-                      widget
-                              .qttyPerGroupController
-                              .text
-                              .isNotEmpty
+                      widget.qttyPerGroupController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .qttyPerGroupController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
                   sizeType: dataProvider.selectedSize,
-                  isRefundable:
-                      dataProvider.isProductRefundable,
-                  setCustomPrice:
-                      dataProvider.setCustomPrice,
+                  isRefundable: dataProvider.isProductRefundable,
+                  setCustomPrice: dataProvider.setCustomPrice,
                   costPrice:
                       widget.costController.text.isNotEmpty
                           ? double.parse(
-                            widget.costController.text
-                                .replaceAll(',', ''),
+                            widget.costController.text.replaceAll(',', ''),
                           )
                           : 0,
                   shopId: shopId(),
                   sellingPrice:
-                      widget
-                              .sellingController
-                              .text
-                              .isNotEmpty
+                      widget.sellingController.text.isNotEmpty
                           ? double.parse(
-                            widget.sellingController.text
-                                .replaceAll(',', ''),
+                            widget.sellingController.text.replaceAll(',', ''),
                           )
                           : null,
                   wholeSalePrice:
-                      widget
-                              .wholeSaleController
-                              .text
-                              .isNotEmpty
+                      widget.wholeSaleController.text.isNotEmpty
                           ? double.parse(
-                            widget.wholeSaleController.text
-                                .replaceAll(',', ''),
+                            widget.wholeSaleController.text.replaceAll(',', ''),
                           )
                           : null,
                   quantity: 0,
@@ -268,12 +233,10 @@ class _AddProductDesktopState
                       widget.lowQttyController.text.isEmpty
                           ? 10
                           : double.tryParse(
-                            widget.lowQttyController.text
-                                .replaceAll(',', ''),
+                            widget.lowQttyController.text.replaceAll(',', ''),
                           ),
                   discount: double.tryParse(
-                    widget.discountController.text
-                        .replaceAll(',', ''),
+                    widget.discountController.text.replaceAll(',', ''),
                   ),
                   expiryDate: dataProvider.expiryDate,
                   // categoryUuid:
@@ -281,18 +244,14 @@ class _AddProductDesktopState
                   uuid: createdProductUuid,
                   departmentName:
                       returnData().departmentUuid != null
-                          ? returnDepartmentProvider()
-                              .departments
+                          ? returnDepartmentProvider().departments
                               .firstWhere(
                                 (dept) =>
-                                    dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    dept.uuid == returnData().departmentUuid,
                               )
                               .name
                           : null,
-                  departmentUuid:
-                      returnData().departmentUuid,
+                  departmentUuid: returnData().departmentUuid,
                 ),
               );
 
@@ -304,9 +263,7 @@ class _AddProductDesktopState
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
                 if (safeContext.mounted) {
-                  Navigator.of(
-                    safeContext,
-                  ).pop(); // pop current page
+                  Navigator.of(safeContext).pop(); // pop current page
                 }
               });
             },
@@ -347,8 +304,7 @@ class _AddProductDesktopState
           var theme = returnTheme(context);
           return ConfirmationAlert(
             theme: theme,
-            message:
-                'Are you sure you want to proceed with update?',
+            message: 'Are you sure you want to proceed with update?',
             title: 'Proceed?',
             action: () async {
               final provider = returnData();
@@ -365,47 +321,35 @@ class _AddProductDesktopState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempProductClass(
-                  manageSalesWastage:
-                      provider.manageWastage,
+                  manageSalesWastage: provider.manageWastage,
+                  deriveQuantityFromPrice: provider.deriveQuantityFromPrice,
                   quantityType: quantityType,
                   heightDimension: double.tryParse(
-                    widget.heightController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.heightController.text.replaceAll(',', ''),
                   ),
                   widthDimension: double.tryParse(
-                    widget.widthController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.widthController.text.replaceAll(',', ''),
                   ),
                   dimensionUnit: provider.selectedDimensionUnit,
-                  dimensionUnitConversion:
-                      provider.selectedDimensionConversion,
+                  dimensionUnitConversion: provider.selectedDimensionConversion,
                   unitsList: provider.getFinalUnitList(),
                   pricesList: provider.getFinalPriceList(
                     productUuid: createdProductUuid ?? '',
                     sellingText: widget.sellingController.text,
                   ),
                   useGroupUnit: provider.useGroupUnit,
-                  categories:
-                      provider.selectedCategories.toList(),
+                  categories: provider.selectedCategories.toList(),
                   storageUuid: widget.product?.storageUuid,
                   departmentName:
                       returnData().departmentUuid != null
-                          ? returnDepartmentProvider()
-                              .departments
+                          ? returnDepartmentProvider().departments
                               .firstWhere(
                                 (dept) =>
-                                    dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    dept.uuid == returnData().departmentUuid,
                               )
                               .name
                           : null,
-                  departmentUuid:
-                      returnData().departmentUuid,
+                  departmentUuid: returnData().departmentUuid,
                   setCustomPrice: provider.setCustomPrice,
                   isManaged:
                       // widget.quantityController.text.isEmpty
@@ -422,44 +366,31 @@ class _AddProductDesktopState
                       'Unit(s)',
                   groupUnit: provider.selectedGroupUnit,
                   qttyPerGroup:
-                      widget
-                              .qttyPerGroupController
-                              .text
-                              .isNotEmpty
+                      widget.qttyPerGroupController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .qttyPerGroupController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
-                  isRefundable:
-                      provider.isProductRefundable,
+                  isRefundable: provider.isProductRefundable,
                   costPrice:
                       widget.costController.text.isNotEmpty
                           ? double.parse(
-                            widget.costController.text
-                                .replaceAll(',', ''),
+                            widget.costController.text.replaceAll(',', ''),
                           )
                           : 0,
                   sellingPrice:
-                      widget
-                              .sellingController
-                              .text
-                              .isNotEmpty
+                      widget.sellingController.text.isNotEmpty
                           ? double.parse(
-                            widget.sellingController.text
-                                .replaceAll(',', ''),
+                            widget.sellingController.text.replaceAll(',', ''),
                           )
                           : null,
                   wholeSalePrice:
-                      widget
-                              .wholeSaleController
-                              .text
-                              .isNotEmpty
+                      widget.wholeSaleController.text.isNotEmpty
                           ? double.parse(
-                            widget.wholeSaleController.text
-                                .replaceAll(',', ''),
+                            widget.wholeSaleController.text.replaceAll(',', ''),
                           )
                           : null,
                   quantity: widget.product?.quantity,
@@ -469,8 +400,7 @@ class _AddProductDesktopState
                   //     provider.selectedCategory?.uuid,
                   createdAt: widget.product!.createdAt,
                   discount: double.tryParse(
-                    widget.discountController.text
-                        .replaceAll(',', ''),
+                    widget.discountController.text.replaceAll(',', ''),
                   ),
                   // endDate: provider.endDate,
                   expiryDate: provider.expiryDate,
@@ -478,8 +408,7 @@ class _AddProductDesktopState
                       widget.lowQttyController.text.isEmpty
                           ? 10
                           : double.tryParse(
-                            widget.lowQttyController.text
-                                .replaceAll(',', ''),
+                            widget.lowQttyController.text.replaceAll(',', ''),
                           ),
                   sizeType: provider.selectedSize,
                 ),
@@ -538,11 +467,10 @@ class _AddProductDesktopState
   Future<void> clearFields() async {
     await Future.delayed(Duration(microseconds: 500), () {
       returnData().clearFields(setIsManaged: false);
-      var res = ItemsAuthAction()
-          .allowStockallToManageItemAction(
-            // ignore: use_build_context_synchronously
-            context: context,
-          );
+      var res = ItemsAuthAction().allowStockallToManageItemAction(
+        // ignore: use_build_context_synchronously
+        context: context,
+      );
       if (res) {
         returnData().toggleIsManagedTemp(true);
       } else {
@@ -550,25 +478,21 @@ class _AddProductDesktopState
       }
     });
     if (widget.product != null && context.mounted) {
-      returnData().departmentUuid =
-          widget.product?.departmentUuid;
-      returnData().manageWastage =
-          widget.product?.manageSalesWastage ?? false;
-      returnData().selectedDimensionUnit =
-          widget.product?.dimensionUnit;
+      returnData().departmentUuid = widget.product?.departmentUuid;
+      returnData().manageWastage = widget.product?.manageSalesWastage ?? false;
+      returnData().selectedDimensionUnit = widget.product?.dimensionUnit;
       returnData().selectedDimensionConversion =
           widget.product?.dimensionUnitConversion;
+      returnData().deriveQuantityFromPrice =
+          widget.product?.deriveQuantityFromPrice ?? false;
       returnData().expiryDate = widget.product?.expiryDate;
       barcode = widget.product!.barcode;
-      barCodeSet =
-          widget.product!.barcode != null ? true : false;
+      barCodeSet = widget.product!.barcode != null ? true : false;
       widget.nameController.text = widget.product!.name;
-      widget.lowQttyController.text = widget
-          .product!
-          .lowQtty!
-          .toStringAsFixed(0);
-      widget.costController.text =
-          widget.product!.costPrice.toString();
+      widget.lowQttyController.text = widget.product!.lowQtty!.toStringAsFixed(
+        0,
+      );
+      widget.costController.text = widget.product!.costPrice.toString();
       widget.sellingController.text =
           widget.product!.sellingPrice != null
               ? widget.product!.sellingPrice.toString()
@@ -581,13 +505,10 @@ class _AddProductDesktopState
           widget.product!.discount != null
               ? widget.product!.discount!.toString()
               : '';
-      returnData().isProductRefundable =
-          widget.product!.isRefundable;
+      returnData().isProductRefundable = widget.product!.isRefundable;
       returnData().isManaged = widget.product!.isManaged;
-      returnData().useGroupUnit =
-          widget.product!.useGroupUnit ?? false;
-      returnData().setCustomPrice =
-          widget.product!.setCustomPrice;
+      returnData().useGroupUnit = widget.product!.useGroupUnit ?? false;
+      returnData().setCustomPrice = widget.product!.setCustomPrice;
       returnData().selectUnit(widget.product!.unit);
       returnData().initUnitsList(
         productUuid: createdProductUuid,
@@ -595,31 +516,23 @@ class _AddProductDesktopState
       );
       returnData().initPricesList(
         productUuid: createdProductUuid,
-        pricesListNew:
-            widget.product?.getPricesList() ?? [],
+        pricesListNew: widget.product?.getPricesList() ?? [],
       );
       returnData().initPriceUnitModes();
       if (!returnData().useMultiplePrices) {
-        final primaryValue =
-            widget.product!.getPrimaryPrice().priceValue;
+        final primaryValue = widget.product!.getPrimaryPrice().priceValue;
         widget.sellingController.text =
             primaryValue != 0 ? primaryValue.toString() : '';
       }
-      returnData().selectGroupUnit(
-        unit: widget.product!.groupUnit,
-      );
+      returnData().selectGroupUnit(unit: widget.product!.groupUnit);
       widget.qttyPerGroupController.text =
           widget.product!.qttyPerGroup != null
               ? widget.product!.qttyPerGroup!.toString()
               : '';
       widget.product!.sizeType != null
-          ? returnData().selectSize(
-            widget.product!.sizeType!,
-          )
+          ? returnData().selectSize(widget.product!.sizeType!)
           : null;
-      returnData().initCategories(
-        categories: widget.product?.categories ?? [],
-      );
+      returnData().initCategories(categories: widget.product?.categories ?? []);
       quantityType = widget.product?.quantityType ?? 1;
       widget.heightController.text =
           widget.product?.heightDimension?.toString() ?? '';
@@ -663,26 +576,19 @@ class _AddProductDesktopState
                 scrolledUnderElevation: 0,
                 centerTitle: true,
                 title: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
+                        fontSize: theme.mobileTexts.h4.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
-                      widget.product != null
-                          ? 'Edit Item'
-                          : 'New Item',
+                      widget.product != null ? 'Edit Item' : 'New Item',
                     ),
                     SizedBox(height: 5),
                     Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                      ),
+                      style: TextStyle(fontSize: theme.mobileTexts.b2.fontSize),
                       widget.product != null
                           ? 'Edit item details'
                           : 'Add a new item to your store.',
@@ -696,35 +602,24 @@ class _AddProductDesktopState
                     children: [
                       Expanded(
                         child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 10.0,
-                              ),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: SingleChildScrollView(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(
-                                    top: 10.0,
-                                  ),
+                              padding: const EdgeInsets.only(top: 10.0),
                               child: Column(
                                 children: [
                                   GeneralTextField(
-                                    focusNode:
-                                        nameFieldNode,
+                                    focusNode: nameFieldNode,
                                     onSubmitted: (value) {
                                       FocusScope.of(
                                         context,
-                                      ).requestFocus(
-                                        costFieldNode,
-                                      );
+                                      ).requestFocus(costFieldNode);
                                     },
                                     theme: theme,
                                     hint: 'Enter Item Name',
                                     lines: 1,
                                     title: 'Item Name',
-                                    controller:
-                                        widget
-                                            .nameController,
+                                    controller: widget.nameController,
                                   ),
                                   SizedBox(height: 10),
                                   Column(
@@ -739,30 +634,21 @@ class _AddProductDesktopState
                                             ),
                                             child: Expanded(
                                               child: MoneyTextfield(
-                                                focusNode:
-                                                    costFieldNode,
-                                                onSubmitted: (
-                                                  value,
-                                                ) {
+                                                focusNode: costFieldNode,
+                                                onSubmitted: (value) {
                                                   FocusScope.of(
                                                     context,
                                                   ).requestFocus(
                                                     sellingFieldNode,
                                                   );
                                                 },
-                                                onChanged:
-                                                    (
-                                                      value,
-                                                    ) {},
-                                                theme:
-                                                    theme,
-                                                hint:
-                                                    'Enter Real Cost',
+                                                onChanged: (value) {},
+                                                theme: theme,
+                                                hint: 'Enter Real Cost',
                                                 title:
                                                     'Cost - Price (Optional)',
                                                 controller:
-                                                    widget
-                                                        .costController,
+                                                    widget.costController,
                                               ),
                                             ),
                                           ),
@@ -856,8 +742,7 @@ class _AddProductDesktopState
                                       SizedBox(height: 15),
                                       UseMultipleToggleAddItemPage(
                                         theme: theme,
-                                        title:
-                                            'Manage Multiple Prices',
+                                        title: 'Manage Multiple Prices',
                                         description:
                                             'Turn on to set more than one selling price for this item.',
                                         value:
@@ -868,11 +753,9 @@ class _AddProductDesktopState
                                           toggleMultiplePricesAction(
                                             context: context,
                                             sellingController:
-                                                widget
-                                                    .sellingController,
+                                                widget.sellingController,
                                             productUuid:
-                                                createdProductUuid ??
-                                                '',
+                                                createdProductUuid ?? '',
                                           );
                                         },
                                       ),
@@ -883,21 +766,16 @@ class _AddProductDesktopState
                                               context: context,
                                             ).useMultiplePrices,
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(
-                                                bottom: 10.0,
-                                              ),
+                                          padding: const EdgeInsets.only(
+                                            bottom: 10.0,
+                                          ),
                                           child: MoneyTextfield(
-                                            focusNode:
-                                                sellingFieldNode,
+                                            focusNode: sellingFieldNode,
                                             theme: theme,
-                                            hint:
-                                                'Enter Selling Price',
-                                            title:
-                                                'Selling Price',
+                                            hint: 'Enter Selling Price',
+                                            title: 'Selling Price',
                                             controller:
-                                                widget
-                                                    .sellingController,
+                                                widget.sellingController,
                                           ),
                                         ),
                                       ),
@@ -907,10 +785,9 @@ class _AddProductDesktopState
                                               context: context,
                                             ).useMultiplePrices,
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(
-                                                bottom: 10.0,
-                                              ),
+                                          padding: const EdgeInsets.only(
+                                            bottom: 10.0,
+                                          ),
                                           child: MainDropdown(
                                             valueSet:
                                                 returnData()
@@ -920,9 +797,7 @@ class _AddProductDesktopState
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
+                                                  builder: (context) {
                                                     return ProductPricesPage(
                                                       productUuid:
                                                           createdProductUuid ??
@@ -936,12 +811,10 @@ class _AddProductDesktopState
                                                 returnData()
                                                     .tempPricesList
                                                     .isNotEmpty,
-                                            title:
-                                                'Selling Price(s)',
+                                            title: 'Selling Price(s)',
                                             hint:
                                                 returnData(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                     ).tempPricesList.isEmpty
                                                     ? 'Price Not Set'
                                                     : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
@@ -961,71 +834,59 @@ class _AddProductDesktopState
                                               Visibility(
                                                 visible:
                                                     kIsWeb ||
-                                                    platforms(
-                                                          context,
-                                                        ) ==
-                                                        TargetPlatform.android ||
-                                                    platforms(
-                                                          context,
-                                                        ) ==
+                                                    platforms(context) ==
+                                                        TargetPlatform
+                                                            .android ||
+                                                    platforms(context) ==
                                                         TargetPlatform.iOS,
                                                 child: BarcodeScanner(
-                                                  focusNode:
-                                                      barcodeFieldNode,
-                                                  controller:
-                                                      barcodeController,
-                                                  valueSet:
-                                                      barCodeSet,
+                                                  focusNode: barcodeFieldNode,
+                                                  controller: barcodeController,
+                                                  valueSet: barCodeSet,
                                                   onTap: () async {
-                                                    ItemsAuthAction().generateBarcodeAction(
-                                                      context:
-                                                          context,
-                                                      action: () async {
-                                                        String?
-                                                        info = await scanCode(
-                                                          context,
-                                                          'Not Saved',
-                                                        );
+                                                    ItemsAuthAction()
+                                                        .generateBarcodeAction(
+                                                          context: context,
+                                                          action: () async {
+                                                            String? info =
+                                                                await scanCode(
+                                                                  context,
+                                                                  'Not Saved',
+                                                                );
 
-                                                        setState(() {
-                                                          barcode =
-                                                              info;
-                                                          barCodeSet =
-                                                              true;
-                                                        });
-                                                      },
-                                                    );
+                                                            setState(() {
+                                                              barcode = info;
+                                                              barCodeSet = true;
+                                                            });
+                                                          },
+                                                        );
                                                   },
                                                   title:
                                                       'Item Barcode (Optional)',
                                                   hint:
                                                       barcode ??
                                                       'Click to Scan Item Barcode',
-                                                  theme:
-                                                      theme,
+                                                  theme: theme,
                                                 ),
                                               ),
                                               Visibility(
                                                 visible:
-                                                    platforms(
-                                                          context,
-                                                        ) ==
-                                                        TargetPlatform.windows ||
-                                                    platforms(
-                                                          context,
-                                                        ) ==
+                                                    platforms(context) ==
+                                                        TargetPlatform
+                                                            .windows ||
+                                                    platforms(context) ==
                                                         TargetPlatform.linux ||
-                                                    platforms(
-                                                          context,
-                                                        ) ==
+                                                    platforms(context) ==
                                                         TargetPlatform.macOS,
                                                 child: Column(
-                                                  spacing:
-                                                      5,
+                                                  spacing: 5,
                                                   children: [
                                                     Text(
                                                       style:
-                                                          theme.mobileTexts.b3.textStyleBold,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b3
+                                                              .textStyleBold,
                                                       'Item Barcode (Optional)',
                                                     ),
                                                     TextFormField(
@@ -1033,82 +894,80 @@ class _AddProductDesktopState
                                                           barcodeFieldNode,
                                                       controller:
                                                           barcodeController,
-                                                      onChanged: (
-                                                        value,
-                                                      ) {
+                                                      onChanged: (value) {
                                                         setState(() {
-                                                          barcode =
-                                                              value;
+                                                          barcode = value;
                                                           if (value.isEmpty) {
-                                                            barCodeSet =
-                                                                false;
+                                                            barCodeSet = false;
                                                           } else {
-                                                            barCodeSet =
-                                                                true;
+                                                            barCodeSet = true;
                                                           }
                                                         });
-                                                        mainLocalLog(
-                                                          barcode,
-                                                        );
+                                                        mainLocalLog(barcode);
                                                         mainLocalLog(
                                                           barCodeSet.toString(),
                                                         );
                                                       },
-                                                      enabled:
-                                                          true,
+                                                      enabled: true,
                                                       decoration: InputDecoration(
-                                                        isCollapsed:
-                                                            true,
+                                                        isCollapsed: true,
                                                         suffixIcon: Padding(
-                                                          padding: const EdgeInsets.only(
-                                                            right:
-                                                                50.0,
-                                                          ),
+                                                          padding:
+                                                              const EdgeInsets.only(
+                                                                right: 50.0,
+                                                              ),
                                                           child: Icon(
-                                                            size:
-                                                                20,
-                                                            color:
-                                                                Colors.grey,
-                                                            Icons.qr_code_scanner_sharp,
+                                                            size: 20,
+                                                            color: Colors.grey,
+                                                            Icons
+                                                                .qr_code_scanner_sharp,
                                                           ),
                                                         ),
-                                                        suffixIconConstraints: BoxConstraints(
-                                                          maxHeight:
-                                                              20,
-                                                          maxWidth:
-                                                              35,
-                                                        ),
-                                                        contentPadding: EdgeInsets.symmetric(
-                                                          horizontal:
-                                                              20,
-                                                          vertical:
-                                                              8,
-                                                        ),
+                                                        suffixIconConstraints:
+                                                            BoxConstraints(
+                                                              maxHeight: 20,
+                                                              maxWidth: 35,
+                                                            ),
+                                                        contentPadding:
+                                                            EdgeInsets.symmetric(
+                                                              horizontal: 20,
+                                                              vertical: 8,
+                                                            ),
                                                         hintText:
                                                             barcode ??
                                                             'Click to Scan Item Barcode',
                                                         hintStyle: TextStyle(
                                                           color:
                                                               barCodeSet
-                                                                  ? Colors.grey.shade700
-                                                                  : Colors.grey.shade500,
+                                                                  ? Colors
+                                                                      .grey
+                                                                      .shade700
+                                                                  : Colors
+                                                                      .grey
+                                                                      .shade500,
                                                           fontSize:
-                                                              theme.mobileTexts.b2.fontSize,
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b2
+                                                                  .fontSize,
                                                           fontWeight:
                                                               barCodeSet
-                                                                  ? FontWeight.bold
-                                                                  : FontWeight.normal,
+                                                                  ? FontWeight
+                                                                      .bold
+                                                                  : FontWeight
+                                                                      .normal,
                                                         ),
                                                         border: OutlineInputBorder(
-                                                          borderSide: BorderSide(
-                                                            color:
-                                                                Colors.grey,
-                                                            width:
-                                                                1,
-                                                          ),
-                                                          borderRadius: BorderRadius.circular(
-                                                            5,
-                                                          ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                color:
+                                                                    Colors.grey,
+                                                                width: 1,
+                                                              ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                5,
+                                                              ),
                                                         ),
                                                       ),
                                                     ),
@@ -1119,67 +978,73 @@ class _AddProductDesktopState
                                           ),
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .end,
+                                                MainAxisAlignment.end,
                                             children: [
                                               InkWell(
                                                 mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
+                                                    SystemMouseCursors.click,
                                                 onTap: () async {
                                                   ItemsAuthAction().generateBarcodeAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                     action: () async {
-                                                      String
-                                                      sellingPrice() {
-                                                        if (widget.sellingController.text.isEmpty) {
+                                                      String sellingPrice() {
+                                                        if (widget
+                                                            .sellingController
+                                                            .text
+                                                            .isEmpty) {
                                                           return '';
                                                         } else {
-                                                          if (widget.sellingController.text
-                                                                  .split(
-                                                                    ',',
-                                                                  )
+                                                          if (widget
+                                                                  .sellingController
+                                                                  .text
+                                                                  .split(',')
                                                                   .length >
                                                               1) {
-                                                            return widget.sellingController.text
-                                                                    .split(
-                                                                      ',',
-                                                                    )
+                                                            return widget
+                                                                    .sellingController
+                                                                    .text
+                                                                    .split(',')
                                                                     .first +
-                                                                widget.sellingController.text
-                                                                    .split(
-                                                                      ',',
-                                                                    )
+                                                                widget
+                                                                    .sellingController
+                                                                    .text
+                                                                    .split(',')
                                                                     .last;
                                                           } else {
-                                                            return widget.sellingController.text;
+                                                            return widget
+                                                                .sellingController
+                                                                .text;
                                                           }
                                                         }
                                                       }
 
                                                       wholeSalePrice() {
-                                                        if (widget.wholeSaleController.text.isEmpty) {
+                                                        if (widget
+                                                            .wholeSaleController
+                                                            .text
+                                                            .isEmpty) {
                                                           return '';
                                                         } else {
-                                                          if (widget.wholeSaleController.text
-                                                                  .split(
-                                                                    ',',
-                                                                  )
+                                                          if (widget
+                                                                  .wholeSaleController
+                                                                  .text
+                                                                  .split(',')
                                                                   .length >
                                                               1) {
-                                                            return widget.wholeSaleController.text
-                                                                    .split(
-                                                                      ',',
-                                                                    )
+                                                            return widget
+                                                                    .wholeSaleController
+                                                                    .text
+                                                                    .split(',')
                                                                     .first +
-                                                                widget.wholeSaleController.text
-                                                                    .split(
-                                                                      ',',
-                                                                    )
+                                                                widget
+                                                                    .wholeSaleController
+                                                                    .text
+                                                                    .split(',')
                                                                     .last;
                                                           } else {
-                                                            return widget.wholeSaleController.text;
+                                                            return widget
+                                                                .wholeSaleController
+                                                                .text;
                                                           }
                                                         }
                                                       }
@@ -1187,87 +1052,104 @@ class _AddProductDesktopState
                                                       var tempProduct = TempProductClass(
                                                         manageSalesWastage:
                                                             null,
-                                                        heightDimension:
-                                                            null,
-                                                        quantityType:
-                                                            1,
-                                                        widthDimension:
-                                                            null,
+                                                        heightDimension: null,
+                                                        quantityType: 1,
+                                                        widthDimension: null,
                                                         pricesList:
-                                                            widget.product?.pricesList ??
+                                                            widget
+                                                                .product
+                                                                ?.pricesList ??
                                                             [],
                                                         unitsList:
-                                                            widget.product?.unitsList ??
+                                                            widget
+                                                                .product
+                                                                ?.unitsList ??
                                                             [],
                                                         categories:
-                                                            widget.product?.categories ??
+                                                            widget
+                                                                .product
+                                                                ?.categories ??
                                                             [],
                                                         storageUuid:
-                                                            widget.product?.storageUuid,
+                                                            widget
+                                                                .product
+                                                                ?.storageUuid,
                                                         departmentName:
-                                                            returnDepartmentProvider().currentDepartment()?.name,
+                                                            returnDepartmentProvider()
+                                                                .currentDepartment()
+                                                                ?.name,
                                                         departmentUuid:
-                                                            returnDepartmentProvider().currentDepartment()?.name,
+                                                            returnDepartmentProvider()
+                                                                .currentDepartment()
+                                                                ?.name,
                                                         groupUnit:
-                                                            widget.product?.groupUnit,
+                                                            widget
+                                                                .product
+                                                                ?.groupUnit,
                                                         qttyPerGroup:
-                                                            widget.product?.qttyPerGroup,
+                                                            widget
+                                                                .product
+                                                                ?.qttyPerGroup,
                                                         name:
                                                             widget.product ==
                                                                     null
-                                                                ? widget.nameController.text
-                                                                : widget.product?.name ??
+                                                                ? widget
+                                                                    .nameController
+                                                                    .text
+                                                                : widget
+                                                                        .product
+                                                                        ?.name ??
                                                                     'Product Name',
-                                                        unit:
-                                                            'Unit(s)',
-                                                        isRefundable:
-                                                            false,
-                                                        costPrice:
-                                                            0,
-                                                        shopId:
-                                                            1,
-                                                        setCustomPrice:
-                                                            false,
-                                                        isManaged:
-                                                            false,
-                                                        useGroupUnit:
-                                                            false,
+                                                        unit: 'Unit(s)',
+                                                        isRefundable: false,
+                                                        costPrice: 0,
+                                                        shopId: 1,
+                                                        setCustomPrice: false,
+                                                        isManaged: false,
+                                                        useGroupUnit: false,
                                                         uuid:
                                                             widget.product ==
                                                                     null
                                                                 ? createdProductUuid
-                                                                : widget.product?.uuid,
+                                                                : widget
+                                                                    .product
+                                                                    ?.uuid,
                                                         sellingPrice:
                                                             widget.product ==
                                                                     null
                                                                 ? double.tryParse(
                                                                   sellingPrice(),
                                                                 )
-                                                                : widget.product?.sellingPrice,
+                                                                : widget
+                                                                    .product
+                                                                    ?.sellingPrice,
                                                         wholeSalePrice:
                                                             widget.product ==
                                                                     null
                                                                 ? double.tryParse(
                                                                   wholeSalePrice(),
                                                                 )
-                                                                : widget.product?.wholeSalePrice,
+                                                                : widget
+                                                                    .product
+                                                                    ?.wholeSalePrice,
                                                       );
 
                                                       if (widget
                                                           .nameController
                                                           .text
                                                           .isNotEmpty) {
-                                                        returnData().addToBarcodeGenerationList(
-                                                          ProductBarcode(
-                                                            product:
-                                                                tempProduct,
-                                                            number:
-                                                                1,
-                                                          ),
-                                                        );
+                                                        returnData()
+                                                            .addToBarcodeGenerationList(
+                                                              ProductBarcode(
+                                                                product:
+                                                                    tempProduct,
+                                                                number: 1,
+                                                              ),
+                                                            );
                                                         await generateBarcodeAndPrint(
                                                           context,
-                                                          returnData().barcodeGenerationList,
+                                                          returnData()
+                                                              .barcodeGenerationList,
                                                           true,
                                                         );
                                                         // if (res) {
@@ -1276,22 +1158,19 @@ class _AddProductDesktopState
                                                             widget.product ==
                                                                     null
                                                                 ? createdProductUuid!
-                                                                : widget.product!.uuid!,
+                                                                : widget
+                                                                    .product!
+                                                                    .uuid!,
                                                           );
-                                                          barCodeSet =
-                                                              true;
+                                                          barCodeSet = true;
                                                         });
                                                         // }
                                                       } else {
                                                         showDialog(
-                                                          context:
-                                                              context,
-                                                          builder: (
-                                                            context,
-                                                          ) {
+                                                          context: context,
+                                                          builder: (context) {
                                                             return InfoAlert(
-                                                              theme:
-                                                                  theme,
+                                                              theme: theme,
                                                               message:
                                                                   'Product Name must be set before barcode can be generated.',
                                                               title:
@@ -1304,25 +1183,27 @@ class _AddProductDesktopState
                                                   );
                                                 },
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(
-                                                        5.0,
-                                                      ),
+                                                  padding: const EdgeInsets.all(
+                                                    5.0,
+                                                  ),
                                                   child: Row(
-                                                    spacing:
-                                                        5,
+                                                    spacing: 5,
                                                     children: [
                                                       Icon(
-                                                        size:
-                                                            15,
+                                                        size: 15,
                                                         color:
-                                                            theme.lightModeColor.secColor200,
+                                                            theme
+                                                                .lightModeColor
+                                                                .secColor200,
                                                         Icons.qr_code_rounded,
                                                       ),
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              theme.mobileTexts.b3.fontSize,
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b3
+                                                                  .fontSize,
                                                         ),
                                                         'Generate Barcode',
                                                       ),
@@ -1349,29 +1230,23 @@ class _AddProductDesktopState
                                   Divider(height: 0),
                                   // SizedBox(height: 5),
                                   InkWell(
-                                    mouseCursor:
-                                        SystemMouseCursors
-                                            .click,
+                                    mouseCursor: SystemMouseCursors.click,
                                     onTap: () {
                                       setState(() {
                                         expand = !expand;
                                       });
                                     },
                                     child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(
-                                            vertical: 5,
-                                          ),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 5,
+                                      ),
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             style: TextStyle(
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             expand
                                                 ? 'Hide Details'
@@ -1379,23 +1254,18 @@ class _AddProductDesktopState
                                           ),
                                           InkWell(
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             onTap: () {
                                               setState(() {
-                                                expand =
-                                                    !expand;
+                                                expand = !expand;
                                               });
                                             },
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    left:
-                                                        35.0,
-                                                    top: 5,
-                                                    bottom:
-                                                        5,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                left: 35.0,
+                                                top: 5,
+                                                bottom: 5,
+                                              ),
                                               child: Row(
                                                 children: [
                                                   Text(
@@ -1405,8 +1275,10 @@ class _AddProductDesktopState
                                                   ),
                                                   Icon(
                                                     expand
-                                                        ? Icons.keyboard_arrow_up_outlined
-                                                        : Icons.keyboard_arrow_down,
+                                                        ? Icons
+                                                            .keyboard_arrow_up_outlined
+                                                        : Icons
+                                                            .keyboard_arrow_down,
                                                   ),
                                                 ],
                                               ),
@@ -1427,22 +1299,13 @@ class _AddProductDesktopState
                                           children: [
                                             EditCartTextField(
                                               theme: theme,
-                                              hint:
-                                                  'Enter Discount (%)',
-                                              title:
-                                                  'Discount Percent (%)',
+                                              hint: 'Enter Discount (%)',
+                                              title: 'Discount Percent (%)',
                                               controller:
-                                                  widget
-                                                      .discountController,
-                                              onChanged: (
-                                                value,
-                                              ) {
-                                                if (value
-                                                    .isNotEmpty) {
-                                                  if (int.parse(
-                                                        value,
-                                                      ) >
-                                                      100) {
+                                                  widget.discountController,
+                                              onChanged: (value) {
+                                                if (value.isNotEmpty) {
+                                                  if (int.parse(value) > 100) {
                                                     widget
                                                         .discountController
                                                         .text = '100';
@@ -1450,18 +1313,13 @@ class _AddProductDesktopState
                                                 }
                                               },
                                             ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                             EditCartTextField(
                                               theme: theme,
-                                              hint:
-                                                  'Enter Limit',
-                                              title:
-                                                  'Low Quantity Limit',
+                                              hint: 'Enter Limit',
+                                              title: 'Low Quantity Limit',
                                               controller:
-                                                  widget
-                                                      .lowQttyController,
+                                                  widget.lowQttyController,
                                             ),
                                             Visibility(
                                               visible:
@@ -1471,13 +1329,10 @@ class _AddProductDesktopState
                                                       true &&
                                                   authorization(
                                                     authorized:
-                                                        Authorizations().viewAllDepartments,
+                                                        Authorizations()
+                                                            .viewAllDepartments,
                                                   ),
-                                              child:
-                                                  SizedBox(
-                                                    height:
-                                                        10,
-                                                  ),
+                                              child: SizedBox(height: 10),
                                             ),
                                             Visibility(
                                               visible:
@@ -1487,26 +1342,24 @@ class _AddProductDesktopState
                                                       true &&
                                                   authorization(
                                                     authorized:
-                                                        Authorizations().viewAllDepartments,
+                                                        Authorizations()
+                                                            .viewAllDepartments,
                                                   ),
                                               child: InkWell(
                                                 mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
+                                                    SystemMouseCursors.click,
                                                 onTap: () {
                                                   GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                     action: () {
-                                                      String?
-                                                      selectedDept;
+                                                      String? selectedDept;
                                                       setState(() {
                                                         selectedDept =
-                                                            returnData().departmentUuid;
+                                                            returnData()
+                                                                .departmentUuid;
                                                       });
                                                       showDialog(
-                                                        context:
-                                                            context,
+                                                        context: context,
                                                         builder: (
                                                           firstContext,
                                                         ) {
@@ -1516,16 +1369,16 @@ class _AddProductDesktopState
                                                               setState,
                                                             ) {
                                                               return DialogTemplate(
-                                                                theme:
-                                                                    theme,
+                                                                theme: theme,
                                                                 message:
                                                                     'Select Department for this Staff',
                                                                 title:
                                                                     'Select Department(s)',
                                                                 action: () {
-                                                                  returnData().setDepartment(
-                                                                    selectedDept,
-                                                                  );
+                                                                  returnData()
+                                                                      .setDepartment(
+                                                                        selectedDept,
+                                                                      );
                                                                   Navigator.of(
                                                                     context,
                                                                   ).pop();
@@ -1640,13 +1493,10 @@ class _AddProductDesktopState
                                                 },
                                                 child: Column(
                                                   mainAxisSize:
-                                                      MainAxisSize
-                                                          .min,
+                                                      MainAxisSize.min,
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .start,
-                                                  spacing:
-                                                      5,
+                                                      MainAxisAlignment.start,
+                                                  spacing: 5,
                                                   children: [
                                                     Row(
                                                       children: [
@@ -1654,50 +1504,57 @@ class _AddProductDesktopState
                                                           textAlign:
                                                               TextAlign.start,
                                                           style:
-                                                              theme.mobileTexts.b3.textStyleBold,
+                                                              theme
+                                                                  .mobileTexts
+                                                                  .b3
+                                                                  .textStyleBold,
                                                           'Set Department',
                                                         ),
                                                       ],
                                                     ),
                                                     SubWrapper(
                                                       isVisible:
-                                                          !GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                            context:
-                                                                context,
-                                                          ),
+                                                          !GeneralSettingsAuthAction()
+                                                              .manageDeparmtmentsAction(
+                                                                context:
+                                                                    context,
+                                                              ),
                                                       mainWidget: Container(
-                                                        padding: EdgeInsets.symmetric(
-                                                          vertical:
-                                                              0,
-                                                          horizontal:
-                                                              5,
-                                                        ),
+                                                        padding:
+                                                            EdgeInsets.symmetric(
+                                                              vertical: 0,
+                                                              horizontal: 5,
+                                                            ),
                                                         decoration: BoxDecoration(
                                                           border: Border.all(
                                                             color:
                                                                 returnData().departmentUuid !=
                                                                         null
-                                                                    ? theme.lightModeColor.prColor300
-                                                                    : Colors.grey,
+                                                                    ? theme
+                                                                        .lightModeColor
+                                                                        .prColor300
+                                                                    : Colors
+                                                                        .grey,
                                                             width:
                                                                 returnData().departmentUuid !=
                                                                         null
                                                                     ? 1.3
                                                                     : 1,
                                                           ),
-                                                          borderRadius: BorderRadius.circular(
-                                                            5,
-                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                5,
+                                                              ),
                                                         ),
                                                         child: Row(
                                                           mainAxisAlignment:
-                                                              MainAxisAlignment.spaceBetween,
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
                                                           children: [
                                                             Row(
                                                               children: [
                                                                 SizedBox(
-                                                                  width:
-                                                                      10,
+                                                                  width: 10,
                                                                 ),
                                                                 Text(
                                                                   style: TextStyle(
@@ -1720,7 +1577,8 @@ class _AddProductDesktopState
                                                                   returnData().departmentUuid ==
                                                                           null
                                                                       ? 'Select Department'
-                                                                      : returnDepartmentProvider().departments
+                                                                      : returnDepartmentProvider()
+                                                                          .departments
                                                                           .firstWhere(
                                                                             (
                                                                               dept,
@@ -1735,20 +1593,25 @@ class _AddProductDesktopState
                                                             Ink(
                                                               child: InkWell(
                                                                 mouseCursor:
-                                                                    SystemMouseCursors.click,
-                                                                borderRadius: BorderRadius.circular(
-                                                                  20,
-                                                                ),
+                                                                    SystemMouseCursors
+                                                                        .click,
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      20,
+                                                                    ),
                                                                 onTap: () {
-                                                                  returnData().clearDepartment();
+                                                                  returnData()
+                                                                      .clearDepartment();
                                                                 },
                                                                 child: Container(
-                                                                  padding: EdgeInsets.all(
-                                                                    7,
-                                                                  ),
+                                                                  padding:
+                                                                      EdgeInsets.all(
+                                                                        7,
+                                                                      ),
                                                                   decoration: BoxDecoration(
                                                                     shape:
-                                                                        BoxShape.circle,
+                                                                        BoxShape
+                                                                            .circle,
                                                                   ),
                                                                   child: Icon(
                                                                     Icons.clear,
@@ -1764,41 +1627,33 @@ class _AddProductDesktopState
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                             InkWell(
                                               mouseCursor:
-                                                  SystemMouseCursors
-                                                      .click,
+                                                  SystemMouseCursors.click,
                                               onTap: () {
-                                                ItemsAuthAction().setExpiryDateAction(
-                                                  context:
-                                                      context,
-                                                  action: () {
-                                                    myDatePickerAction(
-                                                      theme,
-                                                      context,
-                                                    ).then((
-                                                      value,
-                                                    ) {
-                                                      value !=
-                                                              null
-                                                          ? returnData().setExpDate(
-                                                            value,
-                                                          )
-                                                          : {};
-                                                    });
-                                                  },
-                                                );
+                                                ItemsAuthAction()
+                                                    .setExpiryDateAction(
+                                                      context: context,
+                                                      action: () {
+                                                        myDatePickerAction(
+                                                          theme,
+                                                          context,
+                                                        ).then((value) {
+                                                          value != null
+                                                              ? returnData()
+                                                                  .setExpDate(
+                                                                    value,
+                                                                  )
+                                                              : {};
+                                                        });
+                                                      },
+                                                    );
                                               },
                                               child: Column(
-                                                mainAxisSize:
-                                                    MainAxisSize
-                                                        .min,
+                                                mainAxisSize: MainAxisSize.min,
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .start,
+                                                    MainAxisAlignment.start,
                                                 spacing: 5,
                                                 children: [
                                                   Row(
@@ -1807,30 +1662,34 @@ class _AddProductDesktopState
                                                         textAlign:
                                                             TextAlign.start,
                                                         style:
-                                                            theme.mobileTexts.b3.textStyleBold,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .textStyleBold,
                                                         'Expiry Date (Optional)',
                                                       ),
                                                     ],
                                                   ),
                                                   SubWrapper(
                                                     isVisible:
-                                                        !ItemsAuthAction().setExpiryDateAction(
-                                                          context:
-                                                              context,
-                                                        ),
+                                                        !ItemsAuthAction()
+                                                            .setExpiryDateAction(
+                                                              context: context,
+                                                            ),
                                                     mainWidget: Container(
-                                                      padding: EdgeInsets.symmetric(
-                                                        vertical:
-                                                            0,
-                                                        horizontal:
-                                                            5,
-                                                      ),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 0,
+                                                            horizontal: 5,
+                                                          ),
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
                                                           color:
                                                               returnData().expiryDate !=
                                                                       null
-                                                                  ? theme.lightModeColor.prColor300
+                                                                  ? theme
+                                                                      .lightModeColor
+                                                                      .prColor300
                                                                   : Colors.grey,
                                                           width:
                                                               returnData().expiryDate !=
@@ -1838,43 +1697,54 @@ class _AddProductDesktopState
                                                                   ? 1.3
                                                                   : 1,
                                                         ),
-                                                        borderRadius: BorderRadius.circular(
-                                                          5,
-                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              5,
+                                                            ),
                                                       ),
                                                       child: Row(
                                                         mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
                                                         children: [
                                                           Row(
                                                             children: [
                                                               SizedBox(
-                                                                width:
-                                                                    10,
+                                                                width: 10,
                                                               ),
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
                                                                       returnData().expiryDate !=
                                                                               null
-                                                                          ? theme.mobileTexts.b2.fontSize
-                                                                          : theme.mobileTexts.b2.fontSize,
+                                                                          ? theme
+                                                                              .mobileTexts
+                                                                              .b2
+                                                                              .fontSize
+                                                                          : theme
+                                                                              .mobileTexts
+                                                                              .b2
+                                                                              .fontSize,
                                                                   fontWeight:
                                                                       returnData().expiryDate !=
                                                                               null
-                                                                          ? FontWeight.bold
+                                                                          ? FontWeight
+                                                                              .bold
                                                                           : null,
                                                                   color:
                                                                       returnData().expiryDate !=
                                                                               null
                                                                           ? null
-                                                                          : Colors.grey.shade500,
+                                                                          : Colors
+                                                                              .grey
+                                                                              .shade500,
                                                                 ),
                                                                 returnData().expiryDate ==
                                                                         null
                                                                     ? 'Set Expiry Date'
                                                                     : formatDateWithDay(
-                                                                      returnData().expiryDate ??
+                                                                      returnData()
+                                                                              .expiryDate ??
                                                                           DateTime.now(),
                                                                     ),
                                                               ),
@@ -1883,21 +1753,27 @@ class _AddProductDesktopState
                                                           Ink(
                                                             child: InkWell(
                                                               mouseCursor:
-                                                                  SystemMouseCursors.click,
-                                                              borderRadius: BorderRadius.circular(
-                                                                20,
-                                                              ),
+                                                                  SystemMouseCursors
+                                                                      .click,
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    20,
+                                                                  ),
                                                               onTap: () {
-                                                                returnData().clearExpDate();
+                                                                returnData()
+                                                                    .clearExpDate();
                                                               },
                                                               child: Container(
-                                                                padding: EdgeInsets.all(
-                                                                  7,
-                                                                ),
-                                                                decoration: BoxDecoration(
-                                                                  shape:
-                                                                      BoxShape.circle,
-                                                                ),
+                                                                padding:
+                                                                    EdgeInsets.all(
+                                                                      7,
+                                                                    ),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                      shape:
+                                                                          BoxShape
+                                                                              .circle,
+                                                                    ),
                                                                 child: Icon(
                                                                   Icons.clear,
                                                                 ),
@@ -1911,70 +1787,51 @@ class _AddProductDesktopState
                                                 ],
                                               ),
                                             ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                           ],
                                         ),
                                         SelectProductQuantityTypeSection(
                                           heightController:
-                                              widget
-                                                  .heightController,
-                                          quantityType:
-                                              quantityType,
-                                          switchQuantityType: (
-                                            index,
-                                          ) {
-                                            switchQuantityType(
-                                              index,
-                                            );
+                                              widget.heightController,
+                                          quantityType: quantityType,
+                                          switchQuantityType: (index) {
+                                            switchQuantityType(index);
                                           },
                                           widthController:
-                                              widget
-                                                  .widthController,
+                                              widget.widthController,
                                         ),
                                         Visibility(
-                                          visible:
-                                              canSeeItemUnit(),
+                                          visible: canSeeItemUnit(),
                                           child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(
-                                                  bottom:
-                                                      10.0,
-                                                ),
+                                            padding: const EdgeInsets.only(
+                                              bottom: 10.0,
+                                            ),
                                             child: Column(
                                               children: [
                                                 UseMultipleToggleAddItemPage(
                                                   theme: theme,
-                                                  title:
-                                                      'Use Multiple Units',
+                                                  title: 'Use Multiple Units',
                                                   description:
                                                       'Turn on to sell or count this item in more than one unit (e.g. Bottle and Crate).',
                                                   value:
                                                       returnData(
-                                                        context:
-                                                            context,
+                                                        context: context,
                                                       ).useMultipleUnits,
                                                   onTap: () {
                                                     toggleMultipleUnitsAction(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                     );
                                                   },
                                                 ),
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
+                                                SizedBox(height: 10),
                                                 SubWrapper(
                                                   isVisible:
                                                       !itemUnitAuthAction(
-                                                        context:
-                                                            context,
+                                                        context: context,
                                                       ),
                                                   mainWidget:
                                                       returnData(
-                                                            context:
-                                                                context,
+                                                            context: context,
                                                           ).useMultipleUnits
                                                           ? MainDropdown(
                                                             valueSet:
@@ -2019,8 +1876,7 @@ class _AddProductDesktopState
                                                                     ).tempUnitsList.isEmpty
                                                                     ? 'Unit Not Set'
                                                                     : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
-                                                            theme:
-                                                                theme,
+                                                            theme: theme,
                                                           )
                                                           : MainDropdown(
                                                             valueSet:
@@ -2039,8 +1895,7 @@ class _AddProductDesktopState
                                                                     2,
                                                               );
                                                             },
-                                                            isOpen:
-                                                                false,
+                                                            isOpen: false,
                                                             title:
                                                                 'Item Unit (Optional)',
                                                             hint:
@@ -2049,11 +1904,35 @@ class _AddProductDesktopState
                                                                       context,
                                                                 ).singleUnitName() ??
                                                                 'Unit Not Set',
-                                                            theme:
-                                                                theme,
+                                                            theme: theme,
                                                           ),
                                                 ),
                                               ],
+                                            ),
+                                          ),
+                                        ),
+                                        // Price entry only works out
+                                        // quantity for 1D items.
+                                        Visibility(
+                                          visible: quantityType != 2,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 10.0,
+                                            ),
+                                            child: UseMultipleToggleAddItemPage(
+                                              theme: theme,
+                                              title:
+                                                  'Derive Quantity From Price',
+                                              description:
+                                                  'Turn on to let sellers enter a price during sale; the app works out the quantity for that price.',
+                                              value:
+                                                  returnData(
+                                                    context: context,
+                                                  ).deriveQuantityFromPrice,
+                                              onTap: () {
+                                                returnData()
+                                                    .toggleDeriveQuantityFromPrice();
+                                              },
                                             ),
                                           ),
                                         ),
@@ -2061,110 +1940,91 @@ class _AddProductDesktopState
                                           children: [
                                             SubWrapper(
                                               isVisible:
-                                                  !ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
+                                                  !ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                      ),
                                               mainWidget: MainDropdown(
                                                 valueSet:
                                                     returnData(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                     ).sizeValueSet,
                                                 onTap: () {
-                                                  ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                    action: () {
-                                                      sizeTypeBottomSheet(
-                                                        context,
-                                                        () {
-                                                          setState(
+                                                  ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                        action: () {
+                                                          sizeTypeBottomSheet(
+                                                            context,
                                                             () {
-                                                              isSizedTypeOpen =
-                                                                  !isSizedTypeOpen;
+                                                              setState(() {
+                                                                isSizedTypeOpen =
+                                                                    !isSizedTypeOpen;
+                                                              });
                                                             },
                                                           );
+                                                          setState(() {
+                                                            isSizedTypeOpen =
+                                                                !isSizedTypeOpen;
+                                                          });
                                                         },
                                                       );
-                                                      setState(() {
-                                                        isSizedTypeOpen =
-                                                            !isSizedTypeOpen;
-                                                      });
-                                                    },
-                                                  );
                                                 },
-                                                isOpen:
-                                                    isSizedTypeOpen,
-                                                title:
-                                                    'Size Type (Optional)',
+                                                isOpen: isSizedTypeOpen,
+                                                title: 'Size Type (Optional)',
                                                 hint:
-                                                    returnData()
-                                                        .selectedSize ??
+                                                    returnData().selectedSize ??
                                                     'Select Item Size Type',
-                                                theme:
-                                                    theme,
+                                                theme: theme,
                                               ),
                                             ),
 
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                             SubWrapper(
                                               isVisible:
-                                                  !ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
+                                                  !ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                      ),
                                               mainWidget: MainDropdown(
                                                 valueSet:
                                                     returnData(
-                                                      context:
-                                                          context,
+                                                      context: context,
                                                     ).catValueSet,
                                                 onTap: () {
-                                                  ItemsAuthAction().applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                    action: () {
-                                                      categoriesBottomSheet(
-                                                        context,
-                                                        () {
-                                                          setState(
+                                                  ItemsAuthAction()
+                                                      .applyVariationsAction(
+                                                        context: context,
+                                                        action: () {
+                                                          categoriesBottomSheet(
+                                                            context,
                                                             () {
-                                                              isOpen =
-                                                                  false;
+                                                              setState(() {
+                                                                isOpen = false;
+                                                              });
                                                             },
                                                           );
+                                                          setState(() {
+                                                            isOpen = !isOpen;
+                                                          });
                                                         },
                                                       );
-                                                      setState(() {
-                                                        isOpen =
-                                                            !isOpen;
-                                                      });
-                                                    },
-                                                  );
                                                 },
-                                                isOpen:
-                                                    isOpen,
-                                                title:
-                                                    'Categories (Optional)',
+                                                isOpen: isOpen,
+                                                title: 'Categories (Optional)',
                                                 hint:
-                                                    returnData(
-                                                          context:
-                                                              context,
-                                                        ).selectedCategories.toList().isNotEmpty
+                                                    returnData(context: context)
+                                                            .selectedCategories
+                                                            .toList()
+                                                            .isNotEmpty
                                                         ? "(${returnData(context: context).selectedCategories.toList().length}) Categories Selected"
                                                         : 'Select Item Categories',
-                                                theme:
-                                                    theme,
+                                                theme: theme,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                       ],
                                     ),
                                   ),
@@ -2205,22 +2065,14 @@ class _AddProductDesktopState
           ),
           Visibility(
             visible: isLoading,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showLoader(
+            child: returnCompProvider(context, listen: false).showLoader(
               message:
-                  widget.product != null
-                      ? 'Updating Item'
-                      : 'Creating Item',
+                  widget.product != null ? 'Updating Item' : 'Creating Item',
             ),
           ),
           Visibility(
             visible: showSuccess,
-            child: returnCompProvider(
-              context,
-              listen: false,
-            ).showSuccess(
+            child: returnCompProvider(context, listen: false).showSuccess(
               widget.product != null
                   ? 'Item Updated Successfully'
                   : 'Item Created Successfully',

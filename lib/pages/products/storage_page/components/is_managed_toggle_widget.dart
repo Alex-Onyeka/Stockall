@@ -48,6 +48,8 @@ class _IsManagedToggleWidgetState extends State<IsManagedToggleWidget> {
                       quantityChange: null,
                       product: TempProductClass(
                         manageSalesWastage: widget.product.manageSalesWastage,
+                        deriveQuantityFromPrice:
+                            widget.product.deriveQuantityFromPrice,
                         heightDimension: widget.product.heightDimension,
                         widthDimension: widget.product.widthDimension,
                         dimensionUnit: widget.product.dimensionUnit,

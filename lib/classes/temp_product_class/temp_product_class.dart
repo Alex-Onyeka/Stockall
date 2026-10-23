@@ -139,6 +139,11 @@ class TempProductClass {
   @HiveField(42)
   double? dimensionUnitConversion;
 
+  // Lets the sale dialog take a price and work out the
+  // quantity for it (1D items only).
+  @HiveField(43)
+  bool? deriveQuantityFromPrice;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -183,11 +188,10 @@ class TempProductClass {
     required this.manageSalesWastage,
     this.dimensionUnit,
     this.dimensionUnitConversion,
+    this.deriveQuantityFromPrice,
   });
 
-  factory TempProductClass.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory TempProductClass.fromJson(Map<String, dynamic> json) {
     return TempProductClass(
       id: json['id'] as int?,
       name: json['name'] as String,
@@ -202,26 +206,19 @@ class TempProductClass {
       size: json['size'] as String?,
       lowQtty: (json['low_qtty'] as num?)?.toDouble(),
       costPrice: (json['cost_price'] as num).toDouble(),
-      sellingPrice:
-          (json['selling_price'] as num?)?.toDouble(),
+      sellingPrice: (json['selling_price'] as num?)?.toDouble(),
       discount: (json['discount'] as num?)?.toDouble(),
       startDate:
           json['starting_date'] != null
-              ? DateTime.parse(
-                json['starting_date'] as String,
-              )
+              ? DateTime.parse(json['starting_date'] as String)
               : null,
       endDate:
           json['ending_date'] != null
-              ? DateTime.parse(
-                json['ending_date'] as String,
-              )
+              ? DateTime.parse(json['ending_date'] as String)
               : null,
       expiryDate:
           json['expiry_date'] != null
-              ? DateTime.parse(
-                json['expiry_date'] as String,
-              )
+              ? DateTime.parse(json['expiry_date'] as String)
               : null,
       quantity: (json['quantity'] as num?)?.toDouble(),
       createdAt:
@@ -237,17 +234,13 @@ class TempProductClass {
       departmentName: json['department_name'] as String?,
       isManaged: json['is_managed'] as bool,
       uuid: json['uuid'] as String?,
-      totalQttyInStorage:
-          (json['total_qtty_in_storage'] as num?)?.toInt(),
+      totalQttyInStorage: (json['total_qtty_in_storage'] as num?)?.toInt(),
       totalQttyInStorageDouble:
-          (json['total_qtty_in_storage_double'] as num?)
-              ?.toDouble(),
+          (json['total_qtty_in_storage_double'] as num?)?.toDouble(),
       groupUnit: json['group_unit'] as String?,
-      qttyPerGroup:
-          (json['qtty_per_group'] as num?)?.toDouble(),
+      qttyPerGroup: (json['qtty_per_group'] as num?)?.toDouble(),
       categoryUuid: json['category_uuid'] as String?,
-      wholeSalePrice:
-          (json['whole_sale_price'] as num?)?.toDouble(),
+      wholeSalePrice: (json['whole_sale_price'] as num?)?.toDouble(),
       storageUuid: json['storage_uuid'] as String?,
       categories:
           (json['categories'] as List<dynamic>?)
@@ -277,23 +270,19 @@ class TempProductClass {
                         ),
               )
               .toList(),
-      widthDimension:
-          (json['width_dimension'] as num?)?.toDouble(),
-      heightDimension:
-          (json['height_dimension'] as num?)?.toDouble(),
+      widthDimension: (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension: (json['height_dimension'] as num?)?.toDouble(),
       quantityType: json['quantity_type'] as int? ?? 1,
-      manageSalesWastage:
-          json['manage_sales_wastage'] as bool? ?? false,
+      manageSalesWastage: json['manage_sales_wastage'] as bool? ?? false,
       dimensionUnit: json['dimension_unit'] as String?,
       dimensionUnitConversion:
-          (json['dimension_unit_conversion'] as num?)
-              ?.toDouble(),
+          (json['dimension_unit_conversion'] as num?)?.toDouble(),
+      deriveQuantityFromPrice:
+          json['derive_quantity_from_price'] as bool? ?? false,
     );
   }
 
-  Map<String, dynamic> toJson({
-    required bool isIncludeQuantity,
-  }) {
+  Map<String, dynamic> toJson({required bool isIncludeQuantity}) {
     if (isIncludeQuantity) {
       return {
         'name': name,
@@ -309,12 +298,9 @@ class TempProductClass {
         'cost_price': costPrice,
         'selling_price': sellingPrice,
         'discount': discount,
-        'starting_date':
-            startDate?.toIso8601String().split('T').first,
-        'ending_date':
-            endDate?.toIso8601String().split('T').first,
-        'expiry_date':
-            expiryDate?.toIso8601String().split('T').first,
+        'starting_date': startDate?.toIso8601String().split('T').first,
+        'ending_date': endDate?.toIso8601String().split('T').first,
+        'expiry_date': expiryDate?.toIso8601String().split('T').first,
         'quantity': quantity,
         'set_custom_price': setCustomPrice,
         'department_uuid': departmentUuid,
@@ -324,8 +310,7 @@ class TempProductClass {
         'updated_at': updatedAt?.toIso8601String(),
         'uuid': uuid,
         'total_qtty_in_storage': totalQttyInStorage,
-        'total_qtty_in_storage_double':
-            totalQttyInStorageDouble,
+        'total_qtty_in_storage_double': totalQttyInStorageDouble,
         'group_unit': groupUnit,
         'qtty_per_group': qttyPerGroup,
         'category_uuid': categoryUuid,
@@ -336,10 +321,7 @@ class TempProductClass {
         'units_list': ProductUnitsClass.getUnitList(
           tempUnitList: unitsList,
           productUuid: uuid,
-          dimensionType:
-              quantityType == 2
-                  ? ProductUnitsClass.sheetUnit
-                  : null,
+          dimensionType: quantityType == 2 ? ProductUnitsClass.sheetUnit : null,
         ),
         'prices_list': ProductPricesClass.getPricesList(
           tempPricesList: pricesList,
@@ -350,8 +332,8 @@ class TempProductClass {
         'quantity_type': quantityType ?? 1,
         'manage_sales_wastage': manageSalesWastage,
         'dimension_unit': dimensionUnit,
-        'dimension_unit_conversion':
-            dimensionUnitConversion,
+        'dimension_unit_conversion': dimensionUnitConversion,
+        'derive_quantity_from_price': deriveQuantityFromPrice,
       };
     } else {
       return {
@@ -368,12 +350,9 @@ class TempProductClass {
         'cost_price': costPrice,
         'selling_price': sellingPrice,
         'discount': discount,
-        'starting_date':
-            startDate?.toIso8601String().split('T').first,
-        'ending_date':
-            endDate?.toIso8601String().split('T').first,
-        'expiry_date':
-            expiryDate?.toIso8601String().split('T').first,
+        'starting_date': startDate?.toIso8601String().split('T').first,
+        'ending_date': endDate?.toIso8601String().split('T').first,
+        'expiry_date': expiryDate?.toIso8601String().split('T').first,
         // 'quantity': quantity,
         'set_custom_price': setCustomPrice,
         'department_uuid': departmentUuid,
@@ -383,8 +362,7 @@ class TempProductClass {
         'updated_at': updatedAt?.toIso8601String(),
         'uuid': uuid,
         'total_qtty_in_storage': totalQttyInStorage,
-        'total_qtty_in_storage_double':
-            totalQttyInStorageDouble,
+        'total_qtty_in_storage_double': totalQttyInStorageDouble,
         'group_unit': groupUnit,
         'qtty_per_group': qttyPerGroup,
         'category_uuid': categoryUuid,
@@ -395,10 +373,7 @@ class TempProductClass {
         'units_list': ProductUnitsClass.getUnitList(
           tempUnitList: unitsList,
           productUuid: uuid,
-          dimensionType:
-              quantityType == 2
-                  ? ProductUnitsClass.sheetUnit
-                  : null,
+          dimensionType: quantityType == 2 ? ProductUnitsClass.sheetUnit : null,
         ),
         'prices_list': ProductPricesClass.getPricesList(
           tempPricesList: pricesList,
@@ -409,8 +384,8 @@ class TempProductClass {
         'quantity_type': quantityType ?? 1,
         'manage_sales_wastage': manageSalesWastage,
         'dimension_unit': dimensionUnit,
-        'dimension_unit_conversion':
-            dimensionUnitConversion,
+        'dimension_unit_conversion': dimensionUnitConversion,
+        'derive_quantity_from_price': deriveQuantityFromPrice,
       };
     }
   }
@@ -459,6 +434,7 @@ class TempProductClass {
     bool? manageSalesWastage,
     String? dimensionUnit,
     double? dimensionUnitConversion,
+    bool? deriveQuantityFromPrice,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -487,11 +463,9 @@ class TempProductClass {
       isManaged: isManaged ?? this.isManaged,
       updatedAt: updatedAt ?? this.updatedAt,
       uuid: uuid ?? this.uuid,
-      totalQttyInStorage:
-          totalQttyInStorage ?? this.totalQttyInStorage,
+      totalQttyInStorage: totalQttyInStorage ?? this.totalQttyInStorage,
       totalQttyInStorageDouble:
-          totalQttyInStorageDouble ??
-          this.totalQttyInStorageDouble,
+          totalQttyInStorageDouble ?? this.totalQttyInStorageDouble,
       groupUnit: groupUnit ?? this.groupUnit,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       categoryUuid: categoryUuid ?? this.categoryUuid,
@@ -502,28 +476,23 @@ class TempProductClass {
       unitsList: unitsList ?? this.unitsList,
       pricesList: pricesList ?? this.pricesList,
       widthDimension: widthDimension ?? this.widthDimension,
-      heightDimension:
-          heightDimension ?? this.heightDimension,
+      heightDimension: heightDimension ?? this.heightDimension,
       quantityType: quantityType ?? this.quantityType,
-      manageSalesWastage:
-          manageSalesWastage ?? this.manageSalesWastage,
+      manageSalesWastage: manageSalesWastage ?? this.manageSalesWastage,
       dimensionUnit: dimensionUnit ?? this.dimensionUnit,
       dimensionUnitConversion:
-          dimensionUnitConversion ??
-          this.dimensionUnitConversion,
+          dimensionUnitConversion ?? this.dimensionUnitConversion,
+      deriveQuantityFromPrice:
+          deriveQuantityFromPrice ?? this.deriveQuantityFromPrice,
     );
   }
 
-  double? getActualQuantity({
-    double? tempWidth,
-    double? tempHeight,
-  }) {
+  double? getActualQuantity({double? tempWidth, double? tempHeight}) {
     if (quantityType == 1) {
       return quantity;
     } else if (quantityType == 2) {
       final conv =
-          (dimensionUnitConversion != null &&
-                  dimensionUnitConversion! > 0)
+          (dimensionUnitConversion != null && dimensionUnitConversion! > 0)
               ? dimensionUnitConversion!
               : 1.0;
       return (quantity ?? 0) *
@@ -539,11 +508,9 @@ class TempProductClass {
   // Converts area back to the stored sheet count.
   double dimensionArea() {
     if (quantityType == 2) {
-      final area =
-          (widthDimension ?? 1) * (heightDimension ?? 1);
+      final area = (widthDimension ?? 1) * (heightDimension ?? 1);
       final conv =
-          (dimensionUnitConversion != null &&
-                  dimensionUnitConversion! > 0)
+          (dimensionUnitConversion != null && dimensionUnitConversion! > 0)
               ? dimensionUnitConversion!
               : 1.0;
       final converted = area / conv;
@@ -556,8 +523,7 @@ class TempProductClass {
   // Stored quantity left after removing [removedQuantity]
   // (in getActualQuantity units, i.e. area for 2D items).
   double quantityAfterRemoving(double removedQuantity) {
-    return ((getActualQuantity() ?? 0) - removedQuantity) /
-        dimensionArea();
+    return ((getActualQuantity() ?? 0) - removedQuantity) / dimensionArea();
   }
 
   //
@@ -566,29 +532,21 @@ class TempProductClass {
   //
 
   List<ProductPricesClass> getPriceListFinal() {
-    return getPricesList()
-        .map((item) => item.copyWith())
-        .toList();
+    return getPricesList().map((item) => item.copyWith()).toList();
   }
 
   ProductPricesClass getProductPrice({String? priceUuid}) {
-    var items = getPricesList().where(
-      (item) => item.uuid == priceUuid,
-    );
+    var items = getPricesList().where((item) => item.uuid == priceUuid);
     if (priceUuid == null || items.isEmpty) {
       return getPrimaryPrice();
     } else {
-      return getPricesList().firstWhere(
-        (item) => item.uuid == priceUuid,
-      );
+      return getPricesList().firstWhere((item) => item.uuid == priceUuid);
     }
   }
 
   ProductPricesClass getPrimaryPrice() {
     if (getPricesList().isEmpty == true ||
-        getPricesList()
-            .where((item) => item.isPrimary == true)
-            .isEmpty) {
+        getPricesList().where((item) => item.isPrimary == true).isEmpty) {
       return ProductPricesClass(
         uuid: uuidGen(),
         staffUuid: currentUser().userId,
@@ -601,16 +559,13 @@ class TempProductClass {
         priceType: 1,
       );
     } else {
-      return getPricesList()
-          .where((item) => item.isPrimary == true)
-          .first;
+      return getPricesList().where((item) => item.isPrimary == true).first;
     }
   }
 
   List<ProductPricesClass> getPricesList() {
     List<ProductPricesClass> tempList() {
-      if (pricesList == null ||
-          pricesList?.isEmpty == true) {
+      if (pricesList == null || pricesList?.isEmpty == true) {
         List<ProductPricesClass> tempList = [
           ProductPricesClass(
             uuid: uuidGen(),
@@ -668,14 +623,10 @@ class TempProductClass {
   //
 
   List<ProductUnitsClass> getUnitListFinal() {
-    return getUnitsList()
-        .map((item) => item.copyWith())
-        .toList();
+    return getUnitsList().map((item) => item.copyWith()).toList();
   }
 
-  String getItemTilePriceWithDiscount({
-    required BuildContext context,
-  }) {
+  String getItemTilePriceWithDiscount({required BuildContext context}) {
     if (discount == null) {
       return getItemTilePriceNoDiscount(context: context);
     } else {
@@ -685,16 +636,13 @@ class TempProductClass {
                 ? getPrimaryUnit().conversion
                 : 1) *
             ((getPrimaryPrice().priceValue -
-                (getPrimaryPrice().priceValue *
-                    (discount! / 100)))),
+                (getPrimaryPrice().priceValue * (discount! / 100)))),
         context: context,
       );
     }
   }
 
-  String getItemTilePriceNoDiscount({
-    required BuildContext context,
-  }) {
+  String getItemTilePriceNoDiscount({required BuildContext context}) {
     if (getPrimaryPrice().priceValue != 0) {
       return formatMoneyBig(
         amount: getItemPrice(context: context),
@@ -709,8 +657,7 @@ class TempProductClass {
     final primaryUnit = getPrimaryUnit();
     final areaConversion =
         quantityType == 2 &&
-                primaryUnit.dimensionType ==
-                    ProductUnitsClass.sheetUnit
+                primaryUnit.dimensionType == ProductUnitsClass.sheetUnit
             ? primaryUnit.conversion * dimensionArea()
             : primaryUnit.conversion;
     return getPrimaryPrice().priceType == 1
@@ -718,13 +665,8 @@ class TempProductClass {
         : getPrimaryPrice().priceValue;
   }
 
-  String getQuantityText({
-    BuildContext? context,
-    required int index,
-  }) {
-    if (!authorization(
-      authorized: Authorizations().viewItemQuantity,
-    )) {
+  String getQuantityText({BuildContext? context, required int index}) {
+    if (!authorization(authorized: Authorizations().viewItemQuantity)) {
       return '****';
     } else {
       if (isExpired()) {
@@ -743,30 +685,25 @@ class TempProductClass {
     BuildContext? context,
     required int index,
   }) {
-    if (!authorization(
-      authorized: Authorizations().viewItemQuantity,
-    )) {
+    if (!authorization(authorized: Authorizations().viewItemQuantity)) {
       return '****';
     } else {
       if (isExpired()) {
         return 'Expired';
       } else {
-        var products = returnData(context: context)
-            .productListMain
-            .where((item) => item.uuid == uuid);
+        var products = returnData(
+          context: context,
+        ).productListMain.where((item) => item.uuid == uuid);
         double tempQuantity = 0;
         if (products.isNotEmpty) {
           tempQuantity =
               context == null
-                  ? returnSalesProvider()
-                      .remainingItemQttyInAllCarts(
-                        product: products.first,
-                      )
+                  ? returnSalesProvider().remainingItemQttyInAllCarts(
+                    product: products.first,
+                  )
                   : returnSalesProviderContext(
                     context,
-                  ).remainingItemQttyInAllCarts(
-                    product: products.first,
-                  );
+                  ).remainingItemQttyInAllCarts(product: products.first);
         } else {
           tempQuantity = (getActualQuantity() ?? 0);
         }
@@ -787,9 +724,7 @@ class TempProductClass {
     if (unitsList == null || unitsList?.isEmpty == true) {
       return (getActualQuantity() ?? 0);
     } else {
-      var items = unitsList!.where(
-        (item) => item.isPrimary,
-      );
+      var items = unitsList!.where((item) => item.isPrimary);
       if (items.isEmpty) {
         return (getActualQuantity() ?? 0);
       } else {
@@ -804,11 +739,8 @@ class TempProductClass {
     }
   }
 
-  String getSelectedUnitForProductEdit(
-    BuildContext context,
-  ) {
-    var selectedUnits =
-        returnData(context: context).tempUnitsList;
+  String getSelectedUnitForProductEdit(BuildContext context) {
+    var selectedUnits = returnData(context: context).tempUnitsList;
     if (selectedUnits.isEmpty) {
       return 'Unit Not Set';
     } else {
@@ -817,23 +749,17 @@ class TempProductClass {
   }
 
   ProductUnitsClass getProductUnit({String? unitUuid}) {
-    var items = getUnitsList().where(
-      (item) => item.uuid == unitUuid,
-    );
+    var items = getUnitsList().where((item) => item.uuid == unitUuid);
     if (unitUuid == null || items.isEmpty) {
       return getPrimaryUnit();
     } else {
-      return getUnitsList().firstWhere(
-        (item) => item.uuid == unitUuid,
-      );
+      return getUnitsList().firstWhere((item) => item.uuid == unitUuid);
     }
   }
 
   ProductUnitsClass getPrimaryUnit() {
     final list = getUnitsList();
-    final primaries = list.where(
-      (item) => item.isPrimary == true,
-    );
+    final primaries = list.where((item) => item.isPrimary == true);
     if (list.isEmpty || primaries.isEmpty) {
       return ProductUnitsClass(
         uuid: '${uuid ?? ''}_primary_unit',
@@ -844,10 +770,7 @@ class TempProductClass {
         name: unit == 'Others' ? 'Unit(s)' : unit,
         isPrimary: true,
         productUuid: uuid ?? '',
-        dimensionType:
-            quantityType == 2
-                ? ProductUnitsClass.sheetUnit
-                : null,
+        dimensionType: quantityType == 2 ? ProductUnitsClass.sheetUnit : null,
       );
     } else {
       return primaries.first;
@@ -868,13 +791,10 @@ class TempProductClass {
             isPrimary: true,
             productUuid: uuid ?? '',
             dimensionType:
-                quantityType == 2
-                    ? ProductUnitsClass.sheetUnit
-                    : null,
+                quantityType == 2 ? ProductUnitsClass.sheetUnit : null,
           ),
         ];
-        if (useGroupUnit == true &&
-            (qttyPerGroup ?? 0) > 0) {
+        if (useGroupUnit == true && (qttyPerGroup ?? 0) > 0) {
           ProductUnitsClass newItem = ProductUnitsClass(
             uuid: '${uuid ?? ''}_group_unit',
             staffUuid: currentUser().userId,
@@ -888,17 +808,13 @@ class TempProductClass {
             isPrimary: false,
             productUuid: uuid ?? '',
             dimensionType:
-                quantityType == 2
-                    ? ProductUnitsClass.sheetUnit
-                    : null,
+                quantityType == 2 ? ProductUnitsClass.sheetUnit : null,
           );
           tempList.add(newItem);
         }
         return tempList;
       } else {
-        List<ProductUnitsClass> tempList = [
-          ...(unitsList ?? []),
-        ];
+        List<ProductUnitsClass> tempList = [...(unitsList ?? [])];
         if (useGroupUnit == true &&
             (qttyPerGroup ?? 0) > 0 &&
             tempList.every((item) => item.isPrimary)) {
@@ -916,9 +832,7 @@ class TempProductClass {
               isPrimary: false,
               productUuid: uuid ?? '',
               dimensionType:
-                  quantityType == 2
-                      ? ProductUnitsClass.sheetUnit
-                      : null,
+                  quantityType == 2 ? ProductUnitsClass.sheetUnit : null,
             ),
           );
         }
@@ -930,9 +844,7 @@ class TempProductClass {
     if (resolved.length < 2) {
       return resolved;
     } else {
-      final primaries = resolved.where(
-        (item) => item.isPrimary,
-      );
+      final primaries = resolved.where((item) => item.isPrimary);
       return [
         if (primaries.isNotEmpty) primaries.first,
         ...resolved.where((item) => !item.isPrimary),
@@ -957,9 +869,7 @@ class TempProductClass {
     if (liveUnits != null && liveUnits.isNotEmpty) {
       for (final unitUuid in unitUuids.toSet()) {
         if (unitUuid == null ||
-            liveUnits.any(
-              (item) => item.uuid == unitUuid,
-            )) {
+            liveUnits.any((item) => item.uuid == unitUuid)) {
           continue;
         }
         final snapshot =
@@ -994,20 +904,14 @@ class TempProductClass {
           'Price $priceUuid of item $uuid ($name) is not in the line snapshot. Using the primary price.',
         );
       } else {
-        newPrices = [
-          ...livePrices,
-          snapshot.copyWith(isPrimary: false),
-        ];
+        newPrices = [...livePrices, snapshot.copyWith(isPrimary: false)];
       }
     }
 
     if (newUnits == null && newPrices == null) {
       return this;
     }
-    return copyWith(
-      unitsList: newUnits,
-      pricesList: newPrices,
-    );
+    return copyWith(unitsList: newUnits, pricesList: newPrices);
   }
 
   bool canSelectForCart() {
@@ -1019,8 +923,7 @@ class TempProductClass {
       )) {
         return true;
       } else {
-        if (getActualQuantity() == null ||
-            (getActualQuantity() ?? 0) <= 0) {
+        if (getActualQuantity() == null || (getActualQuantity() ?? 0) <= 0) {
           return false;
         } else {
           return true;
@@ -1037,8 +940,7 @@ class TempProductClass {
         return false;
       } else {
         if (expiryDate != null) {
-          if (expiryDate?.isBefore(DateTime.now()) ==
-              true) {
+          if (expiryDate?.isBefore(DateTime.now()) == true) {
             return true;
           } else {
             return false;
@@ -1078,8 +980,7 @@ class TempProductClass {
 
   double getGroupQuantity() {
     if (useGroupUnit == true) {
-      return (getActualQuantity() ?? 0) /
-          (qttyPerGroup ?? 1);
+      return (getActualQuantity() ?? 0) / (qttyPerGroup ?? 1);
     } else {
       return 0;
     }
@@ -1087,15 +988,9 @@ class TempProductClass {
 
   String getSingleUnit() {
     if (storageUuid != null) {
-      if (returnShopProvider()
-              .userShop()
-              ?.manageInventoryStorage ==
-          true) {
-        return returnStorageProductProvider()
-                .storageProductListMain
-                .where(
-                  (storage) => storage.uuid == storageUuid,
-                )
+      if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
+        return returnStorageProductProvider().storageProductListMain
+                .where((storage) => storage.uuid == storageUuid)
                 .first
                 .unit ??
             'Unit(s)';
@@ -1109,15 +1004,9 @@ class TempProductClass {
 
   String getGroupUnit() {
     if (storageUuid != null) {
-      if (returnShopProvider()
-              .userShop()
-              ?.manageInventoryStorage ==
-          true) {
-        return returnStorageProductProvider()
-                .storageProductListMain
-                .where(
-                  (storage) => storage.uuid == storageUuid,
-                )
+      if (returnShopProvider().userShop()?.manageInventoryStorage == true) {
+        return returnStorageProductProvider().storageProductListMain
+                .where((storage) => storage.uuid == storageUuid)
                 .first
                 .groupUnit ??
             'Group(s)';
@@ -1130,12 +1019,8 @@ class TempProductClass {
   }
 
   bool canUpdateQuantity() {
-    if (authorization(
-          authorized: Authorizations().updateProduct,
-        ) &&
-        authorization(
-          authorized: Authorizations().updateItemQuantity,
-        ) &&
+    if (authorization(authorized: Authorizations().updateProduct) &&
+        authorization(authorized: Authorizations().updateItemQuantity) &&
         !isPartOfStorage()) {
       return true;
     } else {
@@ -1145,10 +1030,7 @@ class TempProductClass {
 
   bool isPartOfStorage() {
     if (storageUuid != null &&
-        returnShopProvider()
-                .userShop()
-                ?.manageInventoryStorage ==
-            true) {
+        returnShopProvider().userShop()?.manageInventoryStorage == true) {
       return true;
     } else {
       return false;

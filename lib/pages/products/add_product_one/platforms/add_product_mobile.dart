@@ -61,12 +61,10 @@ class AddProductMobile extends StatefulWidget {
   });
 
   @override
-  State<AddProductMobile> createState() =>
-      _AddProductMobileState();
+  State<AddProductMobile> createState() => _AddProductMobileState();
 }
 
-class _AddProductMobileState
-    extends State<AddProductMobile> {
+class _AddProductMobileState extends State<AddProductMobile> {
   bool barCodeSet = false;
   bool isLoading = false;
   bool showSuccess = false;
@@ -79,8 +77,7 @@ class _AddProductMobileState
 
   bool isSizedTypeOpen = false;
 
-  TextEditingController expiryDateC =
-      TextEditingController();
+  TextEditingController expiryDateC = TextEditingController();
   int quantityType = 1;
 
   void switchQuantityType(int index) {
@@ -104,8 +101,7 @@ class _AddProductMobileState
           var theme = returnTheme(context);
           return InfoAlert(
             theme: theme,
-            message:
-                'Item Name Must be set before item can be created',
+            message: 'Item Name Must be set before item can be created',
             title: 'Empty Input',
           );
         },
@@ -129,8 +125,7 @@ class _AddProductMobileState
       final safeContext = context;
       var samePro = returnData().productList().where(
         (pr) =>
-            pr.name.toLowerCase() ==
-            widget.nameController.text.toLowerCase(),
+            pr.name.toLowerCase() == widget.nameController.text.toLowerCase(),
       );
       showDialog(
         context: safeContext,
@@ -141,10 +136,7 @@ class _AddProductMobileState
                 samePro.isNotEmpty
                     ? 'Item with the name  ${widget.nameController.text.toUpperCase()}  already Exists in your Inventory. Are you sure you want to proceed to create a duplicate Item?'
                     : 'You are about to add a new item to your stock, are you sure you want to proceed?',
-            title:
-                samePro.isNotEmpty
-                    ? 'Item Already Exists'
-                    : 'Are you sure?',
+            title: samePro.isNotEmpty ? 'Item Already Exists' : 'Are you sure?',
             action: () async {
               Navigator.of(confirmDialog).pop();
 
@@ -155,9 +147,7 @@ class _AddProductMobileState
               final dataProvider = returnData();
               ItemHistory itemHistory = ItemHistory(
                 source: ItemHistoryEventClass.manualSource,
-                destination:
-                    ItemHistoryEventClass
-                        .productDestination,
+                destination: ItemHistoryEventClass.productDestination,
                 event: ItemHistoryEventClass.itemCreated,
                 isManaged: true,
                 unit: 'Not Set',
@@ -174,20 +164,14 @@ class _AddProductMobileState
                 isMultiple: false,
                 itemHistory: itemHistory,
                 product: TempProductClass(
-                  manageSalesWastage:
-                      dataProvider.manageWastage,
+                  manageSalesWastage: dataProvider.manageWastage,
+                  deriveQuantityFromPrice: dataProvider.deriveQuantityFromPrice,
                   quantityType: quantityType,
                   heightDimension: double.tryParse(
-                    widget.heightController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.heightController.text.replaceAll(',', ''),
                   ),
                   widthDimension: double.tryParse(
-                    widget.widthController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.widthController.text.replaceAll(',', ''),
                   ),
                   dimensionUnit: dataProvider.selectedDimensionUnit,
                   dimensionUnitConversion:
@@ -198,24 +182,18 @@ class _AddProductMobileState
                     sellingText: widget.sellingController.text,
                   ),
                   useGroupUnit: dataProvider.useGroupUnit,
-                  categories:
-                      dataProvider.selectedCategories
-                          .toList(),
+                  categories: dataProvider.selectedCategories.toList(),
                   storageUuid: null,
                   departmentName:
                       returnData().departmentUuid != null
-                          ? returnDepartmentProvider()
-                              .departments
+                          ? returnDepartmentProvider().departments
                               .firstWhere(
                                 (dept) =>
-                                    dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    dept.uuid == returnData().departmentUuid,
                               )
                               .name
                           : null,
-                  departmentUuid:
-                      returnData().departmentUuid,
+                  departmentUuid: returnData().departmentUuid,
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
@@ -223,52 +201,36 @@ class _AddProductMobileState
                           ? dataProvider.selectedUnit
                           : dataProvider.singleUnitName()) ??
                       'Unit(s)',
-                  groupUnit:
-                      dataProvider.selectedGroupUnit ??
-                      'Group(s)',
+                  groupUnit: dataProvider.selectedGroupUnit ?? 'Group(s)',
                   qttyPerGroup:
-                      widget
-                              .qttyPerGroupController
-                              .text
-                              .isNotEmpty
+                      widget.qttyPerGroupController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .qttyPerGroupController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
                   sizeType: dataProvider.selectedSize,
-                  isRefundable:
-                      dataProvider.isProductRefundable,
-                  setCustomPrice:
-                      dataProvider.setCustomPrice,
+                  isRefundable: dataProvider.isProductRefundable,
+                  setCustomPrice: dataProvider.setCustomPrice,
                   costPrice:
                       widget.costController.text.isNotEmpty
                           ? double.parse(
-                            widget.costController.text
-                                .replaceAll(',', ''),
+                            widget.costController.text.replaceAll(',', ''),
                           )
                           : 0,
                   shopId: shopId(),
                   sellingPrice:
-                      widget
-                              .sellingController
-                              .text
-                              .isNotEmpty
+                      widget.sellingController.text.isNotEmpty
                           ? double.parse(
-                            widget.sellingController.text
-                                .replaceAll(',', ''),
+                            widget.sellingController.text.replaceAll(',', ''),
                           )
                           : null,
                   wholeSalePrice:
-                      widget
-                              .wholeSaleController
-                              .text
-                              .isNotEmpty
+                      widget.wholeSaleController.text.isNotEmpty
                           ? double.parse(
-                            widget.wholeSaleController.text
-                                .replaceAll(',', ''),
+                            widget.wholeSaleController.text.replaceAll(',', ''),
                           )
                           : null,
                   quantity: 0,
@@ -277,12 +239,10 @@ class _AddProductMobileState
                       widget.lowQttyController.text.isEmpty
                           ? 10
                           : double.tryParse(
-                            widget.lowQttyController.text
-                                .replaceAll(',', ''),
+                            widget.lowQttyController.text.replaceAll(',', ''),
                           ),
                   discount: double.tryParse(
-                    widget.discountController.text
-                        .replaceAll(',', ''),
+                    widget.discountController.text.replaceAll(',', ''),
                   ),
                   expiryDate: dataProvider.expiryDate,
                   // categoryUuid:
@@ -299,9 +259,7 @@ class _AddProductMobileState
               Future.delayed(Duration(seconds: 2), () {
                 // Pop current screen
                 if (safeContext.mounted) {
-                  Navigator.of(
-                    safeContext,
-                  ).pop(); // pop current page
+                  Navigator.of(safeContext).pop(); // pop current page
                 }
               });
             },
@@ -342,8 +300,7 @@ class _AddProductMobileState
           var theme = returnTheme(context);
           return ConfirmationAlert(
             theme: theme,
-            message:
-                'Are you sure you want to proceed with update?',
+            message: 'Are you sure you want to proceed with update?',
             title: 'Proceed?',
             action: () async {
               final provider = returnData();
@@ -362,47 +319,35 @@ class _AddProductMobileState
                 isQuantityUpdate: false,
                 quantityChange: null,
                 product: TempProductClass(
-                  manageSalesWastage:
-                      provider.manageWastage,
+                  manageSalesWastage: provider.manageWastage,
+                  deriveQuantityFromPrice: provider.deriveQuantityFromPrice,
                   quantityType: quantityType,
                   heightDimension: double.tryParse(
-                    widget.heightController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.heightController.text.replaceAll(',', ''),
                   ),
                   widthDimension: double.tryParse(
-                    widget.widthController.text.replaceAll(
-                      ',',
-                      '',
-                    ),
+                    widget.widthController.text.replaceAll(',', ''),
                   ),
                   dimensionUnit: provider.selectedDimensionUnit,
-                  dimensionUnitConversion:
-                      provider.selectedDimensionConversion,
+                  dimensionUnitConversion: provider.selectedDimensionConversion,
                   unitsList: provider.getFinalUnitList(),
                   pricesList: provider.getFinalPriceList(
                     productUuid: createdProductUuid ?? '',
                     sellingText: widget.sellingController.text,
                   ),
                   useGroupUnit: provider.useGroupUnit,
-                  categories:
-                      provider.selectedCategories.toList(),
+                  categories: provider.selectedCategories.toList(),
                   storageUuid: widget.product?.storageUuid,
                   departmentName:
                       returnData().departmentUuid != null
-                          ? returnDepartmentProvider()
-                              .departments
+                          ? returnDepartmentProvider().departments
                               .firstWhere(
                                 (dept) =>
-                                    dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    dept.uuid == returnData().departmentUuid,
                               )
                               .name
                           : null,
-                  departmentUuid:
-                      returnData().departmentUuid,
+                  departmentUuid: returnData().departmentUuid,
                   setCustomPrice: provider.setCustomPrice,
                   isManaged:
                       // widget.quantityController.text.isEmpty
@@ -420,44 +365,31 @@ class _AddProductMobileState
                       'Unit(s)',
                   groupUnit: provider.selectedGroupUnit,
                   qttyPerGroup:
-                      widget
-                              .qttyPerGroupController
-                              .text
-                              .isNotEmpty
+                      widget.qttyPerGroupController.text.isNotEmpty
                           ? double.parse(
-                            widget
-                                .qttyPerGroupController
-                                .text
-                                .replaceAll(',', ''),
+                            widget.qttyPerGroupController.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           )
                           : null,
-                  isRefundable:
-                      provider.isProductRefundable,
+                  isRefundable: provider.isProductRefundable,
                   costPrice:
                       widget.costController.text.isNotEmpty
                           ? double.parse(
-                            widget.costController.text
-                                .replaceAll(',', ''),
+                            widget.costController.text.replaceAll(',', ''),
                           )
                           : 0,
                   sellingPrice:
-                      widget
-                              .sellingController
-                              .text
-                              .isNotEmpty
+                      widget.sellingController.text.isNotEmpty
                           ? double.parse(
-                            widget.sellingController.text
-                                .replaceAll(',', ''),
+                            widget.sellingController.text.replaceAll(',', ''),
                           )
                           : null,
                   wholeSalePrice:
-                      widget
-                              .wholeSaleController
-                              .text
-                              .isNotEmpty
+                      widget.wholeSaleController.text.isNotEmpty
                           ? double.parse(
-                            widget.wholeSaleController.text
-                                .replaceAll(',', ''),
+                            widget.wholeSaleController.text.replaceAll(',', ''),
                           )
                           : null,
                   quantity: widget.product?.quantity,
@@ -467,8 +399,7 @@ class _AddProductMobileState
                   //     provider.selectedCategory?.uuid,
                   createdAt: widget.product!.createdAt,
                   discount: double.tryParse(
-                    widget.discountController.text
-                        .replaceAll(',', ''),
+                    widget.discountController.text.replaceAll(',', ''),
                   ),
                   // endDate: provider.endDate,
                   expiryDate: provider.expiryDate,
@@ -476,8 +407,7 @@ class _AddProductMobileState
                       widget.lowQttyController.text.isEmpty
                           ? 10
                           : double.tryParse(
-                            widget.lowQttyController.text
-                                .replaceAll(',', ''),
+                            widget.lowQttyController.text.replaceAll(',', ''),
                           ),
                   sizeType: provider.selectedSize,
                   // startDate: provider.startDate,
@@ -528,10 +458,9 @@ class _AddProductMobileState
   Future<void> clearFields() async {
     await Future.delayed(Duration(microseconds: 500), () {
       returnData().clearFields(setIsManaged: false);
-      var res = ItemsAuthAction()
-          .allowStockallToManageItemAction(
-            context: context,
-          );
+      var res = ItemsAuthAction().allowStockallToManageItemAction(
+        context: context,
+      );
       if (res) {
         returnData().toggleIsManagedTemp(true);
       } else {
@@ -539,21 +468,18 @@ class _AddProductMobileState
       }
     });
     if (widget.product != null && context.mounted) {
-      returnData().manageWastage =
-          widget.product?.manageSalesWastage ?? false;
-      returnData().selectedDimensionUnit =
-          widget.product?.dimensionUnit;
+      returnData().manageWastage = widget.product?.manageSalesWastage ?? false;
+      returnData().selectedDimensionUnit = widget.product?.dimensionUnit;
       returnData().selectedDimensionConversion =
           widget.product?.dimensionUnitConversion;
+      returnData().deriveQuantityFromPrice =
+          widget.product?.deriveQuantityFromPrice ?? false;
       barcode = widget.product!.barcode;
-      barCodeSet =
-          widget.product!.barcode != null ? true : false;
+      barCodeSet = widget.product!.barcode != null ? true : false;
 
       widget.nameController.text = widget.product!.name;
-      widget.lowQttyController.text =
-          widget.product!.lowQtty!.toString();
-      widget.costController.text =
-          widget.product!.costPrice.toString();
+      widget.lowQttyController.text = widget.product!.lowQtty!.toString();
+      widget.costController.text = widget.product!.costPrice.toString();
       widget.sellingController.text =
           widget.product!.sellingPrice != null
               ? widget.product!.sellingPrice.toString()
@@ -566,48 +492,36 @@ class _AddProductMobileState
           widget.product!.discount != null
               ? widget.product!.discount!.toString()
               : '';
-      returnData().departmentUuid =
-          widget.product?.departmentUuid;
+      returnData().departmentUuid = widget.product?.departmentUuid;
       returnData().expiryDate = widget.product?.expiryDate;
-      returnData().isProductRefundable =
-          widget.product!.isRefundable;
+      returnData().isProductRefundable = widget.product!.isRefundable;
       returnData().isManaged = widget.product!.isManaged;
-      returnData().useGroupUnit =
-          widget.product!.useGroupUnit ?? false;
+      returnData().useGroupUnit = widget.product!.useGroupUnit ?? false;
       returnData().initUnitsList(
         productUuid: createdProductUuid,
         unitsListNew: widget.product?.getUnitsList() ?? [],
       );
       returnData().initPricesList(
         productUuid: createdProductUuid,
-        pricesListNew:
-            widget.product?.getPricesList() ?? [],
+        pricesListNew: widget.product?.getPricesList() ?? [],
       );
       returnData().initPriceUnitModes();
       if (!returnData().useMultiplePrices) {
-        final primaryValue =
-            widget.product!.getPrimaryPrice().priceValue;
+        final primaryValue = widget.product!.getPrimaryPrice().priceValue;
         widget.sellingController.text =
             primaryValue != 0 ? primaryValue.toString() : '';
       }
-      returnData().setCustomPrice =
-          widget.product!.setCustomPrice;
+      returnData().setCustomPrice = widget.product!.setCustomPrice;
       returnData().selectUnit(widget.product!.unit);
-      returnData().selectGroupUnit(
-        unit: widget.product!.groupUnit,
-      );
+      returnData().selectGroupUnit(unit: widget.product!.groupUnit);
       widget.qttyPerGroupController.text =
           widget.product!.qttyPerGroup != null
               ? widget.product!.qttyPerGroup!.toString()
               : '';
       widget.product!.sizeType != null
-          ? returnData().selectSize(
-            widget.product!.sizeType!,
-          )
+          ? returnData().selectSize(widget.product!.sizeType!)
           : null;
-      returnData().initCategories(
-        categories: widget.product?.categories ?? [],
-      );
+      returnData().initCategories(categories: widget.product?.categories ?? []);
       quantityType = widget.product?.quantityType ?? 1;
       widget.heightController.text =
           widget.product?.heightDimension?.toString() ?? '';
@@ -651,15 +565,11 @@ class _AddProductMobileState
                     fontSize: theme.mobileTexts.h4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  widget.product != null
-                      ? 'Edit Item'
-                      : 'New Item',
+                  widget.product != null ? 'Edit Item' : 'New Item',
                 ),
                 SizedBox(height: 5),
                 Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
-                  ),
+                  style: TextStyle(fontSize: theme.mobileTexts.b2.fontSize),
                   widget.product != null
                       ? 'Edit item details'
                       : 'Add a new item to your store.',
@@ -673,14 +583,10 @@ class _AddProductMobileState
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: SingleChildScrollView(
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 10.0,
-                          ),
+                          padding: const EdgeInsets.only(top: 10.0),
                           child: Column(
                             children: [
                               GeneralTextField(
@@ -688,34 +594,25 @@ class _AddProductMobileState
                                 hint: 'Enter Item Name',
                                 lines: 1,
                                 title: 'Item Name',
-                                controller:
-                                    widget.nameController,
+                                controller: widget.nameController,
                               ),
                               SizedBox(height: 10),
                               Visibility(
                                 visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .manageCostPrice,
+                                  authorized: Authorizations().manageCostPrice,
                                 ),
                                 child: MoneyTextfield(
                                   theme: theme,
                                   hint: 'Enter Real Cost',
-                                  title:
-                                      'Cost - Price (Optional)',
-                                  controller:
-                                      widget.costController,
+                                  title: 'Cost - Price (Optional)',
+                                  controller: widget.costController,
                                 ),
                               ),
                               Padding(
-                                padding:
-                                    const EdgeInsets.only(
-                                      top: 15.0,
-                                    ),
+                                padding: const EdgeInsets.only(top: 15.0),
                                 child: UseMultipleToggleAddItemPage(
                                   theme: theme,
-                                  title:
-                                      'Manage Multiple Prices',
+                                  title: 'Manage Multiple Prices',
                                   description:
                                       'Turn on to set more than one selling price for this item.',
                                   value:
@@ -726,11 +623,8 @@ class _AddProductMobileState
                                     toggleMultiplePricesAction(
                                       context: context,
                                       sellingController:
-                                          widget
-                                              .sellingController,
-                                      productUuid:
-                                          createdProductUuid ??
-                                          '',
+                                          widget.sellingController,
+                                      productUuid: createdProductUuid ?? '',
                                     );
                                   },
                                 ),
@@ -741,17 +635,15 @@ class _AddProductMobileState
                                       context: context,
                                     ).useMultiplePrices,
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        bottom: 10.0,
-                                        top: 10,
-                                      ),
+                                  padding: const EdgeInsets.only(
+                                    bottom: 10.0,
+                                    top: 10,
+                                  ),
                                   child: MoneyTextfield(
                                     theme: theme,
                                     hint: 'Enter Selling Price',
                                     title: 'Selling Price',
-                                    controller:
-                                        widget.sellingController,
+                                    controller: widget.sellingController,
                                   ),
                                 ),
                               ),
@@ -761,16 +653,13 @@ class _AddProductMobileState
                                       context: context,
                                     ).useMultiplePrices,
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        bottom: 10.0,
-                                        top: 10,
-                                      ),
+                                  padding: const EdgeInsets.only(
+                                    bottom: 10.0,
+                                    top: 10,
+                                  ),
                                   child: MainDropdown(
                                     valueSet:
-                                        returnData()
-                                            .tempPricesList
-                                            .isNotEmpty,
+                                        returnData().tempPricesList.isNotEmpty,
                                     onTap: () {
                                       Navigator.push(
                                         context,
@@ -778,25 +667,19 @@ class _AddProductMobileState
                                           builder: (context) {
                                             return ProductPricesPage(
                                               productUuid:
-                                                  createdProductUuid ??
-                                                  '',
+                                                  createdProductUuid ?? '',
                                             );
                                           },
                                         ),
                                       );
                                     },
                                     isOpen:
-                                        returnData()
-                                            .tempPricesList
-                                            .isNotEmpty,
+                                        returnData().tempPricesList.isNotEmpty,
                                     title: 'Selling Price(s)',
                                     hint:
                                         returnData(
-                                                  context:
-                                                      context,
-                                                )
-                                                .tempPricesList
-                                                .isEmpty
+                                              context: context,
+                                            ).tempPricesList.isEmpty
                                             ? 'Price Not Set'
                                             : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
                                     theme: theme,
@@ -819,64 +702,49 @@ class _AddProductMobileState
                               Divider(),
                               // SizedBox(height: 5),
                               InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
+                                mouseCursor: SystemMouseCursors.click,
                                 onTap: () {
                                   setState(() {
                                     expand = !expand;
                                   });
                                 },
                                 child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 5,
-                                      ),
+                                  padding: EdgeInsets.symmetric(vertical: 5),
                                   child: Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                         expand
                                             ? 'Hide Details'
                                             : 'More Details',
                                       ),
                                       InkWell(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
+                                        mouseCursor: SystemMouseCursors.click,
                                         onTap: () {
                                           setState(() {
-                                            expand =
-                                                !expand;
+                                            expand = !expand;
                                           });
                                         },
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(
-                                                left: 35.0,
-                                                top: 5,
-                                                bottom: 5,
-                                              ),
+                                          padding: const EdgeInsets.only(
+                                            left: 35.0,
+                                            top: 5,
+                                            bottom: 5,
+                                          ),
                                           child: Row(
                                             children: [
                                               Text(
-                                                expand
-                                                    ? 'Colapse'
-                                                    : 'Expand',
+                                                expand ? 'Colapse' : 'Expand',
                                               ),
                                               Icon(
                                                 expand
                                                     ? Icons
                                                         .keyboard_arrow_up_outlined
-                                                    : Icons
-                                                        .keyboard_arrow_down,
+                                                    : Icons.keyboard_arrow_down,
                                               ),
                                             ],
                                           ),
@@ -896,30 +764,26 @@ class _AddProductMobileState
                                     Column(
                                       children: [
                                         BarcodeScanner(
-                                          valueSet:
-                                              barCodeSet,
+                                          valueSet: barCodeSet,
                                           onTap: () async {
-                                            ItemsAuthAction().useOfBArcodeAction(
-                                              context:
-                                                  context,
-                                              action: () async {
-                                                String?
-                                                info = await scanCode(
-                                                  context,
-                                                  'Not Saved',
-                                                );
+                                            ItemsAuthAction()
+                                                .useOfBArcodeAction(
+                                                  context: context,
+                                                  action: () async {
+                                                    String? info =
+                                                        await scanCode(
+                                                          context,
+                                                          'Not Saved',
+                                                        );
 
-                                                setState(() {
-                                                  barcode =
-                                                      info;
-                                                  barCodeSet =
-                                                      true;
-                                                });
-                                              },
-                                            );
+                                                    setState(() {
+                                                      barcode = info;
+                                                      barCodeSet = true;
+                                                    });
+                                                  },
+                                                );
                                           },
-                                          title:
-                                              'Item Barcode (Optional)',
+                                          title: 'Item Barcode (Optional)',
                                           hint:
                                               barcode ??
                                               'Click to Scan Item Barcode',
@@ -927,44 +791,42 @@ class _AddProductMobileState
                                         ),
                                         Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .end,
+                                              MainAxisAlignment.end,
                                           children: [
                                             InkWell(
                                               mouseCursor:
-                                                  SystemMouseCursors
-                                                      .click,
+                                                  SystemMouseCursors.click,
                                               onTap: () async {
                                                 ItemsAuthAction().generateBarcodeAction(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                   action: () async {
-                                                    String
-                                                    sellingPrice() {
+                                                    String sellingPrice() {
                                                       if (widget
                                                           .sellingController
                                                           .text
                                                           .isEmpty) {
                                                         return '';
                                                       } else {
-                                                        if (widget.sellingController.text
-                                                                .split(
-                                                                  ',',
-                                                                )
+                                                        if (widget
+                                                                .sellingController
+                                                                .text
+                                                                .split(',')
                                                                 .length >
                                                             1) {
-                                                          return widget.sellingController.text
-                                                                  .split(
-                                                                    ',',
-                                                                  )
+                                                          return widget
+                                                                  .sellingController
+                                                                  .text
+                                                                  .split(',')
                                                                   .first +
-                                                              widget.sellingController.text
-                                                                  .split(
-                                                                    ',',
-                                                                  )
+                                                              widget
+                                                                  .sellingController
+                                                                  .text
+                                                                  .split(',')
                                                                   .last;
                                                         } else {
-                                                          return widget.sellingController.text;
+                                                          return widget
+                                                              .sellingController
+                                                              .text;
                                                         }
                                                       }
                                                     }
@@ -976,139 +838,149 @@ class _AddProductMobileState
                                                           .isEmpty) {
                                                         return '';
                                                       } else {
-                                                        if (widget.wholeSaleController.text
-                                                                .split(
-                                                                  ',',
-                                                                )
+                                                        if (widget
+                                                                .wholeSaleController
+                                                                .text
+                                                                .split(',')
                                                                 .length >
                                                             1) {
-                                                          return widget.wholeSaleController.text
-                                                                  .split(
-                                                                    ',',
-                                                                  )
+                                                          return widget
+                                                                  .wholeSaleController
+                                                                  .text
+                                                                  .split(',')
                                                                   .first +
-                                                              widget.wholeSaleController.text
-                                                                  .split(
-                                                                    ',',
-                                                                  )
+                                                              widget
+                                                                  .wholeSaleController
+                                                                  .text
+                                                                  .split(',')
                                                                   .last;
                                                         } else {
-                                                          return widget.wholeSaleController.text;
+                                                          return widget
+                                                              .wholeSaleController
+                                                              .text;
                                                         }
                                                       }
                                                     }
 
                                                     var tempProduct = TempProductClass(
-                                                      manageSalesWastage:
-                                                          null,
-                                                      heightDimension:
-                                                          null,
-                                                      quantityType:
-                                                          1,
-                                                      widthDimension:
-                                                          null,
+                                                      manageSalesWastage: null,
+                                                      heightDimension: null,
+                                                      quantityType: 1,
+                                                      widthDimension: null,
                                                       unitsList:
-                                                          widget.product?.unitsList ??
+                                                          widget
+                                                              .product
+                                                              ?.unitsList ??
                                                           [],
                                                       pricesList:
-                                                          widget.product?.pricesList ??
+                                                          widget
+                                                              .product
+                                                              ?.pricesList ??
                                                           [],
                                                       categories:
-                                                          widget.product?.categories ??
+                                                          widget
+                                                              .product
+                                                              ?.categories ??
                                                           [],
                                                       storageUuid:
-                                                          widget.product?.storageUuid,
+                                                          widget
+                                                              .product
+                                                              ?.storageUuid,
                                                       departmentName:
-                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                          returnDepartmentProvider()
+                                                              .currentDepartment()
+                                                              ?.name,
                                                       departmentUuid:
-                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                          returnDepartmentProvider()
+                                                              .currentDepartment()
+                                                              ?.name,
                                                       groupUnit:
-                                                          widget.product?.groupUnit,
+                                                          widget
+                                                              .product
+                                                              ?.groupUnit,
                                                       qttyPerGroup:
-                                                          widget.product?.qttyPerGroup,
+                                                          widget
+                                                              .product
+                                                              ?.qttyPerGroup,
                                                       name:
-                                                          widget.product ==
-                                                                  null
-                                                              ? widget.nameController.text
-                                                              : widget.product?.name ??
+                                                          widget.product == null
+                                                              ? widget
+                                                                  .nameController
+                                                                  .text
+                                                              : widget
+                                                                      .product
+                                                                      ?.name ??
                                                                   'Product Name',
-                                                      unit:
-                                                          'Unit(s)',
-                                                      isRefundable:
-                                                          false,
-                                                      costPrice:
-                                                          0,
-                                                      shopId:
-                                                          1,
-                                                      setCustomPrice:
-                                                          false,
-                                                      isManaged:
-                                                          false,
-                                                      useGroupUnit:
-                                                          false,
+                                                      unit: 'Unit(s)',
+                                                      isRefundable: false,
+                                                      costPrice: 0,
+                                                      shopId: 1,
+                                                      setCustomPrice: false,
+                                                      isManaged: false,
+                                                      useGroupUnit: false,
                                                       uuid:
-                                                          widget.product ==
-                                                                  null
+                                                          widget.product == null
                                                               ? createdProductUuid
-                                                              : widget.product?.uuid,
+                                                              : widget
+                                                                  .product
+                                                                  ?.uuid,
                                                       sellingPrice:
-                                                          widget.product ==
-                                                                  null
+                                                          widget.product == null
                                                               ? double.tryParse(
                                                                 sellingPrice(),
                                                               )
-                                                              : widget.product?.sellingPrice,
+                                                              : widget
+                                                                  .product
+                                                                  ?.sellingPrice,
                                                       wholeSalePrice:
-                                                          widget.product ==
-                                                                  null
+                                                          widget.product == null
                                                               ? double.tryParse(
                                                                 wholeSalePrice(),
                                                               )
-                                                              : widget.product?.wholeSalePrice,
+                                                              : widget
+                                                                  .product
+                                                                  ?.wholeSalePrice,
                                                     );
 
                                                     if (widget
                                                         .nameController
                                                         .text
                                                         .isNotEmpty) {
-                                                      returnData().addToBarcodeGenerationList(
-                                                        ProductBarcode(
-                                                          product:
-                                                              tempProduct,
-                                                          number:
-                                                              1,
-                                                        ),
-                                                      );
+                                                      returnData()
+                                                          .addToBarcodeGenerationList(
+                                                            ProductBarcode(
+                                                              product:
+                                                                  tempProduct,
+                                                              number: 1,
+                                                            ),
+                                                          );
                                                       await generateBarcodeAndPrint(
                                                         context,
-                                                        returnData().barcodeGenerationList,
+                                                        returnData()
+                                                            .barcodeGenerationList,
                                                         true,
                                                       );
                                                       // if (res) {
                                                       setState(() {
                                                         barcode = returnOnlyDigits(
-                                                          widget.product ==
-                                                                  null
+                                                          widget.product == null
                                                               ? createdProductUuid!
-                                                              : widget.product!.uuid!,
+                                                              : widget
+                                                                  .product!
+                                                                  .uuid!,
                                                         );
                                                         // barcodeController.text =
                                                         //     barcode ??
                                                         //     '';
-                                                        barCodeSet =
-                                                            true;
+                                                        barCodeSet = true;
                                                       });
                                                       // }
                                                     } else {
                                                       showDialog(
-                                                        context:
-                                                            context,
-                                                        builder: (
-                                                          context,
-                                                        ) {
+                                                        context: context,
+                                                        builder: (context) {
                                                           return InfoAlert(
-                                                            theme:
-                                                                theme,
+                                                            theme: theme,
                                                             message:
                                                                 'Product Name must be set before barcode can be generated.',
                                                             title:
@@ -1121,26 +993,27 @@ class _AddProductMobileState
                                                 );
                                               },
                                               child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(
-                                                      5.0,
-                                                    ),
+                                                padding: const EdgeInsets.all(
+                                                  5.0,
+                                                ),
                                                 child: Row(
-                                                  spacing:
-                                                      5,
+                                                  spacing: 5,
                                                   children: [
                                                     Icon(
-                                                      size:
-                                                          15,
+                                                      size: 15,
                                                       color:
-                                                          theme.lightModeColor.secColor200,
-                                                      Icons
-                                                          .qr_code_rounded,
+                                                          theme
+                                                              .lightModeColor
+                                                              .secColor200,
+                                                      Icons.qr_code_rounded,
                                                     ),
                                                     Text(
                                                       style: TextStyle(
                                                         fontSize:
-                                                            theme.mobileTexts.b3.fontSize,
+                                                            theme
+                                                                .mobileTexts
+                                                                .b3
+                                                                .fontSize,
                                                       ),
                                                       'Generate Barcode',
                                                     ),
@@ -1154,46 +1027,27 @@ class _AddProductMobileState
                                     ),
                                     Column(
                                       children: [
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         EditCartTextField(
                                           theme: theme,
-                                          hint:
-                                              'Enter Discount (%)',
-                                          title:
-                                              'Discount Percent (%)',
-                                          controller:
-                                              widget
-                                                  .discountController,
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            if (value
-                                                .isNotEmpty) {
-                                              if (int.parse(
-                                                    value,
-                                                  ) >
-                                                  100) {
-                                                widget
-                                                    .discountController
-                                                    .text = '100';
+                                          hint: 'Enter Discount (%)',
+                                          title: 'Discount Percent (%)',
+                                          controller: widget.discountController,
+                                          onChanged: (value) {
+                                            if (value.isNotEmpty) {
+                                              if (int.parse(value) > 100) {
+                                                widget.discountController.text =
+                                                    '100';
                                               }
                                             }
                                           },
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         EditCartTextField(
                                           theme: theme,
-                                          hint:
-                                              'Enter Limit',
-                                          title:
-                                              'Low Quantity Limit',
-                                          controller:
-                                              widget
-                                                  .lowQttyController,
+                                          hint: 'Enter Limit',
+                                          title: 'Low Quantity Limit',
+                                          controller: widget.lowQttyController,
                                         ),
                                         Visibility(
                                           visible:
@@ -1206,9 +1060,7 @@ class _AddProductMobileState
                                                     Authorizations()
                                                         .viewAllDepartments,
                                               ),
-                                          child: SizedBox(
-                                            height: 10,
-                                          ),
+                                          child: SizedBox(height: 10),
                                         ),
                                         Visibility(
                                           visible:
@@ -1223,41 +1075,36 @@ class _AddProductMobileState
                                               ),
                                           child: InkWell(
                                             mouseCursor:
-                                                SystemMouseCursors
-                                                    .click,
+                                                SystemMouseCursors.click,
                                             onTap: () {
                                               GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                context:
-                                                    context,
+                                                context: context,
                                                 action: () {
-                                                  String?
-                                                  selectedDept;
+                                                  String? selectedDept;
                                                   setState(() {
                                                     selectedDept =
-                                                        returnData().departmentUuid;
+                                                        returnData()
+                                                            .departmentUuid;
                                                   });
                                                   showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      firstContext,
-                                                    ) {
+                                                    context: context,
+                                                    builder: (firstContext) {
                                                       return StatefulBuilder(
                                                         builder: (
                                                           secondContext,
                                                           setState,
                                                         ) {
                                                           return DialogTemplate(
-                                                            theme:
-                                                                theme,
+                                                            theme: theme,
                                                             message:
                                                                 'Select Department for this Staff',
                                                             title:
                                                                 'Select Department(s)',
                                                             action: () {
-                                                              returnData().setDepartment(
-                                                                selectedDept,
-                                                              );
+                                                              returnData()
+                                                                  .setDepartment(
+                                                                    selectedDept,
+                                                                  );
                                                               Navigator.of(
                                                                 context,
                                                               ).pop();
@@ -1277,10 +1124,10 @@ class _AddProductMobileState
                                                                         15,
                                                                   ),
                                                                   child: Column(
-                                                                    spacing:
-                                                                        5,
+                                                                    spacing: 5,
                                                                     children:
-                                                                        returnDepartmentProvider().departments
+                                                                        returnDepartmentProvider()
+                                                                            .departments
                                                                             .map(
                                                                               (
                                                                                 dept,
@@ -1371,12 +1218,9 @@ class _AddProductMobileState
                                               );
                                             },
                                             child: Column(
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .min,
+                                              mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .start,
+                                                  MainAxisAlignment.start,
                                               spacing: 5,
                                               children: [
                                                 Row(
@@ -1385,30 +1229,34 @@ class _AddProductMobileState
                                                       textAlign:
                                                           TextAlign.start,
                                                       style:
-                                                          theme.mobileTexts.b3.textStyleBold,
+                                                          theme
+                                                              .mobileTexts
+                                                              .b3
+                                                              .textStyleBold,
                                                       'Set Department',
                                                     ),
                                                   ],
                                                 ),
                                                 SubWrapper(
                                                   isVisible:
-                                                      !GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                        context:
-                                                            context,
-                                                      ),
+                                                      !GeneralSettingsAuthAction()
+                                                          .manageDeparmtmentsAction(
+                                                            context: context,
+                                                          ),
                                                   mainWidget: Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                      vertical:
-                                                          0,
-                                                      horizontal:
-                                                          5,
-                                                    ),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                          vertical: 0,
+                                                          horizontal: 5,
+                                                        ),
                                                     decoration: BoxDecoration(
                                                       border: Border.all(
                                                         color:
                                                             returnData().departmentUuid !=
                                                                     null
-                                                                ? theme.lightModeColor.prColor300
+                                                                ? theme
+                                                                    .lightModeColor
+                                                                    .prColor300
                                                                 : Colors.grey,
                                                         width:
                                                             returnData().departmentUuid !=
@@ -1423,36 +1271,44 @@ class _AddProductMobileState
                                                     ),
                                                     child: Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.spaceBetween,
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
                                                       children: [
                                                         Row(
                                                           children: [
-                                                            SizedBox(
-                                                              width:
-                                                                  10,
-                                                            ),
+                                                            SizedBox(width: 10),
                                                             Text(
                                                               style: TextStyle(
                                                                 fontSize:
                                                                     returnData().departmentUuid !=
                                                                             null
-                                                                        ? theme.mobileTexts.b2.fontSize
-                                                                        : theme.mobileTexts.b2.fontSize,
+                                                                        ? theme
+                                                                            .mobileTexts
+                                                                            .b2
+                                                                            .fontSize
+                                                                        : theme
+                                                                            .mobileTexts
+                                                                            .b2
+                                                                            .fontSize,
                                                                 fontWeight:
                                                                     returnData().departmentUuid !=
                                                                             null
-                                                                        ? FontWeight.bold
+                                                                        ? FontWeight
+                                                                            .bold
                                                                         : null,
                                                                 color:
                                                                     returnData().departmentUuid !=
                                                                             null
                                                                         ? null
-                                                                        : Colors.grey.shade500,
+                                                                        : Colors
+                                                                            .grey
+                                                                            .shade500,
                                                               ),
                                                               returnData().departmentUuid ==
                                                                       null
                                                                   ? 'Select Department'
-                                                                  : returnDepartmentProvider().departments
+                                                                  : returnDepartmentProvider()
+                                                                      .departments
                                                                       .firstWhere(
                                                                         (
                                                                           dept,
@@ -1467,21 +1323,27 @@ class _AddProductMobileState
                                                         Ink(
                                                           child: InkWell(
                                                             mouseCursor:
-                                                                SystemMouseCursors.click,
-                                                            borderRadius: BorderRadius.circular(
-                                                              20,
-                                                            ),
+                                                                SystemMouseCursors
+                                                                    .click,
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  20,
+                                                                ),
                                                             onTap: () {
-                                                              returnData().clearDepartment();
+                                                              returnData()
+                                                                  .clearDepartment();
                                                             },
                                                             child: Container(
-                                                              padding: EdgeInsets.all(
-                                                                7,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                              ),
+                                                              padding:
+                                                                  EdgeInsets.all(
+                                                                    7,
+                                                                  ),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                    shape:
+                                                                        BoxShape
+                                                                            .circle,
+                                                                  ),
                                                               child: Icon(
                                                                 Icons.clear,
                                                               ),
@@ -1496,73 +1358,64 @@ class _AddProductMobileState
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         InkWell(
-                                          mouseCursor:
-                                              SystemMouseCursors
-                                                  .click,
+                                          mouseCursor: SystemMouseCursors.click,
                                           onTap: () {
-                                            ItemsAuthAction().setExpiryDateAction(
-                                              context:
-                                                  context,
-                                              action: () {
-                                                myDatePickerAction(
-                                                  theme,
-                                                  context,
-                                                ).then((
-                                                  value,
-                                                ) {
-                                                  value !=
-                                                          null
-                                                      ? returnData().setExpDate(
-                                                        value,
-                                                      )
-                                                      : {};
-                                                });
-                                              },
-                                            );
+                                            ItemsAuthAction()
+                                                .setExpiryDateAction(
+                                                  context: context,
+                                                  action: () {
+                                                    myDatePickerAction(
+                                                      theme,
+                                                      context,
+                                                    ).then((value) {
+                                                      value != null
+                                                          ? returnData()
+                                                              .setExpDate(value)
+                                                          : {};
+                                                    });
+                                                  },
+                                                );
                                           },
                                           child: Column(
-                                            mainAxisSize:
-                                                MainAxisSize
-                                                    .min,
+                                            mainAxisSize: MainAxisSize.min,
                                             mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .start,
+                                                MainAxisAlignment.start,
                                             spacing: 5,
                                             children: [
                                               Row(
                                                 children: [
                                                   Text(
-                                                    textAlign:
-                                                        TextAlign.start,
+                                                    textAlign: TextAlign.start,
                                                     style:
-                                                        theme.mobileTexts.b3.textStyleBold,
+                                                        theme
+                                                            .mobileTexts
+                                                            .b3
+                                                            .textStyleBold,
                                                     'Expiry Date (Optional)',
                                                   ),
                                                 ],
                                               ),
                                               SubWrapper(
                                                 isVisible:
-                                                    !ItemsAuthAction().setExpiryDateAction(
-                                                      context:
-                                                          context,
-                                                    ),
+                                                    !ItemsAuthAction()
+                                                        .setExpiryDateAction(
+                                                          context: context,
+                                                        ),
                                                 mainWidget: Container(
                                                   padding: EdgeInsets.symmetric(
-                                                    vertical:
-                                                        0,
-                                                    horizontal:
-                                                        5,
+                                                    vertical: 0,
+                                                    horizontal: 5,
                                                   ),
                                                   decoration: BoxDecoration(
                                                     border: Border.all(
                                                       color:
                                                           returnData().expiryDate !=
                                                                   null
-                                                              ? theme.lightModeColor.prColor300
+                                                              ? theme
+                                                                  .lightModeColor
+                                                                  .prColor300
                                                               : Colors.grey,
                                                       width:
                                                           returnData().expiryDate !=
@@ -1577,37 +1430,45 @@ class _AddProductMobileState
                                                   ),
                                                   child: Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
+                                                          SizedBox(width: 10),
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
                                                                   returnData().expiryDate !=
                                                                           null
-                                                                      ? theme.mobileTexts.b2.fontSize
-                                                                      : theme.mobileTexts.b2.fontSize,
+                                                                      ? theme
+                                                                          .mobileTexts
+                                                                          .b2
+                                                                          .fontSize
+                                                                      : theme
+                                                                          .mobileTexts
+                                                                          .b2
+                                                                          .fontSize,
                                                               fontWeight:
                                                                   returnData().expiryDate !=
                                                                           null
-                                                                      ? FontWeight.bold
+                                                                      ? FontWeight
+                                                                          .bold
                                                                       : null,
                                                               color:
                                                                   returnData().expiryDate !=
                                                                           null
                                                                       ? null
-                                                                      : Colors.grey.shade500,
+                                                                      : Colors
+                                                                          .grey
+                                                                          .shade500,
                                                             ),
                                                             returnData().expiryDate ==
                                                                     null
                                                                 ? 'Set Expiry Date'
                                                                 : formatDateWithDay(
-                                                                  returnData().expiryDate ??
+                                                                  returnData()
+                                                                          .expiryDate ??
                                                                       DateTime.now(),
                                                                 ),
                                                           ),
@@ -1616,21 +1477,27 @@ class _AddProductMobileState
                                                       Ink(
                                                         child: InkWell(
                                                           mouseCursor:
-                                                              SystemMouseCursors.click,
-                                                          borderRadius: BorderRadius.circular(
-                                                            20,
-                                                          ),
+                                                              SystemMouseCursors
+                                                                  .click,
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                20,
+                                                              ),
                                                           onTap: () {
-                                                            returnData().clearExpDate();
+                                                            returnData()
+                                                                .clearExpDate();
                                                           },
                                                           child: Container(
-                                                            padding: EdgeInsets.all(
-                                                              7,
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
-                                                            ),
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                  7,
+                                                                ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                                  shape:
+                                                                      BoxShape
+                                                                          .circle,
+                                                                ),
                                                             child: Icon(
                                                               Icons.clear,
                                                             ),
@@ -1647,62 +1514,45 @@ class _AddProductMobileState
                                       ],
                                     ),
                                     SelectProductQuantityTypeSection(
-                                      heightController:
-                                          widget
-                                              .heightController,
-                                      quantityType:
-                                          quantityType,
-                                      switchQuantityType: (
-                                        index,
-                                      ) {
-                                        switchQuantityType(
-                                          index,
-                                        );
+                                      heightController: widget.heightController,
+                                      quantityType: quantityType,
+                                      switchQuantityType: (index) {
+                                        switchQuantityType(index);
                                       },
-                                      widthController:
-                                          widget
-                                              .widthController,
+                                      widthController: widget.widthController,
                                     ),
                                     Visibility(
                                       visible: canSeeItemUnit(),
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(
-                                              top: 10.0,
-                                            ),
+                                        padding: const EdgeInsets.only(
+                                          top: 10.0,
+                                        ),
                                         child: Column(
                                           children: [
                                             UseMultipleToggleAddItemPage(
                                               theme: theme,
-                                              title:
-                                                  'Use Multiple Units',
+                                              title: 'Use Multiple Units',
                                               description:
                                                   'Turn on to sell or count this item in more than one unit (e.g. Bottle and Crate).',
                                               value:
                                                   returnData(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ).useMultipleUnits,
                                               onTap: () {
                                                 toggleMultipleUnitsAction(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 );
                                               },
                                             ),
-                                            SizedBox(
-                                              height: 10,
-                                            ),
+                                            SizedBox(height: 10),
                                             SubWrapper(
                                               isVisible:
                                                   !itemUnitAuthAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ),
                                               mainWidget:
                                                   returnData(
-                                                        context:
-                                                            context,
+                                                        context: context,
                                                       ).useMultipleUnits
                                                       ? MainDropdown(
                                                         valueSet:
@@ -1711,8 +1561,7 @@ class _AddProductMobileState
                                                                 .isNotEmpty,
                                                         onTap: () {
                                                           itemUnitAuthAction(
-                                                            context:
-                                                                context,
+                                                            context: context,
                                                             action: () {
                                                               Navigator.push(
                                                                 context,
@@ -1739,9 +1588,11 @@ class _AddProductMobileState
                                                             'Item Unit (Optional)',
                                                         hint:
                                                             returnData(
-                                                                  context:
-                                                                      context,
-                                                                ).tempUnitsList.isEmpty
+                                                                      context:
+                                                                          context,
+                                                                    )
+                                                                    .tempUnitsList
+                                                                    .isEmpty
                                                                 ? 'Unit Not Set'
                                                                 : "${returnData(context: context).tempUnitsList.firstWhere((item) => item.isPrimary).name} and (${returnData(context: context).tempUnitsList.length - 1}) More",
                                                         theme: theme,
@@ -1753,8 +1604,7 @@ class _AddProductMobileState
                                                                 .isNotEmpty,
                                                         onTap: () {
                                                           selectSingleUnitAction(
-                                                            context:
-                                                                context,
+                                                            context: context,
                                                             productUuid:
                                                                 createdProductUuid ??
                                                                 '',
@@ -1768,8 +1618,7 @@ class _AddProductMobileState
                                                             'Item Unit (Optional)',
                                                         hint:
                                                             returnData(
-                                                              context:
-                                                                  context,
+                                                              context: context,
                                                             ).singleUnitName() ??
                                                             'Unit Not Set',
                                                         theme: theme,
@@ -1779,112 +1628,119 @@ class _AddProductMobileState
                                         ),
                                       ),
                                     ),
+                                    // Price entry only works out
+                                    // quantity for 1D items.
+                                    Visibility(
+                                      visible: quantityType != 2,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 10.0,
+                                        ),
+                                        child: UseMultipleToggleAddItemPage(
+                                          theme: theme,
+                                          title: 'Derive Quantity From Price',
+                                          description:
+                                              'Turn on to let sellers enter a price during sale; the app works out the quantity for that price.',
+                                          value:
+                                              returnData(
+                                                context: context,
+                                              ).deriveQuantityFromPrice,
+                                          onTap: () {
+                                            returnData()
+                                                .toggleDeriveQuantityFromPrice();
+                                          },
+                                        ),
+                                      ),
+                                    ),
                                     Column(
                                       children: [
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         SubWrapper(
                                           isVisible:
                                               !ItemsAuthAction()
                                                   .applyVariationsAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
                                                 returnData(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).sizeValueSet,
                                             onTap: () {
-                                              ItemsAuthAction().applyVariationsAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  sizeTypeBottomSheet(
-                                                    context,
-                                                    () {
+                                              ItemsAuthAction()
+                                                  .applyVariationsAction(
+                                                    context: context,
+                                                    action: () {
+                                                      sizeTypeBottomSheet(
+                                                        context,
+                                                        () {
+                                                          setState(() {
+                                                            isSizedTypeOpen =
+                                                                !isSizedTypeOpen;
+                                                          });
+                                                        },
+                                                      );
                                                       setState(() {
                                                         isSizedTypeOpen =
                                                             !isSizedTypeOpen;
                                                       });
                                                     },
                                                   );
-                                                  setState(() {
-                                                    isSizedTypeOpen =
-                                                        !isSizedTypeOpen;
-                                                  });
-                                                },
-                                              );
                                             },
-                                            isOpen:
-                                                isSizedTypeOpen,
-                                            title:
-                                                'Size Type (Optional)',
+                                            isOpen: isSizedTypeOpen,
+                                            title: 'Size Type (Optional)',
                                             hint:
                                                 returnData(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).selectedSize ??
                                                 'Select Item Size Type',
                                             theme: theme,
                                           ),
                                         ),
 
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                         SubWrapper(
                                           isVisible:
                                               !ItemsAuthAction()
                                                   .applyVariationsAction(
-                                                    context:
-                                                        context,
+                                                    context: context,
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
                                                 returnData(
-                                                  context:
-                                                      context,
+                                                  context: context,
                                                 ).catValueSet,
                                             onTap: () {
-                                              ItemsAuthAction().applyVariationsAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  categoriesBottomSheet(
-                                                    context,
-                                                    () {
+                                              ItemsAuthAction()
+                                                  .applyVariationsAction(
+                                                    context: context,
+                                                    action: () {
+                                                      categoriesBottomSheet(
+                                                        context,
+                                                        () {
+                                                          setState(() {
+                                                            isOpen = false;
+                                                          });
+                                                        },
+                                                      );
                                                       setState(() {
-                                                        isOpen =
-                                                            false;
+                                                        isOpen = !isOpen;
                                                       });
                                                     },
                                                   );
-                                                  setState(() {
-                                                    isOpen =
-                                                        !isOpen;
-                                                  });
-                                                },
-                                              );
                                             },
                                             isOpen: isOpen,
-                                            title:
-                                                'Categories (Optional)',
+                                            title: 'Categories (Optional)',
                                             hint:
-                                                returnData(
-                                                      context:
-                                                          context,
-                                                    ).selectedCategories.isNotEmpty
+                                                returnData(context: context)
+                                                        .selectedCategories
+                                                        .isNotEmpty
                                                     ? "(${returnData(context: context).selectedCategories.length}) Categories Selected"
                                                     : 'Select Item Categories',
                                             theme: theme,
                                           ),
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
+                                        SizedBox(height: 10),
                                       ],
                                     ),
                                   ],
@@ -1927,22 +1783,13 @@ class _AddProductMobileState
 
         Visibility(
           visible: isLoading,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showLoader(
-            message:
-                widget.product != null
-                    ? 'Updating Item'
-                    : 'Creating Item',
+          child: returnCompProvider(context, listen: false).showLoader(
+            message: widget.product != null ? 'Updating Item' : 'Creating Item',
           ),
         ),
         Visibility(
           visible: showSuccess,
-          child: returnCompProvider(
-            context,
-            listen: false,
-          ).showSuccess(
+          child: returnCompProvider(context, listen: false).showSuccess(
             widget.product != null
                 ? 'Item Updated Successfully'
                 : 'Item Created Successfully',
