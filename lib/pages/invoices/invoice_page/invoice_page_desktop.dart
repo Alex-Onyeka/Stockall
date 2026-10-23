@@ -287,7 +287,7 @@ class _InvoicePageDesktopState
                                             invoice
                                                 .staffName,
                                         filename:
-                                            'Stockall_Invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                            'downloaded_invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                         context: context,
                                         receipts:
                                             returnReceiptProviderSingle()
@@ -409,7 +409,7 @@ class _InvoicePageDesktopState
                                                 invoice
                                                     .staffName,
                                             filename:
-                                                'Stockall_Invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                                'downloaded_invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                             context:
                                                 context,
                                             receipts:

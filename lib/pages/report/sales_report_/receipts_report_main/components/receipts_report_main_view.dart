@@ -1194,6 +1194,83 @@ class _ReceiptsReportMainViewState
     );
   }
 
+  /// Totals of the whole filtered set, as the Invoice Report.
+  Widget _totalsRow(
+    ThemeProvider theme,
+    List<_Col> cols,
+    ReceiptsReportPage res,
+  ) {
+    Widget cell(_Col c) {
+      switch (c.label) {
+        case 'ID':
+          return _txt(
+            theme,
+            'TOTAL',
+            bold: true,
+            align: TextAlign.start,
+          );
+        case 'Discount':
+          return _txt(theme, _money(res.totalDiscount), bold: true);
+        case 'VAT':
+          return _txt(theme, _money(res.totalVat), bold: true);
+        case 'Items':
+          return _txt(
+            theme,
+            formatLargeNumberDouble(res.totalItems),
+            bold: true,
+          );
+        case 'Balance':
+          return _txt(theme, _money(res.totalBalance), bold: true);
+        case 'Profit/Loss':
+          return _txt(
+            theme,
+            _money(res.totalProfit),
+            bold: true,
+            color: _signColor(theme, res.totalProfit),
+          );
+        case 'Margin (%)':
+          final m = res.totalMargin;
+          if (m == null) {
+            return _txt(theme, 'N/A', color: Colors.grey);
+          }
+          return _txt(
+            theme,
+            _percent(m),
+            bold: true,
+            color: _signColor(theme, m),
+          );
+        case 'Subtotal':
+          return _txt(theme, _money(res.totalSubtotal), bold: true);
+        case 'Total Revenue':
+          return _txt(theme, _money(res.totalRevenue), bold: true);
+        default:
+          return const SizedBox.shrink();
+      }
+    }
+
+    return Container(
+      height: 46,
+      color: theme.lightModeColor.prColor300.withAlpha(25),
+      child: Row(
+        children: [
+          for (final c in cols)
+            SizedBox(
+              width: c.width,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                child: Align(
+                  alignment: _alignment(c.align),
+                  child: cell(c),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _table(
     ThemeProvider theme,
     ReceiptsReportPage res,
@@ -1282,6 +1359,8 @@ class _ReceiptsReportMainViewState
                             ),
                           ),
                         ),
+                        const Divider(height: 1, thickness: 1),
+                        _totalsRow(theme, cols, res),
                       ],
                     ),
                   ),

@@ -2190,7 +2190,7 @@ class _ReceiptDetailsContainerState
                                               .staffName ??
                                           'Not Set',
                                       filename:
-                                          'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                          'downloaded_receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                       context: safeContext,
                                       receipt:
                                           widget
@@ -2486,7 +2486,7 @@ class _ReceiptDetailsContainerState
                                                 .staffName ??
                                             "Not Set",
                                         filename:
-                                            'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                            'downloaded_receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                         context:
                                             safeContext,
                                         receipt:

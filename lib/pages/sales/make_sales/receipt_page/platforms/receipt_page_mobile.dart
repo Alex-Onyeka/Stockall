@@ -2121,7 +2121,7 @@ class _ReceiptDetailsContainerState
                                                 .staffName ??
                                             "Not Set",
                                         filename:
-                                            'Stockall_Receipt_${widget.mainReceipt.uuid}.pdf',
+                                            'downloaded_receipt_${widget.mainReceipt.uuid}.pdf',
                                         context:
                                             safeContext,
                                         receipt:

@@ -1352,4 +1352,62 @@ void main() {
       expect(sorted, isEmpty);
     });
   });
+
+  group('totals', () {
+    final rows = [
+      for (var i = 0; i < 120; i++)
+        row(
+          receipt(
+            uuid: 'r${i.toString().padLeft(3, '0')}',
+            cash: 1000,
+            originalCost: 1000,
+            fixedDiscount: 50,
+            vat: 10,
+            items: [
+              line(revenue: 600, costPrice: 400),
+              line(revenue: 400, costPrice: 200),
+              line(quantity: 5, revenue: 999, isVoid: true),
+            ],
+          ),
+        ),
+      // No line data: profit unknown.
+      row(receipt(uuid: 'r-nolines', cash: 500)),
+      row(
+        receipt(
+          uuid: 'r-payment',
+          salesTypeIndex: 2,
+          invoiceUuid: 'inv-1',
+          cash: 300,
+          balance: 400,
+        ),
+      ),
+    ];
+
+    test('cover every page, not just the current one', () {
+      final sorted = run(rows);
+      final p1 = ReceiptsReportQuery.paginate(sorted, 1);
+      final p2 = ReceiptsReportQuery.paginate(sorted, 2);
+      expect(p1.totalCount, 122);
+      expect(p1.rows.length, 100);
+      for (final p in [p1, p2]) {
+        expect(p.totalRevenue, 120800);
+        expect(p.totalSubtotal, 120000);
+        expect(p.totalDiscount, 6000);
+        expect(p.totalVat, 12000);
+        expect(p.totalItems, 240);
+        expect(p.totalBalance, 400);
+        expect(p.totalProfit, 48000);
+      }
+    });
+
+    test('margin skips rows without a profit', () {
+      final p = ReceiptsReportQuery.paginate(run(rows), 1);
+      expect(p.totalLineRevenue, 120000);
+      expect(p.totalMargin, 40);
+      expect(
+        ReceiptsReportQuery.paginate(const [], 1).totalMargin,
+        isNull,
+      );
+    });
+  });
 }

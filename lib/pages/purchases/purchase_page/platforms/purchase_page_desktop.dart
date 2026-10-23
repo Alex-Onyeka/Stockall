@@ -363,7 +363,7 @@ class _PurchasePageDesktopState
                                           purchase:
                                               purchase,
                                           filename:
-                                              'Stockall_Purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                              'downloaded_purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                           context: context,
                                           records:
                                               saleRecords,
@@ -436,7 +436,7 @@ class _PurchasePageDesktopState
                                               purchase:
                                                   purchase,
                                               filename:
-                                                  'Stockall_Purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                                  'downloaded_purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                               context:
                                                   context,
                                               records:
@@ -2220,7 +2220,7 @@ class _PurchasePaymentWidgetState
                                         purchase:
                                             newPurchase,
                                         filename:
-                                            'Stockall_Purchase_Payment_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                            'downloaded_purchase_payment_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                         context: context,
                                         payment:
                                             widget.payment,
@@ -2303,7 +2303,7 @@ class _PurchasePaymentWidgetState
                                           purchase:
                                               newPurchase,
                                           filename:
-                                              'Stockall_Purchase_Payment_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                              'downloaded_purchase_payment_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                           context: context,
                                           payment:
                                               widget

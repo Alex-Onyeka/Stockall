@@ -481,7 +481,7 @@ class _InvoicePageMobileState
                                                     staffName:
                                                         invoice.staffName,
                                                     filename:
-                                                        'Stockall_Invoice_${invoice.uuid}.pdf',
+                                                        'downloaded_invoice_${invoice.uuid}.pdf',
                                                     context:
                                                         safeContext,
                                                     receipts:

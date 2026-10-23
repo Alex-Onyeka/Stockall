@@ -52,17 +52,20 @@ enum ItemSalesSortField {
 /// Table columns in display order. Kept here so an export can
 /// use the same order, labels and visibility.
 enum ItemSalesColumn {
-  recordId,
   item,
+  quantity,
+  unit,
+  revenue,
+  profit,
+  margin,
+  date,
+  time,
+  recordId,
   category,
   receiptId,
   staff,
   subStaff,
   customer,
-  date,
-  time,
-  quantity,
-  unit,
   sellingPrice,
   discount,
   grossValue,
@@ -74,9 +77,6 @@ enum ItemSalesColumn {
   type,
   voidStatus,
   wastage,
-  revenue,
-  profit,
-  margin,
 }
 
 extension ItemSalesColumnInfo on ItemSalesColumn {
@@ -1037,12 +1037,44 @@ class ItemSalesPage {
   final int page; // 1-based, already clamped
   final int totalPages;
 
+  /// Totals of every filtered row (not just this page). Void
+  /// lines are never counted.
+  final double totalRevenue;
+  final double totalProfit;
+
+  /// Revenue of the rows that have a profit, the margin
+  /// denominator (as the Receipts Report).
+  final double totalProfitRevenue;
+  final double totalDiscount;
+  final double totalGrossValue;
+  final double totalCost;
+
+  /// Quantity sum, without part payments. Null when the units
+  /// are mixed or unknown.
+  final double? totalQuantity;
+  final String? totalQuantityUnit;
+
   const ItemSalesPage({
     required this.rows,
     required this.totalCount,
     required this.page,
     required this.totalPages,
+    this.totalRevenue = 0,
+    this.totalProfit = 0,
+    this.totalProfitRevenue = 0,
+    this.totalDiscount = 0,
+    this.totalGrossValue = 0,
+    this.totalCost = 0,
+    this.totalQuantity,
+    this.totalQuantityUnit,
   });
+
+  /// totalProfit / totalProfitRevenue * 100. Null when the
+  /// revenue is not above 0.
+  double? get totalMargin =>
+      totalProfitRevenue > 0
+          ? (totalProfit / totalProfitRevenue) * 100
+          : null;
 
   int get firstIndex =>
       totalCount == 0
@@ -1280,6 +1312,38 @@ class ItemSalesQuery {
         (start + itemSalesReportPageSize) > total
             ? total
             : start + itemSalesReportPageSize;
+
+    double revenue = 0;
+    double profit = 0;
+    double profitRevenue = 0;
+    double discount = 0;
+    double grossValue = 0;
+    double cost = 0;
+    double quantity = 0;
+    String? unit;
+    bool quantityKnown = true;
+    bool quantityCounted = false;
+    for (final r in sorted) {
+      if (r.isVoid) continue;
+      revenue += r.revenue;
+      profit += r.profit;
+      // Every line has a profit (missing cost counts as 0).
+      profitRevenue += r.revenue;
+      discount += r.discount ?? 0;
+      grossValue += r.grossValue ?? 0;
+      cost += r.cost ?? 0;
+      if (r.isPartPayment || !quantityKnown) continue;
+      if (r.unitName == null ||
+          (quantityCounted && r.unitName != unit)) {
+        quantityKnown = false;
+        continue;
+      }
+      unit = r.unitName;
+      quantity += r.quantity;
+      quantityCounted = true;
+    }
+    final showQuantity = quantityKnown && quantityCounted;
+
     return ItemSalesPage(
       rows:
           total == 0
@@ -1288,6 +1352,14 @@ class ItemSalesQuery {
       totalCount: total,
       page: page,
       totalPages: pages,
+      totalRevenue: revenue,
+      totalProfit: profit,
+      totalProfitRevenue: profitRevenue,
+      totalDiscount: discount,
+      totalGrossValue: grossValue,
+      totalCost: cost,
+      totalQuantity: showQuantity ? quantity : null,
+      totalQuantityUnit: showQuantity ? unit : null,
     );
   }
 }

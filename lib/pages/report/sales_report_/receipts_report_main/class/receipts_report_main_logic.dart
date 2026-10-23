@@ -816,12 +816,41 @@ class ReceiptsReportPage {
   final int page; // 1-based, already clamped
   final int totalPages;
 
+  /// Totals of every filtered row (not just this page). Unknown
+  /// values ("—") are left out.
+  final double totalRevenue;
+  final double totalBalance;
+  final double totalSubtotal;
+  final double totalDiscount;
+  final double totalVat;
+  final double totalItems;
+  final double totalProfit;
+
+  /// Line revenue of the rows that have a profit, the margin
+  /// denominator.
+  final double totalLineRevenue;
+
   const ReceiptsReportPage({
     required this.rows,
     required this.totalCount,
     required this.page,
     required this.totalPages,
+    this.totalRevenue = 0,
+    this.totalBalance = 0,
+    this.totalSubtotal = 0,
+    this.totalDiscount = 0,
+    this.totalVat = 0,
+    this.totalItems = 0,
+    this.totalProfit = 0,
+    this.totalLineRevenue = 0,
   });
+
+  /// totalProfit / totalLineRevenue * 100. Null when the line
+  /// revenue is not above 0.
+  double? get totalMargin =>
+      totalLineRevenue > 0
+          ? (totalProfit / totalLineRevenue) * 100
+          : null;
 
   int get firstIndex =>
       totalCount == 0
@@ -969,6 +998,28 @@ class ReceiptsReportQuery {
         (start + receiptsReportPageSize) > total
             ? total
             : start + receiptsReportPageSize;
+
+    double revenue = 0;
+    double balance = 0;
+    double subtotal = 0;
+    double discount = 0;
+    double vat = 0;
+    double items = 0;
+    double profit = 0;
+    double lineRevenue = 0;
+    for (final r in sorted) {
+      revenue += r.revenue;
+      balance += r.balance ?? 0;
+      subtotal += r.subtotal ?? 0;
+      discount += r.discount ?? 0;
+      vat += r.vat ?? 0;
+      items += r.items ?? 0;
+      if (r.profit != null) {
+        profit += r.profit!;
+        lineRevenue += r.lineRevenue ?? 0;
+      }
+    }
+
     return ReceiptsReportPage(
       rows:
           total == 0
@@ -977,6 +1028,14 @@ class ReceiptsReportQuery {
       totalCount: total,
       page: page,
       totalPages: pages,
+      totalRevenue: revenue,
+      totalBalance: balance,
+      totalSubtotal: subtotal,
+      totalDiscount: discount,
+      totalVat: vat,
+      totalItems: items,
+      totalProfit: profit,
+      totalLineRevenue: lineRevenue,
     );
   }
 }

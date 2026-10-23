@@ -1374,7 +1374,7 @@ Future<void> generateAndPreviewPdfInvoice({
         5,
       );
       var name =
-          "Stockall_Invoice_$invoiceId.${DateTime.now().millisecondsSinceEpoch}";
+          "downloaded_invoice_$invoiceId.${DateTime.now().millisecondsSinceEpoch}";
 
       if (Platform.isAndroid || Platform.isIOS) {
         await savePdfMobileInvoice(bytes, name);

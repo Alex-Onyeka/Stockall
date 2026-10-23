@@ -1740,6 +1740,128 @@ void main() {
     });
   });
 
+  group('totals', () {
+    final all = ItemSalesFilters(
+      voidFilter: ItemSalesVoidFilter.all,
+    );
+    final rows = build([
+      receipt(
+        uuid: 'r-sales',
+        items: [
+          for (var i = 0; i < 120; i++)
+            line(
+              uuid: 'l-${i.toString().padLeft(3, '0')}',
+              quantity: 2,
+              unitText: 'Bottle',
+              revenue: 100,
+              originalCost: 110,
+              discountedAmount: 10,
+              costPrice: 60,
+            ),
+          line(
+            uuid: 'l-void',
+            quantity: 50,
+            unitText: 'Crate',
+            revenue: 999,
+            originalCost: 999,
+            discountedAmount: 5,
+            costPrice: 1,
+            isVoid: true,
+          ),
+        ],
+      ),
+      receipt(
+        uuid: 'r-part',
+        salesTypeIndex: 2,
+        items: [
+          line(
+            uuid: 'l-part',
+            quantity: 7,
+            unitText: 'Crate',
+            revenue: 300,
+          ),
+        ],
+      ),
+    ]);
+
+    test('cover every page, not just the current one', () {
+      final sorted = run(rows, filters: all);
+      final p1 = ItemSalesQuery.paginate(sorted, 1);
+      final p2 = ItemSalesQuery.paginate(sorted, 2);
+      expect(p1.totalCount, 122);
+      expect(p1.rows.length, 100);
+      for (final p in [p1, p2]) {
+        expect(p.totalRevenue, 12300);
+        expect(p.totalGrossValue, 13500);
+        expect(p.totalDiscount, 1200);
+        expect(p.totalCost, 7200);
+      }
+    });
+
+    test('void lines never count, even when shown', () {
+      final sorted = run(rows, filters: all);
+      expect(sorted.where((r) => r.isVoid).length, 1);
+      final p = ItemSalesQuery.paginate(sorted, 1);
+      // 120 x (100 - 60) + part payment 300 (no cost).
+      expect(p.totalProfit, 5100);
+      expect(p.totalProfitRevenue, 12300);
+      expect(p.totalQuantity, 240);
+      expect(p.totalQuantityUnit, 'Bottle');
+    });
+
+    test('margin is profit / revenue of rows with a profit', () {
+      final p = ItemSalesQuery.paginate(
+        run(rows, filters: all),
+        1,
+      );
+      expect(p.totalMargin, closeTo(5100 / 12300 * 100, 1e-9));
+      expect(
+        ItemSalesQuery.paginate(const [], 1).totalMargin,
+        isNull,
+      );
+    });
+
+    test('quantity is blank when units are mixed or unknown', () {
+      final mixed = build([
+        receipt(
+          items: [
+            line(uuid: 'a', quantity: 2, unitText: 'Bottle'),
+            line(uuid: 'b', quantity: 3, unitText: 'Crate'),
+          ],
+        ),
+      ]);
+      final mixedPage = ItemSalesQuery.paginate(run(mixed), 1);
+      expect(mixedPage.totalQuantity, isNull);
+      expect(mixedPage.totalQuantityUnit, isNull);
+
+      final unknown = build([
+        receipt(
+          items: [
+            line(uuid: 'a', quantity: 2, unitText: 'Bottle'),
+            line(uuid: 'b', quantity: 3),
+          ],
+        ),
+      ]);
+      expect(
+        ItemSalesQuery.paginate(run(unknown), 1).totalQuantity,
+        isNull,
+      );
+    });
+
+    test('part payments alone give no quantity', () {
+      final part = build([
+        receipt(
+          salesTypeIndex: 2,
+          items: [line(quantity: 4, unitText: 'Bottle')],
+        ),
+      ]);
+      final p = ItemSalesQuery.paginate(run(part), 1);
+      expect(p.totalCount, 1);
+      expect(p.totalQuantity, isNull);
+      expect(p.totalQuantityUnit, isNull);
+    });
+  });
+
   group('columns', () {
     test('all 25 in order when everything is on', () {
       final cols = ItemSalesColumnInfo.visible(
