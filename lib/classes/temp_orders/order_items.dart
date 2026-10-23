@@ -820,15 +820,15 @@ class OrderItems extends HiveObject {
   // When a 2D item has custom dimensions, this is the equivalent quantity
   // in the primary unit (e.g. 1.0 M²).
   // For all other lines, it is the line quantity in the selected unit.
-  double displayQuantity() {
+  double displayQuantity({TempProductClass? product}) {
     if (quantityType == 2 && hasCustomDimensions) {
       return getStockQuantity();
     }
-    return historyQuantityChange();
+    return historyQuantityChange(product: product);
   }
 
   // Decimal fraction / unit quantity for ItemHistory (e.g. 0.5 Slabs).
-  double historyQuantityChange() {
+  double historyQuantityChange({TempProductClass? product}) {
     if (quantityType == 2) {
       final unit = getSelectedUnit();
       if (unit.dimensionType ==
@@ -836,16 +836,9 @@ class OrderItems extends HiveObject {
         return getStockQuantity() /
             (unit.conversion > 0 ? unit.conversion : 1.0);
       }
-      TempProductClass? prod;
-      try {
-        prod =
-            returnData().productListMain
-                .where((p) => p.uuid == productUuid)
-                .firstOrNull;
-      } catch (_) {}
       final wholeArea =
-          (prod != null && prod.dimensionArea() > 0)
-              ? prod.dimensionArea() *
+          (product != null && product.dimensionArea() > 0)
+              ? product.dimensionArea() *
                   (unit.conversion > 0
                       ? unit.conversion
                       : 1.0)
@@ -876,7 +869,7 @@ class OrderItems extends HiveObject {
     return sel.name == 'Others' ? 'Unit(s)' : sel.name;
   }
 
-  double baseQuantityInSaleUnit() {
+  double baseQuantityInSaleUnit({TempProductClass? product}) {
     if (quantityType == 2) {
       final unit = getSelectedUnit();
       if (unit.dimensionType ==
@@ -884,16 +877,9 @@ class OrderItems extends HiveObject {
         return getActualQuantity() /
             (unit.conversion > 0 ? unit.conversion : 1.0);
       }
-      TempProductClass? prod;
-      try {
-        prod =
-            returnData().productListMain
-                .where((p) => p.uuid == productUuid)
-                .firstOrNull;
-      } catch (_) {}
       final wholeArea =
-          (prod != null && prod.dimensionArea() > 0)
-              ? prod.dimensionArea() *
+          (product != null && product.dimensionArea() > 0)
+              ? product.dimensionArea() *
                   (unit.conversion > 0
                       ? unit.conversion
                       : 1.0)
@@ -908,12 +894,13 @@ class OrderItems extends HiveObject {
     return quantity;
   }
 
-  double wastageInSaleUnit() =>
-      historyQuantityChange() - baseQuantityInSaleUnit();
+  double wastageInSaleUnit({TempProductClass? product}) =>
+      historyQuantityChange(product: product) -
+      baseQuantityInSaleUnit(product: product);
 
   // "incl. 0.1 Slab wastage", or '' without wastage.
-  String wastageNote() {
-    final wastage = wastageInSaleUnit();
+  String wastageNote({TempProductClass? product}) {
+    final wastage = wastageInSaleUnit(product: product);
     if (wastage <= 1e-9) return '';
     final unitName = getSelectedUnit().name;
     return 'incl. ${formatDimension(wastage)} '
@@ -921,13 +908,13 @@ class OrderItems extends HiveObject {
   }
 
   // Quantity text for item-history records.
-  String historyQuantityText() {
-    return formatDimension(historyQuantityChange());
+  String historyQuantityText({TempProductClass? product}) {
+    return formatDimension(historyQuantityChange(product: product));
   }
 
   // Quantity text for receipts and order display.
-  String quantityText() {
-    return formatDimension(displayQuantity());
+  String quantityText({TempProductClass? product}) {
+    return formatDimension(displayQuantity(product: product));
   }
 
   // Unit label for ItemHistory.
@@ -952,20 +939,10 @@ class OrderItems extends HiveObject {
       return selName;
     }
 
-    TempProductClass? targetProduct = product;
-    if (targetProduct == null) {
-      try {
-        targetProduct =
-            returnData().productListMain
-                .where((p) => p.uuid == productUuid)
-                .firstOrNull;
-      } catch (_) {}
-    }
-
     final primaryQty = primUnit.getQuantityEquivDivided(
       index: 1,
       newQuantity: getStockQuantity(),
-      product: targetProduct,
+      product: product,
     );
 
     return formatHistoryUnit(
