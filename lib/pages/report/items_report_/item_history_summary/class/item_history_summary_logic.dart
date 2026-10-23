@@ -596,7 +596,8 @@ class ItemHistorySummaryBuilder {
     final newV = _parseNum(h.newValue);
 
     if (oldV != null && newV != null) {
-      if (h.event == ItemHistoryEventClass.itemDeleted) {
+      if (ItemHistoryEventClass.eventOf(h) ==
+          ItemHistoryEventClass.itemDeleted) {
         return oldV.abs();
       }
       final diff = (newV - oldV).abs();
@@ -767,8 +768,8 @@ class ItemHistorySummaryBuilder {
               if (h.createdAt == null) {
                 return false;
               }
-              if (h.event == null ||
-                  !_stockEvents.contains(h.event)) {
+              final ev = ItemHistoryEventClass.eventOf(h);
+              if (ev == null || !_stockEvents.contains(ev)) {
                 return false;
               }
               return true;
@@ -850,7 +851,7 @@ class ItemHistorySummaryBuilder {
           }).toList();
 
       for (final h in inRangeEvents) {
-        final ev = h.event;
+        final ev = ItemHistoryEventClass.eventOf(h);
         totalEventsInPeriod++;
 
         if (ev == ItemHistoryEventClass.transferedIn) {

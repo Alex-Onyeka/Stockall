@@ -468,8 +468,8 @@ class StockMovementCalculator {
     ItemsReportRow row,
   ) {
     if (h.createdAt == null) return false;
-    if (h.event == null ||
-        !_stockEvents.contains(h.event)) {
+    final event = ItemHistoryEventClass.eventOf(h);
+    if (event == null || !_stockEvents.contains(event)) {
       return false;
     }
     if (_parse(h.oldValue) == null ||

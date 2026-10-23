@@ -316,8 +316,8 @@ class StorageStockMovementCalculator {
     StorageReportRow row,
   ) {
     if (h.createdAt == null) return false;
-    if (h.event == null ||
-        !_stockEvents.contains(h.event)) {
+    final event = StorageItemHistoryEventClass.eventOf(h);
+    if (event == null || !_stockEvents.contains(event)) {
       return false;
     }
     if (_parse(h.storageItemOldValue) == null ||
