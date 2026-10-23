@@ -130,6 +130,9 @@ class AddStorageItemMobileState extends State<AddStorageItemMobile> {
                 heightDimension: parseDimension(
                   widget.heightController,
                 ),
+                dimensionUnit: returnData().selectedDimensionUnit,
+                dimensionUnitConversion:
+                    returnData().selectedDimensionConversion,
               );
 
               StorageItemHistory itemHistory = StorageItemHistory(
@@ -267,6 +270,9 @@ class AddStorageItemMobileState extends State<AddStorageItemMobile> {
                   heightDimension: parseDimension(
                     widget.heightController,
                   ),
+                  dimensionUnit: dataProvider.selectedDimensionUnit,
+                  dimensionUnitConversion:
+                      dataProvider.selectedDimensionConversion,
                 ),
                 // oldProduct: widget.product!,
               );
@@ -324,6 +330,10 @@ class AddStorageItemMobileState extends State<AddStorageItemMobile> {
         productUuid: createdProductUuid,
       );
       returnData().initPriceUnitModes();
+      returnData().selectedDimensionUnit =
+          widget.storageProduct?.dimensionUnit;
+      returnData().selectedDimensionConversion =
+          widget.storageProduct?.dimensionUnitConversion;
       widget.qttyPerGroupController.text =
           widget.storageProduct!.qttyPerGroup != null
               ? widget.storageProduct!.qttyPerGroup!.toString()

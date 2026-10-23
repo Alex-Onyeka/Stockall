@@ -480,11 +480,17 @@ ThemeProvider returnTheme(
   );
 }
 
-DataProvider returnData({BuildContext? context}) {
+DataProvider returnData({
+  BuildContext? context,
+  bool listen = true,
+}) {
   if (context == null) {
     return DataProvider();
   } else {
-    return Provider.of<DataProvider>(context);
+    return Provider.of<DataProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 

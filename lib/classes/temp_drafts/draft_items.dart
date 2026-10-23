@@ -107,6 +107,12 @@ class DraftItems extends HiveObject {
   @HiveField(32)
   String? wastageUnitUuid;
 
+  @HiveField(33)
+  String? dimensionUnit;
+
+  @HiveField(34)
+  double? dimensionUnitConversion;
+
   DraftItems({
     required this.uuid,
     required this.draftId,
@@ -141,6 +147,8 @@ class DraftItems extends HiveObject {
     required this.isPercentageWastage,
     required this.wastageAmount,
     this.wastageUnitUuid,
+    this.dimensionUnit,
+    this.dimensionUnitConversion,
   });
 
   factory DraftItems.fromJson(Map<String, dynamic> json) {
@@ -204,6 +212,9 @@ class DraftItems extends HiveObject {
       wastageAmount:
           (json['wastage_amount'] as num?)?.toDouble(),
       wastageUnitUuid: json['wastage_unit_uuid'] as String?,
+      dimensionUnit: json['dimension_unit'] as String?,
+      dimensionUnitConversion:
+          (json['dimension_unit_conversion'] as num?)?.toDouble(),
     );
   }
 
@@ -246,6 +257,8 @@ class DraftItems extends HiveObject {
       'is_percentage_wastage': isPercentageWastage,
       'wastage_amount': wastageAmount,
       'wastage_unit_uuid': wastageUnitUuid,
+      'dimension_unit': dimensionUnit,
+      'dimension_unit_conversion': dimensionUnitConversion,
     };
   }
 }

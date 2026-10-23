@@ -257,6 +257,8 @@ class DraftsProvider extends ChangeNotifier {
         heightDimension: cartItem.heightDimension,
         quantityType: cartItem.quantityType,
         widthDimension: cartItem.widthDimension,
+        dimensionUnit: product.dimensionUnit,
+        dimensionUnitConversion: product.dimensionUnitConversion,
         uuid: cartItem.uuid ?? uuidGen(),
         draftId: draftId,
         createdAt: DateTime.now(),
@@ -343,12 +345,21 @@ class DraftsProvider extends ChangeNotifier {
       );
 
       if (products.isNotEmpty) {
+        var newProduct = products.first.copyWith();
+        if (record.dimensionUnit != null) {
+          newProduct.dimensionUnit = record.dimensionUnit;
+        }
+        if (record.dimensionUnitConversion != null &&
+            record.dimensionUnitConversion! > 0) {
+          newProduct.dimensionUnitConversion =
+              record.dimensionUnitConversion;
+        }
         cartItems.add(
           draftItemToCartItem(
             record: record,
             product: editLineProduct(
               record: record,
-              product: products.first,
+              product: newProduct,
             ),
           ),
         );
@@ -360,6 +371,8 @@ class DraftsProvider extends ChangeNotifier {
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,
+          dimensionUnit: record.dimensionUnit,
+          dimensionUnitConversion: record.dimensionUnitConversion,
           pricesList: record.pricesList ?? [],
           unitsList: record.unitsList ?? [],
           useGroupUnit: record.useGroupQuantity ?? false,

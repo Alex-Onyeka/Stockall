@@ -61,13 +61,15 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       isPercentageWastage: fields[41] as bool?,
       wastageAmount: fields[42] as double?,
       wastageUnitUuid: fields[43] as String?,
+      dimensionUnit: fields[44] as String?,
+      dimensionUnitConversion: fields[45] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductSaleRecord obj) {
     writer
-      ..writeByte(44)
+      ..writeByte(46)
       ..writeByte(0)
       ..write(obj.productRecordId)
       ..writeByte(1)
@@ -155,7 +157,11 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       ..writeByte(42)
       ..write(obj.wastageAmount)
       ..writeByte(43)
-      ..write(obj.wastageUnitUuid);
+      ..write(obj.wastageUnitUuid)
+      ..writeByte(44)
+      ..write(obj.dimensionUnit)
+      ..writeByte(45)
+      ..write(obj.dimensionUnitConversion);
   }
 
   @override

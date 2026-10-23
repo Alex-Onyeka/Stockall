@@ -50,13 +50,15 @@ class DraftItemsAdapter extends TypeAdapter<DraftItems> {
       isPercentageWastage: fields[30] as bool?,
       wastageAmount: fields[31] as double?,
       wastageUnitUuid: fields[32] as String?,
+      dimensionUnit: fields[33] as String?,
+      dimensionUnitConversion: fields[34] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DraftItems obj) {
     writer
-      ..writeByte(33)
+      ..writeByte(35)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -122,7 +124,11 @@ class DraftItemsAdapter extends TypeAdapter<DraftItems> {
       ..writeByte(31)
       ..write(obj.wastageAmount)
       ..writeByte(32)
-      ..write(obj.wastageUnitUuid);
+      ..write(obj.wastageUnitUuid)
+      ..writeByte(33)
+      ..write(obj.dimensionUnit)
+      ..writeByte(34)
+      ..write(obj.dimensionUnitConversion);
   }
 
   @override

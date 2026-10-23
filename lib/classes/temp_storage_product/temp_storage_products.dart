@@ -62,6 +62,12 @@ class TempStorageProducts {
   @HiveField(16)
   double? heightDimension;
 
+  @HiveField(17)
+  String? dimensionUnit;
+
+  @HiveField(18)
+  double? dimensionUnitConversion;
+
   TempStorageProducts({
     this.uuid,
     this.createdAt,
@@ -80,6 +86,8 @@ class TempStorageProducts {
     this.quantityType = 1,
     this.widthDimension,
     this.heightDimension,
+    this.dimensionUnit,
+    this.dimensionUnitConversion,
   });
 
   factory TempStorageProducts.fromJson(
@@ -120,9 +128,12 @@ class TempStorageProducts {
       unitsList:
           (json['units_list'] as List<dynamic>? ?? [])
               .map(
-                (item) => ProductUnitsClass.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    item is ProductUnitsClass
+                        ? item
+                        : ProductUnitsClass.fromJson(
+                          item as Map<String, dynamic>,
+                        ),
               )
               .toList(),
       quantityType: json['quantity_type'] as int? ?? 1,
@@ -130,6 +141,9 @@ class TempStorageProducts {
           (json['width_dimension'] as num?)?.toDouble(),
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
+      dimensionUnit: json['dimension_unit'] as String?,
+      dimensionUnitConversion:
+          (json['dimension_unit_conversion'] as num?)?.toDouble(),
     );
   }
 
@@ -159,6 +173,8 @@ class TempStorageProducts {
       'quantity_type': quantityType ?? 1,
       'width_dimension': widthDimension,
       'height_dimension': heightDimension,
+      'dimension_unit': dimensionUnit,
+      'dimension_unit_conversion': dimensionUnitConversion,
     };
   }
 
@@ -180,6 +196,8 @@ class TempStorageProducts {
     int? quantityType,
     double? widthDimension,
     double? heightDimension,
+    String? dimensionUnit,
+    double? dimensionUnitConversion,
   }) {
     return TempStorageProducts(
       uuid: uuid ?? this.uuid,
@@ -200,6 +218,9 @@ class TempStorageProducts {
       widthDimension: widthDimension ?? this.widthDimension,
       heightDimension:
           heightDimension ?? this.heightDimension,
+      dimensionUnit: dimensionUnit ?? this.dimensionUnit,
+      dimensionUnitConversion:
+          dimensionUnitConversion ?? this.dimensionUnitConversion,
     );
   }
 
@@ -221,6 +242,8 @@ class TempStorageProducts {
     quantityType = newItem.quantityType;
     widthDimension = newItem.widthDimension;
     heightDimension = newItem.heightDimension;
+    dimensionUnit = newItem.dimensionUnit;
+    dimensionUnitConversion = newItem.dimensionUnitConversion;
   }
 
   //
@@ -244,7 +267,12 @@ class TempStorageProducts {
     if (quantityType == 2) {
       final area =
           (widthDimension ?? 1) * (heightDimension ?? 1);
-      return area > 0 ? area : 1;
+      final conv = (dimensionUnitConversion != null &&
+              dimensionUnitConversion! > 0)
+          ? dimensionUnitConversion!
+          : 1.0;
+      final converted = area / conv;
+      return converted > 0 ? converted : 1;
     } else {
       return 1;
     }
@@ -259,7 +287,10 @@ class TempStorageProducts {
 
   // [quantity] of [unit] in getActualQuantity units: area for
   // 2D items (area units as they are, sheet units × sheet area).
-  double actualFromUnit(ProductUnitsClass unit, double quantity) {
+  double actualFromUnit(
+    ProductUnitsClass unit,
+    double quantity,
+  ) {
     if (quantityType == 2 &&
         unit.dimensionType != ProductUnitsClass.areaUnit) {
       return quantity * unit.conversion * dimensionArea();
@@ -268,7 +299,10 @@ class TempStorageProducts {
   }
 
   // getActualQuantity units back to [unit].
-  double unitFromActual(ProductUnitsClass unit, double actual) {
+  double unitFromActual(
+    ProductUnitsClass unit,
+    double actual,
+  ) {
     final perUnit = actualFromUnit(unit, 1);
     if (!perUnit.isFinite || perUnit <= 0) {
       return 0;

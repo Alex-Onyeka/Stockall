@@ -70,7 +70,7 @@ class OrderItemListTileOrderPage extends StatelessWidget {
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          "${formatLargeNumberDouble(record.quantity)} ${record.getUnit()}",
+                          "${formatLargeNumberDouble(record.quantity)} ${record.getUnit()}${record.wastageNote().isNotEmpty ? ' (${record.wastageNote()})' : ''}",
                         ),
                       ],
                     ),

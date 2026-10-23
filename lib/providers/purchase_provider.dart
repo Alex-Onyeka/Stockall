@@ -639,7 +639,11 @@ class PurchaseProvider extends ChangeNotifier {
                     isIncreased: false,
                     quantityChange: rec.quantity,
                     storagePrimaryUnit: primaryUnit.name,
-                    storageUnit: selectedUnit.name,
+                    storageUnit: formatHistoryUnit(
+                      selectedUnit: selectedUnit.name,
+                      primaryUnit: primaryUnit.name,
+                      primaryQuantity: deltaQty.abs(),
+                    ),
                   );
                 }
 
@@ -755,7 +759,11 @@ class PurchaseProvider extends ChangeNotifier {
                   itemName: newPro.name,
                   itemUuid: newPro.uuid,
                   primaryUnit: primaryUnit.name,
-                  unit: selectedUnit.name,
+                  unit: formatHistoryUnit(
+                    selectedUnit: selectedUnit.name,
+                    primaryUnit: primaryUnit.name,
+                    primaryQuantity: deltaArea.abs(),
+                  ),
                 );
               }
 
@@ -1105,7 +1113,11 @@ class PurchaseProvider extends ChangeNotifier {
             isIncreased: true,
             quantityChange: item.quantity,
             storagePrimaryUnit: primaryUnit.name,
-            storageUnit: selectedUnit.name,
+            storageUnit: formatHistoryUnit(
+              selectedUnit: selectedUnit.name,
+              primaryUnit: primaryUnit.name,
+              primaryQuantity: deltaQty.abs(),
+            ),
           );
 
           await returnStorageProductProvider()
@@ -1207,7 +1219,11 @@ class PurchaseProvider extends ChangeNotifier {
             itemName: newPr.name,
             itemUuid: newPr.uuid,
             primaryUnit: primaryUnit.name,
-            unit: selectedUnit.name,
+            unit: formatHistoryUnit(
+              selectedUnit: selectedUnit.name,
+              primaryUnit: primaryUnit.name,
+              primaryQuantity: deltaArea.abs(),
+            ),
           );
 
           await returnData().updateProduct(

@@ -13,7 +13,9 @@ String randomCode({int? length}) {
   return "#${String.fromCharCodes(Iterable.generate(length ?? 4, (_) => chars.codeUnitAt(random.nextInt(chars.length))))}";
 }
 
-TimeOfDay? _getShopClosingTime(TimeOfDay? customClosingTime) {
+TimeOfDay? _getShopClosingTime(
+  TimeOfDay? customClosingTime,
+) {
   if (customClosingTime != null) return customClosingTime;
   try {
     final shop = returnShopProvider().userShop();
@@ -26,24 +28,28 @@ TimeOfDay? _getShopClosingTime(TimeOfDay? customClosingTime) {
   return null;
 }
 
-DateTime resolveBusinessDate(DateTime now, {TimeOfDay? customClosingTime}) {
+DateTime resolveBusinessDate(
+  DateTime now, {
+  TimeOfDay? customClosingTime,
+}) {
   final cTime = _getShopClosingTime(customClosingTime);
 
-  final closingToday = now.isUtc
-      ? DateTime.utc(
-          now.year,
-          now.month,
-          now.day,
-          cTime?.hour ?? 0,
-          cTime?.minute ?? 0,
-        )
-      : DateTime(
-          now.year,
-          now.month,
-          now.day,
-          cTime?.hour ?? 0,
-          cTime?.minute ?? 0,
-        );
+  final closingToday =
+      now.isUtc
+          ? DateTime.utc(
+            now.year,
+            now.month,
+            now.day,
+            cTime?.hour ?? 0,
+            cTime?.minute ?? 0,
+          )
+          : DateTime(
+            now.year,
+            now.month,
+            now.day,
+            cTime?.hour ?? 0,
+            cTime?.minute ?? 0,
+          );
 
   if (now.isBefore(closingToday)) {
     return now.subtract(const Duration(days: 1));
@@ -107,7 +113,9 @@ bool isDateTimeInBusinessWindow({
   TimeOfDay? customClosingTime,
 }) {
   if (dateTime == null) return false;
-  if (dateSet == null && rangeStartDate == null && rangeEndDate == null) {
+  if (dateSet == null &&
+      rangeStartDate == null &&
+      rangeEndDate == null) {
     return true;
   }
 
@@ -123,7 +131,8 @@ bool isDateTimeInBusinessWindow({
       isUtc: isUtc,
       customClosingTime: customClosingTime,
     );
-    return !dateTime.isBefore(start) && dateTime.isBefore(end);
+    return !dateTime.isBefore(start) &&
+        dateTime.isBefore(end);
   } else if (rangeStartDate != null) {
     final start = fourAm(
       rangeStartDate,
@@ -135,7 +144,8 @@ bool isDateTimeInBusinessWindow({
       isUtc: isUtc,
       customClosingTime: customClosingTime,
     );
-    return !dateTime.isBefore(start) && dateTime.isBefore(end);
+    return !dateTime.isBefore(start) &&
+        dateTime.isBefore(end);
   }
   return true;
 }
@@ -187,11 +197,153 @@ String formatDimension(num number) {
 }
 
 // " (W x H)" for 2D lines, '' when either value is missing.
-String formatDimensionsLabel(double? width, double? height) {
+String dimensionUnitShortName(String? unit) {
+  if (unit == null || unit.trim().isEmpty) return '';
+  final lower = unit.toLowerCase().trim();
+  if (lower.contains('centi') || lower == 'cm') return 'cm';
+  if (lower.contains('milli') || lower == 'mm') return 'mm';
+  if (lower.contains('meter') || lower == 'm') return 'm';
+  if (lower.contains('inch') || lower == 'in') return 'in';
+  if (lower.contains('foot') ||
+      lower.contains('feet') ||
+      lower == 'ft')
+    return 'ft';
+  if (lower.contains('yard') || lower == 'yd') return 'yd';
+  return unit.trim();
+}
+
+// " (W x H)" or " (Wunit x Hunit)" for 2D lines, '' when either value is missing.
+// " (W x H)" or " (Wunit x Hunit)" for 2D lines, '' when either value is missing.
+String formatDimensionsLabel(
+  double? width,
+  double? height, {
+  String? unit,
+}) {
   if (width == null || height == null) {
     return '';
   }
-  return ' (${formatDimension(width)} x ${formatDimension(height)})';
+  final u = dimensionUnitShortName(unit);
+  final suffix = u.isNotEmpty ? u : '';
+  return ' (${formatDimension(width)}$suffix x ${formatDimension(height)}$suffix)';
+}
+
+// Strips dimension labels like " (50 x 50)" or " (50cm x 50cm)" from a unit string.
+String stripDimensionLabel(String unit) {
+  return unit
+      .replaceAll(RegExp(r'\s*\([^)]*x[^)]*\)\s*'), ' ')
+      .trim();
+}
+
+// Formats the history unit string.
+// If selected unit differs from primary unit, displays:
+//   "SelectedUnit (PrimaryQty PrimaryUnit)"
+// e.g. "bottles (0.2 Crates)" or "Slabs (0.5 M²)"
+// If selected unit == primary unit, displays:
+//   "SelectedUnit"
+// e.g. "Crates" or "M²"
+String formatHistoryUnit({
+  required String selectedUnit,
+  required String primaryUnit,
+  required double primaryQuantity,
+}) {
+  final cleanSelected = stripDimensionLabel(
+    selectedUnit.trim() == 'Others'
+        ? 'Unit(s)'
+        : selectedUnit.trim(),
+  );
+  final cleanPrimary = stripDimensionLabel(
+    primaryUnit.trim() == 'Others'
+        ? 'Unit(s)'
+        : primaryUnit.trim(),
+  );
+
+  if (cleanSelected.isEmpty) return cleanPrimary;
+  if (cleanPrimary.isEmpty ||
+      cleanSelected.toLowerCase() ==
+          cleanPrimary.toLowerCase()) {
+    return cleanSelected;
+  }
+
+  return '$cleanSelected (${formatDimension(primaryQuantity.abs())} $cleanPrimary)';
+}
+
+String returnHistoryQuantity({
+  required double? quantityChange,
+  required bool? isIncreased,
+  required String? unit,
+  String? primaryUnit,
+  String? oldValue,
+  String? newValue,
+}) {
+  var displayUnit = unit ?? '';
+  if (primaryUnit != null &&
+      primaryUnit.trim().isNotEmpty &&
+      primaryUnit.trim() != 'Others') {
+    final cleanPrim = stripDimensionLabel(
+      primaryUnit.trim() == 'Others'
+          ? 'Unit(s)'
+          : primaryUnit.trim(),
+    );
+    final cleanSelected = stripDimensionLabel(
+      displayUnit.trim() == 'Others'
+          ? 'Unit(s)'
+          : displayUnit.trim(),
+    );
+
+    if (cleanSelected.toLowerCase() ==
+        cleanPrim.toLowerCase()) {
+      displayUnit = cleanSelected;
+    } else {
+      final alreadyHasPrimary =
+          displayUnit.contains('(') &&
+          displayUnit.toLowerCase().contains(
+            cleanPrim.toLowerCase(),
+          );
+      if (!alreadyHasPrimary) {
+        final oldVal =
+            oldValue != null
+                ? double.tryParse(
+                  oldValue.replaceAll(',', ''),
+                )
+                : null;
+        final newVal =
+            newValue != null
+                ? double.tryParse(
+                  newValue.replaceAll(',', ''),
+                )
+                : null;
+        if (oldVal != null &&
+            newVal != null &&
+            (newVal - oldVal).abs() > 1e-9) {
+          final diff = (newVal - oldVal).abs();
+          displayUnit = formatHistoryUnit(
+            selectedUnit: cleanSelected,
+            primaryUnit: cleanPrim,
+            primaryQuantity: diff,
+          );
+        } else if (displayUnit.contains(
+          RegExp(r'\([^)]*x[^)]*\)'),
+        )) {
+          displayUnit = cleanSelected;
+        }
+      }
+    }
+  }
+
+  final quantity = quantityChange ?? 0;
+
+  if (quantity == 0) {
+    return '${formatDimension(quantity.abs())} $displayUnit'
+        .trim();
+  }
+
+  if (isIncreased == false) {
+    return '-${formatDimension(quantity.abs())} $displayUnit'
+        .trim();
+  }
+
+  return '+${formatDimension(quantity.abs())} $displayUnit'
+      .trim();
 }
 
 // Extra area used up as wastage on a 2D line: a percent of
