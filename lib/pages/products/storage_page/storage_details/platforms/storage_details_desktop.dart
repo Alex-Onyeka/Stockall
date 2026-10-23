@@ -189,7 +189,7 @@ class _StorageDetailsDesktopState extends State<StorageDetailsDesktop> {
                                                   FontWeight
                                                       .bold,
                                             ),
-                                            '2D Item. Sheet Size:${formatDimensionsLabel(product.widthDimension, product.heightDimension)}',
+                                            '2D Item. Sheet Size:${formatDimensionsLabel(product.widthDimension, product.heightDimension, unit: product.dimensionUnit)}',
                                           ),
                                       ],
                                     ),

@@ -210,8 +210,10 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                                 }
                                               },
                                               title:
-                                                  '${widget.product.getProductUnit(unitUuid: unitUuid).name} Width',
-                                              hint: 'Enter Width',
+                                                  '${widget.product.dimensionUnit ?? widget.product.getProductUnit(unitUuid: unitUuid).name} Width',
+                                              hint: widget.product.widthDimension != null
+                                                  ? 'Max ${formatDimension(widget.product.widthDimension!)}${widget.product.dimensionUnit != null ? ' ${widget.product.dimensionUnit}' : ''}'
+                                                  : 'Enter Width',
                                               controller: widthController,
                                               theme: theme,
                                             ),
@@ -233,8 +235,10 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                                 }
                                               },
                                               title:
-                                                  '${widget.product.getProductUnit(unitUuid: unitUuid).name} Height',
-                                              hint: 'Enter Height',
+                                                  '${widget.product.dimensionUnit ?? widget.product.getProductUnit(unitUuid: unitUuid).name} Height',
+                                              hint: widget.product.heightDimension != null
+                                                  ? 'Max ${formatDimension(widget.product.heightDimension!)}${widget.product.dimensionUnit != null ? ' ${widget.product.dimensionUnit}' : ''}'
+                                                  : 'Enter Height',
                                               controller: heightController,
                                               theme: theme,
                                             ),
@@ -708,6 +712,11 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                                 widget.product.heightDimension,
                                             widthDimension:
                                                 widget.product.widthDimension,
+                                            dimensionUnit:
+                                                widget.product.dimensionUnit,
+                                            dimensionUnitConversion: widget
+                                                .product
+                                                .dimensionUnitConversion,
                                             quantityType:
                                                 widget.product.quantityType,
                                             unitsList: widget.product.unitsList,

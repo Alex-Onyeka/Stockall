@@ -1200,30 +1200,26 @@ class _StorageItemHistoryReportViewState
       );
     }
 
-    final qty = r.quantityChange!;
-    final unit = StorageItemHistoryReportQuery.quantityChangeUnit(r);
-    final unitStr = unit == null ? '' : ' $unit';
+    final formatted = returnHistoryQuantity(
+      quantityChange: r.quantityChange,
+      isIncreased: r.isIncreased,
+      unit: r.storageUnit,
+      primaryUnit: r.storagePrimaryUnit,
+      oldValue: r.storageItemOldValue,
+      newValue: r.storageItemNewValue,
+    );
 
-    if (qty == 0) {
-      return _txt(
-        theme,
-        '0$unitStr',
-        bold: true,
-        color: Colors.grey.shade700,
-        align: TextAlign.center,
-      );
-    }
-
-    // isIncreased first: purchase records store unsigned quantities.
-    final up = r.isIncreased ?? (qty > 0);
+    final up = r.isIncreased ?? ((r.quantityChange ?? 0) > 0);
+    final isZero = (r.quantityChange ?? 0) == 0;
     return _txt(
       theme,
-      '${up ? '+' : '-'}${formatLargeNumberDouble(qty.abs())}$unitStr',
+      formatted,
       bold: true,
-      color:
-          up
+      color: isZero
+          ? Colors.grey.shade700
+          : (up
               ? Colors.green.shade700
-              : theme.lightModeColor.errorColor200,
+              : theme.lightModeColor.errorColor200),
       align: TextAlign.center,
     );
   }
@@ -1801,8 +1797,14 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
     final unit = StorageItemHistoryReportQuery.quantityChangeUnit(history);
     final qtyStr =
         history.quantityChange != null
-            ? '${formatLargeNumberDouble(history.quantityChange!.abs())} ${unit ?? ''}'
-                .trim()
+            ? returnHistoryQuantity(
+                quantityChange: history.quantityChange,
+                isIncreased: history.isIncreased,
+                unit: history.storageUnit,
+                primaryUnit: history.storagePrimaryUnit,
+                oldValue: history.storageItemOldValue,
+                newValue: history.storageItemNewValue,
+              )
             : 'N/A';
     final directionStr =
         history.isIncreased == true

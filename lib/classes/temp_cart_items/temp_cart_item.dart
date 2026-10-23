@@ -590,10 +590,20 @@ class TempCartItem extends HiveObject {
     return getRealQuantity() + wastageArea();
   }
 
-  // getStockQuantity() in the sale unit: 1 slab + 0.3 m² of
-  // wastage on a 3 m² slab is 1.1. Equal to quantity without
-  // wastage (and for 1D lines).
+  // Total line quantity in the selected unit.
+  // For 2D lines with sheet/piece units, custom dimensions scale as a fraction of the whole item:
+  // e.g. 1 cut of 1×1 from a 1×2 whole slab = 0.5 slab.
   double displayQuantity() {
+    final unit = getSelectedUnit();
+    if (item.quantityType == 2) {
+      if (unit.dimensionType == ProductUnitsClass.areaUnit) {
+        return getStockQuantity() / (unit.conversion > 0 ? unit.conversion : 1.0);
+      }
+      final wholeArea = item.dimensionArea() * (unit.conversion > 0 ? unit.conversion : 1.0);
+      if (wholeArea > 0) {
+        return getStockQuantity() / wholeArea;
+      }
+    }
     final wastage = wastageArea();
     if (wastage <= 0) return quantity;
     final base = getRealQuantity();
@@ -601,16 +611,54 @@ class TempCartItem extends HiveObject {
     return quantity + quantity * wastage / base;
   }
 
-  double wastageInSaleUnit() =>
-      displayQuantity() - quantity;
+  double baseQuantityInSaleUnit() {
+    final unit = getSelectedUnit();
+    if (item.quantityType == 2) {
+      if (unit.dimensionType == ProductUnitsClass.areaUnit) {
+        return getRealQuantity() / (unit.conversion > 0 ? unit.conversion : 1.0);
+      }
+      final wholeArea = item.dimensionArea() * (unit.conversion > 0 ? unit.conversion : 1.0);
+      if (wholeArea > 0) {
+        return getRealQuantity() / wholeArea;
+      }
+    }
+    return quantity;
+  }
 
-  // Quantity and wastage for item-history text: unchanged
-  // ("2.0", "") without wastage, "1.1" and " (incl. 0.1 wastage)"
-  // with it.
+  double wastageInSaleUnit() =>
+      displayQuantity() - baseQuantityInSaleUnit();
+
+  // Quantity and wastage for item-history text.
   String quantityText() {
-    return wastageInSaleUnit() <= 1e-9
-        ? '$quantity'
-        : formatDimension(displayQuantity());
+    return formatDimension(displayQuantity());
+  }
+
+  // Unit label for ItemHistory.
+  // Shows selected unit, plus primary unit equiv in brackets if they differ:
+  // e.g. "bottles (0.2 Crates)" or "Slabs (0.5 M²)", or just "Crates" / "M²".
+  String historyUnit({TempProductClass? product}) {
+    final selUnit = getSelectedUnit();
+    final primUnit = product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final selName = selUnit.name == 'Others' ? 'Unit(s)' : selUnit.name.trim();
+    final primName = primUnit.name == 'Others' ? 'Unit(s)' : primUnit.name.trim();
+
+    if (selName.isEmpty) return primName;
+    if (primName.isEmpty || selName.toLowerCase() == primName.toLowerCase()) {
+      return selName;
+    }
+
+    final prod = product ?? item;
+    final primaryQty = primUnit.getQuantityEquivDivided(
+      index: 1,
+      newQuantity: getStockQuantity(),
+      product: prod,
+    );
+
+    return formatHistoryUnit(
+      selectedUnit: selName,
+      primaryUnit: primName,
+      primaryQuantity: primaryQty,
+    );
   }
 
   String historyWastageText() {
@@ -704,6 +752,7 @@ class TempCartItem extends HiveObject {
       return formatDimensionsLabel(
         widthDimension,
         heightDimension,
+        unit: item.dimensionUnit,
       );
     }
   }

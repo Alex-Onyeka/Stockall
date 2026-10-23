@@ -351,12 +351,14 @@ class SalesProvider extends ChangeNotifier {
   Future<void> updateCurrentCartItem(
     TempCartItem cartItem,
   ) async {
-    List<TempCartItem> temps =
-        currentCart().cartItems
-            .where((item) => item.uuid == cartItem.uuid)
-            .toList();
-    if (temps.isNotEmpty) {
-      var tempItem = temps.first;
+    final int index = currentCart().cartItems.indexWhere(
+      (item) =>
+          (cartItem.uuid != null &&
+              item.uuid == cartItem.uuid) ||
+          identical(item, cartItem),
+    );
+    if (index != -1) {
+      var tempItem = currentCart().cartItems[index];
       tempItem.item = cartItem.item;
       tempItem.itemUuid = cartItem.itemUuid;
       tempItem.quantity = cartItem.quantity;
@@ -386,6 +388,8 @@ class SalesProvider extends ChangeNotifier {
           cartItem.isPercentageWastage;
       tempItem.manageSalesWastage =
           cartItem.manageSalesWastage;
+      tempItem.quantityType = cartItem.quantityType;
+      currentCart().cartItems[index] = tempItem;
     } else {
       await mainLocalLog('Couldn\'t Find Cart Item');
     }
@@ -449,21 +453,13 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Orders don't apply wastage. Clears it from lines of an order
-  // cart, e.g. order lines saved before wastage was hidden there.
-  void clearOrderWastage(TempCart cart) {
-    if (cart.cartItemTypeIndex != 3) return;
-    for (final cartItem in cart.cartItems) {
-      cartItem.wastageAmount = null;
-      cartItem.wastageUnitUuid = null;
-    }
-  }
+  // Orders preserve wastage as estimated wastage so that delivery accounts for it.
+  void clearOrderWastage(TempCart cart) {}
 
   Future<void> addNewCart(
     BuildContext context,
     TempCart tempCart,
   ) async {
-    clearOrderWastage(tempCart);
     SalesAuthAction().numberOfCartsAction(
       context: context,
       action: () async {
@@ -914,7 +910,6 @@ class SalesProvider extends ChangeNotifier {
 
     void performAction() {
       currentCart().cartItemTypeIndex = value;
-      clearOrderWastage(currentCart());
       CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
     }
@@ -1248,6 +1243,9 @@ class SalesProvider extends ChangeNotifier {
         heightDimension: cartItem.heightDimension,
         quantityType: cartItem.quantityType,
         widthDimension: cartItem.widthDimension,
+        dimensionUnit: cartItem.item.dimensionUnit,
+        dimensionUnitConversion:
+            cartItem.item.dimensionUnitConversion,
         priceUuid: cartItem.priceUuid,
         pricesList: cartItem.getPriceListFinal(),
         unitUuid: cartItem.unitUuid,
@@ -1360,9 +1358,18 @@ class SalesProvider extends ChangeNotifier {
       final displayDiff =
           (newDisplayQty - oldDisplayQty).abs();
 
-      final unitName =
-          "${refCartItem.getSelectedUnit().name}${refCartItem.dimensionsLabel()}";
       final primaryUnit = refCartItem.getPrimaryUnit();
+      final double stockQtyForDisplay = stockDiff.abs();
+      final double primaryQtyEquiv = primaryUnit.getQuantityEquivDivided(
+        index: 1,
+        newQuantity: stockQtyForDisplay,
+        product: mainItem,
+      );
+      final unitName = formatHistoryUnit(
+        selectedUnit: refCartItem.getSelectedUnit().name,
+        primaryUnit: primaryUnit.name,
+        primaryQuantity: primaryQtyEquiv,
+      );
       final areaPerSheet = mainItem.dimensionArea();
 
       final isManaged = shouldDeductStock(
@@ -1857,6 +1864,8 @@ class SalesProvider extends ChangeNotifier {
                       .quantityAfterRemoving(
                         cartItem.getStockQuantity(),
                       );
+                  final historyUnitName =
+                      cartItem.historyUnit(product: mainItem);
                   ItemHistory itemHistory = ItemHistory(
                     event: ItemHistoryEventClass.sold,
                     isManaged: cartItem.item.isManaged,
@@ -1865,13 +1874,12 @@ class SalesProvider extends ChangeNotifier {
                     destination:
                         ItemHistoryEventClass
                             .receiptDestination,
-                    unit:
-                        "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
+                    unit: historyUnitName,
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     shopId: shopId,
                     desc:
-                        '${cartItem.quantityText()} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}${cartItem.historyWastageText()} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                        '${cartItem.quantityText()} $historyUnitName${cartItem.historyWastageText()} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                     isIncreased: false,
 
                     title: 'Item Sold In Receipt',
@@ -1935,6 +1943,8 @@ class SalesProvider extends ChangeNotifier {
                             cartItem.getItem()?.name,
                       )
                       .isNotEmpty) {
+                    final historyUnitName =
+                        cartItem.historyUnit(product: mainItem);
                     ItemHistory itemHistory = ItemHistory(
                       event: ItemHistoryEventClass.sold,
                       isManaged: cartItem.item.isManaged,
@@ -1944,12 +1954,11 @@ class SalesProvider extends ChangeNotifier {
                       destination:
                           ItemHistoryEventClass
                               .receiptDestination,
-                      unit:
-                          "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
+                      unit: historyUnitName,
                       primaryUnit:
                           cartItem.getPrimaryUnit().name,
                       desc:
-                          '${cartItem.quantityText()} ${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}${cartItem.historyWastageText()} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                          '${cartItem.quantityText()} $historyUnitName${cartItem.historyWastageText()} of This Item was Sold, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                       shopId: shopId,
                       isIncreased: false,
                       oldValue: formatLargeNumberDouble(
@@ -2382,6 +2391,10 @@ class SalesProvider extends ChangeNotifier {
                   heightDimension: cartItem.heightDimension,
                   quantityType: cartItem.quantityType,
                   widthDimension: cartItem.widthDimension,
+                  dimensionUnit:
+                      cartItem.item.dimensionUnit,
+                  dimensionUnitConversion:
+                      cartItem.item.dimensionUnitConversion,
                   priceUuid: cartItem.priceUuid,
                   pricesList: cartItem.getPriceListFinal(),
                   unitUuid: cartItem.unitUuid,
@@ -2528,6 +2541,8 @@ class SalesProvider extends ChangeNotifier {
                       .quantityAfterRemoving(
                         cartItem.getStockQuantity(),
                       );
+                  final historyUnitName =
+                      cartItem.historyUnit(product: mainItem);
                   ItemHistory itemHistory = ItemHistory(
                     event: ItemHistoryEventClass.sold,
                     isManaged: cartItem.item.isManaged,
@@ -2536,13 +2551,12 @@ class SalesProvider extends ChangeNotifier {
                     destination:
                         ItemHistoryEventClass
                             .invoiceDestination,
-                    unit:
-                        "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
+                    unit: historyUnitName,
                     primaryUnit:
                         cartItem.getPrimaryUnit().name,
                     shopId: shopId,
                     desc:
-                        '${cartItem.quantityText()} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}"${cartItem.historyWastageText()} of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                        '${cartItem.quantityText()} "$historyUnitName"${cartItem.historyWastageText()} of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                     isIncreased: false,
 
                     title: 'Item Sold On Credit',
@@ -2606,6 +2620,8 @@ class SalesProvider extends ChangeNotifier {
                             cartItem.getItem()?.name,
                       )
                       .isNotEmpty) {
+                    final historyUnitName =
+                        cartItem.historyUnit(product: mainItem);
                     ItemHistory itemHistory = ItemHistory(
                       event: ItemHistoryEventClass.sold,
                       isManaged: cartItem.item.isManaged,
@@ -2615,12 +2631,11 @@ class SalesProvider extends ChangeNotifier {
                       destination:
                           ItemHistoryEventClass
                               .invoiceDestination,
-                      unit:
-                          "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
+                      unit: historyUnitName,
                       primaryUnit:
                           cartItem.getPrimaryUnit().name,
                       desc:
-                          '${cartItem.quantityText()} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}"${cartItem.historyWastageText()} of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                          '${cartItem.quantityText()} "$historyUnitName"${cartItem.historyWastageText()} of This Item was Sold On Credit, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                       shopId: shopId,
                       isIncreased: false,
                       oldValue: formatLargeNumberDouble(
@@ -2894,11 +2909,15 @@ class SalesProvider extends ChangeNotifier {
               isPercentageWastage:
                   cartItem.isPercentageWastage,
               wastageAmount: cartItem.wastageAmount,
+              wastageUnitUuid: cartItem.wastageUnitUuid,
               manageSalesWastage:
                   cartItem.manageSalesWastage,
               heightDimension: cartItem.heightDimension,
               quantityType: cartItem.quantityType,
               widthDimension: cartItem.widthDimension,
+              dimensionUnit: cartItem.item.dimensionUnit,
+              dimensionUnitConversion:
+                  cartItem.item.dimensionUnitConversion,
               priceUuid: cartItem.priceUuid,
               pricesList: cartItem.getPriceListFinal(),
               unitUuid: cartItem.unitUuid,
@@ -3002,17 +3021,18 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
+              final historyUnitName =
+                  cartItem.historyUnit(product: mainItem);
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.sold,
                 isManaged: cartItem.item.isManaged,
                 source: ItemHistoryEventClass.productSource,
                 destination:
                     ItemHistoryEventClass.orderDestination,
-                unit:
-                    "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}",
+                unit: historyUnitName,
                 primaryUnit: cartItem.getPrimaryUnit().name,
                 desc:
-                    '${cartItem.quantity} "${cartItem.getSelectedUnit().name}${cartItem.dimensionsLabel()}" of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${cartItem.quantityText()} "$historyUnitName" of This Item was Ordered for, but Not Deducted. Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId,
                 isIncreased: false,
                 title: 'Order Created',
@@ -4638,30 +4658,30 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  void editCartItemQuantity({
+  Future<bool> editCartItemQuantity({
     required TempCartItem cartItem,
     required double number,
     double? customPrice,
     required bool setTotalPrice,
     required bool setCustomPrice,
   }) async {
-    final newArea = cartItem
-        .getSelectedUnit()
-        .getQuantityEquivMultiplied(
-          index: 1,
-          newQuantity: number,
-          customWidth: cartItem.widthDimension,
-          customHeight: cartItem.heightDimension,
-        );
+    final double oldQuantity = cartItem.quantity;
+    cartItem.quantity = number;
+    cartItem.customPrice = customPrice;
+    cartItem.setTotalPrice = setTotalPrice;
+    cartItem.setCustomPrice = setCustomPrice;
+
+    final double quantityToAdd =
+        cartItem.getStockQuantity();
+
     if (canAddProductToCart(
       isEdit: true,
       newCartItem: cartItem,
-      quantityToAdd:
-          newArea + cartItem.wastageArea(baseArea: newArea),
+      quantityToAdd: quantityToAdd,
     )) {
       if (returnShopProvider().userShop()!.trackCart ==
               true &&
-          cartItem.quantity > number) {
+          oldQuantity > number) {
         // The voided quantity is of the line's current size,
         // which this edit may be changing.
         final originalLine =
@@ -4677,10 +4697,10 @@ class SalesProvider extends ChangeNotifier {
 
         if (voidItem != null) {
           var beanItem = voidItem;
-          beanItem.quantity += cartItem.quantity - number;
+          beanItem.quantity += oldQuantity - number;
         } else {
           var deletedItem = cartItem.copyWith(
-            quantity: cartItem.quantity - number,
+            quantity: oldQuantity - number,
             isVoid: true,
             uuid: uuidGen(),
             widthDimension: originalLine.widthDimension,
@@ -4696,10 +4716,6 @@ class SalesProvider extends ChangeNotifier {
           currentCart().cartItems.add(deletedItem);
         }
       }
-      cartItem.quantity = number;
-      cartItem.customPrice = customPrice;
-      cartItem.setTotalPrice = setTotalPrice;
-      cartItem.setCustomPrice = setCustomPrice;
       await updateCurrentCartItem(cartItem);
       await returnMultiDisplayProvider().updateWindow(
         cartClass: AltCartClass(
@@ -4731,10 +4747,12 @@ class SalesProvider extends ChangeNotifier {
 
       await CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
+      return true;
     } else {
       await mainLocalLog(
         'Cannot Add to Cart Because Quantity Ti Wa',
       );
+      return false;
     }
   }
 
@@ -5011,6 +5029,14 @@ class SalesProvider extends ChangeNotifier {
         }
         var newProduct = product.first.copyWith();
         newProduct.unitsList = record.getUnitListFinal();
+        if (record.dimensionUnit != null) {
+          newProduct.dimensionUnit = record.dimensionUnit;
+        }
+        if (record.dimensionUnitConversion != null &&
+            record.dimensionUnitConversion! > 0) {
+          newProduct.dimensionUnitConversion =
+              record.dimensionUnitConversion;
+        }
         final cartItem = saleRecordToCartItem(
           record: newRecord,
           product: editLineProduct(
@@ -5048,6 +5074,9 @@ class SalesProvider extends ChangeNotifier {
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,
+          dimensionUnit: record.dimensionUnit,
+          dimensionUnitConversion:
+              record.dimensionUnitConversion,
           pricesList: record.getPriceListFinal(),
           unitsList: record.getUnitListFinal(),
           useGroupUnit: false,

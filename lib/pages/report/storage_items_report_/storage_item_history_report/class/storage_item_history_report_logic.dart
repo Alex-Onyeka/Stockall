@@ -326,7 +326,28 @@ class StorageItemHistoryReportQuery {
   static String? quantityChangeUnit(StorageItemHistory h) {
     final u = _clean(h.storageUnit);
     if (u == null || u.toLowerCase() == 'not set') return null;
-    return u;
+    final cleanSelected = stripDimensionLabel(u);
+    final cleanPrim = stripDimensionLabel(h.storagePrimaryUnit ?? '');
+    if (cleanPrim.isEmpty ||
+        cleanSelected.trim().toLowerCase() ==
+            cleanPrim.trim().toLowerCase()) {
+      return cleanSelected;
+    }
+    final bracketMatch = RegExp(r'\(([^)]+)\)').firstMatch(cleanSelected);
+    if (bracketMatch != null) {
+      return cleanSelected;
+    }
+    final oldVal = double.tryParse(h.storageItemOldValue ?? '');
+    final newVal = double.tryParse(h.storageItemNewValue ?? '');
+    if (oldVal != null && newVal != null) {
+      final diff = (newVal - oldVal).abs();
+      return formatHistoryUnit(
+        selectedUnit: cleanSelected,
+        primaryUnit: cleanPrim,
+        primaryQuantity: diff,
+      );
+    }
+    return cleanSelected;
   }
 
   static int _cmp<T extends Comparable>(T? a, T? b, bool asc) {

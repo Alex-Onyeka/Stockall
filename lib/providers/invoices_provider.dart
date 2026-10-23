@@ -524,6 +524,8 @@ class InvoicesProvider extends ChangeNotifier {
               heightDimension: record.heightDimension,
               quantityType: record.quantityType,
               widthDimension: record.widthDimension,
+              dimensionUnit: record.dimensionUnit,
+              dimensionUnitConversion: record.dimensionUnitConversion,
               priceUuid: record.priceUuid,
               pricesList: record.getPriceListFinal(),
               unitUuid: record.unitUuid,
@@ -914,6 +916,14 @@ class InvoicesProvider extends ChangeNotifier {
         var newProduct = product.first.copyWith();
         newProduct.unitsList = record.getUnitListFinal();
         newProduct.pricesList = record.getPriceListFinal();
+        if (record.dimensionUnit != null) {
+          newProduct.dimensionUnit = record.dimensionUnit;
+        }
+        if (record.dimensionUnitConversion != null &&
+            record.dimensionUnitConversion! > 0) {
+          newProduct.dimensionUnitConversion =
+              record.dimensionUnitConversion;
+        }
 
         if (newRecord.unitUuid == null ||
             !newProduct.getUnitsList().any(
@@ -972,6 +982,8 @@ class InvoicesProvider extends ChangeNotifier {
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,
+          dimensionUnit: record.dimensionUnit,
+          dimensionUnitConversion: record.dimensionUnitConversion,
           pricesList: record.getPriceListFinal(),
           unitsList: record.getUnitListFinal(),
           useGroupUnit: false,

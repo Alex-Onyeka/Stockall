@@ -616,6 +616,7 @@ class OrdersProvider extends ChangeNotifier {
     return TempCartItem(
       isPercentageWastage: record.isPercentageWastage,
       wastageAmount: record.wastageAmount,
+      wastageUnitUuid: record.wastageUnitUuid,
       manageSalesWastage: record.manageSalesWastage,
       heightDimension: record.heightDimension,
       quantityType: record.quantityType,
@@ -630,6 +631,7 @@ class OrdersProvider extends ChangeNotifier {
       item: product,
       quantity: record.quantity,
       discount: record.discount,
+      fixedDiscount: record.fixedDiscount,
       customPrice: record.customPriceSet ? tempRev : null,
       addToStock: record.addToStock ?? false,
       setCustomPrice: record.customPriceSet,
@@ -654,6 +656,15 @@ class OrdersProvider extends ChangeNotifier {
       );
 
       if (product.isNotEmpty) {
+        var newProduct = product.first.copyWith();
+        if (record.dimensionUnit != null) {
+          newProduct.dimensionUnit = record.dimensionUnit;
+        }
+        if (record.dimensionUnitConversion != null &&
+            record.dimensionUnitConversion! > 0) {
+          newProduct.dimensionUnitConversion =
+              record.dimensionUnitConversion;
+        }
         var newRecord = record.copyWith();
         if (newRecord.discount != null) {
           newRecord.revenue = newRecord.originalCost!;
@@ -663,7 +674,7 @@ class OrdersProvider extends ChangeNotifier {
           record: newRecord,
           product: editLineProduct(
             record: newRecord,
-            product: product.first,
+            product: newProduct,
           ),
         );
         cartItems.add(cartItem);
@@ -695,6 +706,9 @@ class OrdersProvider extends ChangeNotifier {
           heightDimension: record.heightDimension,
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,
+          dimensionUnit: record.dimensionUnit,
+          dimensionUnitConversion:
+              record.dimensionUnitConversion,
           pricesList: record.pricesList ?? [],
           unitsList: record.unitsList ?? [],
           useGroupUnit: record.useGroupQuantity ?? false,
@@ -997,10 +1011,14 @@ class OrdersProvider extends ChangeNotifier {
               isPercentageWastage:
                   record.isPercentageWastage,
               wastageAmount: record.wastageAmount,
+              wastageUnitUuid: record.wastageUnitUuid,
               manageSalesWastage: record.manageSalesWastage,
               heightDimension: record.heightDimension,
               quantityType: record.quantityType,
               widthDimension: record.widthDimension,
+              dimensionUnit: record.dimensionUnit,
+              dimensionUnitConversion:
+                  record.dimensionUnitConversion,
               priceUuid: record.priceUuid,
               pricesList: record.getPriceListFinal(),
               unitUuid: record.unitUuid,
@@ -1106,7 +1124,7 @@ class OrdersProvider extends ChangeNotifier {
               final oldQuantity =
                   product.getActualQuantity() ?? 0;
               final quantityChange =
-                  item.getActualQuantityDuringDeliveryCheckout();
+                  item.getStockQuantity();
               // Stock math is in area for 2D items; store the
               // result back as a sheet count.
               product.quantity = product
@@ -1116,6 +1134,9 @@ class OrdersProvider extends ChangeNotifier {
               final primaryUnit = product.getPrimaryUnit();
               final primaryUnitConversion =
                   primaryUnit.conversion;
+              final unitName = item.historyUnit(
+                product: product,
+              );
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.delivered,
                 isManaged: item.isProductManaged ?? false,
@@ -1124,17 +1145,17 @@ class OrdersProvider extends ChangeNotifier {
                     ItemHistoryEventClass.orderDestination,
                 shopId: shopId(),
                 desc:
-                    '${item.quantity} ${item.getUnit()} of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${formatDimension(item.displayQuantity())} $unitName of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 isIncreased: false,
                 title: 'Order Item Delivered',
-                quantityChange: -item.quantity,
+                quantityChange: -item.displayQuantity(),
                 oldValue: formatLargeNumberDouble(
                   oldQuantity / primaryUnitConversion,
                 ),
                 newValue: formatLargeNumberDouble(
                   newQuantity / primaryUnitConversion,
                 ),
-                unit: item.getUnit(),
+                unit: unitName,
                 primaryUnit: primaryUnit.name,
               );
               await returnData().updateProduct(
@@ -1154,6 +1175,9 @@ class OrdersProvider extends ChangeNotifier {
                   primaryUnit.conversion;
               final stockQuantity =
                   product.getActualQuantity() ?? 0;
+              final unitName = item.historyUnit(
+                product: product,
+              );
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.delivered,
                 isManaged: item.isProductManaged ?? false,
@@ -1161,7 +1185,7 @@ class OrdersProvider extends ChangeNotifier {
                 destination:
                     ItemHistoryEventClass.orderDestination,
                 desc:
-                    '${item.quantity} ${item.getUnit()} of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${formatDimension(item.displayQuantity())} $unitName of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId(),
                 isIncreased: false,
                 oldValue: formatLargeNumberDouble(
@@ -1170,7 +1194,7 @@ class OrdersProvider extends ChangeNotifier {
                 newValue: formatLargeNumberDouble(
                   stockQuantity / primaryUnitConversion,
                 ),
-                unit: item.getUnit(),
+                unit: unitName,
                 primaryUnit: primaryUnit.name,
                 title: 'Order Item Delivered (Unmanaged)',
                 quantityChange: 0,

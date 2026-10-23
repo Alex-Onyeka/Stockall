@@ -139,7 +139,7 @@ class _StorageDetailsMobileState extends State<StorageDetailsMobile> {
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  '2D Item. Sheet Size:${formatDimensionsLabel(product.widthDimension, product.heightDimension)}',
+                                  '2D Item. Sheet Size:${formatDimensionsLabel(product.widthDimension, product.heightDimension, unit: product.dimensionUnit)}',
                                 ),
                             ],
                           ),

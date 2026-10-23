@@ -59,13 +59,16 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
       manageSalesWastage: fields[39] as bool?,
       isPercentageWastage: fields[40] as bool?,
       wastageAmount: fields[41] as double?,
+      dimensionUnit: fields[42] as String?,
+      dimensionUnitConversion: fields[43] as double?,
+      wastageUnitUuid: fields[44] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderItems obj) {
     writer
-      ..writeByte(42)
+      ..writeByte(45)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -149,7 +152,13 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
       ..writeByte(40)
       ..write(obj.isPercentageWastage)
       ..writeByte(41)
-      ..write(obj.wastageAmount);
+      ..write(obj.wastageAmount)
+      ..writeByte(42)
+      ..write(obj.dimensionUnit)
+      ..writeByte(43)
+      ..write(obj.dimensionUnitConversion)
+      ..writeByte(44)
+      ..write(obj.wastageUnitUuid);
   }
 
   @override

@@ -50,7 +50,7 @@ class OrderItemDeliveryTile extends StatelessWidget {
                           theme.mobileTexts.b2.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
-                    item.productName,
+                    '${item.productName}${item.dimensionsLabel()}',
                   ),
                 ],
               ),
@@ -65,7 +65,7 @@ class OrderItemDeliveryTile extends StatelessWidget {
                           theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
-                    '${formatLargeNumberDouble(item.quantity)} ${item.getUnit()}',
+                    '${formatLargeNumberDouble(item.quantity)} ${item.getUnit()}${item.wastageNote().isNotEmpty ? " (${item.wastageNote()})" : ""}',
                   ),
                   Text(
                     style: TextStyle(

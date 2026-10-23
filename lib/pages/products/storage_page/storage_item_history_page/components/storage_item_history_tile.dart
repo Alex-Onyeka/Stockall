@@ -135,6 +135,18 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                                         unit:
                                             widget.itemHistory?.storageUnit ??
                                             'Unit(s)',
+                                        primaryUnit:
+                                            widget
+                                                .itemHistory
+                                                ?.storagePrimaryUnit,
+                                        oldValue:
+                                            widget
+                                                .itemHistory
+                                                ?.storageItemOldValue,
+                                        newValue:
+                                            widget
+                                                .itemHistory
+                                                ?.storageItemNewValue,
                                       ),
                                     ),
                                   ],
@@ -377,6 +389,12 @@ class _StorageItemHistoryDetailsWidgetState
                     unit: widget.itemHistory?.storageUnit ?? 'Unit(s)',
                     isIncreased: (widget.itemHistory?.isIncreased),
                     quantityChange: widget.itemHistory?.quantityChange,
+                    primaryUnit:
+                        widget.itemHistory?.storagePrimaryUnit,
+                    oldValue:
+                        widget.itemHistory?.storageItemOldValue,
+                    newValue:
+                        widget.itemHistory?.storageItemNewValue,
                   ),
                 ),
 
@@ -569,22 +587,4 @@ class StorageItemHistorySectionWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-String returnHistoryQuantity({
-  required double? quantityChange,
-  required bool? isIncreased,
-  required String? unit,
-}) {
-  final quantity = quantityChange ?? 0;
-
-  if (quantity == 0) {
-    return '${quantity.abs()} $unit';
-  }
-
-  if (isIncreased == false) {
-    return '-${quantity.abs()} $unit';
-  }
-
-  return '+${quantity.abs()} $unit';
 }
