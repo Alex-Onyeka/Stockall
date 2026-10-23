@@ -20,7 +20,7 @@ class PdfPreviewPag extends StatelessWidget {
           allowPrinting: true,
           allowSharing: true,
           initialPageFormat: PdfPageFormat.roll80,
-          pdfFileName: "stockall_receipt.pdf",
+          pdfFileName: "downloaded_receipt.pdf",
         ),
       ),
     );

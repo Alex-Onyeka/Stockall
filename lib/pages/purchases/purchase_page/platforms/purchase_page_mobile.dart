@@ -575,7 +575,7 @@ class _PurchasePageMobileState
                                                     purchase:
                                                         purchase,
                                                     filename:
-                                                        'Stockall_Purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                                        'downloaded_purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                                     context:
                                                         context,
                                                     records:

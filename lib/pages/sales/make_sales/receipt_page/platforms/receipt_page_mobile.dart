@@ -404,7 +404,7 @@ class _ReceiptPageMobileState
                                                 staffName:
                                                     cashierName,
                                                 filename:
-                                                    'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                                    'downloaded_receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                                 context:
                                                     safeContext,
                                                 receipt:
@@ -512,7 +512,7 @@ class _ReceiptPageMobileState
                                                 staffName:
                                                     cashierName,
                                                 filename:
-                                                    'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                                    'downloaded_receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                                 context:
                                                     safeContext,
                                                 receipt:

@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
 
 void main() {
@@ -780,4 +781,197 @@ void main() {
       });
     },
   );
+
+  group('InvoiceReportGrouping', () {
+    TempInvoice inv(
+      String uuid, {
+      String staffId = 'staff-1',
+      String staffName = 'Alice',
+      String? customerUuid,
+      String? customerName,
+      double total = 1000,
+      int day = 1,
+    }) => TempInvoice(
+      uuid: uuid,
+      createdAt: DateTime(2026, 5, day, 10),
+      shopId: 1,
+      staffId: staffId,
+      staffName: staffName,
+      customerUuid: customerUuid,
+      customerName: customerName,
+      paymentMethod: 'Cash',
+      bank: 0,
+      cashAlt: total,
+      departmentName: null,
+      departmentUuidNew: null,
+      cartName: 'Cart 1',
+      subStaffName: null,
+      comment: null,
+    );
+
+    TempMainReceipt pay(
+      String invoiceUuid,
+      String uuid, {
+      double cash = 0,
+      double bank = 0,
+    }) => TempMainReceipt(
+      uuid: uuid,
+      invoiceUuid: invoiceUuid,
+      shopId: 1,
+      staffId: 'staff-1',
+      staffName: 'Alice',
+      paymentMethod: bank > 0 ? 'Bank' : 'Cash',
+      bank: bank,
+      cashAlt: cash,
+      customerAccount: 0,
+      createdAt: DateTime(2026, 5, 10),
+      isInvoice: true,
+      salesTypeIndex: 2,
+      departmentName: '',
+      departmentUuidNew: '',
+      cartName: 'Cart 1',
+      subStaffName: '',
+      comment: '',
+    );
+
+    InvoiceReportRow build(
+      TempInvoice invoice, [
+      List<TempMainReceipt> payments = const [],
+    ]) => InvoiceReportRowBuilder.buildSingle(
+      invoice: invoice,
+      relatedReceipts: payments,
+      fallbackSales: [],
+      customerMap: {},
+    );
+
+    final rows = [
+      // Alice, renamed: the newest name wins.
+      build(
+        inv(
+          'i-1',
+          staffName: 'Ali',
+          customerUuid: 'c-1',
+          customerName: 'Chidi',
+          day: 1,
+        ),
+        [pay('i-1', 'p-1', cash: 1000)],
+      ),
+      build(
+        inv(
+          'i-2',
+          customerUuid: 'c-1',
+          customerName: 'Chidi N.',
+          total: 3000,
+          day: 3,
+        ),
+        [
+          pay('i-2', 'p-2', cash: 1000),
+          pay('i-2', 'p-3', bank: 500),
+        ],
+      ),
+      build(
+        inv('i-3', staffId: 'staff-2', staffName: 'Bob', total: 5000, day: 2),
+        [pay('i-3', 'p-4', bank: 2000)],
+      ),
+      // No staff, no customer, unpaid.
+      build(inv('i-4', staffId: '', staffName: '', total: 700, day: 4)),
+    ];
+
+    List<InvoiceReportGroupRow> grouped(
+      ReportGroupBy by, {
+      InvoiceGroupSortField field = InvoiceGroupSortField.total,
+      bool ascending = false,
+    }) => InvoiceReportGrouping.sort(
+      InvoiceReportGrouping.build(rows, by),
+      field: field,
+      ascending: ascending,
+    );
+
+    test('staff: newest name, sums, No staff last', () {
+      final g = grouped(ReportGroupBy.staff);
+      expect(g.map((e) => e.label), [
+        'Bob',
+        'Alice',
+        invoiceNoStaffLabel,
+      ]);
+      final alice = g[1];
+      expect(alice.count, 2);
+      expect(alice.total, 4000);
+      expect(alice.paid, 2500);
+      expect(alice.balance, 1500);
+    });
+
+    test('customer: keyed by uuid, No customer last', () {
+      final g = grouped(
+        ReportGroupBy.customer,
+        field: InvoiceGroupSortField.name,
+        ascending: true,
+      );
+      expect(g.map((e) => e.label), [
+        'Chidi N.',
+        invoiceNoCustomerLabel,
+      ]);
+      expect(g.first.count, 2);
+      expect(g.last.count, 2);
+    });
+
+    test('channel: derived from payments, Unpaid last', () {
+      for (final asc in [true, false]) {
+        final g = grouped(
+          ReportGroupBy.channel,
+          field: InvoiceGroupSortField.count,
+          ascending: asc,
+        );
+        expect(g.last.label, invoiceUnpaidChannel);
+        expect(g.last.isNone, isTrue);
+      }
+      final g = grouped(ReportGroupBy.channel);
+      final counts = {for (final e in g) e.label: e.count};
+      // i-2 was paid in cash and bank: only in Split.
+      expect(counts, {
+        'Bank': 1,
+        'Split': 1,
+        'Cash': 1,
+        'Unpaid': 1,
+      });
+      expect(
+        g.fold<int>(0, (s, e) => s + e.count),
+        rows.length,
+      );
+    });
+
+    test('group totals equal the ungrouped totals', () {
+      final plain = InvoiceReportQuery.paginate(rows, 1);
+      for (final by in [
+        ReportGroupBy.staff,
+        ReportGroupBy.customer,
+        ReportGroupBy.channel,
+      ]) {
+        final p = InvoiceReportGrouping.paginate(
+          InvoiceReportGrouping.build(rows, by),
+          1,
+        );
+        expect(p.totalInvoices, plain.totalCount);
+        expect(p.totalRevenue, plain.totalRevenue);
+        expect(p.totalAmountPaid, plain.totalAmountPaid);
+        expect(p.totalBalance, plain.totalBalance);
+      }
+    });
+
+    test('paging and off', () {
+      expect(
+        InvoiceReportGrouping.build(rows, ReportGroupBy.off),
+        isEmpty,
+      );
+      final p = InvoiceReportGrouping.paginate(
+        grouped(ReportGroupBy.staff),
+        2,
+        pageSize: 2,
+      );
+      expect(p.totalPages, 2);
+      expect(p.rows.single.label, invoiceNoStaffLabel);
+      expect(p.firstIndex, 3);
+      expect(p.totalInvoices, 4);
+    });
+  });
 }

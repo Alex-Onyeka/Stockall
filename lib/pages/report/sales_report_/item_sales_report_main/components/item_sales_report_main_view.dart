@@ -1490,6 +1490,89 @@ class _ItemSalesReportMainViewState
     );
   }
 
+  /// Totals of the whole filtered set, as the Invoice Report.
+  /// Void lines are left out.
+  Widget _totalsRow(
+    ThemeProvider theme,
+    List<_Col> cols,
+    ItemSalesPage res,
+  ) {
+    Widget cell(_Col c) {
+      switch (c.column) {
+        case ItemSalesColumn.item:
+          return _txt(
+            theme,
+            'TOTAL',
+            bold: true,
+            align: TextAlign.start,
+          );
+        case ItemSalesColumn.quantity:
+          final q = res.totalQuantity;
+          if (q == null) return const SizedBox.shrink();
+          return _txt(
+            theme,
+            '${formatDimension(q)} ${res.totalQuantityUnit ?? ''}'
+                .trim(),
+            bold: true,
+          );
+        case ItemSalesColumn.discount:
+          return _txt(theme, _money(res.totalDiscount), bold: true);
+        case ItemSalesColumn.grossValue:
+          return _txt(
+            theme,
+            _money(res.totalGrossValue),
+            bold: true,
+          );
+        case ItemSalesColumn.costPrice:
+          return _txt(theme, _money(res.totalCost), bold: true);
+        case ItemSalesColumn.revenue:
+          return _txt(theme, _money(res.totalRevenue), bold: true);
+        case ItemSalesColumn.profit:
+          return _txt(
+            theme,
+            _money(res.totalProfit),
+            bold: true,
+            color: _signColor(theme, res.totalProfit),
+          );
+        case ItemSalesColumn.margin:
+          final m = res.totalMargin;
+          if (m == null) {
+            return _txt(theme, 'N/A', color: Colors.grey);
+          }
+          return _txt(
+            theme,
+            _percent(m),
+            bold: true,
+            color: _signColor(theme, m),
+          );
+        default:
+          return const SizedBox.shrink();
+      }
+    }
+
+    return Container(
+      height: 46,
+      color: theme.lightModeColor.prColor300.withAlpha(25),
+      child: Row(
+        children: [
+          for (final c in cols)
+            SizedBox(
+              width: c.width,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                child: Align(
+                  alignment: _alignment(c.align),
+                  child: cell(c),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _table(ThemeProvider theme, ItemSalesPage res) {
     final cols = _columns(theme);
     final totalWidth = cols.fold<double>(
@@ -1575,6 +1658,8 @@ class _ItemSalesReportMainViewState
                             ),
                           ),
                         ),
+                        const Divider(height: 1, thickness: 1),
+                        _totalsRow(theme, cols, res),
                       ],
                     ),
                   ),

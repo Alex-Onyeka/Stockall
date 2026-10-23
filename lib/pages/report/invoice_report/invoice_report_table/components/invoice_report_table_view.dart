@@ -11,6 +11,7 @@ import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -28,6 +29,24 @@ class _TableCol {
     required this.width,
     required this.cell,
     this.sort,
+    this.align = TextAlign.center,
+  });
+}
+
+class _GroupCol {
+  final String label;
+  final double width;
+  final InvoiceGroupSortField sort;
+  final TextAlign align;
+  final Widget Function(InvoiceReportGroupRow row) cell;
+  final Widget Function(InvoiceReportGroupPage res) total;
+
+  const _GroupCol({
+    required this.label,
+    required this.width,
+    required this.sort,
+    required this.cell,
+    required this.total,
     this.align = TextAlign.center,
   });
 }
@@ -79,6 +98,15 @@ class _InvoiceReportTableViewState
   bool _showFilters = false;
 
   DateTimeRange? _range;
+
+  // Grouping has its own sort, so the invoice sort is kept.
+  ReportGroupBy _groupBy = ReportGroupBy.off;
+  InvoiceGroupSortField _groupSortField =
+      InvoiceGroupSortField.total;
+  bool _groupAscending = false;
+  InvoiceReportGroupPage? _groupResult;
+
+  bool get _grouped => _groupBy != ReportGroupBy.off;
 
   bool _loading = true;
   String? _error;
@@ -251,9 +279,23 @@ class _InvoiceReportTableViewState
       costFilterAllowed: _canSeeCost,
     );
 
-    final page = InvoiceReportQuery.paginate(sorted, _page);
-    _page = page.page;
-    _result = page;
+    if (_grouped) {
+      final groups = InvoiceReportGrouping.sort(
+        InvoiceReportGrouping.build(sorted, _groupBy),
+        field: _groupSortField,
+        ascending: _groupAscending,
+      );
+      final page = InvoiceReportGrouping.paginate(
+        groups,
+        _page,
+      );
+      _page = page.page;
+      _groupResult = page;
+    } else {
+      final page = InvoiceReportQuery.paginate(sorted, _page);
+      _page = page.page;
+      _result = page;
+    }
   }
 
   void _apply(
@@ -273,11 +315,16 @@ class _InvoiceReportTableViewState
   }
 
   void _goToPage(int p) {
-    final r = _result;
-    if (r == null ||
+    final totalPages =
+        _grouped
+            ? _groupResult?.totalPages
+            : _result?.totalPages;
+    final current =
+        _grouped ? _groupResult?.page : _result?.page;
+    if (totalPages == null ||
         p < 1 ||
-        p > r.totalPages ||
-        p == r.page) {
+        p > totalPages ||
+        p == current) {
       return;
     }
     _apply(() => _page = p, resetPage: false);
@@ -293,6 +340,18 @@ class _InvoiceReportTableViewState
       } else {
         _sortField = f;
         _ascending = true;
+      }
+    });
+  }
+
+  void _setGroupSort(InvoiceGroupSortField f) {
+    _apply(() {
+      if (_groupSortField == f) {
+        _groupAscending = !_groupAscending;
+      } else {
+        _groupSortField = f;
+        // Names A-Z first; counts and amounts largest first.
+        _groupAscending = f == InvoiceGroupSortField.name;
       }
     });
   }
@@ -494,7 +553,9 @@ class _InvoiceReportTableViewState
             Expanded(child: _content(theme)),
             if (!_loading &&
                 _error == null &&
-                _result != null)
+                (_grouped
+                    ? _groupResult != null
+                    : _result != null))
               _pager(theme),
             const SizedBox(height: 6),
           ],
@@ -539,7 +600,10 @@ class _InvoiceReportTableViewState
     }
 
     final res = _result;
-    if (res == null || res.totalCount == 0) {
+    final groups = _groupResult;
+    final count =
+        _grouped ? groups?.totalCount : res?.totalCount;
+    if (count == null || count == 0) {
       final hasFilters = _filters.hasAnything;
       return Padding(
         padding: const EdgeInsets.only(top: 60),
@@ -562,7 +626,8 @@ class _InvoiceReportTableViewState
         ),
       );
     }
-    return _table(theme, res);
+    if (_grouped) return _groupTable(theme, groups!);
+    return _table(theme, res!);
   }
 
   Widget _toolbar(ThemeProvider theme) {
@@ -692,6 +757,12 @@ class _InvoiceReportTableViewState
                   () => _showFilters = !_showFilters,
                 ),
           ),
+        ),
+        // A view option, not a filter: Reset Filters keeps it.
+        ReportGroupByButton(
+          theme: theme,
+          value: _groupBy,
+          onChanged: (g) => _apply(() => _groupBy = g),
         ),
         if (_filters.hasAnything)
           Material(
@@ -1985,12 +2056,318 @@ class _InvoiceReportTableViewState
     );
   }
 
+  // ---------------------------------------------------------------
+  // grouped by staff / customer / channel
+  // ---------------------------------------------------------------
+
+  Alignment _alignOf(TextAlign a) =>
+      a == TextAlign.start
+          ? Alignment.centerLeft
+          : (a == TextAlign.end
+              ? Alignment.centerRight
+              : Alignment.center);
+
+  List<_GroupCol> _groupColumns(ThemeProvider theme) {
+    final green = Colors.green.shade700;
+    final red = theme.lightModeColor.errorColor200;
+
+    return [
+      _GroupCol(
+        label: _groupBy.label,
+        width: 220,
+        sort: InvoiceGroupSortField.name,
+        align: TextAlign.start,
+        cell:
+            (g) => _txt(
+              theme,
+              g.label,
+              bold: true,
+              align: TextAlign.start,
+              color:
+                  g.isNone || g.name == null
+                      ? Colors.grey
+                      : null,
+            ),
+        total:
+            (_) => _txt(
+              theme,
+              'TOTAL',
+              bold: true,
+              align: TextAlign.start,
+            ),
+      ),
+      _GroupCol(
+        label: 'Invoices',
+        width: 110,
+        sort: InvoiceGroupSortField.count,
+        cell: (g) => _txt(theme, '${g.count}'),
+        total:
+            (res) => _txt(
+              theme,
+              '${res.totalInvoices}',
+              bold: true,
+            ),
+      ),
+      _GroupCol(
+        label: 'Invoice Total',
+        width: 160,
+        sort: InvoiceGroupSortField.total,
+        cell:
+            (g) => _txt(theme, _money(g.total), bold: true),
+        total:
+            (res) => _txt(
+              theme,
+              _money(res.totalRevenue),
+              bold: true,
+            ),
+      ),
+      _GroupCol(
+        label: 'Amount Paid',
+        width: 160,
+        sort: InvoiceGroupSortField.paid,
+        cell:
+            (g) => _txt(
+              theme,
+              _money(g.paid),
+              color: g.paid > 0 ? green : null,
+            ),
+        total:
+            (res) => _txt(
+              theme,
+              _money(res.totalAmountPaid),
+              bold: true,
+              color: res.totalAmountPaid > 0 ? green : null,
+            ),
+      ),
+      _GroupCol(
+        label: 'Balance',
+        width: 160,
+        sort: InvoiceGroupSortField.balance,
+        cell:
+            (g) => _txt(
+              theme,
+              _money(g.balance),
+              color: g.balance > 0 ? red : green,
+            ),
+        total:
+            (res) => _txt(
+              theme,
+              _money(res.totalBalance),
+              bold: true,
+              color: res.totalBalance > 0 ? red : green,
+            ),
+      ),
+    ];
+  }
+
+  Widget _groupHeaderCell(
+    ThemeProvider theme,
+    _GroupCol c,
+  ) {
+    final isSorted = c.sort == _groupSortField;
+    final accent = theme.lightModeColor.prColor300;
+    return SizedBox(
+      width: c.width,
+      child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
+        onTap: () => _setGroupSort(c.sort),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Align(
+            alignment: _alignOf(c.align),
+            child: Row(
+              mainAxisAlignment:
+                  c.align == TextAlign.start
+                      ? MainAxisAlignment.start
+                      : MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              spacing: 3,
+              children: [
+                Flexible(
+                  child: Text(
+                    c.label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: c.align,
+                    style: TextStyle(
+                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          isSorted ? accent : Colors.black87,
+                    ),
+                  ),
+                ),
+                Icon(
+                  isSorted
+                      ? (_groupAscending
+                          ? Icons.arrow_upward_rounded
+                          : Icons.arrow_downward_rounded)
+                      : Icons.unfold_more_rounded,
+                  size: 14,
+                  color: isSorted ? accent : Colors.grey,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// One cell per column, for a group row or the totals row.
+  Widget _groupCells(
+    List<_GroupCol> cols,
+    Widget Function(_GroupCol c) cell,
+  ) {
+    return Row(
+      children: [
+        for (final c in cols)
+          SizedBox(
+            width: c.width,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Align(
+                alignment: _alignOf(c.align),
+                child: cell(c),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _groupTable(
+    ThemeProvider theme,
+    InvoiceReportGroupPage res,
+  ) {
+    final cols = _groupColumns(theme);
+    final totalWidth = cols.fold<double>(
+      0,
+      (s, c) => s + c.width,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x14000000),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final w =
+                totalWidth > constraints.maxWidth
+                    ? totalWidth
+                    : constraints.maxWidth;
+            return Scrollbar(
+              controller: _vScroll,
+              thumbVisibility: true,
+              notificationPredicate:
+                  (notif) =>
+                      notif.metrics.axis == Axis.vertical,
+              child: Scrollbar(
+                controller: _hScroll,
+                thumbVisibility: true,
+                notificationPredicate:
+                    (notif) =>
+                        notif.metrics.axis ==
+                        Axis.horizontal,
+                child: SingleChildScrollView(
+                  controller: _hScroll,
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: w,
+                    height: constraints.maxHeight,
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 48,
+                          color: theme
+                              .lightModeColor
+                              .prColor300
+                              .withAlpha(22),
+                          child: Row(
+                            children: [
+                              for (final c in cols)
+                                _groupHeaderCell(theme, c),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1, thickness: 1),
+                        Expanded(
+                          child: ListView.separated(
+                            controller: _vScroll,
+                            itemCount: res.rows.length,
+                            separatorBuilder:
+                                (_, __) => Divider(
+                                  height: 1,
+                                  color: Colors.grey.shade100,
+                                ),
+                            // No row tap: a group has no single
+                            // invoice to open.
+                            itemBuilder: (context, index) {
+                              final g = res.rows[index];
+                              return Container(
+                                height: 44,
+                                color:
+                                    index.isEven
+                                        ? Colors.white
+                                        : Colors.grey.shade50
+                                            .withAlpha(120),
+                                child: _groupCells(
+                                  cols,
+                                  (c) => c.cell(g),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const Divider(height: 1, thickness: 1),
+                        Container(
+                          height: 46,
+                          color: theme.lightModeColor.prColor300
+                              .withAlpha(25),
+                          child: _groupCells(
+                            cols,
+                            (c) => c.total(res),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _pager(ThemeProvider theme) {
     final r = _result;
-    if (r == null) return const SizedBox.shrink();
+    final g = _groupResult;
+    if (_grouped ? g == null : r == null) {
+      return const SizedBox.shrink();
+    }
 
-    final cur = r.page;
-    final total = r.totalPages;
+    final cur = _grouped ? g!.page : r!.page;
+    final total = _grouped ? g!.totalPages : r!.totalPages;
+    final firstIndex =
+        _grouped ? g!.firstIndex : r!.firstIndex;
+    final lastIndex = _grouped ? g!.lastIndex : r!.lastIndex;
+    final totalCount =
+        _grouped ? g!.totalCount : r!.totalCount;
     final accent = theme.lightModeColor.prColor300;
 
     Widget btn({
@@ -2037,7 +2414,7 @@ class _InvoiceReportTableViewState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Showing ${r.firstIndex} - ${r.lastIndex} of ${r.totalCount}',
+            'Showing $firstIndex - $lastIndex of $totalCount',
             style: TextStyle(
               fontSize: theme.mobileTexts.b4.fontSize,
               color: Colors.grey.shade700,

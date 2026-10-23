@@ -408,7 +408,7 @@ Future<void> generateAndPreviewPdf({
         5,
       );
       var name =
-          "Stockall_Receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
+          "downloaded_receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
 
       if (Platform.isAndroid || Platform.isIOS) {
         await savePdfMobile(bytes, name);
@@ -3023,7 +3023,7 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
         allowPrinting: true,
         allowSharing: true,
         initialPageFormat: PdfPageFormat.a4,
-        pdfFileName: "stockall_receipt.pdf",
+        pdfFileName: "downloaded_receipt.pdf",
       ),
     );
   }

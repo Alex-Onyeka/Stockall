@@ -6,6 +6,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
@@ -27,6 +28,26 @@ class _Col {
     required this.cell,
     this.sort,
     this.align = TextAlign.center,
+  });
+}
+
+class _GCol {
+  final String label;
+  final double width;
+  final ReceiptsTableGroupSortField? sort;
+  final TextAlign align;
+  final Widget Function(ReceiptsGroupRow row) cell;
+
+  /// Cell of the totals row; empty when null.
+  final Widget Function(ReceiptsGroupPage res)? total;
+
+  const _GCol({
+    required this.label,
+    required this.width,
+    required this.cell,
+    this.sort,
+    this.align = TextAlign.center,
+    this.total,
   });
 }
 
@@ -69,6 +90,15 @@ class _ReceiptsReportMainViewState
   bool _showFilters = false;
 
   late ReceiptsReportPeriod _period;
+
+  // Grouping has its own sort, so the receipt sort is kept.
+  ReportGroupBy _groupBy = ReportGroupBy.off;
+  ReceiptsTableGroupSortField _groupSortField =
+      ReceiptsTableGroupSortField.revenue;
+  bool _groupAscending = false;
+  ReceiptsGroupPage? _groupResult;
+
+  bool get _grouped => _groupBy != ReportGroupBy.off;
 
   bool _loading = true;
   String? _error;
@@ -220,6 +250,13 @@ class _ReceiptsReportMainViewState
       _sortField = ReceiptsSortField.createdAt;
       _ascending = false;
     }
+    if (!profitVisible &&
+        (_groupSortField == ReceiptsTableGroupSortField.profit ||
+            _groupSortField ==
+                ReceiptsTableGroupSortField.margin)) {
+      _groupSortField = ReceiptsTableGroupSortField.revenue;
+      _groupAscending = false;
+    }
     final sorted = ReceiptsReportQuery.filterAndSort(
       rows: _baseRows,
       period: _period,
@@ -230,12 +267,23 @@ class _ReceiptsReportMainViewState
       subStaffEnabled: _subStaffEnabled,
       profitVisible: profitVisible,
     );
-    final page = ReceiptsReportQuery.paginate(
-      sorted,
-      _page,
-    );
-    _page = page.page;
-    _result = page;
+    if (_grouped) {
+      final groups = ReceiptsGrouping.sort(
+        ReceiptsGrouping.build(sorted, _groupBy),
+        field: _groupSortField,
+        ascending: _groupAscending,
+      );
+      final page = ReceiptsGrouping.paginate(groups, _page);
+      _page = page.page;
+      _groupResult = page;
+    } else {
+      final page = ReceiptsReportQuery.paginate(
+        sorted,
+        _page,
+      );
+      _page = page.page;
+      _result = page;
+    }
     _profitExcluded =
         ReceiptsReportQuery.profitExcludedCount(
           rows: _baseRows,
@@ -264,11 +312,16 @@ class _ReceiptsReportMainViewState
   }
 
   void _goToPage(int p) {
-    final r = _result;
-    if (r == null ||
+    final totalPages =
+        _grouped
+            ? _groupResult?.totalPages
+            : _result?.totalPages;
+    final current =
+        _grouped ? _groupResult?.page : _result?.page;
+    if (totalPages == null ||
         p < 1 ||
-        p > r.totalPages ||
-        p == r.page) {
+        p > totalPages ||
+        p == current) {
       return;
     }
     _apply(() => _page = p, resetPage: false);
@@ -287,6 +340,18 @@ class _ReceiptsReportMainViewState
         _ascending =
             f == ReceiptsSortField.customer ||
             f == ReceiptsSortField.staff;
+      }
+    });
+  }
+
+  void _setGroupSort(ReceiptsTableGroupSortField f) {
+    _apply(() {
+      if (_groupSortField == f) {
+        _groupAscending = !_groupAscending;
+      } else {
+        _groupSortField = f;
+        // Names A-Z first; counts and amounts largest first.
+        _groupAscending = f == ReceiptsTableGroupSortField.name;
       }
     });
   }
@@ -447,6 +512,21 @@ class _ReceiptsReportMainViewState
             Expanded(child: _content(theme)),
             if (!_loading &&
                 _error == null &&
+                _grouped &&
+                _groupResult != null)
+              ReportPager(
+                theme: theme,
+                page: _groupResult!.page,
+                totalPages: _groupResult!.totalPages,
+                totalCount: _groupResult!.totalCount,
+                firstIndex: _groupResult!.firstIndex,
+                lastIndex: _groupResult!.lastIndex,
+                itemLabel: _groupBy.pagerLabel,
+                onPage: _goToPage,
+              ),
+            if (!_loading &&
+                _error == null &&
+                !_grouped &&
                 _result != null)
               ReportPager(
                 theme: theme,
@@ -500,7 +580,10 @@ class _ReceiptsReportMainViewState
       );
     }
     final res = _result;
-    if (res == null || res.totalCount == 0) {
+    final groups = _groupResult;
+    final count =
+        _grouped ? groups?.totalCount : res?.totalCount;
+    if (count == null || count == 0) {
       final hasFilters = _filters.hasAnything;
       return Padding(
         padding: const EdgeInsets.only(top: 60),
@@ -523,7 +606,8 @@ class _ReceiptsReportMainViewState
         ),
       );
     }
-    return _table(theme, res);
+    if (_grouped) return _groupTable(theme, groups!);
+    return _table(theme, res!);
   }
 
   // ---------------------------------------------------------------
@@ -609,6 +693,12 @@ class _ReceiptsReportMainViewState
                   () => _showFilters = !_showFilters,
                 ),
           ),
+        ),
+        // A view option, not a filter: Reset All keeps it.
+        ReportGroupByButton(
+          theme: theme,
+          value: _groupBy,
+          onChanged: (g) => _apply(() => _groupBy = g),
         ),
         if (_filters.hasAnything)
           ReportPill(
@@ -1194,6 +1284,83 @@ class _ReceiptsReportMainViewState
     );
   }
 
+  /// Totals of the whole filtered set, as the Invoice Report.
+  Widget _totalsRow(
+    ThemeProvider theme,
+    List<_Col> cols,
+    ReceiptsReportPage res,
+  ) {
+    Widget cell(_Col c) {
+      switch (c.label) {
+        case 'ID':
+          return _txt(
+            theme,
+            'TOTAL',
+            bold: true,
+            align: TextAlign.start,
+          );
+        case 'Discount':
+          return _txt(theme, _money(res.totalDiscount), bold: true);
+        case 'VAT':
+          return _txt(theme, _money(res.totalVat), bold: true);
+        case 'Items':
+          return _txt(
+            theme,
+            formatLargeNumberDouble(res.totalItems),
+            bold: true,
+          );
+        case 'Balance':
+          return _txt(theme, _money(res.totalBalance), bold: true);
+        case 'Profit/Loss':
+          return _txt(
+            theme,
+            _money(res.totalProfit),
+            bold: true,
+            color: _signColor(theme, res.totalProfit),
+          );
+        case 'Margin (%)':
+          final m = res.totalMargin;
+          if (m == null) {
+            return _txt(theme, 'N/A', color: Colors.grey);
+          }
+          return _txt(
+            theme,
+            _percent(m),
+            bold: true,
+            color: _signColor(theme, m),
+          );
+        case 'Subtotal':
+          return _txt(theme, _money(res.totalSubtotal), bold: true);
+        case 'Total Revenue':
+          return _txt(theme, _money(res.totalRevenue), bold: true);
+        default:
+          return const SizedBox.shrink();
+      }
+    }
+
+    return Container(
+      height: 46,
+      color: theme.lightModeColor.prColor300.withAlpha(25),
+      child: Row(
+        children: [
+          for (final c in cols)
+            SizedBox(
+              width: c.width,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                child: Align(
+                  alignment: _alignment(c.align),
+                  child: cell(c),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _table(
     ThemeProvider theme,
     ReceiptsReportPage res,
@@ -1282,6 +1449,389 @@ class _ReceiptsReportMainViewState
                             ),
                           ),
                         ),
+                        const Divider(height: 1, thickness: 1),
+                        _totalsRow(theme, cols, res),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------
+  // grouped by staff / customer / channel
+  // ---------------------------------------------------------------
+
+  List<_GCol> _groupColumns(ThemeProvider theme) {
+    const dash = '—';
+    final cost = _canSeeCost;
+
+    Widget bold(String text, {Color? color}) =>
+        _txt(theme, text, bold: true, color: color);
+
+    Widget marginText(double? m, {bool isBold = false}) {
+      if (m == null) {
+        return _txt(theme, 'N/A', color: Colors.grey);
+      }
+      return _txt(
+        theme,
+        _percent(m),
+        bold: isBold,
+        color: _signColor(theme, m),
+      );
+    }
+
+    return [
+      _GCol(
+        label: _groupBy.label,
+        width: 220,
+        sort: ReceiptsTableGroupSortField.name,
+        align: TextAlign.start,
+        cell:
+            (g) => _txt(
+              theme,
+              g.label,
+              bold: true,
+              align: TextAlign.start,
+              color:
+                  g.isNone || g.name == null
+                      ? Colors.grey
+                      : null,
+            ),
+        total:
+            (_) => _txt(
+              theme,
+              'TOTAL',
+              bold: true,
+              align: TextAlign.start,
+            ),
+      ),
+      _GCol(
+        label: 'Receipts',
+        width: 110,
+        sort: ReceiptsTableGroupSortField.count,
+        cell: (g) => _txt(theme, '${g.count}'),
+        total: (res) => bold('${res.totalReceipts}'),
+      ),
+      _GCol(
+        label: 'Items',
+        width: 110,
+        sort: ReceiptsTableGroupSortField.items,
+        cell:
+            (g) =>
+                g.items == null
+                    ? _txt(
+                      theme,
+                      dash,
+                      color: Colors.grey,
+                      tooltip: _noItemsTip,
+                    )
+                    : _txt(
+                      theme,
+                      formatLargeNumberDouble(g.items!),
+                    ),
+        total:
+            (res) =>
+                res.totalItems == null
+                    ? const SizedBox.shrink()
+                    : bold(
+                      formatLargeNumberDouble(res.totalItems!),
+                    ),
+      ),
+      _GCol(
+        label: 'Balance',
+        width: 140,
+        sort: ReceiptsTableGroupSortField.balance,
+        cell: (g) => _txt(theme, _money(g.balance)),
+        total: (res) => bold(_money(res.totalBalance)),
+      ),
+      _GCol(
+        label: 'Total Revenue',
+        width: 160,
+        sort: ReceiptsTableGroupSortField.revenue,
+        cell: (g) => bold(_money(g.revenue)),
+        total: (res) => bold(_money(res.totalRevenue)),
+      ),
+      if (cost)
+        _GCol(
+          label: 'Profit/Loss',
+          width: 160,
+          sort: ReceiptsTableGroupSortField.profit,
+          cell: (g) {
+            if (g.profitUnknown) {
+              return _txt(
+                theme,
+                'N/A',
+                color: Colors.grey,
+                tooltip: _noItemsTip,
+              );
+            }
+            final value = bold(
+              _money(g.profit),
+              color: _signColor(theme, g.profit),
+            );
+            if (g.costMissingCount == 0) return value;
+            return Tooltip(
+              message:
+                  '${g.costMissingCount} of ${g.count} receipts '
+                  'have items with no cost price, so their cost '
+                  'is counted as 0',
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 4,
+                children: [
+                  Flexible(child: value),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 14,
+                    color: Colors.orange.shade800,
+                  ),
+                ],
+              ),
+            );
+          },
+          total:
+              (res) =>
+                  res.totalProfitCount == 0
+                      ? _txt(theme, 'N/A', color: Colors.grey)
+                      : bold(
+                        _money(res.totalProfit),
+                        color: _signColor(
+                          theme,
+                          res.totalProfit,
+                        ),
+                      ),
+        ),
+      if (cost)
+        _GCol(
+          label: 'Margin (%)',
+          width: 120,
+          sort: ReceiptsTableGroupSortField.margin,
+          cell: (g) => marginText(g.margin),
+          total:
+              (res) => marginText(
+                res.totalMargin,
+                isBold: true,
+              ),
+        ),
+    ];
+  }
+
+  Widget _groupHeaderCell(ThemeProvider theme, _GCol c) {
+    final isSorted =
+        c.sort != null && c.sort == _groupSortField;
+    final accent = theme.lightModeColor.prColor300;
+    final content = Row(
+      mainAxisAlignment:
+          c.align == TextAlign.start
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      spacing: 3,
+      children: [
+        Flexible(
+          child: Text(
+            c.label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: c.align,
+            style: TextStyle(
+              fontSize: theme.mobileTexts.b3.fontSize,
+              fontWeight: FontWeight.bold,
+              color: isSorted ? accent : Colors.black87,
+            ),
+          ),
+        ),
+        if (c.sort != null)
+          Icon(
+            isSorted
+                ? (_groupAscending
+                    ? Icons.arrow_upward_rounded
+                    : Icons.arrow_downward_rounded)
+                : Icons.unfold_more_rounded,
+            size: 14,
+            color: isSorted ? accent : Colors.grey,
+          ),
+      ],
+    );
+    final padded = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Align(
+        alignment: _alignment(c.align),
+        child: content,
+      ),
+    );
+    return SizedBox(
+      width: c.width,
+      child:
+          c.sort == null
+              ? padded
+              : InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap: () => _setGroupSort(c.sort!),
+                child: padded,
+              ),
+    );
+  }
+
+  /// No row tap: a group has no single receipt to open.
+  Widget _groupRow(
+    List<_GCol> cols,
+    ReceiptsGroupRow g,
+    int i,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: i.isEven ? Colors.white : Colors.grey.shade50,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade100),
+        ),
+      ),
+      child: Row(
+        children: [
+          for (final c in cols)
+            SizedBox(
+              width: c.width,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                child: Align(
+                  alignment: _alignment(c.align),
+                  child: c.cell(g),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Totals of every group, as the receipt table's totals row.
+  Widget _groupTotalsRow(
+    ThemeProvider theme,
+    List<_GCol> cols,
+    ReceiptsGroupPage res,
+  ) {
+    return Container(
+      height: 46,
+      color: theme.lightModeColor.prColor300.withAlpha(25),
+      child: Row(
+        children: [
+          for (final c in cols)
+            SizedBox(
+              width: c.width,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                child: Align(
+                  alignment: _alignment(c.align),
+                  child:
+                      c.total?.call(res) ??
+                      const SizedBox.shrink(),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _groupTable(
+    ThemeProvider theme,
+    ReceiptsGroupPage res,
+  ) {
+    final cols = _groupColumns(theme);
+    final totalWidth = cols.fold<double>(
+      0,
+      (s, c) => s + c.width,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x14000000),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final w =
+                totalWidth > constraints.maxWidth
+                    ? totalWidth
+                    : constraints.maxWidth;
+            return Scrollbar(
+              controller: _vScroll,
+              thumbVisibility: true,
+              notificationPredicate:
+                  (notif) =>
+                      notif.metrics.axis == Axis.vertical,
+              child: Scrollbar(
+                controller: _hScroll,
+                thumbVisibility: true,
+                notificationPredicate:
+                    (notif) =>
+                        notif.metrics.axis ==
+                        Axis.horizontal,
+                child: SingleChildScrollView(
+                  controller: _hScroll,
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: w,
+                    height: constraints.maxHeight,
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 48,
+                          color: theme
+                              .lightModeColor
+                              .prColor300
+                              .withAlpha(22),
+                          child: Row(
+                            children: [
+                              for (final c in cols)
+                                _groupHeaderCell(theme, c),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        Expanded(
+                          child: ScrollConfiguration(
+                            behavior:
+                                ScrollConfiguration.of(
+                                  context,
+                                ).copyWith(
+                                  scrollbars: false,
+                                ),
+                            child: ListView.builder(
+                              controller: _vScroll,
+                              itemCount: res.rows.length,
+                              itemExtent: 52,
+                              itemBuilder:
+                                  (context, i) => _groupRow(
+                                    cols,
+                                    res.rows[i],
+                                    i,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        const Divider(height: 1, thickness: 1),
+                        _groupTotalsRow(theme, cols, res),
                       ],
                     ),
                   ),

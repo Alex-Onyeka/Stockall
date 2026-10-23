@@ -14,8 +14,7 @@ const int itemSalesReportPageSize = receiptsReportPageSize;
 const String itemSalesDeletedItemKey = '__deleted_item__';
 
 const String itemSalesNoCategoryLabel = 'No Category';
-const String itemSalesDeletedItemLabel =
-    'Unknown (deleted item)';
+const String itemSalesDeletedItemLabel = 'Unknown (deleted item)';
 
 /// Which void state the table shows. Void lines were removed
 /// from the cart, so they are hidden unless asked for.
@@ -52,17 +51,20 @@ enum ItemSalesSortField {
 /// Table columns in display order. Kept here so an export can
 /// use the same order, labels and visibility.
 enum ItemSalesColumn {
-  recordId,
   item,
+  quantity,
+  unit,
+  revenue,
+  profit,
+  margin,
+  date,
+  time,
+  recordId,
   category,
   receiptId,
   staff,
   subStaff,
   customer,
-  date,
-  time,
-  quantity,
-  unit,
   sellingPrice,
   discount,
   grossValue,
@@ -74,9 +76,6 @@ enum ItemSalesColumn {
   type,
   voidStatus,
   wastage,
-  revenue,
-  profit,
-  margin,
 }
 
 extension ItemSalesColumnInfo on ItemSalesColumn {
@@ -179,8 +178,7 @@ extension ItemSalesColumnInfo on ItemSalesColumn {
     required bool costVisible,
   }) {
     return ItemSalesColumn.values.where((c) {
-      if (c == ItemSalesColumn.subStaff)
-        return subStaffEnabled;
+      if (c == ItemSalesColumn.subStaff) return subStaffEnabled;
       if (c == ItemSalesColumn.department) {
         return departmentsEnabled;
       }
@@ -201,8 +199,7 @@ class ItemSalesCategories {
   }) {
     final ids = <String>{
       ...?product.categories,
-      if (product.categoryUuid != null)
-        product.categoryUuid!,
+      if (product.categoryUuid != null) product.categoryUuid!,
     }..removeWhere((e) => e.isEmpty);
     final uuids = <String>[];
     final names = <String>[];
@@ -332,8 +329,7 @@ class ItemSalesRow {
 
   /// Each part payment repeats the invoice's full quantities with
   /// prorated amounts.
-  bool get isPartPayment =>
-      type == ReceiptType.invoicePayment;
+  bool get isPartPayment => type == ReceiptType.invoicePayment;
 
   /// Short form of [recordId] for the table.
   String? get recordLabel {
@@ -348,8 +344,7 @@ class ItemSalesRow {
   /// item)" when the item is no longer in the shop.
   String get categoryLabel {
     if (!productExists) return itemSalesDeletedItemLabel;
-    if (categoryNames.isEmpty)
-      return itemSalesNoCategoryLabel;
+    if (categoryNames.isEmpty) return itemSalesNoCategoryLabel;
     return categoryNames.join(', ');
   }
 }
@@ -362,13 +357,9 @@ class ItemSalesRowBuilder {
     return trimmed.isEmpty ? null : trimmed;
   }
 
-  static ProductUnitsClass? _unit(
-    TempProductSaleRecord line,
-    String? uuid,
-  ) {
+  static ProductUnitsClass? _unit(TempProductSaleRecord line, String? uuid) {
     if (uuid == null) return null;
-    for (final unit
-        in line.unitsList ?? <ProductUnitsClass>[]) {
+    for (final unit in line.unitsList ?? <ProductUnitsClass>[]) {
       if (unit.uuid == uuid) return unit;
     }
     return null;
@@ -381,8 +372,7 @@ class ItemSalesRowBuilder {
     final units = line.unitsList;
     if (units == null || units.isEmpty) return false;
     if (_unit(line, line.unitUuid) == null) return false;
-    if (line.useGroupQuantity == true &&
-        units.every((u) => u.isPrimary)) {
+    if (line.useGroupQuantity == true && units.every((u) => u.isPrimary)) {
       return false;
     }
     return true;
@@ -394,8 +384,7 @@ class ItemSalesRowBuilder {
   static String? unitName(TempProductSaleRecord line) {
     final unit = _unit(line, line.unitUuid);
     if (unit != null) {
-      final name =
-          unit.name == 'Others' ? 'Unit(s)' : unit.name;
+      final name = unit.name == 'Others' ? 'Unit(s)' : unit.name;
       final sized =
           line.quantityType == 2 &&
           unit.dimensionType != ProductUnitsClass.areaUnit;
@@ -424,9 +413,7 @@ class ItemSalesRowBuilder {
     if (units != null && units.isNotEmpty) return null;
     if (line.quantityType == 2) return null;
     final conversion =
-        line.useGroupQuantity == true
-            ? (line.qttyPerGroup ?? 1)
-            : 1.0;
+        line.useGroupQuantity == true ? (line.qttyPerGroup ?? 1) : 1.0;
     if (conversion <= 0) return null;
     return line.quantity * conversion;
   }
@@ -435,8 +422,7 @@ class ItemSalesRowBuilder {
   /// when it has some but its units cannot be resolved. Wastage is
   /// already inside the line's amounts, so it is only shown.
   static double? wastage(TempProductSaleRecord line) {
-    if (line.quantityType != 2 ||
-        line.manageSalesWastage != true) {
+    if (line.quantityType != 2 || line.manageSalesWastage != true) {
       return 0;
     }
     final amount = line.wastageAmount;
@@ -456,11 +442,8 @@ class ItemSalesRowBuilder {
   /// Wastage as it was entered. A fixed amount without a stored
   /// unit is in the base (area) unit, as `wastageAreaPerUnit` reads
   /// it.
-  static String? wastageSetting(
-    TempProductSaleRecord line,
-  ) {
-    if (line.quantityType != 2 ||
-        line.manageSalesWastage != true) {
+  static String? wastageSetting(TempProductSaleRecord line) {
+    if (line.quantityType != 2 || line.manageSalesWastage != true) {
       return null;
     }
     final amount = line.wastageAmount;
@@ -470,13 +453,9 @@ class ItemSalesRowBuilder {
     if (line.isPercentageWastage == true) {
       return '${formatDimension(amount)}%';
     }
-    ProductUnitsClass? unit = _unit(
-      line,
-      line.wastageUnitUuid,
-    );
+    ProductUnitsClass? unit = _unit(line, line.wastageUnitUuid);
     if (unit == null) {
-      for (final u
-          in line.unitsList ?? <ProductUnitsClass>[]) {
+      for (final u in line.unitsList ?? <ProductUnitsClass>[]) {
         if (u.isPrimary) {
           unit = u;
           break;
@@ -500,12 +479,8 @@ class ItemSalesRowBuilder {
     if (partPayment) return null;
     final gross = line.originalCost;
     if (gross == null || wastage == null) return null;
-    final customTotal =
-        line.customPriceSet && line.setTotalPrice == true;
-    final qty =
-        customTotal
-            ? line.quantity
-            : line.quantity + wastage;
+    final customTotal = line.customPriceSet && line.setTotalPrice == true;
+    final qty = customTotal ? line.quantity : line.quantity + wastage;
     if (!(qty > 0)) return null;
     final price = gross / qty;
     return price.isFinite ? price : null;
@@ -514,9 +489,7 @@ class ItemSalesRowBuilder {
   /// The rate, when the discount amount is that percentage of the
   /// gross value. `discount` keeps the item's own rate even when a
   /// fixed discount was applied, so the amount decides.
-  static double? discountPercent(
-    TempProductSaleRecord line,
-  ) {
+  static double? discountPercent(TempProductSaleRecord line) {
     final rate = line.discount;
     final amount = line.discountedAmount;
     final gross = line.originalCost;
@@ -530,12 +503,10 @@ class ItemSalesRowBuilder {
     TempProductSaleRecord line,
     ReceiptLineSource source,
   ) {
-    if (source == ReceiptLineSource.legacy &&
-        line.productRecordId != null) {
+    if (source == ReceiptLineSource.legacy && line.productRecordId != null) {
       return '${line.productRecordId}';
     }
-    return _text(line.uuid) ??
-        line.productRecordId?.toString();
+    return _text(line.uuid) ?? line.productRecordId?.toString();
   }
 
   static ItemSalesRow build({
@@ -546,32 +517,21 @@ class ItemSalesRowBuilder {
     required Map<String, String> categoryNameByUuid,
   }) {
     final productKey = _text(line.productUuid);
-    final product =
-        productKey == null
-            ? null
-            : productsByUuid[productKey];
+    final product = productKey == null ? null : productsByUuid[productKey];
     final categories =
         product == null
-            ? (
-              uuids: const <String>[],
-              names: const <String>[],
-            )
+            ? (uuids: const <String>[], names: const <String>[])
             : ItemSalesCategories.known(
               product: product,
               nameByUuid: categoryNameByUuid,
             );
 
-    final partPayment =
-        parent.type == ReceiptType.invoicePayment;
+    final partPayment = parent.type == ReceiptType.invoicePayment;
     final wastageValue = wastage(line);
-    final cost =
-        (line.costPrice ?? 0) > 0 ? line.costPrice : null;
+    final cost = (line.costPrice ?? 0) > 0 ? line.costPrice : null;
     // As the Receipts Report: revenue - cost, missing cost as 0.
     final profit = line.revenue - (line.costPrice ?? 0);
-    final margin =
-        line.revenue > 0
-            ? (profit / line.revenue) * 100
-            : null;
+    final margin = line.revenue > 0 ? (profit / line.revenue) * 100 : null;
 
     return ItemSalesRow(
       line: line,
@@ -596,8 +556,7 @@ class ItemSalesRowBuilder {
       grossValue: line.originalCost,
       cost: cost,
       customPrice: line.customPriceSet,
-      customTotal:
-          line.customPriceSet && line.setTotalPrice == true,
+      customTotal: line.customPriceSet && line.setTotalPrice == true,
       wholesale: line.useWholeSalePrice,
       managed: line.isProductManaged,
       isVoid: line.isVoid == true,
@@ -619,10 +578,7 @@ class ItemSalesRowBuilder {
     required Map<String, TempProductClass> productsByUuid,
     required Map<String, String> categoryNameByUuid,
   }) {
-    final legacy =
-        ReceiptsReportRowBuilder.legacyLinesByReceipt(
-          legacySales,
-        );
+    final legacy = ReceiptsReportRowBuilder.legacyLinesByReceipt(legacySales);
     final rows = <ItemSalesRow>[];
     for (final receipt in receipts) {
       ReceiptsReportRow parent;
@@ -632,11 +588,7 @@ class ItemSalesRowBuilder {
           receipt: receipt,
           legacyLines: legacy,
         );
-        lines =
-            ReceiptsReportRowBuilder.linesFor(
-              receipt,
-              legacy,
-            ).lines;
+        lines = ReceiptsReportRowBuilder.linesFor(receipt, legacy).lines;
       } catch (_) {
         // A single malformed receipt must never break the report.
         continue;
@@ -709,26 +661,19 @@ class ItemSalesFilters {
   set search(String value) => receipt.search = value;
 
   String? get quantityRangeError =>
-      ReceiptsReportFilters.rangeError(
-        quantityMin,
-        quantityMax,
-      );
+      ReceiptsReportFilters.rangeError(quantityMin, quantityMax);
 
-  bool get quantitySet =>
-      quantityMin != null || quantityMax != null;
+  bool get quantitySet => quantityMin != null || quantityMax != null;
 
   /// Quantities of different items are in different units, so
   /// the range needs one item.
   bool get quantityNeedsItem =>
       quantitySet &&
-      (productKey == null ||
-          productKey == receiptsReportNoneKey);
+      (productKey == null || productKey == receiptsReportNoneKey);
 
   /// Set, valid and with one item selected.
   bool get quantityRangeActive =>
-      quantitySet &&
-      quantityRangeError == null &&
-      !quantityNeedsItem;
+      quantitySet && quantityRangeError == null && !quantityNeedsItem;
 
   int get activeCount =>
       receipt.activeCount +
@@ -739,8 +684,7 @@ class ItemSalesFilters {
       (wholesale != null ? 1 : 0) +
       (quantitySet ? 1 : 0);
 
-  bool get hasAnything =>
-      activeCount > 0 || search.trim().isNotEmpty;
+  bool get hasAnything => activeCount > 0 || search.trim().isNotEmpty;
 
   void clearAll() {
     receipt.clearAll();
@@ -770,10 +714,7 @@ class ItemSalesFilters {
     if (key == null || selected == null) return;
     final fits = rows.any(
       (r) =>
-          ReceiptsReportFilters.keyMatches(
-            selected,
-            r.productKey,
-          ) &&
+          ReceiptsReportFilters.keyMatches(selected, r.productKey) &&
           matchesCategory(r),
     );
     if (!fits) productKey = null;
@@ -782,8 +723,7 @@ class ItemSalesFilters {
   bool matchesCategory(ItemSalesRow r) {
     final key = categoryKey;
     if (key == null) return true;
-    if (key == itemSalesDeletedItemKey)
-      return !r.productExists;
+    if (key == itemSalesDeletedItemKey) return !r.productExists;
     if (key == receiptsReportNoneKey) {
       return r.productExists && r.categoryUuids.isEmpty;
     }
@@ -801,14 +741,10 @@ class ItemSalesFilters {
     }
   }
 
-  bool matchesSearch(
-    ItemSalesRow r, {
-    required bool departmentsEnabled,
-  }) {
+  bool matchesSearch(ItemSalesRow r, {required bool departmentsEnabled}) {
     final q = search.trim().toLowerCase();
     if (q.isEmpty) return true;
-    bool has(String? s) =>
-        s != null && s.toLowerCase().contains(q);
+    bool has(String? s) => s != null && s.toLowerCase().contains(q);
     return has(r.itemName) ||
         has(r.productKey) ||
         has(r.receiptId) ||
@@ -816,8 +752,7 @@ class ItemSalesFilters {
         has(r.parent.staffName) ||
         has(r.parent.customerName) ||
         r.categoryNames.any(has) ||
-        (departmentsEnabled &&
-            has(r.parent.departmentName));
+        (departmentsEnabled && has(r.parent.departmentName));
   }
 
   /// [subStaffEnabled] / [departmentsEnabled] / [profitVisible]
@@ -832,30 +767,18 @@ class ItemSalesFilters {
     bool ignoreQuantity = false,
   }) {
     if (!matchesVoid(r)) return false;
-    if (!matchesSearch(
-      r,
-      departmentsEnabled: departmentsEnabled,
-    )) {
+    if (!matchesSearch(r, departmentsEnabled: departmentsEnabled)) {
       return false;
     }
     final p = r.parent;
-    if (!ReceiptsReportFilters.keyMatches(
-      receipt.staffKey,
-      p.staffKey,
-    )) {
+    if (!ReceiptsReportFilters.keyMatches(receipt.staffKey, p.staffKey)) {
       return false;
     }
-    if (!ReceiptsReportFilters.keyMatches(
-      receipt.customerKey,
-      p.customerKey,
-    )) {
+    if (!ReceiptsReportFilters.keyMatches(receipt.customerKey, p.customerKey)) {
       return false;
     }
     if (subStaffEnabled &&
-        !ReceiptsReportFilters.keyMatches(
-          receipt.subStaffKey,
-          p.subStaffKey,
-        )) {
+        !ReceiptsReportFilters.keyMatches(receipt.subStaffKey, p.subStaffKey)) {
       return false;
     }
     if (departmentsEnabled &&
@@ -865,22 +788,17 @@ class ItemSalesFilters {
         )) {
       return false;
     }
-    if (receipt.channel != null &&
-        p.channel != receipt.channel) {
+    if (receipt.channel != null && p.channel != receipt.channel) {
       return false;
     }
     if (receipt.type != null && p.type != receipt.type) {
       return false;
     }
     if (!matchesCategory(r)) return false;
-    if (!ReceiptsReportFilters.keyMatches(
-      productKey,
-      r.productKey,
-    )) {
+    if (!ReceiptsReportFilters.keyMatches(productKey, r.productKey)) {
       return false;
     }
-    if (customPrice != null &&
-        r.customPrice != customPrice) {
+    if (customPrice != null && r.customPrice != customPrice) {
       return false;
     }
     // Unknown (null) matches neither Yes nor No.
@@ -888,9 +806,7 @@ class ItemSalesFilters {
       return false;
     }
 
-    if (!ignoreProfit &&
-        profitVisible &&
-        receipt.profitRangeActive) {
+    if (!ignoreProfit && profitVisible && receipt.profitRangeActive) {
       // Incomplete profit is never treated as known.
       if (r.costMissing) return false;
       if (!ReceiptsReportFilters.inRange(
@@ -915,11 +831,7 @@ class ItemSalesFilters {
       // Part payments repeat the invoice quantities.
       final q = r.baseQuantity;
       if (q == null || r.isPartPayment) return false;
-      if (!ReceiptsReportFilters.inRange(
-        q,
-        quantityMin,
-        quantityMax,
-      )) {
+      if (!ReceiptsReportFilters.inRange(q, quantityMin, quantityMax)) {
         return false;
       }
     }
@@ -937,14 +849,8 @@ class ItemSalesOptions {
     ItemSalesFilters? categoryOf,
   }) {
     final newestFirst =
-        rows
-            .where(
-              (r) => categoryOf?.matchesCategory(r) ?? true,
-            )
-            .toList()
-          ..sort(
-            (a, b) => b.createdAt.compareTo(a.createdAt),
-          );
+        rows.where((r) => categoryOf?.matchesCategory(r) ?? true).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     final labels = <String, String>{};
     var hasNone = false;
     for (final r in newestFirst) {
@@ -962,29 +868,20 @@ class ItemSalesOptions {
     }
     final options =
         labels.entries.map((e) {
-            final shared =
-                (nameCount[e.value.toLowerCase()] ?? 0) > 1;
-            final short =
-                e.key.length > 8
-                    ? e.key.substring(0, 8)
-                    : e.key;
+            final shared = (nameCount[e.value.toLowerCase()] ?? 0) > 1;
+            final short = e.key.length > 8 ? e.key.substring(0, 8) : e.key;
             return ReceiptsFilterOption(
               e.key,
               shared ? '${e.value} ($short)' : e.value,
             );
           }).toList()
           ..sort((a, b) {
-            final c = a.label.toLowerCase().compareTo(
-              b.label.toLowerCase(),
-            );
+            final c = a.label.toLowerCase().compareTo(b.label.toLowerCase());
             return c != 0 ? c : a.key.compareTo(b.key);
           });
     if (hasNone) {
       options.add(
-        const ReceiptsFilterOption(
-          receiptsReportNoneKey,
-          'No item ID',
-        ),
+        const ReceiptsFilterOption(receiptsReportNoneKey, 'No item ID'),
       );
     }
     return options;
@@ -998,19 +895,13 @@ class ItemSalesOptions {
   ) {
     final options =
         nameByUuid.entries
-            .map(
-              (e) => ReceiptsFilterOption(e.key, e.value),
-            )
+            .map((e) => ReceiptsFilterOption(e.key, e.value))
             .toList()
           ..sort((a, b) {
-            final c = a.label.toLowerCase().compareTo(
-              b.label.toLowerCase(),
-            );
+            final c = a.label.toLowerCase().compareTo(b.label.toLowerCase());
             return c != 0 ? c : a.key.compareTo(b.key);
           });
-    if (rows.any(
-      (r) => r.productExists && r.categoryUuids.isEmpty,
-    )) {
+    if (rows.any((r) => r.productExists && r.categoryUuids.isEmpty)) {
       options.add(
         const ReceiptsFilterOption(
           receiptsReportNoneKey,
@@ -1037,27 +928,50 @@ class ItemSalesPage {
   final int page; // 1-based, already clamped
   final int totalPages;
 
+  /// Totals of every filtered row (not just this page). Void
+  /// lines are never counted.
+  final double totalRevenue;
+  final double totalProfit;
+
+  /// Revenue of the rows that have a profit, the margin
+  /// denominator (as the Receipts Report).
+  final double totalProfitRevenue;
+  final double totalDiscount;
+  final double totalGrossValue;
+  final double totalCost;
+
+  /// Quantity sum, without part payments. Null when the units
+  /// are mixed or unknown.
+  final double? totalQuantity;
+  final String? totalQuantityUnit;
+
   const ItemSalesPage({
     required this.rows,
     required this.totalCount,
     required this.page,
     required this.totalPages,
+    this.totalRevenue = 0,
+    this.totalProfit = 0,
+    this.totalProfitRevenue = 0,
+    this.totalDiscount = 0,
+    this.totalGrossValue = 0,
+    this.totalCost = 0,
+    this.totalQuantity,
+    this.totalQuantityUnit,
   });
 
+  /// totalProfit / totalProfitRevenue * 100. Null when the
+  /// revenue is not above 0.
+  double? get totalMargin =>
+      totalProfitRevenue > 0 ? (totalProfit / totalProfitRevenue) * 100 : null;
+
   int get firstIndex =>
-      totalCount == 0
-          ? 0
-          : (page - 1) * itemSalesReportPageSize + 1;
-  int get lastIndex =>
-      firstIndex == 0 ? 0 : firstIndex + rows.length - 1;
+      totalCount == 0 ? 0 : (page - 1) * itemSalesReportPageSize + 1;
+  int get lastIndex => firstIndex == 0 ? 0 : firstIndex + rows.length - 1;
 }
 
 class ItemSalesQuery {
-  static int _cmp<T extends Comparable>(
-    T? a,
-    T? b,
-    bool asc,
-  ) {
+  static int _cmp<T extends Comparable>(T? a, T? b, bool asc) {
     // Null values always sink to the bottom, in both directions.
     if (a == null && b == null) return 0;
     if (a == null) return 1;
@@ -1077,10 +991,7 @@ class ItemSalesQuery {
     bool ignoreProfit = false,
     bool ignoreQuantity = false,
   }) {
-    return period.contains(
-          r.createdAt,
-          closingTime: closingTime,
-        ) &&
+    return period.contains(r.createdAt, closingTime: closingTime) &&
         filters.matches(
           r,
           departmentsEnabled: departmentsEnabled,
@@ -1168,11 +1079,7 @@ class ItemSalesQuery {
           c = _cmp(a.quantity, b.quantity, ascending);
           break;
         case ItemSalesSortField.sellingPrice:
-          c = _cmp(
-            a.sellingPrice,
-            b.sellingPrice,
-            ascending,
-          );
+          c = _cmp(a.sellingPrice, b.sellingPrice, ascending);
           break;
         case ItemSalesSortField.cost:
           c = _cmp(a.cost, b.cost, ascending);
@@ -1192,9 +1099,7 @@ class ItemSalesQuery {
       final t = b.createdAt.compareTo(a.createdAt);
       if (t != 0) return t;
       final u = a.receiptUuid.compareTo(b.receiptUuid);
-      return u != 0
-          ? u
-          : a.lineIndex.compareTo(b.lineIndex);
+      return u != 0 ? u : a.lineIndex.compareTo(b.lineIndex);
     }
 
     out.sort(compare);
@@ -1212,8 +1117,7 @@ class ItemSalesQuery {
     required bool profitVisible,
     TimeOfDay? closingTime,
   }) {
-    if (!profitVisible ||
-        !filters.receipt.profitRangeActive) {
+    if (!profitVisible || !filters.receipt.profitRangeActive) {
       return 0;
     }
     return rows
@@ -1265,29 +1169,59 @@ class ItemSalesQuery {
         .length;
   }
 
-  static ItemSalesPage paginate(
-    List<ItemSalesRow> sorted,
-    int requestedPage,
-  ) {
+  static ItemSalesPage paginate(List<ItemSalesRow> sorted, int requestedPage) {
     final total = sorted.length;
-    final pages =
-        total == 0
-            ? 1
-            : (total / itemSalesReportPageSize).ceil();
+    final pages = total == 0 ? 1 : (total / itemSalesReportPageSize).ceil();
     final page = requestedPage.clamp(1, pages);
     final start = (page - 1) * itemSalesReportPageSize;
     final end =
         (start + itemSalesReportPageSize) > total
             ? total
             : start + itemSalesReportPageSize;
+
+    double revenue = 0;
+    double profit = 0;
+    double profitRevenue = 0;
+    double discount = 0;
+    double grossValue = 0;
+    double cost = 0;
+    double quantity = 0;
+    String? unit;
+    bool quantityKnown = true;
+    bool quantityCounted = false;
+    for (final r in sorted) {
+      if (r.isVoid) continue;
+      revenue += r.revenue;
+      profit += r.profit;
+      // Every line has a profit (missing cost counts as 0).
+      profitRevenue += r.revenue;
+      discount += r.discount ?? 0;
+      grossValue += r.grossValue ?? 0;
+      cost += r.cost ?? 0;
+      if (r.isPartPayment || !quantityKnown) continue;
+      if (r.unitName == null || (quantityCounted && r.unitName != unit)) {
+        quantityKnown = false;
+        continue;
+      }
+      unit = r.unitName;
+      quantity += r.quantity;
+      quantityCounted = true;
+    }
+    final showQuantity = quantityKnown && quantityCounted;
+
     return ItemSalesPage(
-      rows:
-          total == 0
-              ? const []
-              : sorted.sublist(start, end),
+      rows: total == 0 ? const [] : sorted.sublist(start, end),
       totalCount: total,
       page: page,
       totalPages: pages,
+      totalRevenue: revenue,
+      totalProfit: profit,
+      totalProfitRevenue: profitRevenue,
+      totalDiscount: discount,
+      totalGrossValue: grossValue,
+      totalCost: cost,
+      totalQuantity: showQuantity ? quantity : null,
+      totalQuantityUnit: showQuantity ? unit : null,
     );
   }
 }

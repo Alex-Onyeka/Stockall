@@ -679,7 +679,7 @@ Future<void> generateAndPreviewPdfPurchasePayment({
         5,
       );
       var name =
-          "Stockall_Purchase_Payment_$purchaseId.${DateTime.now().millisecondsSinceEpoch}";
+          "downloaded_purchase_payment_$purchaseId.${DateTime.now().millisecondsSinceEpoch}";
 
       if (Platform.isAndroid || Platform.isIOS) {
         await savePdfMobilePurchase(bytes, name);
