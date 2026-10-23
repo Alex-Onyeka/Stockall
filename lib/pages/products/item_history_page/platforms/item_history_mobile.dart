@@ -6,8 +6,10 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/item_history_page/components/item_history_item_summary.dart';
 import 'package:stockall/pages/products/item_history_page/components/item_history_tile.dart';
 import 'package:stockall/pages/products/item_history_page/platforms/item_history_desktop.dart';
+import 'package:stockall/pages/report/items_report_/item_history_report/components/item_history_report_view.dart';
 
 class ItemHistoryMobile extends StatefulWidget {
   final String? productUuid;
@@ -28,6 +30,7 @@ class ItemHistoryMobileState extends State<ItemHistoryMobile> {
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
+  ItemHistoryViewMode _mode = ItemHistoryViewMode.list;
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -89,77 +92,112 @@ class ItemHistoryMobileState extends State<ItemHistoryMobile> {
       appBar: appBar(
         context: context,
         title: 'Item History',
-        widget: Visibility(
-          visible: authorization(authorized: Authorizations().viewDate),
-          child: Padding(
-            padding: const EdgeInsets.only(right: 15.0),
-            child: InkWell(
-              mouseCursor: SystemMouseCursors.click,
-              onTap: () {
-                if (returnItemHistoryProvider().dateSet != null ||
-                    returnItemHistoryProvider().rangeStartDate != null) {
-                  returnItemHistoryProvider().clearDate();
-                } else {
-                  mainDatePicker(
-                    context: context,
-                    theme: theme,
-                    singleDate: (date) {
-                      returnItemHistoryProvider().setDate(date!);
-                    },
-                    rangeDate: (firstDate, lastDate) {
-                      returnItemHistoryProvider().setRange(
-                        firstDate!,
-                        lastDate ?? DateTime.now(),
+        widget: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Visibility(
+              visible:
+                  _mode == ItemHistoryViewMode.list &&
+                  authorization(authorized: Authorizations().viewDate),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
+                  onTap: () {
+                    if (returnItemHistoryProvider().dateSet != null ||
+                        returnItemHistoryProvider().rangeStartDate != null) {
+                      returnItemHistoryProvider().clearDate();
+                    } else {
+                      mainDatePicker(
+                        context: context,
+                        theme: theme,
+                        singleDate: (date) {
+                          returnItemHistoryProvider().setDate(date!);
+                        },
+                        rangeDate: (firstDate, lastDate) {
+                          returnItemHistoryProvider().setRange(
+                            firstDate!,
+                            lastDate ?? DateTime.now(),
+                          );
+                        },
                       );
-                    },
-                  );
-                }
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 5),
-                padding: EdgeInsets.only(
-                  right: 10,
-                  left: 10,
-                  top: 5,
-                  bottom: 5,
-                ),
-                decoration: BoxDecoration(),
-                child: Row(
-                  spacing: 3,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: theme.mobileTexts.b3.fontSize,
-                      ),
-                      returnItemHistoryProvider(context: context).dateSet !=
-                                  null ||
-                              returnItemHistoryProvider(
-                                    context: context,
-                                  ).rangeStartDate !=
-                                  null
-                          ? 'Clear'
-                          : 'Date',
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 5),
+                    padding: EdgeInsets.only(
+                      right: 10,
+                      left: 10,
+                      top: 5,
+                      bottom: 5,
                     ),
-                    Icon(
-                      size: 16,
-                      returnItemHistoryProvider(context: context).dateSet !=
-                                  null ||
-                              returnItemHistoryProvider(
-                                    context: context,
-                                  ).rangeStartDate !=
-                                  null
-                          ? Icons.clear
-                          : Icons.date_range_outlined,
+                    decoration: BoxDecoration(),
+                    child: Row(
+                      spacing: 3,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: theme.mobileTexts.b3.fontSize,
+                          ),
+                          returnItemHistoryProvider(context: context).dateSet !=
+                                      null ||
+                                  returnItemHistoryProvider(
+                                        context: context,
+                                      ).rangeStartDate !=
+                                      null
+                              ? 'Clear'
+                              : 'Date',
+                        ),
+                        Icon(
+                          size: 16,
+                          returnItemHistoryProvider(context: context).dateSet !=
+                                      null ||
+                                  returnItemHistoryProvider(
+                                        context: context,
+                                      ).rangeStartDate !=
+                                      null
+                              ? Icons.clear
+                              : Icons.date_range_outlined,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+            if (widget.productUuid != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: ItemHistoryViewSwitch(
+                  mode: _mode,
+                  compact: true,
+                  onChanged: (mode) {
+                    setState(() {
+                      _mode = mode;
+                    });
+                  },
+                ),
+              ),
+          ],
         ),
       ),
-      body: Padding(
+      body:
+          _mode == ItemHistoryViewMode.table
+              ? ItemHistoryReportView(
+                isDesktop: false,
+                lockedItemUuid: widget.productUuid,
+                embedded: true,
+              )
+              : _mode == ItemHistoryViewMode.summary
+              ? Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: ItemHistoryItemSummary(
+                  productUuid: widget.productUuid!,
+                  isDesktop: false,
+                ),
+              )
+              : Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
           children: [
