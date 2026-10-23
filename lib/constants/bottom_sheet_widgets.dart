@@ -66,7 +66,8 @@ class _UnitsBottomSheetContent extends StatefulWidget {
       _UnitsBottomSheetContentState();
 }
 
-class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
+class _UnitsBottomSheetContentState
+    extends State<_UnitsBottomSheetContent> {
   late final TextEditingController searchController;
 
   @override
@@ -94,17 +95,15 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
         )..sort();
 
         final query =
-            searchController.text
-                .trim()
-                .toLowerCase();
+            searchController.text.trim().toLowerCase();
         final filteredUnits =
             query.isEmpty
                 ? units
                 : units
                     .where(
-                      (item) => item
-                          .toLowerCase()
-                          .contains(query),
+                      (item) => item.toLowerCase().contains(
+                        query,
+                      ),
                     )
                     .toList();
 
@@ -122,8 +121,7 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                   height: 4,
                   width: 70,
                   decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(5),
                     color: Colors.grey.shade400,
                   ),
                 ),
@@ -141,10 +139,9 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                         'Units',
                         style: TextStyle(
                           fontSize:
-                              returnTheme(context)
-                                  .mobileTexts
-                                  .b1
-                                  .fontSize,
+                              returnTheme(
+                                context,
+                              ).mobileTexts.b1.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -152,17 +149,15 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                         'Select Item Unit',
                         style: TextStyle(
                           fontSize:
-                              returnTheme(context)
-                                  .mobileTexts
-                                  .b2
-                                  .fontSize,
+                              returnTheme(
+                                context,
+                              ).mobileTexts.b2.fontSize,
                         ),
                       ),
                     ],
                   ),
                   IconButton(
-                    mouseCursor:
-                        SystemMouseCursors.click,
+                    mouseCursor: SystemMouseCursors.click,
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -214,25 +209,18 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                       color: Colors.grey.shade600,
                     ),
                     suffixIcon:
-                        searchController
-                                .text
-                                .isNotEmpty
+                        searchController.text.isNotEmpty
                             ? InkWell(
                               mouseCursor:
-                                  SystemMouseCursors
-                                      .click,
+                                  SystemMouseCursors.click,
                               onTap: () {
-                                searchController
-                                    .clear();
+                                searchController.clear();
                                 setState(() {});
                               },
                               child: Icon(
                                 Icons.clear,
                                 size: 16,
-                                color:
-                                    Colors
-                                        .grey
-                                        .shade600,
+                                color: Colors.grey.shade600,
                               ),
                             )
                             : null,
@@ -247,28 +235,29 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                       borderSide: BorderSide(
                         color: Colors.grey.shade300,
                       ),
-                      borderRadius:
-                          BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.grey.shade300,
                       ),
-                      borderRadius:
-                          BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color:
                             returnTheme(
-                                  context,
-                                  listen: false,
-                                )
-                                .lightModeColor
-                                .prColor300,
+                              context,
+                              listen: false,
+                            ).lightModeColor.prColor300,
                       ),
-                      borderRadius:
-                          BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
                     ),
                   ),
                 ),
@@ -277,8 +266,7 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: Colors.grey.shade300,
                     ),
@@ -287,22 +275,18 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                       filteredUnits.isEmpty
                           ? Center(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.all(
-                                    20.0,
-                                  ),
+                              padding: const EdgeInsets.all(
+                                20.0,
+                              ),
                               child: Text(
                                 'No units found',
                                 style: TextStyle(
                                   color:
-                                      Colors
-                                          .grey
-                                          .shade500,
+                                      Colors.grey.shade500,
                                   fontSize:
                                       returnTheme(
                                             context,
-                                            listen:
-                                                false,
+                                            listen: false,
                                           )
                                           .mobileTexts
                                           .b3
@@ -312,14 +296,9 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                             ),
                           )
                           : ListView.builder(
-                            controller:
-                                scrollController,
-                            itemCount:
-                                filteredUnits.length,
-                            itemBuilder: (
-                              context,
-                              index,
-                            ) {
+                            controller: scrollController,
+                            itemCount: filteredUnits.length,
+                            itemBuilder: (context, index) {
                               String unit =
                                   filteredUnits[index];
                               return Container(
@@ -340,30 +319,29 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                                       style: TextStyle(
                                         fontSize:
                                             returnTheme(
-                                              context,
-                                              listen:
-                                                  false,
-                                            ).mobileTexts.b2.fontSize,
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
                                         fontWeight:
-                                            FontWeight
-                                                .bold,
+                                            FontWeight.bold,
                                       ),
                                       unit,
                                     ),
                                     onTap: () {
                                       returnData()
-                                          .selectUnit(
-                                            unit,
-                                          );
-                                      setState(
-                                        () {},
-                                      );
+                                          .selectUnit(unit);
+                                      setState(() {});
                                     },
                                     trailing: Checkbox(
-                                      shape: const CircleBorder(
-                                        side:
-                                            BorderSide(),
-                                      ),
+                                      shape:
+                                          const CircleBorder(
+                                            side:
+                                                BorderSide(),
+                                          ),
                                       side: BorderSide(
                                         color:
                                             Colors
@@ -383,16 +361,12 @@ class _UnitsBottomSheetContentState extends State<_UnitsBottomSheetContent> {
                                                 context,
                                           ).selectedUnit ==
                                           unit,
-                                      onChanged: (
-                                        value,
-                                      ) {
+                                      onChanged: (value) {
                                         returnData()
                                             .selectUnit(
                                               unit,
                                             );
-                                        setState(
-                                          () {},
-                                        );
+                                        setState(() {});
                                       },
                                     ),
                                   ),
@@ -1468,7 +1442,7 @@ void selectProductSales({
   // bool useWholeSalePriceTemp = false;
   TempCartItem cartItem = cartItemTemp.copyWith();
 
-  bool isPercentageWastage = false;
+  bool isPercentageWastage = true;
   // Unit fixed (#) wastage is entered in; null follows the sale
   // unit until one is picked.
   String? wastageUnitUuid;
@@ -3234,10 +3208,13 @@ void selectProductSales({
                                               context,
                                             ).pop();
                                           } else {
-                                            cartItem.useGroupQuantity = true;
+                                            cartItem.useGroupQuantity =
+                                                true;
 
-                                            Future<bool> handleDocketPrint(
-                                              TempCartItem itemToPrint,
+                                            Future<bool>
+                                            handleDocketPrint(
+                                              TempCartItem
+                                              itemToPrint,
                                             ) async {
                                               if (returnShopProvider()
                                                           .userShop()
@@ -3245,41 +3222,44 @@ void selectProductSales({
                                                       true &&
                                                   returnCompProvider(
                                                     context,
-                                                    listen: false,
+                                                    listen:
+                                                        false,
                                                   ).getContinuousPrintDocket() &&
-                                                  screenWidth(context) >
+                                                  screenWidth(
+                                                        context,
+                                                      ) >
                                                       tabletScreenSmall) {
                                                 return kIsWeb
                                                     ? await downloadDocket(
-                                                      setTotal: false,
-                                                      items: [itemToPrint],
+                                                      setTotal:
+                                                          false,
+                                                      items: [
+                                                        itemToPrint,
+                                                      ],
                                                       cart:
-                                                          returnSalesProvider()
-                                                              .currentCart(),
-                                                      context: context,
+                                                          returnSalesProvider().currentCart(),
+                                                      context:
+                                                          context,
                                                       fileName:
                                                           'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
                                                       waiter:
-                                                          returnSalesProvider()
-                                                              .currentMainCart()
-                                                              .subStaff
-                                                              ?.staffName ??
+                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
                                                           'Not Set',
                                                     )
                                                     : await printDocket(
-                                                      setTotal: false,
-                                                      items: [itemToPrint],
+                                                      setTotal:
+                                                          false,
+                                                      items: [
+                                                        itemToPrint,
+                                                      ],
                                                       cart:
-                                                          returnSalesProvider()
-                                                              .currentCart(),
-                                                      context: context,
+                                                          returnSalesProvider().currentCart(),
+                                                      context:
+                                                          context,
                                                       fileName:
                                                           'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
                                                       waiter:
-                                                          returnSalesProvider()
-                                                              .currentMainCart()
-                                                              .subStaff
-                                                              ?.staffName ??
+                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
                                                           'Not Set',
                                                     );
                                               }
@@ -3288,30 +3268,40 @@ void selectProductSales({
 
                                             var existingLine =
                                                 returnSalesProvider().findCartLine(
-                                              returnSalesProvider().currentCart(),
-                                              cartItem,
-                                            );
+                                                  returnSalesProvider()
+                                                      .currentCart(),
+                                                  cartItem,
+                                                );
 
-                                            if (existingLine != null) {
+                                            if (existingLine !=
+                                                null) {
                                               // Item ALREADY EXISTS in cart:
                                               // Show duplicate alert first via addItemToCart.
                                               // If user chooses replace or add to quantity,
                                               // onBeforeCommitDuplicate initiates docket printing
                                               // BEFORE the cart is modified.
-                                              final result =
-                                                  await returnSalesProvider().addItemToCart(
-                                                context: context,
-                                                newItem: cartItem,
+                                              final result = await returnSalesProvider().addItemToCart(
+                                                context:
+                                                    context,
+                                                newItem:
+                                                    cartItem,
                                                 isCustomEdit:
-                                                    returnData().productList().where(
-                                                      (product) =>
-                                                          product.uuid ==
-                                                          cartItem.getItem()?.uuid,
-                                                    ).isEmpty,
-                                                onBeforeCommitDuplicate: (choice) async {
-                                                  var tempCartItem =
-                                                      cartItem.copyWith(
-                                                    quantity: qqty.toDouble(),
+                                                    returnData()
+                                                        .productList()
+                                                        .where(
+                                                          (
+                                                            product,
+                                                          ) =>
+                                                              product.uuid ==
+                                                              cartItem.getItem()?.uuid,
+                                                        )
+                                                        .isEmpty,
+                                                onBeforeCommitDuplicate: (
+                                                  choice,
+                                                ) async {
+                                                  var tempCartItem = cartItem.copyWith(
+                                                    quantity:
+                                                        qqty.toDouble(),
                                                   );
                                                   return await handleDocketPrint(
                                                     tempCartItem,
@@ -3324,8 +3314,11 @@ void selectProductSales({
                                                       'Item Replaced Successfully' ||
                                                   result ==
                                                       'Quantity Updated Successfully') {
-                                                if (context.mounted) {
-                                                  Navigator.of(context).pop();
+                                                if (context
+                                                    .mounted) {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
                                                 }
                                                 closeAction();
                                               }
@@ -3334,28 +3327,37 @@ void selectProductSales({
                                               // Show docket print dialog first (if enabled), then add.
                                               var tempCartItem =
                                                   cartItem.copyWith(
-                                                quantity: qqty.toDouble(),
-                                              );
+                                                    quantity:
+                                                        qqty.toDouble(),
+                                                  );
                                               var printRes =
                                                   await handleDocketPrint(
-                                                tempCartItem,
-                                              );
+                                                    tempCartItem,
+                                                  );
                                               if (printRes) {
-                                                final result =
-                                                    await returnSalesProvider().addItemToCart(
-                                                  context: context,
-                                                  newItem: cartItem,
+                                                final result = await returnSalesProvider().addItemToCart(
+                                                  context:
+                                                      context,
+                                                  newItem:
+                                                      cartItem,
                                                   isCustomEdit:
-                                                      returnData().productList().where(
-                                                        (product) =>
-                                                            product.uuid ==
-                                                            cartItem.getItem()?.uuid,
-                                                      ).isEmpty,
+                                                      returnData()
+                                                          .productList()
+                                                          .where(
+                                                            (
+                                                              product,
+                                                            ) =>
+                                                                product.uuid ==
+                                                                cartItem.getItem()?.uuid,
+                                                          )
+                                                          .isEmpty,
                                                 );
-                                                if (result.isNotEmpty &&
+                                                if (result
+                                                        .isNotEmpty &&
                                                     result !=
                                                         'Quantity Limit Exceeded') {
-                                                  if (context.mounted) {
+                                                  if (context
+                                                      .mounted) {
                                                     Navigator.of(
                                                       context,
                                                     ).pop();
