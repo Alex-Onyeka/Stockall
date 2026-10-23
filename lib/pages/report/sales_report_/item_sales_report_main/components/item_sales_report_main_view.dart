@@ -36,14 +36,37 @@ class _Col {
   ItemSalesSortField? get sort => column.sort;
 }
 
+class _GCol {
+  final ItemSalesGroupColumn column;
+  final double width;
+  final TextAlign align;
+  final Widget Function(ItemSalesGroupRow row) cell;
+
+  const _GCol({
+    required this.column,
+    required this.width,
+    required this.cell,
+    this.align = TextAlign.center,
+  });
+
+  ItemSalesSortField? get sort => column.sort;
+}
+
 /// Shared body of the Item Sales Report page (desktop + mobile):
-/// one row per sold line.
+/// one row per sold line, or one per item and unit when grouped.
+///
+/// [initialFilters] and [initialPeriod] let another page (the
+/// item sales analysis) open the table on a given set.
 class ItemSalesReportMainView extends StatefulWidget {
   final bool isDesktop;
+  final ItemSalesFilters? initialFilters;
+  final ReceiptsReportPeriod? initialPeriod;
 
   const ItemSalesReportMainView({
     super.key,
     required this.isDesktop,
+    this.initialFilters,
+    this.initialPeriod,
   });
 
   @override
@@ -53,7 +76,7 @@ class ItemSalesReportMainView extends StatefulWidget {
 
 class _ItemSalesReportMainViewState
     extends State<ItemSalesReportMainView> {
-  final _filters = ItemSalesFilters();
+  late final ItemSalesFilters _filters;
   final _searchCtrl = TextEditingController();
   final _revMinCtrl = TextEditingController();
   final _revMaxCtrl = TextEditingController();
@@ -70,8 +93,15 @@ class _ItemSalesReportMainViewState
   int _page = 1;
   bool _showFilters = false;
 
-  ReceiptsReportPeriod _period =
-      ReceiptsReportPeriod.today();
+  late ReceiptsReportPeriod _period;
+
+  // Group by item has its own sort, so the line sort is kept.
+  bool _groupByItem = false;
+  ItemSalesSortField _groupSortField =
+      ItemSalesSortField.revenue;
+  bool _groupAscending = false;
+  ItemSalesGroupPage? _groupResult;
+  int _groupQuantityExcluded = 0;
 
   bool _loading = true;
   String? _error;
@@ -92,6 +122,22 @@ class _ItemSalesReportMainViewState
   @override
   void initState() {
     super.initState();
+    _filters =
+        widget.initialFilters?.copy() ?? ItemSalesFilters();
+    _searchCtrl.text = _filters.search;
+    _revMinCtrl.text = _numText(_filters.receipt.revenueMin);
+    _revMaxCtrl.text = _numText(_filters.receipt.revenueMax);
+    _profitMinCtrl.text = _numText(
+      _filters.receipt.profitMin,
+    );
+    _profitMaxCtrl.text = _numText(
+      _filters.receipt.profitMax,
+    );
+    _qtyMinCtrl.text = _numText(_filters.quantityMin);
+    _qtyMaxCtrl.text = _numText(_filters.quantityMax);
+    _period =
+        widget.initialPeriod ??
+        ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
     });
@@ -242,6 +288,12 @@ class _ItemSalesReportMainViewState
       _sortField = ItemSalesSortField.createdAt;
       _ascending = false;
     }
+    if (!profitVisible &&
+        (_groupSortField == ItemSalesSortField.profit ||
+            _groupSortField == ItemSalesSortField.margin)) {
+      _groupSortField = ItemSalesSortField.revenue;
+      _groupAscending = false;
+    }
     final sorted = ItemSalesQuery.filterAndSort(
       rows: _baseRows,
       period: _period,
@@ -252,9 +304,24 @@ class _ItemSalesReportMainViewState
       subStaffEnabled: _subStaffEnabled,
       profitVisible: profitVisible,
     );
-    final page = ItemSalesQuery.paginate(sorted, _page);
-    _page = page.page;
-    _result = page;
+    if (_groupByItem) {
+      final groups = ItemSalesGrouping.sort(
+        ItemSalesGrouping.build(sorted),
+        field: _groupSortField,
+        ascending: _groupAscending,
+      );
+      final page = ItemSalesGrouping.paginate(groups, _page);
+      _page = page.page;
+      _groupResult = page;
+      _groupQuantityExcluded = groups.fold(
+        0,
+        (s, g) => s + g.quantityExcludedCount,
+      );
+    } else {
+      final page = ItemSalesQuery.paginate(sorted, _page);
+      _page = page.page;
+      _result = page;
+    }
     _profitExcluded = ItemSalesQuery.profitExcludedCount(
       rows: _baseRows,
       period: _period,
@@ -303,11 +370,16 @@ class _ItemSalesReportMainViewState
   }
 
   void _goToPage(int p) {
-    final r = _result;
-    if (r == null ||
+    final totalPages =
+        _groupByItem
+            ? _groupResult?.totalPages
+            : _result?.totalPages;
+    final current =
+        _groupByItem ? _groupResult?.page : _result?.page;
+    if (totalPages == null ||
         p < 1 ||
-        p > r.totalPages ||
-        p == r.page) {
+        p > totalPages ||
+        p == current) {
       return;
     }
     _apply(() => _page = p, resetPage: false);
@@ -329,6 +401,18 @@ class _ItemSalesReportMainViewState
             f == ItemSalesSortField.receiptId ||
             f == ItemSalesSortField.staff ||
             f == ItemSalesSortField.customer;
+      }
+    });
+  }
+
+  void _setGroupSort(ItemSalesSortField f) {
+    _apply(() {
+      if (_groupSortField == f) {
+        _groupAscending = !_groupAscending;
+      } else {
+        _groupSortField = f;
+        // Names A-Z first; amounts largest first.
+        _groupAscending = f == ItemSalesSortField.item;
       }
     });
   }
@@ -371,9 +455,11 @@ class _ItemSalesReportMainViewState
     ).then((_) => _afterReturn());
   }
 
-  void _openItem(ItemSalesRow row) {
-    final uuid = row.productKey;
-    if (uuid == null || !row.productExists) return;
+  void _openItem(ItemSalesRow row) =>
+      _openProduct(row.productKey, row.productExists);
+
+  void _openProduct(String? uuid, bool exists) {
+    if (uuid == null || !exists) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -415,6 +501,13 @@ class _ItemSalesReportMainViewState
 
   String _percent(double v) =>
       '${formatLargeNumberDouble(double.parse(v.toStringAsFixed(2)))}%';
+
+  static String _numText(double? v) {
+    if (v == null) return '';
+    return v == v.roundToDouble()
+        ? v.toStringAsFixed(0)
+        : v.toString();
+  }
 
   // ---------------------------------------------------------------
   // build
@@ -526,6 +619,21 @@ class _ItemSalesReportMainViewState
             Expanded(child: _content(theme)),
             if (!_loading &&
                 _error == null &&
+                _groupByItem &&
+                _groupResult != null)
+              ReportPager(
+                theme: theme,
+                page: _groupResult!.page,
+                totalPages: _groupResult!.totalPages,
+                totalCount: _groupResult!.totalCount,
+                firstIndex: _groupResult!.firstIndex,
+                lastIndex: _groupResult!.lastIndex,
+                itemLabel: 'items',
+                onPage: _goToPage,
+              ),
+            if (!_loading &&
+                _error == null &&
+                !_groupByItem &&
                 _result != null)
               ReportPager(
                 theme: theme,
@@ -579,7 +687,10 @@ class _ItemSalesReportMainViewState
       );
     }
     final res = _result;
-    if (res == null || res.totalCount == 0) {
+    final groups = _groupResult;
+    final count =
+        _groupByItem ? groups?.totalCount : res?.totalCount;
+    if (count == null || count == 0) {
       final hasFilters = _filters.hasAnything;
       return Padding(
         padding: const EdgeInsets.only(top: 60),
@@ -602,7 +713,8 @@ class _ItemSalesReportMainViewState
         ),
       );
     }
-    return _table(theme, res);
+    if (_groupByItem) return _groupTable(theme, groups!);
+    return _table(theme, res!);
   }
 
   // ---------------------------------------------------------------
@@ -686,6 +798,20 @@ class _ItemSalesReportMainViewState
             onTap:
                 () => setState(
                   () => _showFilters = !_showFilters,
+                ),
+          ),
+        ),
+        // A view option, not a filter: Reset All keeps it.
+        Padding(
+          padding: const EdgeInsets.only(right: 5),
+          child: ReportPill(
+            theme: theme,
+            icon: Icons.workspaces_outline,
+            label: 'Group by item',
+            highlighted: _groupByItem,
+            onTap:
+                () => _apply(
+                  () => _groupByItem = !_groupByItem,
                 ),
           ),
         ),
@@ -827,6 +953,11 @@ class _ItemSalesReportMainViewState
         '$_quantityExcluded item record${_quantityExcluded == 1 ? ' is' : 's are'} '
             'left out of the quantity range: invoice part '
             'payment or unknown unit.',
+      if (_groupByItem && _groupQuantityExcluded > 0)
+        '$_groupQuantityExcluded invoice part-payment '
+            'line${_groupQuantityExcluded == 1 ? ' is' : 's are'} '
+            'not in Total Quantity: they repeat the invoice\'s '
+            'full quantity.',
     ];
     if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
@@ -1660,6 +1791,344 @@ class _ItemSalesReportMainViewState
                         ),
                         const Divider(height: 1, thickness: 1),
                         _totalsRow(theme, cols, res),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------
+  // grouped by item
+  // ---------------------------------------------------------------
+
+  List<_GCol> _groupColumns(ThemeProvider theme) {
+    const dash = '—';
+    final accent = theme.lightModeColor.prColor300;
+
+    _GCol build(ItemSalesGroupColumn c) {
+      switch (c) {
+        case ItemSalesGroupColumn.item:
+          return _GCol(
+            column: c,
+            width: 240,
+            align: TextAlign.start,
+            cell: (g) {
+              final text = _txt(
+                theme,
+                g.itemLabel,
+                bold: true,
+                align: TextAlign.start,
+                color:
+                    g.itemName == null
+                        ? Colors.grey
+                        : (g.productExists ? accent : null),
+                tooltip:
+                    g.productExists
+                        ? 'Open item details'
+                        : 'Item no longer exists',
+              );
+              if (!g.productExists) return text;
+              return InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap:
+                    () => _openProduct(
+                      g.productKey,
+                      g.productExists,
+                    ),
+                child: text,
+              );
+            },
+          );
+        case ItemSalesGroupColumn.quantity:
+          return _GCol(
+            column: c,
+            width: 140,
+            cell: (g) {
+              final n = g.quantityExcludedCount;
+              final tip =
+                  n == 0
+                      ? null
+                      : '$n invoice part-payment '
+                          'line${n == 1 ? '' : 's'} not counted';
+              if (g.quantityUnknown) {
+                return _txt(
+                  theme,
+                  dash,
+                  color: Colors.grey,
+                  tooltip: tip,
+                );
+              }
+              return _txt(
+                theme,
+                formatDimension(g.quantity),
+                tooltip: tip,
+              );
+            },
+          );
+        case ItemSalesGroupColumn.unit:
+          return _GCol(
+            column: c,
+            width: 150,
+            cell:
+                (g) =>
+                    g.unitName == null
+                        ? _txt(theme, dash, color: Colors.grey)
+                        : _txt(theme, g.unitName!),
+          );
+        case ItemSalesGroupColumn.revenue:
+          return _GCol(
+            column: c,
+            width: 160,
+            cell:
+                (g) => _txt(
+                  theme,
+                  _money(g.revenue),
+                  bold: true,
+                ),
+          );
+        case ItemSalesGroupColumn.profit:
+          return _GCol(
+            column: c,
+            width: 160,
+            cell: (g) {
+              final value = _txt(
+                theme,
+                _money(g.profit),
+                bold: true,
+                color: _signColor(theme, g.profit),
+              );
+              if (g.costMissingCount == 0) return value;
+              return Tooltip(
+                message:
+                    '${g.costMissingCount} of ${g.lineCount} item '
+                    'records have no cost price, so their cost is '
+                    'counted as 0',
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 4,
+                  children: [
+                    Flexible(child: value),
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 14,
+                      color: Colors.orange.shade800,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        case ItemSalesGroupColumn.margin:
+          return _GCol(
+            column: c,
+            width: 130,
+            cell: (g) {
+              final m = g.margin;
+              if (m == null) {
+                return _txt(
+                  theme,
+                  'N/A',
+                  color: Colors.grey,
+                );
+              }
+              return _txt(
+                theme,
+                _percent(m),
+                color: _signColor(theme, m),
+              );
+            },
+          );
+      }
+    }
+
+    return ItemSalesGroupColumnInfo.visible(
+      costVisible: _canSeeCost,
+    ).map(build).toList();
+  }
+
+  Widget _groupHeaderCell(ThemeProvider theme, _GCol c) {
+    final isSorted =
+        c.sort != null && c.sort == _groupSortField;
+    final accent = theme.lightModeColor.prColor300;
+    final content = Row(
+      mainAxisAlignment:
+          c.align == TextAlign.start
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      spacing: 3,
+      children: [
+        Flexible(
+          child: Text(
+            c.column.label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: c.align,
+            style: TextStyle(
+              fontSize: theme.mobileTexts.b3.fontSize,
+              fontWeight: FontWeight.bold,
+              color: isSorted ? accent : Colors.black87,
+            ),
+          ),
+        ),
+        if (c.sort != null)
+          Icon(
+            isSorted
+                ? (_groupAscending
+                    ? Icons.arrow_upward_rounded
+                    : Icons.arrow_downward_rounded)
+                : Icons.unfold_more_rounded,
+            size: 14,
+            color: isSorted ? accent : Colors.grey,
+          ),
+      ],
+    );
+    final padded = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Align(
+        alignment: _alignment(c.align),
+        child: content,
+      ),
+    );
+    return SizedBox(
+      width: c.width,
+      child:
+          c.sort == null
+              ? padded
+              : InkWell(
+                mouseCursor: SystemMouseCursors.click,
+                onTap: () => _setGroupSort(c.sort!),
+                child: padded,
+              ),
+    );
+  }
+
+  /// No row tap: a group has no single receipt to open.
+  Widget _groupRow(
+    List<_GCol> cols,
+    ItemSalesGroupRow g,
+    int i,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: i.isEven ? Colors.white : Colors.grey.shade50,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade100),
+        ),
+      ),
+      child: Row(
+        children: [
+          for (final c in cols)
+            SizedBox(
+              width: c.width,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                child: Align(
+                  alignment: _alignment(c.align),
+                  child: c.cell(g),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _groupTable(
+    ThemeProvider theme,
+    ItemSalesGroupPage res,
+  ) {
+    final cols = _groupColumns(theme);
+    final totalWidth = cols.fold<double>(
+      0,
+      (s, c) => s + c.width,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x14000000),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final w =
+                totalWidth > constraints.maxWidth
+                    ? totalWidth
+                    : constraints.maxWidth;
+            return Scrollbar(
+              controller: _vScroll,
+              thumbVisibility: true,
+              notificationPredicate:
+                  (notif) =>
+                      notif.metrics.axis == Axis.vertical,
+              child: Scrollbar(
+                controller: _hScroll,
+                thumbVisibility: true,
+                notificationPredicate:
+                    (notif) =>
+                        notif.metrics.axis ==
+                        Axis.horizontal,
+                child: SingleChildScrollView(
+                  controller: _hScroll,
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: w,
+                    height: constraints.maxHeight,
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 48,
+                          color: theme
+                              .lightModeColor
+                              .prColor300
+                              .withAlpha(22),
+                          child: Row(
+                            children: [
+                              for (final c in cols)
+                                _groupHeaderCell(theme, c),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        Expanded(
+                          child: ScrollConfiguration(
+                            behavior:
+                                ScrollConfiguration.of(
+                                  context,
+                                ).copyWith(
+                                  scrollbars: false,
+                                ),
+                            child: ListView.builder(
+                              controller: _vScroll,
+                              itemCount: res.rows.length,
+                              itemExtent: 52,
+                              itemBuilder:
+                                  (context, i) => _groupRow(
+                                    cols,
+                                    res.rows[i],
+                                    i,
+                                  ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

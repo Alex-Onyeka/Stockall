@@ -1901,4 +1901,415 @@ void main() {
       expect(cols.length, 20);
     });
   });
+
+  group('group by item', () {
+    final pieces = [
+      unit('u-pc', name: 'Piece'),
+      unit(
+        'u-box',
+        name: 'Box',
+        isPrimary: false,
+        conversion: 12,
+      ),
+    ];
+
+    List<ItemSalesGroupRow> groupsOf(
+      List<TempMainReceipt> receipts,
+    ) => ItemSalesGrouping.build(run(build(receipts)));
+
+    test(
+      'one item in one unit: one row, amounts added, newest name',
+      () {
+        final groups = groupsOf([
+          receipt(
+            createdAt: DateTime(2026, 10, 17, 9),
+            items: [
+              line(
+                productName: 'Cola',
+                quantity: 2,
+                revenue: 20,
+                costPrice: 10,
+                unitsList: pieces,
+                unitUuid: 'u-pc',
+              ),
+            ],
+          ),
+          receipt(
+            createdAt: DateTime(2026, 10, 17, 15),
+            items: [
+              line(
+                productName: 'Cola Zero',
+                quantity: 3,
+                revenue: 30,
+                costPrice: 15,
+                unitsList: pieces,
+                unitUuid: 'u-pc',
+              ),
+            ],
+          ),
+        ]);
+        final g = groups.single;
+        expect(g.itemLabel, 'Cola Zero');
+        expect(g.productKey, 'p-1');
+        expect(g.productExists, isTrue);
+        expect(g.unitName, 'Piece');
+        expect(g.lineCount, 2);
+        expect(g.quantity, 5);
+        expect(g.revenue, 50);
+        expect(g.profit, 25);
+        expect(g.margin, 50);
+        expect(g.costMissingCount, 0);
+      },
+    );
+
+    test('units of one item are never added together', () {
+      final groups = groupsOf([
+        receipt(
+          items: [
+            line(
+              uuid: 'a',
+              quantity: 3,
+              revenue: 30,
+              unitsList: pieces,
+              unitUuid: 'u-pc',
+            ),
+            line(
+              uuid: 'b',
+              quantity: 2,
+              revenue: 200,
+              unitsList: pieces,
+              unitUuid: 'u-box',
+            ),
+          ],
+        ),
+      ]);
+      expect(groups.length, 2);
+      final byUnit = {
+        for (final g in groups) g.unitName: g.quantity,
+      };
+      expect(byUnit, {'Piece': 3, 'Box': 2});
+    });
+
+    test(
+      '2D cut sizes of one unit share a row, with the plain unit name',
+      () {
+        final slab = [
+          unit(
+            'u-slab',
+            name: 'Slab',
+            dimensionType: ProductUnitsClass.sheetUnit,
+          ),
+        ];
+        final rows = run(
+          build([
+            receipt(
+              items: [
+                line(
+                  uuid: 'a',
+                  quantity: 1,
+                  revenue: 60,
+                  quantityType: 2,
+                  unitsList: slab,
+                  unitUuid: 'u-slab',
+                  width: 2,
+                  height: 3,
+                ),
+                line(
+                  uuid: 'b',
+                  quantity: 4,
+                  revenue: 40,
+                  quantityType: 2,
+                  unitsList: slab,
+                  unitUuid: 'u-slab',
+                  width: 1,
+                  height: 1,
+                ),
+              ],
+            ),
+          ]),
+        );
+        expect(
+          rows.map((r) => r.unitName).toSet(),
+          {'Slab (2 x 3)', 'Slab (1 x 1)'},
+        );
+        final g = ItemSalesGrouping.build(rows).single;
+        expect(g.unitName, 'Slab');
+        expect(g.quantity, 5);
+        expect(g.revenue, 100);
+      },
+    );
+
+    test(
+      'part payments add revenue and profit, not quantity',
+      () {
+        final groups = groupsOf([
+          receipt(
+            items: [
+              line(quantity: 2, revenue: 20, costPrice: 5),
+            ],
+          ),
+          receipt(
+            salesTypeIndex: 2,
+            items: [
+              line(quantity: 4, revenue: 10, costPrice: 2),
+            ],
+          ),
+        ]);
+        final g = groups.single;
+        expect(g.lineCount, 2);
+        expect(g.quantity, 2);
+        expect(g.quantityExcludedCount, 1);
+        expect(g.quantityUnknown, isFalse);
+        expect(g.revenue, 30);
+        expect(g.profit, 23);
+
+        final only =
+            groupsOf([
+              receipt(
+                salesTypeIndex: 2,
+                items: [line(quantity: 4, revenue: 10)],
+              ),
+            ]).single;
+        expect(only.quantity, 0);
+        expect(only.quantityUnknown, isTrue);
+      },
+    );
+
+    test(
+      'lines without a product id group by name and stored unit',
+      () {
+        final groups = groupsOf([
+          receipt(
+            items: [
+              line(
+                uuid: 'a',
+                productUuid: null,
+                productName: 'Loose',
+                quantity: 1,
+                unitText: 'Others',
+              ),
+              line(
+                uuid: 'b',
+                productUuid: null,
+                productName: 'loose',
+                quantity: 2,
+                unitText: 'Others',
+              ),
+              line(
+                uuid: 'c',
+                productUuid: null,
+                productName: 'Other',
+                quantity: 5,
+              ),
+            ],
+          ),
+        ]);
+        expect(groups.length, 2);
+        final loose = groups.firstWhere(
+          (g) => g.itemLabel.toLowerCase() == 'loose',
+        );
+        expect(loose.productKey, isNull);
+        expect(loose.productExists, isFalse);
+        expect(loose.unitName, 'Unit(s)');
+        expect(loose.quantity, 3);
+        final other = groups.firstWhere(
+          (g) => g.itemLabel == 'Other',
+        );
+        expect(other.unitName, isNull);
+      },
+    );
+
+    test('filters apply to lines before grouping', () {
+      final rows = build([
+        receipt(
+          staffId: 'staff-a',
+          items: [line(uuid: 'a', quantity: 2, revenue: 20)],
+        ),
+        receipt(
+          staffId: 'staff-b',
+          items: [line(uuid: 'b', quantity: 3, revenue: 30)],
+        ),
+        receipt(
+          items: [
+            line(
+              uuid: 'c',
+              quantity: 7,
+              revenue: 70,
+              isVoid: true,
+            ),
+          ],
+        ),
+      ]);
+      final g =
+          ItemSalesGrouping.build(
+            run(
+              rows,
+              filters:
+                  ItemSalesFilters()
+                    ..receipt.staffKey = 'staff-b',
+            ),
+          ).single;
+      expect(g.quantity, 3);
+      expect(g.revenue, 30);
+      // Void lines stay out, as in the line table.
+      expect(
+        ItemSalesGrouping.build(run(rows)).single.quantity,
+        5,
+      );
+    });
+
+    test('margin is null without revenue', () {
+      final g =
+          groupsOf([
+            receipt(items: [line(revenue: 0)]),
+          ]).single;
+      expect(g.margin, isNull);
+    });
+
+    group('sorting', () {
+      ItemSalesGroupRow g(
+        String key, {
+        String? name,
+        double quantity = 0,
+        double revenue = 0,
+        double profit = 0,
+        bool quantityUnknown = false,
+      }) {
+        final row = ItemSalesGroupRow(
+          key: key,
+          productKey: key,
+          itemName: name ?? key,
+          productExists: true,
+          unitName: 'Piece',
+        );
+        row
+          ..lineCount = 1
+          ..quantity = quantity
+          ..quantityExcludedCount = quantityUnknown ? 1 : 0
+          ..revenue = revenue
+          ..profit = profit;
+        return row;
+      }
+
+      final groups = [
+        g('a', name: 'Banana', quantity: 5, revenue: 50, profit: 5),
+        g('b', name: 'apple', quantity: 9, revenue: 10, profit: 5),
+        g('c', name: 'Cherry', revenue: 0, quantityUnknown: true),
+        g('d', name: 'date', quantity: 1, revenue: 30, profit: -3),
+      ];
+
+      List<String> keys(
+        ItemSalesSortField f, {
+        bool ascending = false,
+      }) =>
+          ItemSalesGrouping.sort(
+            groups,
+            field: f,
+            ascending: ascending,
+          ).map((x) => x.key).toList();
+
+      test('revenue, largest first', () {
+        expect(keys(ItemSalesSortField.revenue), [
+          'a',
+          'd',
+          'b',
+          'c',
+        ]);
+      });
+
+      test('item name A-Z, ignoring case', () {
+        expect(
+          keys(ItemSalesSortField.item, ascending: true),
+          ['b', 'a', 'c', 'd'],
+        );
+      });
+
+      test('unknown quantity sinks in both directions', () {
+        expect(keys(ItemSalesSortField.quantity), [
+          'b',
+          'a',
+          'd',
+          'c',
+        ]);
+        expect(
+          keys(ItemSalesSortField.quantity, ascending: true),
+          ['d', 'a', 'b', 'c'],
+        );
+      });
+
+      test('profit ties break on the name', () {
+        expect(keys(ItemSalesSortField.profit), [
+          'b',
+          'a',
+          'c',
+          'd',
+        ]);
+      });
+
+      test('margin: no revenue sinks', () {
+        expect(keys(ItemSalesSortField.margin), [
+          'b',
+          'a',
+          'd',
+          'c',
+        ]);
+      });
+
+      test('a line-only field sorts by revenue', () {
+        expect(
+          keys(ItemSalesSortField.createdAt),
+          keys(ItemSalesSortField.revenue),
+        );
+      });
+    });
+
+    test('pagination clamps the page', () {
+      final groups = [
+        for (var i = 0; i < itemSalesReportPageSize + 1; i++)
+          ItemSalesGroupRow(
+            key: 'k$i',
+            productKey: 'k$i',
+            itemName: 'Item $i',
+            productExists: true,
+            unitName: null,
+          ),
+      ];
+      final p = ItemSalesGrouping.paginate(groups, 5);
+      expect(p.page, 2);
+      expect(p.totalPages, 2);
+      expect(p.rows.length, 1);
+      expect(p.firstIndex, itemSalesReportPageSize + 1);
+      expect(p.lastIndex, itemSalesReportPageSize + 1);
+      final empty = ItemSalesGrouping.paginate(const [], 1);
+      expect(empty.totalPages, 1);
+      expect(empty.firstIndex, 0);
+    });
+
+    test('columns: no date or time, cost ones need permission', () {
+      expect(
+        ItemSalesGroupColumn.values.map((c) => c.label),
+        [
+          'Item',
+          'Total Quantity',
+          'Unit',
+          'Total Revenue',
+          'Total Profit/Loss',
+          'Profit Margin',
+        ],
+      );
+      expect(
+        ItemSalesGroupColumnInfo.visible(costVisible: false),
+        [
+          ItemSalesGroupColumn.item,
+          ItemSalesGroupColumn.quantity,
+          ItemSalesGroupColumn.unit,
+          ItemSalesGroupColumn.revenue,
+        ],
+      );
+      expect(
+        ItemSalesGroupColumnInfo.visible(costVisible: true),
+        ItemSalesGroupColumn.values,
+      );
+    });
+  });
 }
