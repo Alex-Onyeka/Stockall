@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 
 const midnight = TimeOfDay(hour: 0, minute: 0);
@@ -1408,6 +1409,216 @@ void main() {
         ReceiptsReportQuery.paginate(const [], 1).totalMargin,
         isNull,
       );
+    });
+  });
+
+  group('grouping', () {
+    final rows = [
+      // Ada, renamed: the newest name wins.
+      row(
+        receipt(
+          uuid: 'r-ada-old',
+          staffName: 'Ada Old',
+          cash: 100,
+          customerUuid: 'c-1',
+          customerName: 'Chidi',
+          createdAt: DateTime(2026, 10, 17, 9),
+          items: [line(revenue: 100, costPrice: 60)],
+        ),
+      ),
+      row(
+        receipt(
+          uuid: 'r-ada-new',
+          cash: 300,
+          customerUuid: 'c-1',
+          customerName: 'Chidi N.',
+          createdAt: DateTime(2026, 10, 17, 11),
+          items: [line(quantity: 2, revenue: 300, costPrice: 100)],
+        ),
+      ),
+      // Bob: bank, no line data (profit unknown).
+      row(
+        receipt(
+          uuid: 'r-bob',
+          staffId: 'staff-b',
+          staffName: 'Bob',
+          bank: 1000,
+          createdAt: DateTime(2026, 10, 17, 10),
+        ),
+      ),
+      // No staff, customer account, invoice part payment.
+      row(
+        receipt(
+          uuid: 'r-none',
+          staffId: null,
+          staffName: null,
+          account: 50,
+          salesTypeIndex: 2,
+          invoiceUuid: 'inv-1',
+          balance: 25,
+          createdAt: DateTime(2026, 10, 17, 12),
+          items: [line(quantity: 9, revenue: 50, costPrice: 10)],
+        ),
+      ),
+      // Split payment.
+      row(
+        receipt(
+          uuid: 'r-split',
+          cash: 20,
+          bank: 30,
+          createdAt: DateTime(2026, 10, 17, 8),
+        ),
+      ),
+    ];
+
+    List<ReceiptsGroupRow> grouped(
+      ReportGroupBy by, {
+      ReceiptsTableGroupSortField field =
+          ReceiptsTableGroupSortField.revenue,
+      bool ascending = false,
+    }) => ReceiptsGrouping.sort(
+      ReceiptsGrouping.build(run(rows), by),
+      field: field,
+      ascending: ascending,
+    );
+
+    test('off builds nothing', () {
+      expect(ReceiptsGrouping.build(rows, ReportGroupBy.off), isEmpty);
+    });
+
+    test('staff: newest name, sums, No staff last', () {
+      final g = grouped(ReportGroupBy.staff);
+      expect(g.map((e) => e.label), [
+        'Bob',
+        'Ada',
+        receiptsNoStaffLabel,
+      ]);
+      final ada = g[1];
+      expect(ada.count, 3); // two sales + the split receipt
+      expect(ada.revenue, 450);
+      expect(ada.items, 3);
+      expect(ada.profit, 240);
+      expect(ada.lineRevenue, 400);
+      expect(ada.margin, 60);
+      final bob = g[0];
+      expect(bob.profitUnknown, isTrue);
+      expect(bob.margin, isNull);
+      expect(bob.items, isNull);
+    });
+
+    test('the none row stays last in both directions', () {
+      for (final asc in [true, false]) {
+        for (final f in ReceiptsTableGroupSortField.values) {
+          expect(
+            grouped(
+              ReportGroupBy.staff,
+              field: f,
+              ascending: asc,
+            ).last.isNone,
+            isTrue,
+          );
+          expect(
+            grouped(
+              ReportGroupBy.customer,
+              field: f,
+              ascending: asc,
+            ).last.label,
+            receiptsNoCustomerLabel,
+          );
+        }
+      }
+      expect(
+        grouped(
+          ReportGroupBy.staff,
+          field: ReceiptsTableGroupSortField.name,
+          ascending: true,
+        ).map((e) => e.label),
+        ['Ada', 'Bob', receiptsNoStaffLabel],
+      );
+    });
+
+    test('customer: keyed by uuid, newest name', () {
+      final g = grouped(ReportGroupBy.customer);
+      expect(g.length, 2);
+      expect(g.first.label, 'Chidi N.');
+      expect(g.first.count, 2);
+      expect(g.last.count, 3);
+    });
+
+    test('channel: one row per channel, part payment items skipped', () {
+      final g = grouped(ReportGroupBy.channel);
+      expect(
+        {for (final e in g) e.label: e.count},
+        {
+          'Cash': 2,
+          'Bank': 1,
+          'Customer Account': 1,
+          'Split': 1,
+        },
+      );
+      expect(g.any((e) => e.isNone), isFalse);
+      final account = g.firstWhere(
+        (e) => e.label == 'Customer Account',
+      );
+      expect(account.items, isNull);
+      expect(account.balance, 25);
+    });
+
+    test('group totals equal the ungrouped totals', () {
+      final sorted = run(rows);
+      final plain = ReceiptsReportQuery.paginate(sorted, 1);
+      for (final by in [
+        ReportGroupBy.staff,
+        ReportGroupBy.customer,
+        ReportGroupBy.channel,
+      ]) {
+        final p = ReceiptsGrouping.paginate(
+          ReceiptsGrouping.build(sorted, by),
+          1,
+        );
+        expect(p.totalReceipts, plain.totalCount);
+        expect(p.totalRevenue, plain.totalRevenue);
+        expect(p.totalBalance, plain.totalBalance);
+        expect(p.totalItems, plain.totalItems);
+        expect(p.totalProfit, plain.totalProfit);
+        expect(p.totalMargin, plain.totalMargin);
+      }
+    });
+
+    test('filters apply before grouping', () {
+      final g = ReceiptsGrouping.build(
+        run(
+          rows,
+          filters: ReceiptsReportFilters(staffKey: 'staff-b'),
+        ),
+        ReportGroupBy.staff,
+      );
+      expect(g.single.label, 'Bob');
+    });
+
+    test('more than 100 groups page like receipts', () {
+      final many = [
+        for (var i = 0; i < 130; i++)
+          row(
+            receipt(
+              uuid: 'r$i',
+              staffId: 's$i',
+              staffName: 'S$i',
+              cash: i.toDouble(),
+            ),
+          ),
+      ];
+      final groups = ReceiptsGrouping.build(
+        run(many),
+        ReportGroupBy.staff,
+      );
+      final p2 = ReceiptsGrouping.paginate(groups, 2);
+      expect(p2.totalCount, 130);
+      expect(p2.totalPages, 2);
+      expect(p2.rows.length, 30);
+      expect(p2.firstIndex, 101);
+      expect(p2.totalReceipts, 130);
+      expect(ReceiptsGrouping.paginate(groups, 9).page, 2);
     });
   });
 }

@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_product_class/units_class/product_units_cl
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/pages/report/components/report_group_by.dart';
 
 /// Page size, same as the Items Report table.
 const int receiptsReportPageSize = 100;
@@ -1036,6 +1037,296 @@ class ReceiptsReportQuery {
       totalItems: items,
       totalProfit: profit,
       totalLineRevenue: lineRevenue,
+    );
+  }
+}
+
+const String receiptsNoStaffLabel = 'No staff';
+const String receiptsNoCustomerLabel = 'No customer';
+
+enum ReceiptsTableGroupSortField {
+  name,
+  count,
+  items,
+  balance,
+  revenue,
+  profit,
+  margin,
+}
+
+/// One table row when grouped: every receipt of one staff member,
+/// customer or channel. Values are raw, as on [ReceiptsReportRow].
+class ReceiptsGroupRow {
+  final String key;
+
+  /// The "No staff" / "No customer" row, always shown last.
+  final bool isNone;
+  final String _noneLabel;
+
+  /// Most recent name in the group. Null when none was saved.
+  String? name;
+
+  int count = 0;
+
+  /// Sum of the known item counts. Null when no receipt had one
+  /// (invoice part payments repeat the invoice quantities).
+  double? items;
+  double balance = 0;
+  double revenue = 0;
+
+  /// Sum over the receipts with a profit; [lineRevenue] is their
+  /// line revenue, the margin denominator.
+  double profit = 0;
+  double lineRevenue = 0;
+  int profitCount = 0;
+  int costMissingCount = 0;
+
+  ReceiptsGroupRow({
+    required this.key,
+    required this.isNone,
+    required this.name,
+    String noneLabel = '',
+  }) : _noneLabel = noneLabel;
+
+  String get label =>
+      isNone ? _noneLabel : (name ?? 'Not Set');
+
+  /// No receipt in the group has line data.
+  bool get profitUnknown => profitCount == 0;
+
+  /// profit / lineRevenue * 100. Null when it is not above 0.
+  double? get margin =>
+      lineRevenue > 0 ? (profit / lineRevenue) * 100 : null;
+
+  void add(ReceiptsReportRow r) {
+    count++;
+    if (r.items != null) items = (items ?? 0) + r.items!;
+    balance += r.balance ?? 0;
+    revenue += r.revenue;
+    if (r.profit != null) {
+      profit += r.profit!;
+      lineRevenue += r.lineRevenue ?? 0;
+      profitCount++;
+      if (r.costMissing) costMissingCount++;
+    }
+  }
+}
+
+/// Result of [ReceiptsGrouping.paginate]. Totals cover every
+/// group, not just this page.
+class ReceiptsGroupPage {
+  final List<ReceiptsGroupRow> rows;
+  final int totalCount;
+  final int page; // 1-based, already clamped
+  final int totalPages;
+
+  final int totalReceipts;
+  final double? totalItems;
+  final double totalBalance;
+  final double totalRevenue;
+  final double totalProfit;
+  final double totalLineRevenue;
+  final int totalProfitCount;
+
+  const ReceiptsGroupPage({
+    required this.rows,
+    required this.totalCount,
+    required this.page,
+    required this.totalPages,
+    this.totalReceipts = 0,
+    this.totalItems,
+    this.totalBalance = 0,
+    this.totalRevenue = 0,
+    this.totalProfit = 0,
+    this.totalLineRevenue = 0,
+    this.totalProfitCount = 0,
+  });
+
+  double? get totalMargin =>
+      totalLineRevenue > 0
+          ? (totalProfit / totalLineRevenue) * 100
+          : null;
+
+  int get firstIndex =>
+      totalCount == 0
+          ? 0
+          : (page - 1) * receiptsReportPageSize + 1;
+  int get lastIndex =>
+      firstIndex == 0 ? 0 : firstIndex + rows.length - 1;
+}
+
+/// "Group by" Staff, Customer or Channel.
+class ReceiptsGrouping {
+  /// Groups [rows] that already passed the period and filters
+  /// (`ReceiptsReportQuery.filterAndSort`). Each group shows its
+  /// most recent name.
+  static List<ReceiptsGroupRow> build(
+    List<ReceiptsReportRow> rows,
+    ReportGroupBy by,
+  ) {
+    if (by == ReportGroupBy.off) return [];
+    final newestFirst = List<ReceiptsReportRow>.from(rows)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final groups = <String, ReceiptsGroupRow>{};
+    for (final r in newestFirst) {
+      final String? key;
+      final String? name;
+      String noneLabel = '';
+      switch (by) {
+        case ReportGroupBy.staff:
+          key = r.staffKey;
+          name = r.staffName;
+          noneLabel = receiptsNoStaffLabel;
+          break;
+        case ReportGroupBy.customer:
+          key = r.customerKey;
+          name = r.customerName;
+          noneLabel = receiptsNoCustomerLabel;
+          break;
+        case ReportGroupBy.channel:
+          key = r.channel.name;
+          name = r.channel.label;
+          break;
+        case ReportGroupBy.off:
+          key = null;
+          name = null;
+      }
+      final g = groups.putIfAbsent(
+        key ?? receiptsReportNoneKey,
+        () => ReceiptsGroupRow(
+          key: key ?? receiptsReportNoneKey,
+          isNone: key == null,
+          name: name,
+          noneLabel: noneLabel,
+        ),
+      );
+      // Newest first, so only fill a name the newer ones lacked.
+      g.name ??= name;
+      g.add(r);
+    }
+    return groups.values.toList();
+  }
+
+  /// Sorted copy. The "No staff" / "No customer" row is always
+  /// last; nulls sink to the bottom; ties: label, then key.
+  static List<ReceiptsGroupRow> sort(
+    List<ReceiptsGroupRow> groups, {
+    required ReceiptsTableGroupSortField field,
+    required bool ascending,
+  }) {
+    int compare(ReceiptsGroupRow a, ReceiptsGroupRow b) {
+      if (a.isNone != b.isNone) return a.isNone ? 1 : -1;
+      int c;
+      switch (field) {
+        case ReceiptsTableGroupSortField.name:
+          c = ReceiptsReportQuery._cmp(
+            a.label.toLowerCase(),
+            b.label.toLowerCase(),
+            ascending,
+          );
+          break;
+        case ReceiptsTableGroupSortField.count:
+          c = ReceiptsReportQuery._cmp(
+            a.count,
+            b.count,
+            ascending,
+          );
+          break;
+        case ReceiptsTableGroupSortField.items:
+          c = ReceiptsReportQuery._cmp(
+            a.items,
+            b.items,
+            ascending,
+          );
+          break;
+        case ReceiptsTableGroupSortField.balance:
+          c = ReceiptsReportQuery._cmp(
+            a.balance,
+            b.balance,
+            ascending,
+          );
+          break;
+        case ReceiptsTableGroupSortField.revenue:
+          c = ReceiptsReportQuery._cmp(
+            a.revenue,
+            b.revenue,
+            ascending,
+          );
+          break;
+        case ReceiptsTableGroupSortField.profit:
+          c = ReceiptsReportQuery._cmp(
+            a.profitUnknown ? null : a.profit,
+            b.profitUnknown ? null : b.profit,
+            ascending,
+          );
+          break;
+        case ReceiptsTableGroupSortField.margin:
+          c = ReceiptsReportQuery._cmp(
+            a.margin,
+            b.margin,
+            ascending,
+          );
+          break;
+      }
+      if (c != 0) return c;
+      final n = a.label.toLowerCase().compareTo(
+        b.label.toLowerCase(),
+      );
+      return n != 0 ? n : a.key.compareTo(b.key);
+    }
+
+    return List<ReceiptsGroupRow>.from(groups)
+      ..sort(compare);
+  }
+
+  static ReceiptsGroupPage paginate(
+    List<ReceiptsGroupRow> sorted,
+    int requestedPage,
+  ) {
+    final total = sorted.length;
+    final pages =
+        total == 0
+            ? 1
+            : (total / receiptsReportPageSize).ceil();
+    final page = requestedPage.clamp(1, pages);
+    final start = (page - 1) * receiptsReportPageSize;
+    final end =
+        (start + receiptsReportPageSize) > total
+            ? total
+            : start + receiptsReportPageSize;
+
+    int receipts = 0;
+    double? items;
+    double balance = 0;
+    double revenue = 0;
+    double profit = 0;
+    double lineRevenue = 0;
+    int profitCount = 0;
+    for (final g in sorted) {
+      receipts += g.count;
+      if (g.items != null) items = (items ?? 0) + g.items!;
+      balance += g.balance;
+      revenue += g.revenue;
+      profit += g.profit;
+      lineRevenue += g.lineRevenue;
+      profitCount += g.profitCount;
+    }
+
+    return ReceiptsGroupPage(
+      rows:
+          total == 0
+              ? const []
+              : sorted.sublist(start, end),
+      totalCount: total,
+      page: page,
+      totalPages: pages,
+      totalReceipts: receipts,
+      totalItems: items,
+      totalBalance: balance,
+      totalRevenue: revenue,
+      totalProfit: profit,
+      totalLineRevenue: lineRevenue,
+      totalProfitCount: profitCount,
     );
   }
 }

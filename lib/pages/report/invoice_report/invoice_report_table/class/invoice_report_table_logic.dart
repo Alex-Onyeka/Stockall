@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/pages/report/components/report_group_by.dart';
 
 /// Page size required by report table specification.
 const int invoiceReportPageSize = 100;
@@ -995,6 +996,240 @@ class InvoiceReportQuery {
       pageSize: pageSize,
       totalPages: totalPages,
       totalRevenue: sumRevenue,
+      totalAmountPaid: sumPaid,
+      totalBalance: sumBalance,
+    );
+  }
+}
+
+const String invoiceNoStaffLabel = 'No staff';
+const String invoiceNoCustomerLabel = 'No customer';
+const String invoiceUnpaidChannel = 'Unpaid';
+
+enum InvoiceGroupSortField { name, count, total, paid, balance }
+
+/// One table row when grouped: every invoice of one staff member,
+/// customer or payment channel.
+class InvoiceReportGroupRow {
+  final String key;
+
+  /// "No staff", "No customer" or the Unpaid channel: always
+  /// shown last.
+  final bool isNone;
+  final String _noneLabel;
+
+  /// Most recent name in the group. Null when none was saved.
+  String? name;
+
+  int count = 0;
+
+  /// Same null rules as [InvoiceReportQuery.paginate]: an unknown
+  /// total or balance counts as 0.
+  double total = 0;
+  double paid = 0;
+  double balance = 0;
+
+  InvoiceReportGroupRow({
+    required this.key,
+    required this.isNone,
+    required this.name,
+    String noneLabel = '',
+  }) : _noneLabel = noneLabel;
+
+  String get label =>
+      isNone ? _noneLabel : (name ?? 'Not Set');
+
+  void add(InvoiceReportRow r) {
+    count++;
+    total += r.invoiceTotal ?? 0;
+    paid += r.amountPaid;
+    balance += r.balance ?? 0;
+  }
+}
+
+/// Result of [InvoiceReportGrouping.paginate]. Totals cover every
+/// group, not just this page.
+class InvoiceReportGroupPage {
+  final List<InvoiceReportGroupRow> rows;
+  final int totalCount;
+  final int page;
+  final int pageSize;
+  final int totalPages;
+  final int totalInvoices;
+  final double totalRevenue;
+  final double totalAmountPaid;
+  final double totalBalance;
+
+  const InvoiceReportGroupPage({
+    required this.rows,
+    required this.totalCount,
+    required this.page,
+    required this.pageSize,
+    required this.totalPages,
+    this.totalInvoices = 0,
+    this.totalRevenue = 0,
+    this.totalAmountPaid = 0,
+    this.totalBalance = 0,
+  });
+
+  int get firstIndex =>
+      totalCount == 0 ? 0 : (page - 1) * pageSize + 1;
+  int get lastIndex =>
+      totalCount == 0
+          ? 0
+          : ((page - 1) * pageSize + rows.length);
+}
+
+/// "Group by" Staff, Customer or payment Channel. Channel is the
+/// derived [InvoiceReportRow.paymentChannel] (from the payment
+/// receipts), so each invoice is in exactly one group.
+class InvoiceReportGrouping {
+  static String? _text(String? value) {
+    if (value == null) return null;
+    final t = value.trim();
+    return t.isEmpty ? null : t;
+  }
+
+  /// Groups [rows] that already passed the filters
+  /// (`InvoiceReportQuery.filterAndSort`). Each group shows its
+  /// most recent name.
+  static List<InvoiceReportGroupRow> build(
+    List<InvoiceReportRow> rows,
+    ReportGroupBy by,
+  ) {
+    if (by == ReportGroupBy.off) return [];
+    final newestFirst = List<InvoiceReportRow>.from(rows)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final groups = <String, InvoiceReportGroupRow>{};
+    for (final r in newestFirst) {
+      String? key;
+      String? name;
+      String noneLabel = '';
+      switch (by) {
+        case ReportGroupBy.staff:
+          key = _text(r.invoice.staffId);
+          name = _text(r.invoice.staffName);
+          noneLabel = invoiceNoStaffLabel;
+          break;
+        case ReportGroupBy.customer:
+          key = _text(r.invoice.customerUuid);
+          name = r.customerName;
+          noneLabel = invoiceNoCustomerLabel;
+          break;
+        case ReportGroupBy.channel:
+          name = r.paymentChannel;
+          key =
+              r.paymentChannel == invoiceUnpaidChannel
+                  ? null
+                  : r.paymentChannel;
+          noneLabel = invoiceUnpaidChannel;
+          break;
+        case ReportGroupBy.off:
+          break;
+      }
+      final k = key ?? '__none__';
+      final g = groups.putIfAbsent(
+        k,
+        () => InvoiceReportGroupRow(
+          key: k,
+          isNone: key == null,
+          name: name,
+          noneLabel: noneLabel,
+        ),
+      );
+      // Newest first, so only fill a name the newer ones lacked.
+      g.name ??= name;
+      g.add(r);
+    }
+    return groups.values.toList();
+  }
+
+  /// Sorted copy. The none row is always last; ties: label, then
+  /// key.
+  static List<InvoiceReportGroupRow> sort(
+    List<InvoiceReportGroupRow> groups, {
+    required InvoiceGroupSortField field,
+    required bool ascending,
+  }) {
+    int compare(
+      InvoiceReportGroupRow a,
+      InvoiceReportGroupRow b,
+    ) {
+      if (a.isNone != b.isNone) return a.isNone ? 1 : -1;
+      int c;
+      switch (field) {
+        case InvoiceGroupSortField.name:
+          c = a.label.toLowerCase().compareTo(
+            b.label.toLowerCase(),
+          );
+          break;
+        case InvoiceGroupSortField.count:
+          c = a.count.compareTo(b.count);
+          break;
+        case InvoiceGroupSortField.total:
+          c = a.total.compareTo(b.total);
+          break;
+        case InvoiceGroupSortField.paid:
+          c = a.paid.compareTo(b.paid);
+          break;
+        case InvoiceGroupSortField.balance:
+          c = a.balance.compareTo(b.balance);
+          break;
+      }
+      if (!ascending) c = -c;
+      if (c != 0) return c;
+      final n = a.label.toLowerCase().compareTo(
+        b.label.toLowerCase(),
+      );
+      return n != 0 ? n : a.key.compareTo(b.key);
+    }
+
+    return List<InvoiceReportGroupRow>.from(groups)
+      ..sort(compare);
+  }
+
+  static InvoiceReportGroupPage paginate(
+    List<InvoiceReportGroupRow> sorted,
+    int requestedPage, {
+    int pageSize = invoiceReportPageSize,
+  }) {
+    final total = sorted.length;
+    final totalPages =
+        total == 0 ? 1 : ((total - 1) ~/ pageSize) + 1;
+    final page =
+        requestedPage < 1
+            ? 1
+            : (requestedPage > totalPages
+                ? totalPages
+                : requestedPage);
+    final start = (page - 1) * pageSize;
+    final end =
+        (start + pageSize) > total
+            ? total
+            : (start + pageSize);
+
+    int invoices = 0;
+    double sumTotal = 0;
+    double sumPaid = 0;
+    double sumBalance = 0;
+    for (final g in sorted) {
+      invoices += g.count;
+      sumTotal += g.total;
+      sumPaid += g.paid;
+      sumBalance += g.balance;
+    }
+
+    return InvoiceReportGroupPage(
+      rows:
+          total == 0
+              ? <InvoiceReportGroupRow>[]
+              : sorted.sublist(start, end),
+      totalCount: total,
+      page: page,
+      pageSize: pageSize,
+      totalPages: totalPages,
+      totalInvoices: invoices,
+      totalRevenue: sumTotal,
       totalAmountPaid: sumPaid,
       totalBalance: sumBalance,
     );
