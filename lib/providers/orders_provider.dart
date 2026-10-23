@@ -1148,7 +1148,8 @@ class OrdersProvider extends ChangeNotifier {
                     '${formatDimension(item.historyQuantityChange())} $unitName of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 isIncreased: false,
                 title: 'Order Item Delivered',
-                quantityChange: -item.historyQuantityChange(),
+                quantityChange:
+                    -item.historyQuantityChange(),
                 oldValue: formatLargeNumberDouble(
                   oldQuantity / primaryUnitConversion,
                 ),

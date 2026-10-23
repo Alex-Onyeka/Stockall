@@ -868,7 +868,9 @@ class OrderItems extends HiveObject {
   String displayUnitName() {
     if (quantityType == 2 && hasCustomDimensions) {
       final pUnit = getPrimaryUnit();
-      return pUnit.name == 'Others' ? 'Unit(s)' : pUnit.name;
+      return pUnit.name == 'Others'
+          ? 'Unit(s)'
+          : pUnit.name;
     }
     final sel = getSelectedUnit();
     return sel.name == 'Others' ? 'Unit(s)' : sel.name;

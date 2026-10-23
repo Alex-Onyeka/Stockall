@@ -13,7 +13,10 @@ import 'package:stockall/pages/products/add_product_one/platforms/components/dim
 import 'package:stockall/pages/report/items_report_/item_history_report/class/item_history_report_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/class/storage_item_history_report_logic.dart';
 
-ProductUnitsClass dummyUnit(String name, {int? dimensionType = ProductUnitsClass.sheetUnit}) {
+ProductUnitsClass dummyUnit(
+  String name, {
+  int? dimensionType = ProductUnitsClass.sheetUnit,
+}) {
   return ProductUnitsClass(
     uuid: 'u-1',
     staffUuid: null,
@@ -1114,8 +1117,14 @@ void main() {
         );
 
         expect(oldLine.getStockQuantity(), 1.0);
-        expect(oldLine.displayQuantity(), 1.0); // primary unit equiv (1.0 m²)
-        expect(oldLine.historyQuantityChange(), 0.5); // 0.5 slab fraction
+        expect(
+          oldLine.displayQuantity(),
+          1.0,
+        ); // primary unit equiv (1.0 m²)
+        expect(
+          oldLine.historyQuantityChange(),
+          0.5,
+        ); // 0.5 slab fraction
 
         // Scenario A: User EDITS sale by increasing to 1 cut of 100×200 (full slab = 2.0 m²)
         final newLineMore = oldLine.copyWith(
@@ -1252,529 +1261,602 @@ void main() {
         );
 
         // Wastage in sale unit & wastage note
-        expect(orderItem.displayQuantity(), closeTo(2.1, 1e-9));
+        expect(
+          orderItem.displayQuantity(),
+          closeTo(2.1, 1e-9),
+        );
         expect(orderItem.baseQuantityInSaleUnit(), 2.0);
-        expect(orderItem.wastageInSaleUnit(), closeTo(0.1, 1e-9));
-        expect(orderItem.wastageNote(), 'incl. 0.1 M² wastage');
-        expect(orderItem.historyWastageText(), ' (incl. 0.1 wastage)');
+        expect(
+          orderItem.wastageInSaleUnit(),
+          closeTo(0.1, 1e-9),
+        );
+        expect(
+          orderItem.wastageNote(),
+          'incl. 0.1 M² wastage',
+        );
+        expect(
+          orderItem.historyWastageText(),
+          ' (incl. 0.1 wastage)',
+        );
       },
     );
 
-    test('Base unit resolution in multiple units picks unit where conversion is 1.0', () {
-      final unitSlab = ProductUnitsClass(
-        uuid: 'u-slab',
-        staffUuid: null,
-        createdAt: DateTime.utc(2026),
-        staffName: null,
-        conversion: 2.0, // 2 m² per slab
-        name: 'Slab',
-        isPrimary: true, // Marked primary, but conversion is 2.0
-        productUuid: 'p-1',
-        dimensionType: ProductUnitsClass.sheetUnit,
-      );
+    test(
+      'Base unit resolution in multiple units picks unit where conversion is 1.0',
+      () {
+        final unitSlab = ProductUnitsClass(
+          uuid: 'u-slab',
+          staffUuid: null,
+          createdAt: DateTime.utc(2026),
+          staffName: null,
+          conversion: 2.0, // 2 m² per slab
+          name: 'Slab',
+          isPrimary:
+              true, // Marked primary, but conversion is 2.0
+          productUuid: 'p-1',
+          dimensionType: ProductUnitsClass.sheetUnit,
+        );
 
-      final unitM2 = ProductUnitsClass(
-        uuid: 'u-m2',
-        staffUuid: null,
-        createdAt: DateTime.utc(2026),
-        staffName: null,
-        conversion: 1.0, // Base unit: conversion is 1.0
-        name: 'm²',
-        isPrimary: false,
-        productUuid: 'p-1',
-        dimensionType: ProductUnitsClass.areaUnit,
-      );
+        final unitM2 = ProductUnitsClass(
+          uuid: 'u-m2',
+          staffUuid: null,
+          createdAt: DateTime.utc(2026),
+          staffName: null,
+          conversion: 1.0, // Base unit: conversion is 1.0
+          name: 'm²',
+          isPrimary: false,
+          productUuid: 'p-1',
+          dimensionType: ProductUnitsClass.areaUnit,
+        );
 
-      final unitsList = [unitSlab, unitM2];
+        final unitsList = [unitSlab, unitM2];
 
-      // Resolve base unit where conversion is 1.0:
-      final resolvedBaseUnit = unitsList
-              .where((u) => (u.conversion - 1.0).abs() < 1e-6)
-              .firstOrNull
-              ?.name ??
-          unitsList.where((u) => u.isPrimary).firstOrNull?.name ??
-          'm²';
+        // Resolve base unit where conversion is 1.0:
+        final resolvedBaseUnit =
+            unitsList
+                .where(
+                  (u) => (u.conversion - 1.0).abs() < 1e-6,
+                )
+                .firstOrNull
+                ?.name ??
+            unitsList
+                .where((u) => u.isPrimary)
+                .firstOrNull
+                ?.name ??
+            'm²';
 
-      expect(resolvedBaseUnit, 'm²');
+        expect(resolvedBaseUnit, 'm²');
 
-      // Presets for dimension unit cm with resolvedBaseUnit 'm²' yields 10,000.0:
-      expect(
-        DimensionUnitHelper.getPresetConversion('Centimeter(s)', baseUnit: resolvedBaseUnit),
-        10000.0,
-      );
-    });
+        // Presets for dimension unit cm with resolvedBaseUnit 'm²' yields 10,000.0:
+        expect(
+          DimensionUnitHelper.getPresetConversion(
+            'Centimeter(s)',
+            baseUnit: resolvedBaseUnit,
+          ),
+          10000.0,
+        );
+      },
+    );
 
-    test('Switching cart to order sale type preserves wastage on cart items', () {
-      final product = TempProductClass(
-        id: 1,
-        name: 'Marble Slab',
-        unit: 'M²',
-        isRefundable: false,
-        costPrice: 50,
-        sellingPrice: 100,
-        shopId: 1,
-        quantity: 10,
-        setCustomPrice: false,
-        departmentName: null,
-        departmentUuid: null,
-        isManaged: true,
-        groupUnit: 'None',
-        qttyPerGroup: 1,
-        wholeSalePrice: 80,
-        storageUuid: null,
-        categories: [],
-        useGroupUnit: false,
-        unitsList: [dummyUnit('M²')],
-        pricesList: [dummyPrice()],
-        widthDimension: 100,
-        heightDimension: 200,
-        quantityType: 2,
-        manageSalesWastage: true,
-        dimensionUnit: 'Centimeter(s)',
-        dimensionUnitConversion: 10000.0,
-      );
+    test(
+      'Switching cart to order sale type preserves wastage on cart items',
+      () {
+        final product = TempProductClass(
+          id: 1,
+          name: 'Marble Slab',
+          unit: 'M²',
+          isRefundable: false,
+          costPrice: 50,
+          sellingPrice: 100,
+          shopId: 1,
+          quantity: 10,
+          setCustomPrice: false,
+          departmentName: null,
+          departmentUuid: null,
+          isManaged: true,
+          groupUnit: 'None',
+          qttyPerGroup: 1,
+          wholeSalePrice: 80,
+          storageUuid: null,
+          categories: [],
+          useGroupUnit: false,
+          unitsList: [dummyUnit('M²')],
+          pricesList: [dummyPrice()],
+          widthDimension: 100,
+          heightDimension: 200,
+          quantityType: 2,
+          manageSalesWastage: true,
+          dimensionUnit: 'Centimeter(s)',
+          dimensionUnitConversion: 10000.0,
+        );
 
-      final itemWithWastage = TempCartItem(
-        item: product,
-        itemUuid: product.uuid,
-        quantity: 1,
-        discount: null,
-        addToStock: false,
-        setTotalPrice: false,
-        useWholeSalePrice: false,
-        useGroupQuantity: false,
-        qttyPerGroup: null,
-        isVoid: false,
-        uuid: 'cart-line-order',
-        unitUuid: 'u-1',
-        priceUuid: 'pr-1',
-        widthDimension: 100,
-        heightDimension: 100,
-        quantityType: 2,
-        manageSalesWastage: true,
-        isPercentageWastage: true,
-        wastageAmount: 10.0, // 10%
-        wastageUnitUuid: 'u-1',
-      );
+        final itemWithWastage = TempCartItem(
+          item: product,
+          itemUuid: product.uuid,
+          quantity: 1,
+          discount: null,
+          addToStock: false,
+          setTotalPrice: false,
+          useWholeSalePrice: false,
+          useGroupQuantity: false,
+          qttyPerGroup: null,
+          isVoid: false,
+          uuid: 'cart-line-order',
+          unitUuid: 'u-1',
+          priceUuid: 'pr-1',
+          widthDimension: 100,
+          heightDimension: 100,
+          quantityType: 2,
+          manageSalesWastage: true,
+          isPercentageWastage: true,
+          wastageAmount: 10.0, // 10%
+          wastageUnitUuid: 'u-1',
+        );
 
-      // Verify wastage is calculated:
-      expect(itemWithWastage.wastageAmount, 10.0);
-      expect(itemWithWastage.isPercentageWastage, true);
-      expect(itemWithWastage.wastageArea(), closeTo(0.1, 1e-9));
-      expect(itemWithWastage.getStockQuantity(), closeTo(1.1, 1e-9));
+        // Verify wastage is calculated:
+        expect(itemWithWastage.wastageAmount, 10.0);
+        expect(itemWithWastage.isPercentageWastage, true);
+        expect(
+          itemWithWastage.wastageArea(),
+          closeTo(0.1, 1e-9),
+        );
+        expect(
+          itemWithWastage.getStockQuantity(),
+          closeTo(1.1, 1e-9),
+        );
 
-      // After switching cart type to order (cartItemTypeIndex = 3), wastage is NOT cleared:
-      // (clearOrderWastage is now a no-op)
-      expect(itemWithWastage.wastageAmount, isNotNull);
-      expect(itemWithWastage.wastageAmount, 10.0);
-    });
+        // After switching cart type to order (cartItemTypeIndex = 3), wastage is NOT cleared:
+        // (clearOrderWastage is now a no-op)
+        expect(itemWithWastage.wastageAmount, isNotNull);
+        expect(itemWithWastage.wastageAmount, 10.0);
+      },
+    );
 
-    test('formatHistoryUnit formats 1D and 2D items and respects identical units', () {
-      // 1D item: 2 bottles of a crate item (0.2 Crates equiv)
-      final unit1D = formatHistoryUnit(
-        selectedUnit: 'bottles',
-        primaryUnit: 'Crates',
-        primaryQuantity: 0.2,
-      );
-      expect(unit1D, 'bottles (0.2 Crates)');
+    test(
+      'formatHistoryUnit formats 1D and 2D items and respects identical units',
+      () {
+        // 1D item: 2 bottles of a crate item (0.2 Crates equiv)
+        final unit1D = formatHistoryUnit(
+          selectedUnit: 'bottles',
+          primaryUnit: 'Crates',
+          primaryQuantity: 0.2,
+        );
+        expect(unit1D, 'bottles (0.2 Crates)');
 
-      // 1D identical units: no bracketed equivalent
-      final unit1DSame = formatHistoryUnit(
-        selectedUnit: 'Crates',
-        primaryUnit: 'Crates',
-        primaryQuantity: 2.0,
-      );
-      expect(unit1DSame, 'Crates');
+        // 1D identical units: no bracketed equivalent
+        final unit1DSame = formatHistoryUnit(
+          selectedUnit: 'Crates',
+          primaryUnit: 'Crates',
+          primaryQuantity: 2.0,
+        );
+        expect(unit1DSame, 'Crates');
 
-      // 2D item: cut sold in Slabs with primary unit M²
-      final unit2D = formatHistoryUnit(
-        selectedUnit: 'Slabs (50 x 50)',
-        primaryUnit: 'M²',
-        primaryQuantity: 0.5,
-      );
-      expect(unit2D, 'Slabs (0.5 M²)');
+        // 2D item: cut sold in Slabs with primary unit M²
+        final unit2D = formatHistoryUnit(
+          selectedUnit: 'Slabs (50 x 50)',
+          primaryUnit: 'M²',
+          primaryQuantity: 0.5,
+        );
+        expect(unit2D, 'Slabs (0.5 M²)');
 
-      // 2D identical units: sold in M² when primary is M²
-      final unit2DSame = formatHistoryUnit(
-        selectedUnit: 'M²',
-        primaryUnit: 'M²',
-        primaryQuantity: 0.5,
-      );
-      expect(unit2DSame, 'M²');
-    });
+        // 2D identical units: sold in M² when primary is M²
+        final unit2DSame = formatHistoryUnit(
+          selectedUnit: 'M²',
+          primaryUnit: 'M²',
+          primaryQuantity: 0.5,
+        );
+        expect(unit2DSame, 'M²');
+      },
+    );
 
-    test('returnHistoryQuantity displays quantity change and unit correctly', () {
-      // 1D item sold: 2 bottles (0.2 Crates)
-      final res1D = returnHistoryQuantity(
-        quantityChange: -2,
-        isIncreased: false,
-        unit: 'bottles (0.2 Crates)',
-      );
-      expect(res1D, '-2 bottles (0.2 Crates)');
+    test(
+      'returnHistoryQuantity displays quantity change and unit correctly',
+      () {
+        // 1D item sold: 2 bottles (0.2 Crates)
+        final res1D = returnHistoryQuantity(
+          quantityChange: -2,
+          isIncreased: false,
+          unit: 'bottles (0.2 Crates)',
+        );
+        expect(res1D, '-2 bottles (0.2 Crates)');
 
-      // 2D item sold: 0.123 Slabs (0.5 M²)
-      final res2D = returnHistoryQuantity(
-        quantityChange: -0.123,
-        isIncreased: false,
-        unit: 'Slabs (0.5 M²)',
-      );
-      expect(res2D, '-0.123 Slabs (0.5 M²)');
+        // 2D item sold: 0.123 Slabs (0.5 M²)
+        final res2D = returnHistoryQuantity(
+          quantityChange: -0.123,
+          isIncreased: false,
+          unit: 'Slabs (0.5 M²)',
+        );
+        expect(res2D, '-0.123 Slabs (0.5 M²)');
 
-      // Legacy entry with (50 x 50) is converted using oldValue and newValue
-      final resLegacy = returnHistoryQuantity(
-        quantityChange: -0.123,
-        isIncreased: false,
-        unit: 'Slabs (50 x 50)',
-        primaryUnit: 'M²',
-        oldValue: '10.0',
-        newValue: '9.5',
-      );
-      expect(resLegacy, '-0.123 Slabs (0.5 M²)');
-    });
+        // Legacy entry with (50 x 50) is converted using oldValue and newValue
+        final resLegacy = returnHistoryQuantity(
+          quantityChange: -0.123,
+          isIncreased: false,
+          unit: 'Slabs (50 x 50)',
+          primaryUnit: 'M²',
+          oldValue: '10.0',
+          newValue: '9.5',
+        );
+        expect(resLegacy, '-0.123 Slabs (0.5 M²)');
+      },
+    );
 
-    test('TempCartItem.historyUnit produces correct equivalent for 1D and 2D items', () {
-      // 1D item: Crates (primary) and Bottles (conversion = 0.1)
-      final unitCrate = ProductUnitsClass(
-        uuid: 'u-crate',
-        staffUuid: null,
-        createdAt: DateTime.utc(2026),
-        staffName: null,
-        conversion: 1.0,
-        name: 'Crates',
-        isPrimary: true,
-        productUuid: 'p-1d',
-      );
-      final unitBottle = ProductUnitsClass(
-        uuid: 'u-bottle',
-        staffUuid: null,
-        createdAt: DateTime.utc(2026),
-        staffName: null,
-        conversion: 0.1,
-        name: 'bottles',
-        isPrimary: false,
-        productUuid: 'p-1d',
-      );
-      final product1D = TempProductClass(
-        id: 1,
-        name: 'Soda Drink',
-        unit: 'Crates',
-        isRefundable: false,
-        costPrice: 10,
-        sellingPrice: 20,
-        shopId: 1,
-        quantity: 50,
-        setCustomPrice: false,
-        departmentName: null,
-        departmentUuid: null,
-        isManaged: true,
-        groupUnit: 'None',
-        qttyPerGroup: 1,
-        wholeSalePrice: 15,
-        storageUuid: null,
-        categories: [],
-        useGroupUnit: false,
-        unitsList: [unitCrate, unitBottle],
-        pricesList: [dummyPrice()],
-        quantityType: 1,
-        widthDimension: null,
-        heightDimension: null,
-        manageSalesWastage: false,
-      );
+    test(
+      'TempCartItem.historyUnit produces correct equivalent for 1D and 2D items',
+      () {
+        // 1D item: Crates (primary) and Bottles (conversion = 0.1)
+        final unitCrate = ProductUnitsClass(
+          uuid: 'u-crate',
+          staffUuid: null,
+          createdAt: DateTime.utc(2026),
+          staffName: null,
+          conversion: 1.0,
+          name: 'Crates',
+          isPrimary: true,
+          productUuid: 'p-1d',
+        );
+        final unitBottle = ProductUnitsClass(
+          uuid: 'u-bottle',
+          staffUuid: null,
+          createdAt: DateTime.utc(2026),
+          staffName: null,
+          conversion: 0.1,
+          name: 'bottles',
+          isPrimary: false,
+          productUuid: 'p-1d',
+        );
+        final product1D = TempProductClass(
+          id: 1,
+          name: 'Soda Drink',
+          unit: 'Crates',
+          isRefundable: false,
+          costPrice: 10,
+          sellingPrice: 20,
+          shopId: 1,
+          quantity: 50,
+          setCustomPrice: false,
+          departmentName: null,
+          departmentUuid: null,
+          isManaged: true,
+          groupUnit: 'None',
+          qttyPerGroup: 1,
+          wholeSalePrice: 15,
+          storageUuid: null,
+          categories: [],
+          useGroupUnit: false,
+          unitsList: [unitCrate, unitBottle],
+          pricesList: [dummyPrice()],
+          quantityType: 1,
+          widthDimension: null,
+          heightDimension: null,
+          manageSalesWastage: false,
+        );
 
-      final cartItem1D = TempCartItem(
-        item: product1D,
-        itemUuid: product1D.uuid,
-        quantity: 2,
-        discount: null,
-        addToStock: false,
-        setTotalPrice: false,
-        useWholeSalePrice: false,
-        useGroupQuantity: false,
-        qttyPerGroup: null,
-        isVoid: false,
-        uuid: 'cart-1d',
-        unitUuid: 'u-bottle',
-        priceUuid: 'pr-1',
-        widthDimension: null,
-        heightDimension: null,
-        quantityType: 1,
-        manageSalesWastage: false,
-        isPercentageWastage: false,
-        wastageAmount: null,
-        wastageUnitUuid: null,
-      );
+        final cartItem1D = TempCartItem(
+          item: product1D,
+          itemUuid: product1D.uuid,
+          quantity: 2,
+          discount: null,
+          addToStock: false,
+          setTotalPrice: false,
+          useWholeSalePrice: false,
+          useGroupQuantity: false,
+          qttyPerGroup: null,
+          isVoid: false,
+          uuid: 'cart-1d',
+          unitUuid: 'u-bottle',
+          priceUuid: 'pr-1',
+          widthDimension: null,
+          heightDimension: null,
+          quantityType: 1,
+          manageSalesWastage: false,
+          isPercentageWastage: false,
+          wastageAmount: null,
+          wastageUnitUuid: null,
+        );
 
-      // Sold 2 bottles: equiv in primary unit (Crates) is 0.2 Crates
-      expect(cartItem1D.historyUnit(), 'bottles (0.2 Crates)');
+        // Sold 2 bottles: equiv in primary unit (Crates) is 0.2 Crates
+        expect(
+          cartItem1D.historyUnit(),
+          'bottles (0.2 Crates)',
+        );
 
-      // 2D item: Primary unit M² (conversion = 1.0, areaUnit), Secondary unit Slabs (conversion = 1.0, sheetUnit)
-      final unitM2 = ProductUnitsClass(
-        uuid: 'u-m2',
-        staffUuid: null,
-        createdAt: DateTime.utc(2026),
-        staffName: null,
-        conversion: 1.0,
-        name: 'M²',
-        isPrimary: true,
-        productUuid: 'p-2d',
-        dimensionType: ProductUnitsClass.areaUnit,
-      );
-      final unitSlab = ProductUnitsClass(
-        uuid: 'u-slab',
-        staffUuid: null,
-        createdAt: DateTime.utc(2026),
-        staffName: null,
-        conversion: 1.0,
-        name: 'Slabs',
-        isPrimary: false,
-        productUuid: 'p-2d',
-        dimensionType: ProductUnitsClass.sheetUnit,
-      );
-      final product2D = TempProductClass(
-        id: 2,
-        name: 'Marble Slab',
-        unit: 'M²',
-        isRefundable: false,
-        costPrice: 50,
-        sellingPrice: 100,
-        shopId: 1,
-        quantity: 10,
-        setCustomPrice: false,
-        departmentName: null,
-        departmentUuid: null,
-        isManaged: true,
-        groupUnit: 'None',
-        qttyPerGroup: 1,
-        wholeSalePrice: 80,
-        storageUuid: null,
-        categories: [],
-        useGroupUnit: false,
-        unitsList: [unitM2, unitSlab],
-        pricesList: [dummyPrice()],
-        widthDimension: 100,
-        heightDimension: 200, // 2 m² whole slab
-        quantityType: 2,
-        manageSalesWastage: false,
-        dimensionUnit: 'Centimeter(s)',
-        dimensionUnitConversion: 10000.0,
-      );
+        // 2D item: Primary unit M² (conversion = 1.0, areaUnit), Secondary unit Slabs (conversion = 1.0, sheetUnit)
+        final unitM2 = ProductUnitsClass(
+          uuid: 'u-m2',
+          staffUuid: null,
+          createdAt: DateTime.utc(2026),
+          staffName: null,
+          conversion: 1.0,
+          name: 'M²',
+          isPrimary: true,
+          productUuid: 'p-2d',
+          dimensionType: ProductUnitsClass.areaUnit,
+        );
+        final unitSlab = ProductUnitsClass(
+          uuid: 'u-slab',
+          staffUuid: null,
+          createdAt: DateTime.utc(2026),
+          staffName: null,
+          conversion: 1.0,
+          name: 'Slabs',
+          isPrimary: false,
+          productUuid: 'p-2d',
+          dimensionType: ProductUnitsClass.sheetUnit,
+        );
+        final product2D = TempProductClass(
+          id: 2,
+          name: 'Marble Slab',
+          unit: 'M²',
+          isRefundable: false,
+          costPrice: 50,
+          sellingPrice: 100,
+          shopId: 1,
+          quantity: 10,
+          setCustomPrice: false,
+          departmentName: null,
+          departmentUuid: null,
+          isManaged: true,
+          groupUnit: 'None',
+          qttyPerGroup: 1,
+          wholeSalePrice: 80,
+          storageUuid: null,
+          categories: [],
+          useGroupUnit: false,
+          unitsList: [unitM2, unitSlab],
+          pricesList: [dummyPrice()],
+          widthDimension: 100,
+          heightDimension: 200, // 2 m² whole slab
+          quantityType: 2,
+          manageSalesWastage: false,
+          dimensionUnit: 'Centimeter(s)',
+          dimensionUnitConversion: 10000.0,
+        );
 
-      // Custom cut: 100cm x 50cm = 0.5 m²
-      final cartItem2D = TempCartItem(
-        item: product2D,
-        itemUuid: product2D.uuid,
-        quantity: 1,
-        discount: null,
-        addToStock: false,
-        setTotalPrice: false,
-        useWholeSalePrice: false,
-        useGroupQuantity: false,
-        qttyPerGroup: null,
-        isVoid: false,
-        uuid: 'cart-2d',
-        unitUuid: 'u-slab',
-        priceUuid: 'pr-1',
-        widthDimension: 100,
-        heightDimension: 50,
-        quantityType: 2,
-        manageSalesWastage: false,
-        isPercentageWastage: false,
-        wastageAmount: null,
-        wastageUnitUuid: null,
-      );
+        // Custom cut: 100cm x 50cm = 0.5 m²
+        final cartItem2D = TempCartItem(
+          item: product2D,
+          itemUuid: product2D.uuid,
+          quantity: 1,
+          discount: null,
+          addToStock: false,
+          setTotalPrice: false,
+          useWholeSalePrice: false,
+          useGroupQuantity: false,
+          qttyPerGroup: null,
+          isVoid: false,
+          uuid: 'cart-2d',
+          unitUuid: 'u-slab',
+          priceUuid: 'pr-1',
+          widthDimension: 100,
+          heightDimension: 50,
+          quantityType: 2,
+          manageSalesWastage: false,
+          isPercentageWastage: false,
+          wastageAmount: null,
+          wastageUnitUuid: null,
+        );
 
-      // Sold 1 cut of 100x50 = 0.25 Slabs, stock/primary area is 0.5 M²
-      expect(cartItem2D.historyUnit(), 'Slabs (0.5 M²)');
-      expect(cartItem2D.historyQuantityChange(), 0.25);
-      expect(cartItem2D.displayQuantity(), 0.5);
-      expect(cartItem2D.displayUnitName(), 'M²');
-    });
+        // Sold 1 cut of 100x50 = 0.25 Slabs, stock/primary area is 0.5 M²
+        expect(cartItem2D.historyUnit(), 'Slabs (0.5 M²)');
+        expect(cartItem2D.historyQuantityChange(), 0.25);
+        expect(cartItem2D.displayQuantity(), 0.5);
+        expect(cartItem2D.displayUnitName(), 'M²');
+      },
+    );
 
-    test('ItemHistory & Report table format unit and equivalence', () {
-      // 1D: 2 bottles, primary unit Crates (0.2 Crates)
-      final history1D = ItemHistory(
-        shopId: 1,
-        title: 'Sold',
-        desc: 'Sale',
-        event: 'sale',
-        source: 'pos',
-        isManaged: true,
-        quantityChange: 2,
-        isIncreased: true,
-        unit: 'bottles',
-        primaryUnit: 'Crates',
-        oldValue: '10',
-        newValue: '10.2',
-      );
-      expect(
-        ItemHistoryReportQuery.quantityChangeUnit(history1D),
-        'bottles (0.2 Crates)',
-      );
-      expect(
-        returnHistoryQuantity(
-          quantityChange: history1D.quantityChange,
-          isIncreased: history1D.isIncreased,
-          unit: history1D.unit,
-          primaryUnit: history1D.primaryUnit,
-          oldValue: history1D.oldValue,
-          newValue: history1D.newValue,
-        ),
-        '+2 bottles (0.2 Crates)',
-      );
+    test(
+      'ItemHistory & Report table format unit and equivalence',
+      () {
+        // 1D: 2 bottles, primary unit Crates (0.2 Crates)
+        final history1D = ItemHistory(
+          shopId: 1,
+          title: 'Sold',
+          desc: 'Sale',
+          event: 'sale',
+          source: 'pos',
+          isManaged: true,
+          quantityChange: 2,
+          isIncreased: true,
+          unit: 'bottles',
+          primaryUnit: 'Crates',
+          oldValue: '10',
+          newValue: '10.2',
+        );
+        expect(
+          ItemHistoryReportQuery.quantityChangeUnit(
+            history1D,
+          ),
+          'bottles (0.2 Crates)',
+        );
+        expect(
+          returnHistoryQuantity(
+            quantityChange: history1D.quantityChange,
+            isIncreased: history1D.isIncreased,
+            unit: history1D.unit,
+            primaryUnit: history1D.primaryUnit,
+            oldValue: history1D.oldValue,
+            newValue: history1D.newValue,
+          ),
+          '+2 bottles (0.2 Crates)',
+        );
 
-      // 2D: Legacy format with (w x h) -> stripped and primary equiv shown
-      final history2DLegacy = ItemHistory(
-        shopId: 1,
-        title: 'Sold',
-        desc: 'Sale',
-        event: 'sale',
-        source: 'pos',
-        isManaged: true,
-        quantityChange: 0.123,
-        isIncreased: false,
-        unit: 'Slabs (50 x 50)',
-        primaryUnit: 'M²',
-        oldValue: '10',
-        newValue: '9.5',
-      );
-      expect(
-        ItemHistoryReportQuery.quantityChangeUnit(history2DLegacy),
-        'Slabs (0.5 M²)',
-      );
-      expect(
-        returnHistoryQuantity(
-          quantityChange: history2DLegacy.quantityChange,
-          isIncreased: history2DLegacy.isIncreased,
-          unit: history2DLegacy.unit,
-          primaryUnit: history2DLegacy.primaryUnit,
-          oldValue: history2DLegacy.oldValue,
-          newValue: history2DLegacy.newValue,
-        ),
-        '-0.123 Slabs (0.5 M²)',
-      );
+        // 2D: Legacy format with (w x h) -> stripped and primary equiv shown
+        final history2DLegacy = ItemHistory(
+          shopId: 1,
+          title: 'Sold',
+          desc: 'Sale',
+          event: 'sale',
+          source: 'pos',
+          isManaged: true,
+          quantityChange: 0.123,
+          isIncreased: false,
+          unit: 'Slabs (50 x 50)',
+          primaryUnit: 'M²',
+          oldValue: '10',
+          newValue: '9.5',
+        );
+        expect(
+          ItemHistoryReportQuery.quantityChangeUnit(
+            history2DLegacy,
+          ),
+          'Slabs (0.5 M²)',
+        );
+        expect(
+          returnHistoryQuantity(
+            quantityChange: history2DLegacy.quantityChange,
+            isIncreased: history2DLegacy.isIncreased,
+            unit: history2DLegacy.unit,
+            primaryUnit: history2DLegacy.primaryUnit,
+            oldValue: history2DLegacy.oldValue,
+            newValue: history2DLegacy.newValue,
+          ),
+          '-0.123 Slabs (0.5 M²)',
+        );
 
-      // Same unit: no brackets
-      final historySame = ItemHistory(
-        shopId: 1,
-        title: 'Sold',
-        desc: 'Sale',
-        event: 'sale',
-        source: 'pos',
-        isManaged: true,
-        quantityChange: 5,
-        isIncreased: true,
-        unit: 'Crates',
-        primaryUnit: 'Crates',
-        oldValue: '10',
-        newValue: '15',
-      );
-      expect(
-        ItemHistoryReportQuery.quantityChangeUnit(historySame),
-        'Crates',
-      );
-      expect(
-        returnHistoryQuantity(
-          quantityChange: historySame.quantityChange,
-          isIncreased: historySame.isIncreased,
-          unit: historySame.unit,
-          primaryUnit: historySame.primaryUnit,
-          oldValue: historySame.oldValue,
-          newValue: historySame.newValue,
-        ),
-        '+5 Crates',
-      );
-    });
+        // Same unit: no brackets
+        final historySame = ItemHistory(
+          shopId: 1,
+          title: 'Sold',
+          desc: 'Sale',
+          event: 'sale',
+          source: 'pos',
+          isManaged: true,
+          quantityChange: 5,
+          isIncreased: true,
+          unit: 'Crates',
+          primaryUnit: 'Crates',
+          oldValue: '10',
+          newValue: '15',
+        );
+        expect(
+          ItemHistoryReportQuery.quantityChangeUnit(
+            historySame,
+          ),
+          'Crates',
+        );
+        expect(
+          returnHistoryQuantity(
+            quantityChange: historySame.quantityChange,
+            isIncreased: historySame.isIncreased,
+            unit: historySame.unit,
+            primaryUnit: historySame.primaryUnit,
+            oldValue: historySame.oldValue,
+            newValue: historySame.newValue,
+          ),
+          '+5 Crates',
+        );
+      },
+    );
 
-    test('StorageItemHistory & Storage Report table format unit and equivalence', () {
-      // Storage item: 2 bottles, storagePrimaryUnit Crates (0.2 Crates)
-      final storageHistory1D = StorageItemHistory(
-        shopId: 1,
-        title: 'Transfer',
-        desc: 'Transfer',
-        event: 'transfer',
-        source: 'storage',
-        quantityChange: 2,
-        isIncreased: true,
-        storageUnit: 'bottles',
-        storagePrimaryUnit: 'Crates',
-        storageItemOldValue: '10',
-        storageItemNewValue: '10.2',
-      );
-      expect(
-        StorageItemHistoryReportQuery.quantityChangeUnit(storageHistory1D),
-        'bottles (0.2 Crates)',
-      );
-      expect(
-        returnHistoryQuantity(
-          quantityChange: storageHistory1D.quantityChange,
-          isIncreased: storageHistory1D.isIncreased,
-          unit: storageHistory1D.storageUnit,
-          primaryUnit: storageHistory1D.storagePrimaryUnit,
-          oldValue: storageHistory1D.storageItemOldValue,
-          newValue: storageHistory1D.storageItemNewValue,
-        ),
-        '+2 bottles (0.2 Crates)',
-      );
+    test(
+      'StorageItemHistory & Storage Report table format unit and equivalence',
+      () {
+        // Storage item: 2 bottles, storagePrimaryUnit Crates (0.2 Crates)
+        final storageHistory1D = StorageItemHistory(
+          shopId: 1,
+          title: 'Transfer',
+          desc: 'Transfer',
+          event: 'transfer',
+          source: 'storage',
+          quantityChange: 2,
+          isIncreased: true,
+          storageUnit: 'bottles',
+          storagePrimaryUnit: 'Crates',
+          storageItemOldValue: '10',
+          storageItemNewValue: '10.2',
+        );
+        expect(
+          StorageItemHistoryReportQuery.quantityChangeUnit(
+            storageHistory1D,
+          ),
+          'bottles (0.2 Crates)',
+        );
+        expect(
+          returnHistoryQuantity(
+            quantityChange: storageHistory1D.quantityChange,
+            isIncreased: storageHistory1D.isIncreased,
+            unit: storageHistory1D.storageUnit,
+            primaryUnit:
+                storageHistory1D.storagePrimaryUnit,
+            oldValue: storageHistory1D.storageItemOldValue,
+            newValue: storageHistory1D.storageItemNewValue,
+          ),
+          '+2 bottles (0.2 Crates)',
+        );
 
-      // Storage 2D: Legacy format with (w x h) -> stripped and primary equiv shown
-      final storageHistory2DLegacy = StorageItemHistory(
-        shopId: 1,
-        title: 'Transfer',
-        desc: 'Transfer',
-        event: 'transfer',
-        source: 'storage',
-        quantityChange: 0.123,
-        isIncreased: false,
-        storageUnit: 'Slabs (50 x 50)',
-        storagePrimaryUnit: 'M²',
-        storageItemOldValue: '10',
-        storageItemNewValue: '9.5',
-      );
-      expect(
-        StorageItemHistoryReportQuery.quantityChangeUnit(storageHistory2DLegacy),
-        'Slabs (0.5 M²)',
-      );
-      expect(
-        returnHistoryQuantity(
-          quantityChange: storageHistory2DLegacy.quantityChange,
-          isIncreased: storageHistory2DLegacy.isIncreased,
-          unit: storageHistory2DLegacy.storageUnit,
-          primaryUnit: storageHistory2DLegacy.storagePrimaryUnit,
-          oldValue: storageHistory2DLegacy.storageItemOldValue,
-          newValue: storageHistory2DLegacy.storageItemNewValue,
-        ),
-        '-0.123 Slabs (0.5 M²)',
-      );
+        // Storage 2D: Legacy format with (w x h) -> stripped and primary equiv shown
+        final storageHistory2DLegacy = StorageItemHistory(
+          shopId: 1,
+          title: 'Transfer',
+          desc: 'Transfer',
+          event: 'transfer',
+          source: 'storage',
+          quantityChange: 0.123,
+          isIncreased: false,
+          storageUnit: 'Slabs (50 x 50)',
+          storagePrimaryUnit: 'M²',
+          storageItemOldValue: '10',
+          storageItemNewValue: '9.5',
+        );
+        expect(
+          StorageItemHistoryReportQuery.quantityChangeUnit(
+            storageHistory2DLegacy,
+          ),
+          'Slabs (0.5 M²)',
+        );
+        expect(
+          returnHistoryQuantity(
+            quantityChange:
+                storageHistory2DLegacy.quantityChange,
+            isIncreased: storageHistory2DLegacy.isIncreased,
+            unit: storageHistory2DLegacy.storageUnit,
+            primaryUnit:
+                storageHistory2DLegacy.storagePrimaryUnit,
+            oldValue:
+                storageHistory2DLegacy.storageItemOldValue,
+            newValue:
+                storageHistory2DLegacy.storageItemNewValue,
+          ),
+          '-0.123 Slabs (0.5 M²)',
+        );
 
-      // Storage same unit: no brackets
-      final storageHistorySame = StorageItemHistory(
-        shopId: 1,
-        title: 'Transfer',
-        desc: 'Transfer',
-        event: 'transfer',
-        source: 'storage',
-        quantityChange: 5,
-        isIncreased: true,
-        storageUnit: 'Crates',
-        storagePrimaryUnit: 'Crates',
-        storageItemOldValue: '10',
-        storageItemNewValue: '15',
-      );
-      expect(
-        StorageItemHistoryReportQuery.quantityChangeUnit(storageHistorySame),
-        'Crates',
-      );
-      expect(
-        returnHistoryQuantity(
-          quantityChange: storageHistorySame.quantityChange,
-          isIncreased: storageHistorySame.isIncreased,
-          unit: storageHistorySame.storageUnit,
-          primaryUnit: storageHistorySame.storagePrimaryUnit,
-          oldValue: storageHistorySame.storageItemOldValue,
-          newValue: storageHistorySame.storageItemNewValue,
-        ),
-        '+5 Crates',
-      );
-    });
+        // Storage same unit: no brackets
+        final storageHistorySame = StorageItemHistory(
+          shopId: 1,
+          title: 'Transfer',
+          desc: 'Transfer',
+          event: 'transfer',
+          source: 'storage',
+          quantityChange: 5,
+          isIncreased: true,
+          storageUnit: 'Crates',
+          storagePrimaryUnit: 'Crates',
+          storageItemOldValue: '10',
+          storageItemNewValue: '15',
+        );
+        expect(
+          StorageItemHistoryReportQuery.quantityChangeUnit(
+            storageHistorySame,
+          ),
+          'Crates',
+        );
+        expect(
+          returnHistoryQuantity(
+            quantityChange:
+                storageHistorySame.quantityChange,
+            isIncreased: storageHistorySame.isIncreased,
+            unit: storageHistorySame.storageUnit,
+            primaryUnit:
+                storageHistorySame.storagePrimaryUnit,
+            oldValue:
+                storageHistorySame.storageItemOldValue,
+            newValue:
+                storageHistorySame.storageItemNewValue,
+          ),
+          '+5 Crates',
+        );
+      },
+    );
   });
 }

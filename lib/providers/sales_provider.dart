@@ -1360,11 +1360,12 @@ class SalesProvider extends ChangeNotifier {
 
       final primaryUnit = refCartItem.getPrimaryUnit();
       final double stockQtyForDisplay = stockDiff.abs();
-      final double primaryQtyEquiv = primaryUnit.getQuantityEquivDivided(
-        index: 1,
-        newQuantity: stockQtyForDisplay,
-        product: mainItem,
-      );
+      final double primaryQtyEquiv = primaryUnit
+          .getQuantityEquivDivided(
+            index: 1,
+            newQuantity: stockQtyForDisplay,
+            product: mainItem,
+          );
       final unitName = formatHistoryUnit(
         selectedUnit: refCartItem.getSelectedUnit().name,
         primaryUnit: primaryUnit.name,
@@ -1864,8 +1865,8 @@ class SalesProvider extends ChangeNotifier {
                       .quantityAfterRemoving(
                         cartItem.getStockQuantity(),
                       );
-                  final historyUnitName =
-                      cartItem.historyUnit(product: mainItem);
+                  final historyUnitName = cartItem
+                      .historyUnit(product: mainItem);
                   ItemHistory itemHistory = ItemHistory(
                     event: ItemHistoryEventClass.sold,
                     isManaged: cartItem.item.isManaged,
@@ -1943,8 +1944,8 @@ class SalesProvider extends ChangeNotifier {
                             cartItem.getItem()?.name,
                       )
                       .isNotEmpty) {
-                    final historyUnitName =
-                        cartItem.historyUnit(product: mainItem);
+                    final historyUnitName = cartItem
+                        .historyUnit(product: mainItem);
                     ItemHistory itemHistory = ItemHistory(
                       event: ItemHistoryEventClass.sold,
                       isManaged: cartItem.item.isManaged,
@@ -2541,8 +2542,8 @@ class SalesProvider extends ChangeNotifier {
                       .quantityAfterRemoving(
                         cartItem.getStockQuantity(),
                       );
-                  final historyUnitName =
-                      cartItem.historyUnit(product: mainItem);
+                  final historyUnitName = cartItem
+                      .historyUnit(product: mainItem);
                   ItemHistory itemHistory = ItemHistory(
                     event: ItemHistoryEventClass.sold,
                     isManaged: cartItem.item.isManaged,
@@ -2620,8 +2621,8 @@ class SalesProvider extends ChangeNotifier {
                             cartItem.getItem()?.name,
                       )
                       .isNotEmpty) {
-                    final historyUnitName =
-                        cartItem.historyUnit(product: mainItem);
+                    final historyUnitName = cartItem
+                        .historyUnit(product: mainItem);
                     ItemHistory itemHistory = ItemHistory(
                       event: ItemHistoryEventClass.sold,
                       isManaged: cartItem.item.isManaged,
@@ -3021,8 +3022,9 @@ class SalesProvider extends ChangeNotifier {
               } else {
                 mainItem = cartItem.item.copyWith();
               }
-              final historyUnitName =
-                  cartItem.historyUnit(product: mainItem);
+              final historyUnitName = cartItem.historyUnit(
+                product: mainItem,
+              );
               ItemHistory itemHistory = ItemHistory(
                 event: ItemHistoryEventClass.sold,
                 isManaged: cartItem.item.isManaged,

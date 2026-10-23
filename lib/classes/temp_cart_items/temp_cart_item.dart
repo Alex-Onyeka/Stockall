@@ -609,10 +609,14 @@ class TempCartItem extends HiveObject {
   double historyQuantityChange() {
     final unit = getSelectedUnit();
     if (item.quantityType == 2) {
-      if (unit.dimensionType == ProductUnitsClass.areaUnit) {
-        return getStockQuantity() / (unit.conversion > 0 ? unit.conversion : 1.0);
+      if (unit.dimensionType ==
+          ProductUnitsClass.areaUnit) {
+        return getStockQuantity() /
+            (unit.conversion > 0 ? unit.conversion : 1.0);
       }
-      final wholeArea = item.dimensionArea() * (unit.conversion > 0 ? unit.conversion : 1.0);
+      final wholeArea =
+          item.dimensionArea() *
+          (unit.conversion > 0 ? unit.conversion : 1.0);
       if (wholeArea > 0) {
         return getStockQuantity() / wholeArea;
       }
@@ -629,7 +633,9 @@ class TempCartItem extends HiveObject {
   String displayUnitName() {
     if (item.quantityType == 2 && hasCustomDimensions) {
       final pUnit = getPrimaryUnit();
-      return pUnit.name == 'Others' ? 'Unit(s)' : pUnit.name;
+      return pUnit.name == 'Others'
+          ? 'Unit(s)'
+          : pUnit.name;
     }
     final sel = getSelectedUnit();
     return sel.name == 'Others' ? 'Unit(s)' : sel.name;
@@ -638,10 +644,14 @@ class TempCartItem extends HiveObject {
   double baseQuantityInSaleUnit() {
     final unit = getSelectedUnit();
     if (item.quantityType == 2) {
-      if (unit.dimensionType == ProductUnitsClass.areaUnit) {
-        return getRealQuantity() / (unit.conversion > 0 ? unit.conversion : 1.0);
+      if (unit.dimensionType ==
+          ProductUnitsClass.areaUnit) {
+        return getRealQuantity() /
+            (unit.conversion > 0 ? unit.conversion : 1.0);
       }
-      final wholeArea = item.dimensionArea() * (unit.conversion > 0 ? unit.conversion : 1.0);
+      final wholeArea =
+          item.dimensionArea() *
+          (unit.conversion > 0 ? unit.conversion : 1.0);
       if (wholeArea > 0) {
         return getRealQuantity() / wholeArea;
       }
@@ -667,12 +677,20 @@ class TempCartItem extends HiveObject {
   // e.g. "bottles (0.2 Crates)" or "Slabs (0.5 M²)", or just "Crates" / "M²".
   String historyUnit({TempProductClass? product}) {
     final selUnit = getSelectedUnit();
-    final primUnit = product?.getPrimaryUnit() ?? getPrimaryUnit();
-    final selName = selUnit.name == 'Others' ? 'Unit(s)' : selUnit.name.trim();
-    final primName = primUnit.name == 'Others' ? 'Unit(s)' : primUnit.name.trim();
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final selName =
+        selUnit.name == 'Others'
+            ? 'Unit(s)'
+            : selUnit.name.trim();
+    final primName =
+        primUnit.name == 'Others'
+            ? 'Unit(s)'
+            : primUnit.name.trim();
 
     if (selName.isEmpty) return primName;
-    if (primName.isEmpty || selName.toLowerCase() == primName.toLowerCase()) {
+    if (primName.isEmpty ||
+        selName.toLowerCase() == primName.toLowerCase()) {
       return selName;
     }
 
