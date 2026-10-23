@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/components/calculator_engine.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/calculator_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -15,172 +15,64 @@ class MyCalculator extends StatefulWidget {
 }
 
 class _MyCalculatorState extends State<MyCalculator> {
-  List<String> leftNumbers = [];
-  List<String> rightNumbers = [];
-  String? sign;
-  double mainResult = 0;
+  final CalculatorEngine _engine = CalculatorEngine();
 
   void action(String number) {
-    if (mainResult == 0) {
-      if (sign == null) {
-        if (number == '.') {
-          if (leftNumbers.isNotEmpty) {
-            if (!leftNumbers.contains('.')) {
-              setState(() {
-                leftNumbers.add(number);
-              });
-            }
-          }
-        } else if (number == '0') {
-          if (leftNumbers.isEmpty) {
-            setState(() {
-              leftNumbers.add(number);
-            });
-          } else {
-            if (leftNumbers.length > 1 &&
-                leftNumbers.first == '0' &&
-                leftNumbers[1] != '0') {
-              setState(() {
-                leftNumbers.add(number);
-              });
-            } else {
-              setState(() {
-                leftNumbers.add(number);
-              });
-            }
-          }
-        } else {
-          setState(() {
-            leftNumbers.add(number);
-          });
-        }
+    setState(() {
+      if (number == '.') {
+        _engine.inputDot();
       } else {
-        if (number == '.') {
-          if (rightNumbers.isNotEmpty) {
-            if (!rightNumbers.contains('.')) {
-              setState(() {
-                rightNumbers.add(number);
-              });
-            }
-          }
-        } else if (number == '0') {
-          if (rightNumbers.isEmpty) {
-            setState(() {
-              rightNumbers.add(number);
-            });
-          } else {
-            if (rightNumbers.length > 1 &&
-                rightNumbers.first == '0' &&
-                rightNumbers[1] != '0') {
-              setState(() {
-                rightNumbers.add(number);
-              });
-            } else {
-              setState(() {
-                rightNumbers.add(number);
-              });
-            }
-          }
-        } else {
-          setState(() {
-            rightNumbers.add(number);
-          });
-        }
+        _engine.inputDigit(number);
       }
-    } else {
-      setState(() {
-        mainResult = 0;
-        rightNumbers.clear();
-        sign = null;
-        leftNumbers = [number];
-      });
-    }
+    });
   }
 
   void deleteAction() {
     setState(() {
-      if (rightNumbers.isNotEmpty) {
-        rightNumbers.removeLast();
-      } else if (rightNumbers.isEmpty && sign != null) {
-        sign = null;
-      } else {
-        leftNumbers.removeLast();
-      }
+      _engine.deleteAction();
     });
   }
 
   void setSign(String number) {
-    if (mainResult == 0) {
-      if (leftNumbers.isNotEmpty && rightNumbers.isEmpty) {
-        setState(() {
-          sign = number;
-        });
-      }
-    } else {
-      var beans = mainResult.toString().split('.');
-      var first = beans[0].split('');
-      var second = beans[1].split('').first;
+    setState(() {
+      _engine.inputOperator(number);
+    });
+  }
 
-      first.add('.');
-      first.add(second);
-      var third = first;
-      setState(() {
-        mainResult = 0;
-        rightNumbers.clear();
-        sign = number;
-        leftNumbers = third;
-      });
-    }
+  void inputLeftBracket() {
+    setState(() {
+      _engine.inputLeftBracket();
+    });
+  }
+
+  void inputRightBracket() {
+    setState(() {
+      _engine.inputRightBracket();
+    });
+  }
+
+  void inputSquare() {
+    setState(() {
+      _engine.inputSquare();
+    });
+  }
+
+  void inputSquareRoot() {
+    setState(() {
+      _engine.inputSquareRoot();
+    });
   }
 
   void clear() {
     setState(() {
-      leftNumbers.clear();
-      rightNumbers.clear();
-      sign = null;
-      mainResult = 0;
+      _engine.clear();
     });
   }
 
   void getResult() {
-    double leftValue =
-        double.tryParse(leftNumbers.join()) ?? 0;
-    double rightValue =
-        double.tryParse(rightNumbers.join()) ?? 0;
     setState(() {
-      if (sign != null &&
-          leftNumbers.isNotEmpty &&
-          rightNumbers.isNotEmpty) {
-        if (sign == 'X') {
-          mainResult = leftValue * rightValue;
-        } else if (sign == '+') {
-          mainResult = leftValue + rightValue;
-        } else if (sign == '-') {
-          mainResult = leftValue - rightValue;
-        } else if (sign == '/') {
-          mainResult = leftValue / rightValue;
-        }
-      } else if (sign == null &&
-          leftNumbers.isEmpty &&
-          rightNumbers.isEmpty) {
-        mainResult = 0;
-      }
+      _engine.calculate();
     });
-  }
-
-  String number(List<String> numbers) {
-    String tempNumber = numbers.join();
-    if (!tempNumber.contains('.')) {
-      return formatLargeNumber(tempNumber);
-    } else {
-      if (tempNumber.length > 1 &&
-          tempNumber.contains('.') &&
-          tempNumber.split('.').length > 1) {
-        return "${formatLargeNumber(tempNumber.split('.').first)}.${tempNumber.split('.')[1]}";
-      } else {
-        return tempNumber;
-      }
-    }
   }
 
   @override
@@ -198,14 +90,12 @@ class _MyCalculatorState extends State<MyCalculator> {
                   horizontal: 20.0,
                 ),
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Opacity(
                       opacity: 0,
                       child: IconButton(
-                        mouseCursor:
-                            SystemMouseCursors.click,
+                        mouseCursor: SystemMouseCursors.click,
                         onPressed: () {},
                         icon: Icon(Icons.clear),
                       ),
@@ -213,8 +103,7 @@ class _MyCalculatorState extends State<MyCalculator> {
                     Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            theme.mobileTexts.b1.fontSize,
+                        fontSize: theme.mobileTexts.b1.fontSize,
                       ),
                       'My Calculator',
                     ),
@@ -241,44 +130,47 @@ class _MyCalculatorState extends State<MyCalculator> {
                     color: Colors.white,
                   ),
                   child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Row(
-                        spacing: 12,
-                        mainAxisAlignment:
-                            MainAxisAlignment.end,
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          SubResult(
-                            number: number(leftNumbers),
-                            theme: theme,
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              reverse: true,
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                _engine.displayExpression.isEmpty
+                                    ? '0'
+                                    : _engine.displayExpression,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
                             ),
-                            sign ?? '',
-                          ),
-                          SubResult(
-                            number: number(rightNumbers),
-                            theme: theme,
                           ),
                         ],
                       ),
+                      SizedBox(height: 5),
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            formatLargeNumberDoubleWidgetDecimal(
-                              mainResult,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              reverse: true,
+                              scrollDirection: Axis.horizontal,
+                              child: Text(
+                                _engine.resultText,
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: _engine.errorMessage != null
+                                      ? theme.lightModeColor.errorColor200
+                                      : Colors.black,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -293,10 +185,9 @@ class _MyCalculatorState extends State<MyCalculator> {
                   x: 0.9,
                   y: -0.9,
                   isVisible:
-                      !CalculatorAuthAction()
-                          .useCalculatorAction(
-                            context: context,
-                          ),
+                      !CalculatorAuthAction().useCalculatorAction(
+                        context: context,
+                      ),
                   mainWidget: Container(
                     decoration: BoxDecoration(
                       color: Colors.grey.shade100,
@@ -306,18 +197,17 @@ class _MyCalculatorState extends State<MyCalculator> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 30,
+                        horizontal: 25,
+                        vertical: 20,
                       ),
                       child: Column(
-                        spacing: 15,
+                        spacing: 12,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Row(
-                            spacing: 15,
+                            spacing: 12,
                             mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                             children: [
                               CalcButton(
                                 flex: 2,
@@ -332,33 +222,69 @@ class _MyCalculatorState extends State<MyCalculator> {
                                 action: () {
                                   deleteAction();
                                 },
-                                icon:
-                                    Icons
-                                        .backspace_outlined,
+                                icon: Icons.backspace_outlined,
                                 itemColor:
-                                    theme
-                                        .lightModeColor
-                                        .errorColor200,
+                                    theme.lightModeColor.errorColor200,
                               ),
                               CalcButton(
                                 theme: theme,
                                 action: () {
-                                  setSign('+');
+                                  inputSquare();
                                 },
-                                icon: Icons.add,
-                                height: 30,
+                                text: 'x²',
                                 itemColor:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
+                                    theme.lightModeColor.secColor200,
                               ),
                             ],
                           ),
                           Row(
-                            spacing: 15,
+                            spacing: 12,
                             mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                                MainAxisAlignment.spaceBetween,
+                            children: [
+                              CalcButton(
+                                theme: theme,
+                                action: () {
+                                  inputLeftBracket();
+                                },
+                                text: '(',
+                                itemColor:
+                                    theme.lightModeColor.secColor200,
+                              ),
+                              CalcButton(
+                                theme: theme,
+                                action: () {
+                                  inputRightBracket();
+                                },
+                                text: ')',
+                                itemColor:
+                                    theme.lightModeColor.secColor200,
+                              ),
+                              CalcButton(
+                                theme: theme,
+                                action: () {
+                                  setSign('/');
+                                },
+                                svg: divideIconSvg,
+                                height: 20,
+                                itemColor:
+                                    theme.lightModeColor.secColor200,
+                              ),
+                              CalcButton(
+                                theme: theme,
+                                action: () {
+                                  inputSquareRoot();
+                                },
+                                text: '√',
+                                itemColor:
+                                    theme.lightModeColor.secColor200,
+                              ),
+                            ],
+                          ),
+                          Row(
+                            spacing: 12,
+                            mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
                             children: [
                               CalcButton(
                                 theme: theme,
@@ -384,22 +310,18 @@ class _MyCalculatorState extends State<MyCalculator> {
                               CalcButton(
                                 theme: theme,
                                 action: () {
-                                  setSign('/');
+                                  setSign('X');
                                 },
-                                svg: divideIconSvg,
-                                height: 20,
+                                text: 'X',
                                 itemColor:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
+                                    theme.lightModeColor.secColor200,
                               ),
                             ],
                           ),
                           Row(
-                            spacing: 15,
+                            spacing: 12,
                             mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                             children: [
                               CalcButton(
                                 theme: theme,
@@ -425,21 +347,19 @@ class _MyCalculatorState extends State<MyCalculator> {
                               CalcButton(
                                 theme: theme,
                                 action: () {
-                                  setSign('X');
+                                  setSign('-');
                                 },
-                                text: 'X',
+                                icon: Icons.remove,
+                                height: 28,
                                 itemColor:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
+                                    theme.lightModeColor.secColor200,
                               ),
                             ],
                           ),
                           Row(
-                            spacing: 15,
+                            spacing: 12,
                             mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                             children: [
                               CalcButton(
                                 theme: theme,
@@ -465,22 +385,19 @@ class _MyCalculatorState extends State<MyCalculator> {
                               CalcButton(
                                 theme: theme,
                                 action: () {
-                                  setSign('-');
+                                  setSign('+');
                                 },
-                                icon: Icons.remove,
-                                height: 30,
+                                icon: Icons.add,
+                                height: 28,
                                 itemColor:
-                                    theme
-                                        .lightModeColor
-                                        .secColor200,
+                                    theme.lightModeColor.secColor200,
                               ),
                             ],
                           ),
                           Row(
-                            spacing: 15,
+                            spacing: 12,
                             mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                             children: [
                               CalcButton(
                                 theme: theme,
@@ -504,9 +421,7 @@ class _MyCalculatorState extends State<MyCalculator> {
                                 },
                                 text: '=',
                                 color:
-                                    theme
-                                        .lightModeColor
-                                        .prColor300,
+                                    theme.lightModeColor.prColor300,
                                 itemColor: Colors.white,
                               ),
                             ],
@@ -535,6 +450,7 @@ class CalcButton extends StatelessWidget {
   final double? height;
   final Color? itemColor;
   final int? flex;
+  final double? buttonHeight;
 
   const CalcButton({
     super.key,
@@ -547,6 +463,7 @@ class CalcButton extends StatelessWidget {
     this.height,
     this.itemColor,
     this.flex,
+    this.buttonHeight,
   });
 
   @override
@@ -572,17 +489,17 @@ class CalcButton extends StatelessWidget {
             },
             borderRadius: BorderRadius.circular(10),
             child: Container(
-              padding: EdgeInsets.all(15),
-              height: 60,
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              height: buttonHeight ?? 52,
               child: Center(
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     Visibility(
                       visible: icon == null && svg == null,
                       child: Text(
                         style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.h3.fontSize,
+                          fontSize: theme.mobileTexts.h3.fontSize,
                           fontWeight: FontWeight.w600,
                           color: itemColor,
                         ),
@@ -612,34 +529,6 @@ class CalcButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class SubResult extends StatelessWidget {
-  const SubResult({
-    super.key,
-    required this.theme,
-    required this.number,
-    this.color,
-    this.size,
-  });
-
-  final ThemeProvider theme;
-  final String number;
-  final Color? color;
-  final double? size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      style: TextStyle(
-        height: 0,
-        fontWeight: FontWeight.bold,
-        fontSize: size ?? theme.mobileTexts.h3.fontSize,
-        color: color ?? Colors.grey.shade700,
-      ),
-      number,
     );
   }
 }

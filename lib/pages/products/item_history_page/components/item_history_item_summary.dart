@@ -179,11 +179,12 @@ class _ItemHistoryItemSummaryState
   }
 
   String get _periodLabel {
-    final range = ItemHistorySummaryBuilder.resolveDateRange(
-      period: _period,
-      businessNow: resolveBusinessDate(DateTime.now()),
-      customRange: _customRange,
-    );
+    final range =
+        ItemHistorySummaryBuilder.resolveDateRange(
+          period: _period,
+          businessNow: resolveBusinessDate(DateTime.now()),
+          customRange: _customRange,
+        );
     final s = range.start;
     final e = range.end;
     final same =
@@ -343,7 +344,8 @@ class _ItemHistoryItemSummaryState
               Icon(
                 icon,
                 size: 16,
-                color: highlighted ? accent : Colors.black87,
+                color:
+                    highlighted ? accent : Colors.black87,
               ),
               Flexible(
                 child: Text(
@@ -352,7 +354,10 @@ class _ItemHistoryItemSummaryState
                   style: TextStyle(
                     fontSize: theme.mobileTexts.b3.fontSize,
                     fontWeight: FontWeight.bold,
-                    color: highlighted ? accent : Colors.black87,
+                    color:
+                        highlighted
+                            ? accent
+                            : Colors.black87,
                   ),
                 ),
               ),
@@ -368,7 +373,9 @@ class _ItemHistoryItemSummaryState
     ItemHistorySummaryRow r,
   ) {
     final net = r.netQuantityChange;
-    final entries = <({String label, String value, Color color, bool bold})>[
+    final entries = <
+      ({String label, String value, Color color, bool bold})
+    >[
       (
         label: 'Opening Stock',
         value: r.openingStockText,
@@ -398,7 +405,12 @@ class _ItemHistoryItemSummaryState
                 : Colors.grey.shade600,
         bold: true,
       ),
-      _movement('Sold', r.soldText, r.sold, const Color(0xFFEA580C)),
+      _movement(
+        'Sold',
+        r.soldText,
+        r.sold,
+        const Color(0xFFEA580C),
+      ),
       _movement(
         'Returned (Sales)',
         r.returnedReceiptText,
@@ -493,7 +505,7 @@ class _ItemHistoryItemSummaryState
           return Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 15,
-              vertical: 12,
+              vertical: 15,
             ),
             child: Row(
               spacing: 10,
@@ -502,7 +514,8 @@ class _ItemHistoryItemSummaryState
                   child: Text(
                     e.label,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b2.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       color: Colors.grey.shade700,
                     ),
                   ),
@@ -510,9 +523,11 @@ class _ItemHistoryItemSummaryState
                 Text(
                   e.value,
                   style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
+                    fontSize: theme.mobileTexts.b3.fontSize,
                     fontWeight:
-                        e.bold ? FontWeight.bold : FontWeight.normal,
+                        e.bold
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                     color: e.color,
                   ),
                 ),
@@ -524,7 +539,8 @@ class _ItemHistoryItemSummaryState
     );
   }
 
-  ({String label, String value, Color color, bool bold}) _movement(
+  ({String label, String value, Color color, bool bold})
+  _movement(
     String label,
     String value,
     double amount,
@@ -533,7 +549,8 @@ class _ItemHistoryItemSummaryState
     return (
       label: label,
       value: value,
-      color: amount > 0 ? activeColor : Colors.grey.shade400,
+      color:
+          amount > 0 ? activeColor : Colors.grey.shade400,
       bold: amount > 0,
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/components/calculator_engine.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/calculator_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -18,172 +18,64 @@ class MyCalculatorDesktop extends StatefulWidget {
 
 class _MyCalculatorDesktopState
     extends State<MyCalculatorDesktop> {
-  List<String> leftNumbers = [];
-  List<String> rightNumbers = [];
-  String? sign;
-  double mainResult = 0;
+  final CalculatorEngine _engine = CalculatorEngine();
 
   void action(String number) {
-    if (mainResult == 0) {
-      if (sign == null) {
-        if (number == '.') {
-          if (leftNumbers.isNotEmpty) {
-            if (!leftNumbers.contains('.')) {
-              setState(() {
-                leftNumbers.add(number);
-              });
-            }
-          }
-        } else if (number == '0') {
-          if (leftNumbers.isEmpty) {
-            setState(() {
-              leftNumbers.add(number);
-            });
-          } else {
-            if (leftNumbers.length > 1 &&
-                leftNumbers.first == '0' &&
-                leftNumbers[1] != '0') {
-              setState(() {
-                leftNumbers.add(number);
-              });
-            } else {
-              setState(() {
-                leftNumbers.add(number);
-              });
-            }
-          }
-        } else {
-          setState(() {
-            leftNumbers.add(number);
-          });
-        }
+    setState(() {
+      if (number == '.') {
+        _engine.inputDot();
       } else {
-        if (number == '.') {
-          if (rightNumbers.isNotEmpty) {
-            if (!rightNumbers.contains('.')) {
-              setState(() {
-                rightNumbers.add(number);
-              });
-            }
-          }
-        } else if (number == '0') {
-          if (rightNumbers.isEmpty) {
-            setState(() {
-              rightNumbers.add(number);
-            });
-          } else {
-            if (rightNumbers.length > 1 &&
-                rightNumbers.first == '0' &&
-                rightNumbers[1] != '0') {
-              setState(() {
-                rightNumbers.add(number);
-              });
-            } else {
-              setState(() {
-                rightNumbers.add(number);
-              });
-            }
-          }
-        } else {
-          setState(() {
-            rightNumbers.add(number);
-          });
-        }
+        _engine.inputDigit(number);
       }
-    } else {
-      setState(() {
-        mainResult = 0;
-        rightNumbers.clear();
-        sign = null;
-        leftNumbers = [number];
-      });
-    }
+    });
   }
 
   void deleteAction() {
     setState(() {
-      if (rightNumbers.isNotEmpty) {
-        rightNumbers.removeLast();
-      } else if (rightNumbers.isEmpty && sign != null) {
-        sign = null;
-      } else {
-        leftNumbers.removeLast();
-      }
+      _engine.deleteAction();
     });
   }
 
   void setSign(String number) {
-    if (mainResult == 0) {
-      if (leftNumbers.isNotEmpty && rightNumbers.isEmpty) {
-        setState(() {
-          sign = number;
-        });
-      }
-    } else {
-      var beans = mainResult.toString().split('.');
-      var first = beans[0].split('');
-      var second = beans[1].split('').first;
+    setState(() {
+      _engine.inputOperator(number);
+    });
+  }
 
-      first.add('.');
-      first.add(second);
-      var third = first;
-      setState(() {
-        mainResult = 0;
-        rightNumbers.clear();
-        sign = number;
-        leftNumbers = third;
-      });
-    }
+  void inputLeftBracket() {
+    setState(() {
+      _engine.inputLeftBracket();
+    });
+  }
+
+  void inputRightBracket() {
+    setState(() {
+      _engine.inputRightBracket();
+    });
+  }
+
+  void inputSquare() {
+    setState(() {
+      _engine.inputSquare();
+    });
+  }
+
+  void inputSquareRoot() {
+    setState(() {
+      _engine.inputSquareRoot();
+    });
   }
 
   void clear() {
     setState(() {
-      leftNumbers.clear();
-      rightNumbers.clear();
-      sign = null;
-      mainResult = 0;
+      _engine.clear();
     });
   }
 
   void getResult() {
-    double leftValue =
-        double.tryParse(leftNumbers.join()) ?? 0;
-    double rightValue =
-        double.tryParse(rightNumbers.join()) ?? 0;
     setState(() {
-      if (sign != null &&
-          leftNumbers.isNotEmpty &&
-          rightNumbers.isNotEmpty) {
-        if (sign == 'X') {
-          mainResult = leftValue * rightValue;
-        } else if (sign == '+') {
-          mainResult = leftValue + rightValue;
-        } else if (sign == '-') {
-          mainResult = leftValue - rightValue;
-        } else if (sign == '/') {
-          mainResult = leftValue / rightValue;
-        }
-      } else if (sign == null &&
-          leftNumbers.isEmpty &&
-          rightNumbers.isEmpty) {
-        mainResult = 0;
-      }
+      _engine.calculate();
     });
-  }
-
-  String number(List<String> numbers) {
-    String tempNumber = numbers.join();
-    if (!tempNumber.contains('.')) {
-      return formatLargeNumber(tempNumber);
-    } else {
-      if (tempNumber.length > 1 &&
-          tempNumber.contains('.') &&
-          tempNumber.split('.').length > 1) {
-        return "${formatLargeNumber(tempNumber.split('.').first)}.${tempNumber.split('.')[1]}";
-      } else {
-        return tempNumber;
-      }
-    }
   }
 
   @override
@@ -249,8 +141,8 @@ class _MyCalculatorDesktopState
               flex: 2,
               child: Container(
                 padding: EdgeInsets.only(
-                  left: 5,
-                  right: 5,
+                  left: 10,
+                  right: 10,
                   bottom: 5,
                 ),
                 decoration: BoxDecoration(
@@ -260,40 +152,48 @@ class _MyCalculatorDesktopState
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Row(
-                      spacing: 10,
                       mainAxisAlignment:
                           MainAxisAlignment.end,
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
                       children: [
-                        SubResult(
-                          number: number(leftNumbers),
-                          theme: theme,
-                        ),
-                        Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                        Expanded(
+                          child: SingleChildScrollView(
+                            reverse: true,
+                            scrollDirection:
+                                Axis.horizontal,
+                            child: Text(
+                              _engine.displayExpression.isEmpty
+                                  ? '0'
+                                  : _engine.displayExpression,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
                           ),
-                          sign ?? '',
-                        ),
-                        SubResult(
-                          number: number(rightNumbers),
-                          theme: theme,
                         ),
                       ],
                     ),
+                    SizedBox(height: 5),
                     Row(
                       mainAxisAlignment:
                           MainAxisAlignment.end,
                       children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          formatLargeNumberDoubleWidgetDecimal(
-                            mainResult,
+                        Expanded(
+                          child: SingleChildScrollView(
+                            reverse: true,
+                            scrollDirection:
+                                Axis.horizontal,
+                            child: Text(
+                              _engine.resultText,
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: _engine.errorMessage != null
+                                    ? theme.lightModeColor.errorColor200
+                                    : Colors.black,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -357,10 +257,62 @@ class _MyCalculatorDesktopState
                             CalcButton(
                               theme: theme,
                               action: () {
-                                setSign('+');
+                                inputSquare();
                               },
-                              icon: Icons.add,
-                              height: 22,
+                              text: 'x²',
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 10,
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                inputLeftBracket();
+                              },
+                              text: '(',
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                inputRightBracket();
+                              },
+                              text: ')',
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                setSign('/');
+                              },
+                              svg: divideIconSvg,
+                              height: 18,
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                inputSquareRoot();
+                              },
+                              text: '√',
                               itemColor:
                                   theme
                                       .lightModeColor
@@ -398,10 +350,9 @@ class _MyCalculatorDesktopState
                             CalcButton(
                               theme: theme,
                               action: () {
-                                setSign('/');
+                                setSign('X');
                               },
-                              svg: divideIconSvg,
-                              height: 13,
+                              text: 'X',
                               itemColor:
                                   theme
                                       .lightModeColor
@@ -439,10 +390,10 @@ class _MyCalculatorDesktopState
                             CalcButton(
                               theme: theme,
                               action: () {
-                                setSign('X');
+                                setSign('-');
                               },
-                              height: 20,
-                              text: 'X',
+                              icon: Icons.remove,
+                              height: 22,
                               itemColor:
                                   theme
                                       .lightModeColor
@@ -480,10 +431,10 @@ class _MyCalculatorDesktopState
                             CalcButton(
                               theme: theme,
                               action: () {
-                                setSign('-');
+                                setSign('+');
                               },
-                              icon: Icons.remove,
-                              height: 20,
+                              icon: Icons.add,
+                              height: 22,
                               itemColor:
                                   theme
                                       .lightModeColor
@@ -492,7 +443,7 @@ class _MyCalculatorDesktopState
                           ],
                         ),
                         Row(
-                          spacing: 15,
+                          spacing: 10,
                           mainAxisAlignment:
                               MainAxisAlignment
                                   .spaceBetween,
@@ -549,6 +500,7 @@ class CalcButton extends StatelessWidget {
   final double? height;
   final Color? itemColor;
   final int? flex;
+  final double? buttonHeight;
 
   const CalcButton({
     super.key,
@@ -561,6 +513,7 @@ class CalcButton extends StatelessWidget {
     this.height,
     this.itemColor,
     this.flex,
+    this.buttonHeight,
   });
 
   @override
@@ -587,9 +540,10 @@ class CalcButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: Container(
               padding: EdgeInsets.all(10),
-              height: 60,
+              height: buttonHeight ?? 50,
               child: Center(
                 child: Stack(
+                  alignment: Alignment.center,
                   children: [
                     Visibility(
                       visible: icon == null && svg == null,
@@ -626,34 +580,6 @@ class CalcButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class SubResult extends StatelessWidget {
-  const SubResult({
-    super.key,
-    required this.theme,
-    required this.number,
-    this.color,
-    this.size,
-  });
-
-  final ThemeProvider theme;
-  final String number;
-  final Color? color;
-  final double? size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      style: TextStyle(
-        height: 0,
-        fontWeight: FontWeight.bold,
-        fontSize: size ?? theme.mobileTexts.h4.fontSize,
-        color: color ?? Colors.grey.shade700,
-      ),
-      number,
     );
   }
 }
