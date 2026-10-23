@@ -88,6 +88,51 @@ class ItemHistoryMobileState extends State<ItemHistoryMobile> {
             }
           },
         ).toList();
+
+    String viewLabel(ItemHistoryViewMode mode) {
+      switch (mode) {
+        case ItemHistoryViewMode.list:
+          return 'List';
+        case ItemHistoryViewMode.table:
+          return 'Table';
+        case ItemHistoryViewMode.summary:
+          return 'Summary';
+      }
+    }
+
+    PopupMenuItem viewMenuItem(ItemHistoryViewMode mode) {
+      return PopupMenuItem(
+        onTap: () {
+          setState(() {
+            _mode = mode;
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                  fontWeight: _mode == mode ? FontWeight.bold : null,
+                ),
+                viewLabel(mode),
+              ),
+              Visibility(
+                visible: _mode == mode,
+                child: Icon(
+                  size: 17,
+                  color: Colors.grey.shade700,
+                  Icons.check,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: appBar(
         context: context,
@@ -167,16 +212,34 @@ class ItemHistoryMobileState extends State<ItemHistoryMobile> {
               ),
             ),
             if (widget.productUuid != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: ItemHistoryViewSwitch(
-                  mode: _mode,
-                  compact: true,
-                  onChanged: (mode) {
-                    setState(() {
-                      _mode = mode;
-                    });
-                  },
+              PopupMenuButton(
+                offset: Offset(-20, 30),
+                color: Colors.white,
+                itemBuilder: (context) {
+                  return [
+                    viewMenuItem(ItemHistoryViewMode.list),
+                    viewMenuItem(ItemHistoryViewMode.table),
+                    viewMenuItem(ItemHistoryViewMode.summary),
+                  ];
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      spacing: 4,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize: theme.mobileTexts.b3.fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          viewLabel(_mode),
+                        ),
+                        Icon(Icons.more_vert_rounded),
+                      ],
+                    ),
+                  ),
                 ),
               ),
           ],
