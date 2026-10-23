@@ -590,10 +590,23 @@ class TempCartItem extends HiveObject {
     return getRealQuantity() + wastageArea();
   }
 
-  // Total line quantity in the selected unit.
-  // For 2D lines with sheet/piece units, custom dimensions scale as a fraction of the whole item:
-  // e.g. 1 cut of 1×1 from a 1×2 whole slab = 0.5 slab.
+  bool get hasCustomDimensions =>
+      (widthDimension != null && widthDimension! > 0) ||
+      (heightDimension != null && heightDimension! > 0);
+
+  // Total line quantity displayed in the Bottom Sheet, Cart Tile, and Receipts.
+  // When a 2D item has custom dimensions, this is the equivalent quantity
+  // in the primary unit (e.g. 1.0 M²).
+  // For all other lines, it is the line quantity in the selected unit.
   double displayQuantity() {
+    if (item.quantityType == 2 && hasCustomDimensions) {
+      return getStockQuantity();
+    }
+    return historyQuantityChange();
+  }
+
+  // Decimal fraction / unit quantity for ItemHistory (e.g. 0.5 Slabs).
+  double historyQuantityChange() {
     final unit = getSelectedUnit();
     if (item.quantityType == 2) {
       if (unit.dimensionType == ProductUnitsClass.areaUnit) {
@@ -611,6 +624,17 @@ class TempCartItem extends HiveObject {
     return quantity + quantity * wastage / base;
   }
 
+  // Unit name displayed in the Bottom Sheet, Cart Tile, and Receipts.
+  // When a 2D item has custom dimensions, returns the primary unit name (e.g. M²).
+  String displayUnitName() {
+    if (item.quantityType == 2 && hasCustomDimensions) {
+      final pUnit = getPrimaryUnit();
+      return pUnit.name == 'Others' ? 'Unit(s)' : pUnit.name;
+    }
+    final sel = getSelectedUnit();
+    return sel.name == 'Others' ? 'Unit(s)' : sel.name;
+  }
+
   double baseQuantityInSaleUnit() {
     final unit = getSelectedUnit();
     if (item.quantityType == 2) {
@@ -626,9 +650,14 @@ class TempCartItem extends HiveObject {
   }
 
   double wastageInSaleUnit() =>
-      displayQuantity() - baseQuantityInSaleUnit();
+      historyQuantityChange() - baseQuantityInSaleUnit();
 
-  // Quantity and wastage for item-history text.
+  // Quantity text for item-history text.
+  String historyQuantityText() {
+    return formatDimension(historyQuantityChange());
+  }
+
+  // Quantity text for receipts and cart display.
   String quantityText() {
     return formatDimension(displayQuantity());
   }
@@ -758,11 +787,6 @@ class TempCartItem extends HiveObject {
   }
 
   String getUnit() {
-    var priUnit = getSelectedUnit();
-    if (priUnit.name == 'Others') {
-      return 'Unit(s)';
-    } else {
-      return "${priUnit.name}${dimensionsLabel()} ";
-    }
+    return displayUnitName();
   }
 }

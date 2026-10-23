@@ -1349,11 +1349,11 @@ class SalesProvider extends ChangeNotifier {
 
       final oldDisplayQty = oldLines.fold<double>(
         0.0,
-        (sum, i) => sum + i.displayQuantity(),
+        (sum, i) => sum + i.historyQuantityChange(),
       );
       final newDisplayQty = newLines.fold<double>(
         0.0,
-        (sum, i) => sum + i.displayQuantity(),
+        (sum, i) => sum + i.historyQuantityChange(),
       );
       final displayDiff =
           (newDisplayQty - oldDisplayQty).abs();
@@ -1879,12 +1879,12 @@ class SalesProvider extends ChangeNotifier {
                         cartItem.getPrimaryUnit().name,
                     shopId: shopId,
                     desc:
-                        '${cartItem.quantityText()} $historyUnitName${cartItem.historyWastageText()} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
+                        '${cartItem.historyQuantityText()} $historyUnitName${cartItem.historyWastageText()} of This Item was Sold. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}',
                     isIncreased: false,
 
                     title: 'Item Sold In Receipt',
                     quantityChange:
-                        -cartItem.displayQuantity(),
+                        -cartItem.historyQuantityChange(),
                     newValue: formatLargeNumberDouble(
                       cartItem
                           .getPrimaryUnit()
@@ -2556,12 +2556,12 @@ class SalesProvider extends ChangeNotifier {
                         cartItem.getPrimaryUnit().name,
                     shopId: shopId,
                     desc:
-                        '${cartItem.quantityText()} "$historyUnitName"${cartItem.historyWastageText()} of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
+                        '${cartItem.historyQuantityText()} "$historyUnitName"${cartItem.historyWastageText()} of This Item was Sold on Credit. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}',
                     isIncreased: false,
 
                     title: 'Item Sold On Credit',
                     quantityChange:
-                        -cartItem.displayQuantity(),
+                        -cartItem.historyQuantityChange(),
                     newValue: formatLargeNumberDouble(
                       cartItem
                           .getPrimaryUnit()

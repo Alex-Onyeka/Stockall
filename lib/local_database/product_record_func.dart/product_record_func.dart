@@ -169,11 +169,11 @@ class ProductRecordFunc {
               title: 'Item Returned',
               desc:
                   withWastage
-                      ? '${record.quantityText()} $historyUnitName${record.historyWastageText()} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.'
-                      : '${formatDimension(record.displayQuantity())} $historyUnitName of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
+                      ? '${record.historyQuantityText()} $historyUnitName${record.historyWastageText()} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.'
+                      : '${formatDimension(record.historyQuantityChange())} $historyUnitName of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
               quantityChange:
                   withWastage
-                      ? record.displayQuantity()
+                      ? record.historyQuantityChange()
                       : record.quantity,
               newValue: formatLargeNumberDouble(
                 product
@@ -234,7 +234,7 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Receipt Deleted (Unmanaged)',
               desc:
-                  '${formatDimension(record.displayQuantity())} $historyUnitName of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
+                  '${formatDimension(record.historyQuantityChange())} $historyUnitName of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
@@ -391,8 +391,8 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.quantityText()} $historyUnitName${record.historyWastageText()} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
-              quantityChange: record.displayQuantity(),
+                  '${record.historyQuantityText()} $historyUnitName${record.historyWastageText()} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
+              quantityChange: record.historyQuantityChange(),
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
@@ -453,7 +453,7 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Invoice Deleted (Unmanaged)',
               desc:
-                  '${formatDimension(record.displayQuantity())} $historyUnitName of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
+                  '${formatDimension(record.historyQuantityChange())} $historyUnitName of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product

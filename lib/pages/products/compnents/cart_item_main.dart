@@ -321,8 +321,7 @@ class _CartItemMainState extends State<CartItemMain> {
                                                 ),
                                                 cutLongText(
                                                   widget.cartItem
-                                                      .getSelectedUnit()
-                                                      .name,
+                                                      .displayUnitName(),
                                                   7,
                                                 ),
                                               ),

@@ -1145,10 +1145,10 @@ class OrdersProvider extends ChangeNotifier {
                     ItemHistoryEventClass.orderDestination,
                 shopId: shopId(),
                 desc:
-                    '${formatDimension(item.displayQuantity())} $unitName of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${formatDimension(item.historyQuantityChange())} $unitName of This Item was Delivered. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 isIncreased: false,
                 title: 'Order Item Delivered',
-                quantityChange: -item.displayQuantity(),
+                quantityChange: -item.historyQuantityChange(),
                 oldValue: formatLargeNumberDouble(
                   oldQuantity / primaryUnitConversion,
                 ),
@@ -1185,7 +1185,7 @@ class OrdersProvider extends ChangeNotifier {
                 destination:
                     ItemHistoryEventClass.orderDestination,
                 desc:
-                    '${formatDimension(item.displayQuantity())} $unitName of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
+                    '${formatDimension(item.historyQuantityChange())} $unitName of This Item was Delivered, but Not Deducted Because Item is Not Managed. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}... Order Id: #${returnOnlyDigits(order.uuid ?? '')}',
                 shopId: shopId(),
                 isIncreased: false,
                 oldValue: formatLargeNumberDouble(

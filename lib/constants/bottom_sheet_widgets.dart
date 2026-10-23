@@ -3093,7 +3093,7 @@ void selectProductSales({
                                                    .b2
                                                    .fontWeightBold,
                                          ),
-                                         '${formatLargeNumberDouble(previewLine().displayQuantity())}${previewLine().getSelectedUnit().name != 'Others' && previewLine().getSelectedUnit().name.isNotEmpty ? ' ${previewLine().getSelectedUnit().name}' : (previewLine().getSelectedUnit().name == 'Others' ? ' Unit(s)' : '')}',
+                                         '${formatLargeNumberDouble(previewLine().displayQuantity())}${previewLine().displayUnitName().isNotEmpty ? ' ${previewLine().displayUnitName()}' : ''}',
                                         ),
                                       ],
                                     ),
@@ -3109,7 +3109,9 @@ void selectProductSales({
                                                 fontSize: theme.mobileTexts.b4.fontSize,
                                                 color: Colors.grey.shade600,
                                               ),
-                                              '(${formatLargeNumberDouble(previewLine().quantity)} + ${formatLargeNumberDouble(previewLine().wastageInSaleUnit())} wastage)',
+                                              previewLine().item.quantityType == 2 && previewLine().hasCustomDimensions
+                                                  ? '(${formatLargeNumberDouble(previewLine().getRealQuantity())} + ${formatLargeNumberDouble(previewLine().wastageArea())} wastage)'
+                                                  : '(${formatLargeNumberDouble(previewLine().quantity)} + ${formatLargeNumberDouble(previewLine().wastageInSaleUnit())} wastage)',
                                             ),
                                           ],
                                         ),

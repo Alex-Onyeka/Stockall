@@ -768,11 +768,13 @@ void main() {
         expect(cutLine.getRealQuantity(), 1.0);
         expect(cutLine.getStockQuantity(), 1.0);
 
-        // In Slab unit: 1.0 m² / 2.0 m² = 0.5 Slab!
-        expect(cutLine.displayQuantity(), 0.5);
+        // When custom dimensions are set, display quantity is primary unit equiv (1.0 m²):
+        expect(cutLine.displayQuantity(), 1.0);
+        expect(cutLine.displayUnitName(), 'M²');
+        expect(cutLine.historyQuantityChange(), 0.5);
         expect(cutLine.baseQuantityInSaleUnit(), 0.5);
         expect(cutLine.getSelectedUnit().name, 'Slab');
-        expect(cutLine.getUnit().trim(), 'Slab (1m x 1m)');
+        expect(cutLine.getUnit().trim(), 'M²');
         expect(cutLine.dimensionsLabel(), ' (1m x 1m)');
 
         // With 10% wastage:
@@ -785,9 +787,13 @@ void main() {
           cutWithWastage.getStockQuantity(),
           closeTo(1.1, 1e-9),
         );
-        // Display quantity in Slab: 1.1 / 2.0 = 0.55 Slab!
+        // Display quantity is primary unit equiv: 1.1 m²
         expect(
           cutWithWastage.displayQuantity(),
+          closeTo(1.1, 1e-9),
+        );
+        expect(
+          cutWithWastage.historyQuantityChange(),
           closeTo(0.55, 1e-9),
         );
         expect(
@@ -1108,7 +1114,8 @@ void main() {
         );
 
         expect(oldLine.getStockQuantity(), 1.0);
-        expect(oldLine.displayQuantity(), 0.5);
+        expect(oldLine.displayQuantity(), 1.0); // primary unit equiv (1.0 m²)
+        expect(oldLine.historyQuantityChange(), 0.5); // 0.5 slab fraction
 
         // Scenario A: User EDITS sale by increasing to 1 cut of 100×200 (full slab = 2.0 m²)
         final newLineMore = oldLine.copyWith(
@@ -1578,7 +1585,9 @@ void main() {
 
       // Sold 1 cut of 100x50 = 0.25 Slabs, stock/primary area is 0.5 M²
       expect(cartItem2D.historyUnit(), 'Slabs (0.5 M²)');
-      expect(cartItem2D.displayQuantity(), 0.25);
+      expect(cartItem2D.historyQuantityChange(), 0.25);
+      expect(cartItem2D.displayQuantity(), 0.5);
+      expect(cartItem2D.displayUnitName(), 'M²');
     });
 
     test('ItemHistory & Report table format unit and equivalence', () {

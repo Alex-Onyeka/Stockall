@@ -800,10 +800,23 @@ class TempProductSaleRecord {
     return getActualQuantity() + wastageArea();
   }
 
-  // Total line quantity in the selected unit.
-  // For 2D lines with sheet/piece units, custom dimensions scale as a fraction of the whole item:
-  // e.g. 1 cut of 1×1 from a 1×2 whole slab = 0.5 slab.
+  bool get hasCustomDimensions =>
+      (widthDimension != null && widthDimension! > 0) ||
+      (heightDimension != null && heightDimension! > 0);
+
+  // Total line quantity displayed in Cart Tile and Receipts.
+  // When a 2D item has custom dimensions, this is the equivalent quantity
+  // in the primary unit (e.g. 1.0 M²).
+  // For all other lines, it is the line quantity in the selected unit.
   double displayQuantity() {
+    if (quantityType == 2 && hasCustomDimensions) {
+      return getStockQuantity();
+    }
+    return historyQuantityChange();
+  }
+
+  // Decimal fraction / unit quantity for ItemHistory (e.g. 0.5 Slabs).
+  double historyQuantityChange() {
     if (quantityType == 2) {
       final unit = getSelectedUnit();
       if (unit.dimensionType ==
@@ -839,6 +852,16 @@ class TempProductSaleRecord {
     return quantity + quantity * wastage / base;
   }
 
+  // Unit name displayed in Cart Tile and Receipts.
+  String displayUnitName() {
+    if (quantityType == 2 && hasCustomDimensions) {
+      final pUnit = getPrimaryUnit();
+      return pUnit.name == 'Others' ? 'Unit(s)' : pUnit.name;
+    }
+    final sel = getSelectedUnit();
+    return sel.name == 'Others' ? 'Unit(s)' : sel.name;
+  }
+
   double baseQuantityInSaleUnit() {
     if (quantityType == 2) {
       final unit = getSelectedUnit();
@@ -872,7 +895,7 @@ class TempProductSaleRecord {
   }
 
   double wastageInSaleUnit() =>
-      displayQuantity() - baseQuantityInSaleUnit();
+      historyQuantityChange() - baseQuantityInSaleUnit();
 
   // "incl. 0.1 Slab wastage", or '' without wastage.
   String wastageNote() {
@@ -883,7 +906,12 @@ class TempProductSaleRecord {
         '${unitName == 'Others' ? 'Unit(s)' : unitName} wastage';
   }
 
-  // Quantity and wastage for item-history text.
+  // Quantity text for item-history records.
+  String historyQuantityText() {
+    return formatDimension(historyQuantityChange());
+  }
+
+  // Quantity text for receipts and cart display.
   String quantityText() {
     return formatDimension(displayQuantity());
   }
