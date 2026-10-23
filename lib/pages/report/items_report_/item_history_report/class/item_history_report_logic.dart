@@ -402,4 +402,47 @@ class ItemHistoryReportQuery {
       totalPages: pages,
     );
   }
+
+  static String? _clean(String? s) {
+    final t = s?.trim();
+    return (t == null || t.isEmpty) ? null : t;
+  }
+
+  /// Formats the unit of [ItemHistory.quantityChange].
+  /// Shows the selected unit, plus the primary unit equivalent in brackets
+  /// when they differ (e.g. "bottles (0.2 Crates)" or "Slabs (0.5 M²)").
+  static String? quantityChangeUnit(ItemHistory h) {
+    final u = _clean(h.unit);
+    if (u == null || u.toLowerCase() == 'not set') return null;
+    final prim = _clean(h.primaryUnit);
+    if (prim == null || prim.toLowerCase() == 'not set') {
+      return stripDimensionLabel(u);
+    }
+
+    final cleanSelected = stripDimensionLabel(u);
+    if (cleanSelected.toLowerCase() == prim.toLowerCase()) {
+      return cleanSelected;
+    }
+
+    if (u.contains('(') && u.toLowerCase().contains(prim.toLowerCase())) {
+      return u;
+    }
+
+    final oldV = h.oldValue != null
+        ? double.tryParse(h.oldValue!.replaceAll(',', ''))
+        : null;
+    final newV = h.newValue != null
+        ? double.tryParse(h.newValue!.replaceAll(',', ''))
+        : null;
+    if (oldV != null && newV != null && (newV - oldV).abs() > 1e-9) {
+      final diff = (newV - oldV).abs();
+      return formatHistoryUnit(
+        selectedUnit: cleanSelected,
+        primaryUnit: prim,
+        primaryQuantity: diff,
+      );
+    }
+
+    return cleanSelected;
+  }
 }

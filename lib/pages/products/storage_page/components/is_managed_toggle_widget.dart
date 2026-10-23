@@ -50,6 +50,9 @@ class _IsManagedToggleWidgetState extends State<IsManagedToggleWidget> {
                         manageSalesWastage: widget.product.manageSalesWastage,
                         heightDimension: widget.product.heightDimension,
                         widthDimension: widget.product.widthDimension,
+                        dimensionUnit: widget.product.dimensionUnit,
+                        dimensionUnitConversion:
+                            widget.product.dimensionUnitConversion,
                         quantityType: widget.product.quantityType,
                         unitsList: widget.product.unitsList,
                         pricesList: widget.product.pricesList,

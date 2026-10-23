@@ -132,6 +132,9 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                 heightDimension: parseDimension(
                   widget.heightController,
                 ),
+                dimensionUnit: returnData().selectedDimensionUnit,
+                dimensionUnitConversion:
+                    returnData().selectedDimensionConversion,
               );
 
               StorageItemHistory itemHistory = StorageItemHistory(
@@ -267,6 +270,9 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                   heightDimension: parseDimension(
                     widget.heightController,
                   ),
+                  dimensionUnit: dataProvider.selectedDimensionUnit,
+                  dimensionUnitConversion:
+                      dataProvider.selectedDimensionConversion,
                 ),
                 // oldProduct: widget.product!,
               );
@@ -325,6 +331,10 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
       );
       returnData().initPriceUnitModes();
       returnData().useGroupUnit = widget.storageProduct?.useGroupUnit ?? false;
+      returnData().selectedDimensionUnit =
+          widget.storageProduct?.dimensionUnit;
+      returnData().selectedDimensionConversion =
+          widget.storageProduct?.dimensionUnitConversion;
       widget.qttyPerGroupController.text =
           widget.storageProduct!.qttyPerGroup != null
               ? widget.storageProduct!.qttyPerGroup!.toString()

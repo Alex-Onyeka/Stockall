@@ -6,7 +6,8 @@ part of 'temp_product_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
+class TempProductClassAdapter
+    extends TypeAdapter<TempProductClass> {
   @override
   final int typeId = 5;
 
@@ -14,7 +15,8 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
   TempProductClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempProductClass(
       id: fields[0] as int?,
@@ -52,19 +54,23 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       storageUuid: fields[32] as String?,
       categories: (fields[33] as List?)?.cast<String>(),
       useGroupUnit: fields[34] as bool?,
-      unitsList: (fields[35] as List?)?.cast<ProductUnitsClass>(),
-      pricesList: (fields[36] as List?)?.cast<ProductPricesClass>(),
+      unitsList:
+          (fields[35] as List?)?.cast<ProductUnitsClass>(),
+      pricesList:
+          (fields[36] as List?)?.cast<ProductPricesClass>(),
       widthDimension: fields[37] as double?,
       heightDimension: fields[38] as double?,
       quantityType: fields[39] as int?,
       manageSalesWastage: fields[40] as bool?,
+      dimensionUnit: fields[41] as String?,
+      dimensionUnitConversion: fields[42] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductClass obj) {
     writer
-      ..writeByte(41)
+      ..writeByte(43)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -146,7 +152,11 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       ..writeByte(39)
       ..write(obj.quantityType)
       ..writeByte(40)
-      ..write(obj.manageSalesWastage);
+      ..write(obj.manageSalesWastage)
+      ..writeByte(41)
+      ..write(obj.dimensionUnit)
+      ..writeByte(42)
+      ..write(obj.dimensionUnitConversion);
   }
 
   @override

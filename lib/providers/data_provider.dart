@@ -3027,6 +3027,7 @@ class DataProvider extends ChangeNotifier {
     clearExpDate();
     clearDepartment();
     clearUnit();
+    clearDimensionUnit();
     clearTempUnitsList();
     clearTempPricesList();
     useMultiplePrices = false;
@@ -3228,9 +3229,32 @@ class DataProvider extends ChangeNotifier {
     'Coil(s)',
     'Plank(s)',
     'Shutter(s)',
+    'Yard(s)',
     'Yard²(s)',
     'Other(s)',
   ];
+
+  String? selectedDimensionUnit;
+  double? selectedDimensionConversion;
+
+  void clearDimensionUnit() {
+    selectedDimensionUnit = null;
+    selectedDimensionConversion = null;
+    notifyListeners();
+  }
+
+  void selectDimensionUnit(String? unit, {double? conversion}) {
+    if (selectedDimensionUnit == unit && conversion == null) {
+      selectedDimensionUnit = null;
+      selectedDimensionConversion = null;
+    } else {
+      selectedDimensionUnit = unit;
+      if (conversion != null) {
+        selectedDimensionConversion = conversion;
+      }
+    }
+    notifyListeners();
+  }
 
   String? selectedUnit;
 

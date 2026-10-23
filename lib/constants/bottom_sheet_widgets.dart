@@ -40,9 +40,6 @@ void unitsBottomSheet(
   BuildContext context,
   Function()? action,
 ) async {
-  final TextEditingController searchController =
-      TextEditingController();
-
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -53,339 +50,724 @@ void unitsBottomSheet(
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext sheetContext) {
-      return StatefulBuilder(
-        builder: (context, setModalState) {
-          return DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.9,
-            maxChildSize: 0.9,
-            minChildSize: 0.3,
-            builder: (context, scrollController) {
-              List<String> units = List<String>.from(
-                returnData(context: context).units,
-              )..sort();
+      return const _UnitsBottomSheetContent();
+    },
+  );
+  if (action != null) {
+    action();
+  }
+}
 
-              final query =
-                  searchController.text
-                      .trim()
-                      .toLowerCase();
-              final filteredUnits =
-                  query.isEmpty
-                      ? units
-                      : units
-                          .where(
-                            (item) => item
-                                .toLowerCase()
-                                .contains(query),
-                          )
-                          .toList();
+class _UnitsBottomSheetContent extends StatefulWidget {
+  const _UnitsBottomSheetContent();
 
-              return Container(
-                padding: const EdgeInsets.fromLTRB(
-                  30,
-                  15,
-                  30,
-                  45,
-                ),
-                child: Column(
-                  children: [
-                    Center(
-                      child: Container(
-                        height: 4,
-                        width: 70,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
-                          color: Colors.grey.shade400,
-                        ),
+  @override
+  State<_UnitsBottomSheetContent> createState() =>
+      _UnitsBottomSheetContentState();
+}
+
+class _UnitsBottomSheetContentState
+    extends State<_UnitsBottomSheetContent> {
+  late final TextEditingController searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.9,
+      maxChildSize: 0.9,
+      minChildSize: 0.3,
+      builder: (context, scrollController) {
+        List<String> units = List<String>.from(
+          returnData(context: context).units,
+        )..sort();
+
+        final query =
+            searchController.text.trim().toLowerCase();
+        final filteredUnits =
+            query.isEmpty
+                ? units
+                : units
+                    .where(
+                      (item) => item.toLowerCase().contains(
+                        query,
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Units',
-                              style: TextStyle(
-                                fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Select Item Unit',
-                              style: TextStyle(
-                                fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
-                              ),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          mouseCursor:
-                              SystemMouseCursors.click,
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: Icon(
-                            returnData(
-                                  context: context,
-                                ).unitValueSet
-                                ? Icons.check
-                                : Icons.clear_rounded,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 38,
-                      child: TextField(
-                        controller: searchController,
-                        onChanged: (value) {
-                          setModalState(() {});
-                        },
-                        onTap: () {
-                          if (returnShopProvider()
-                              .isOnScreenKeyboardOn()) {
-                            showOnScreenKeyboard();
-                          }
-                        },
+                    )
+                    .toList();
+
+        final selectedUnit =
+            returnData(context: context).selectedUnit;
+
+        return Container(
+          padding: const EdgeInsets.fromLTRB(
+            30,
+            15,
+            30,
+            45,
+          ),
+          child: Column(
+            children: [
+              Center(
+                child: Container(
+                  height: 4,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Units',
                         style: TextStyle(
                           fontSize:
                               returnTheme(
                                 context,
-                                listen: false,
-                              ).mobileTexts.b3.fontSize,
+                              ).mobileTexts.b1.fontSize,
+                          fontWeight: FontWeight.bold,
                         ),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          hintText: 'Search units...',
-                          hintStyle: TextStyle(
-                            fontSize:
-                                returnTheme(
-                                  context,
-                                  listen: false,
-                                ).mobileTexts.b3.fontSize,
-                            color: Colors.grey.shade500,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            size: 18,
-                            color: Colors.grey.shade600,
-                          ),
-                          suffixIcon:
-                              searchController
-                                      .text
-                                      .isNotEmpty
-                                  ? InkWell(
+                      ),
+                      Text(
+                        'Select Item Unit',
+                        style: TextStyle(
+                          fontSize:
+                              returnTheme(
+                                context,
+                              ).mobileTexts.b2.fontSize,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (selectedUnit != null)
+                        TextButton(
+                          onPressed: () {
+                            returnData().clearUnit();
+                            setState(() {});
+                          },
+                          child: const Text('Clear'),
+                        ),
+                      IconButton(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: Icon(
+                          selectedUnit != null
+                              ? Icons.check
+                              : Icons.clear_rounded,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 38,
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  onTap: () {
+                    if (returnShopProvider()
+                        .isOnScreenKeyboardOn()) {
+                      showOnScreenKeyboard();
+                    }
+                  },
+                  style: TextStyle(
+                    fontSize:
+                        returnTheme(
+                          context,
+                          listen: false,
+                        ).mobileTexts.b3.fontSize,
+                  ),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    hintText: 'Search units...',
+                    hintStyle: TextStyle(
+                      fontSize:
+                          returnTheme(
+                            context,
+                            listen: false,
+                          ).mobileTexts.b3.fontSize,
+                      color: Colors.grey.shade500,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Colors.grey.shade600,
+                    ),
+                    suffixIcon:
+                        searchController.text.isNotEmpty
+                            ? InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              onTap: () {
+                                searchController.clear();
+                                setState(() {});
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 18,
+                                color: Colors.grey.shade600,
+                              ),
+                            )
+                            : null,
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    contentPadding:
+                        const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 10,
+                        ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: RawScrollbar(
+                  thumbColor: Colors.grey.shade300,
+                  radius: const Radius.circular(5),
+                  thickness: 3,
+                  thumbVisibility: true,
+                  controller: scrollController,
+                  child:
+                      filteredUnits.isEmpty
+                          ? Center(
+                            child: Text(
+                              'No units found',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize:
+                                    returnTheme(
+                                          context,
+                                          listen: false,
+                                        )
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                            ),
+                          )
+                          : ListView.builder(
+                            controller: scrollController,
+                            itemCount: filteredUnits.length,
+                            itemBuilder: (context, index) {
+                              String unit =
+                                  filteredUnits[index];
+                              final isSelected =
+                                  selectedUnit == unit;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.only(
+                                      bottom: 2,
+                                    ),
+                                child: Material(
+                                  color:
+                                      isSelected
+                                          ? returnTheme(
+                                                context,
+                                              )
+                                              .lightModeColor
+                                              .prColor250
+                                              .withAlpha(20)
+                                          : Colors
+                                              .transparent,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
+                                  clipBehavior:
+                                      Clip.antiAlias,
+                                  child: ListTile(
                                     mouseCursor:
                                         SystemMouseCursors
                                             .click,
-                                    onTap: () {
-                                      searchController
-                                          .clear();
-                                      setModalState(() {});
-                                    },
-                                    child: Icon(
-                                      Icons.clear,
-                                      size: 16,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade600,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            10,
+                                          ),
                                     ),
-                                  )
-                                  : null,
-                          contentPadding:
-                              const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 10,
-                              ),
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade300,
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(8),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.grey.shade300,
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(8),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color:
-                                  returnTheme(
-                                        context,
-                                        listen: false,
-                                      )
-                                      .lightModeColor
-                                      .prColor300,
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                          ),
-                        ),
-                        child:
-                            filteredUnits.isEmpty
-                                ? Center(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.all(
-                                          20.0,
+                                    contentPadding:
+                                        const EdgeInsets.only(
+                                          left: 20,
+                                          right: 5,
                                         ),
-                                    child: Text(
-                                      'No units found',
+                                    title: Text(
                                       style: TextStyle(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade500,
+                                        fontWeight:
+                                            isSelected
+                                                ? FontWeight
+                                                    .bold
+                                                : FontWeight
+                                                    .normal,
                                         fontSize:
                                             returnTheme(
                                                   context,
-                                                  listen:
-                                                      false,
                                                 )
                                                 .mobileTexts
-                                                .b3
+                                                .b2
                                                 .fontSize,
                                       ),
+                                      unit,
+                                    ),
+                                    onTap: () {
+                                      returnData()
+                                          .selectUnit(unit);
+                                      setState(() {});
+                                    },
+                                    trailing: Checkbox(
+                                      shape:
+                                          const CircleBorder(
+                                            side:
+                                                BorderSide(),
+                                          ),
+                                      side: BorderSide(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        width: 1.2,
+                                      ),
+                                      activeColor:
+                                          returnTheme(
+                                                context,
+                                              )
+                                              .lightModeColor
+                                              .prColor250,
+                                      value: isSelected,
+                                      onChanged: (value) {
+                                        returnData()
+                                            .selectUnit(
+                                              unit,
+                                            );
+                                        setState(() {});
+                                      },
                                     ),
                                   ),
-                                )
-                                : ListView.builder(
-                                  controller:
-                                      scrollController,
-                                  itemCount:
-                                      filteredUnits.length,
-                                  itemBuilder: (
-                                    context,
-                                    index,
-                                  ) {
-                                    String unit =
-                                        filteredUnits[index];
-                                    return Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          top: BorderSide(
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade300,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Material(
-                                        color: Colors.white,
-                                        child: ListTile(
-                                          title: Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  returnTheme(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).mobileTexts.b2.fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            unit,
-                                          ),
-                                          onTap: () {
-                                            returnData()
-                                                .selectUnit(
-                                                  unit,
-                                                );
-                                            setModalState(
-                                              () {},
-                                            );
-                                          },
-                                          trailing: Checkbox(
-                                            shape: const CircleBorder(
-                                              side:
-                                                  BorderSide(),
-                                            ),
-                                            side: BorderSide(
-                                              color:
-                                                  Colors
-                                                      .grey
-                                                      .shade400,
-                                              width: 1.2,
-                                            ),
-                                            activeColor:
-                                                returnTheme(
-                                                      context,
-                                                    )
-                                                    .lightModeColor
-                                                    .prColor250,
-                                            value:
-                                                returnData(
-                                                  context:
-                                                      context,
-                                                ).selectedUnit ==
-                                                unit,
-                                            onChanged: (
-                                              value,
-                                            ) {
-                                              returnData()
-                                                  .selectUnit(
-                                                    unit,
-                                                  );
-                                              setModalState(
-                                                () {},
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
                                 ),
-                      ),
-                    ),
-                  ],
+                              );
+                            },
+                          ),
                 ),
-              );
-            },
-          );
-        },
-      );
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+void dimensionUnitsBottomSheet(
+  BuildContext context,
+  Function()? action,
+) async {
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    backgroundColor: Colors.white,
+    builder: (BuildContext sheetContext) {
+      return const _DimensionUnitsBottomSheetContent();
     },
   );
-  searchController.dispose();
   if (action != null) {
     action();
+  }
+}
+
+class _DimensionUnitsBottomSheetContent
+    extends StatefulWidget {
+  const _DimensionUnitsBottomSheetContent();
+
+  @override
+  State<_DimensionUnitsBottomSheetContent> createState() =>
+      _DimensionUnitsBottomSheetContentState();
+}
+
+class _DimensionUnitsBottomSheetContentState
+    extends State<_DimensionUnitsBottomSheetContent> {
+  late final TextEditingController searchController;
+
+  static const List<String> commonDimensionUnits = [
+    'Centimeter(s)',
+    'Meter(s)',
+    'Millimeter(s)',
+    'Inch(es)',
+    'Foot(s)',
+    'Yard(s)',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.9,
+      maxChildSize: 0.9,
+      minChildSize: 0.3,
+      builder: (context, scrollController) {
+        final allUnits = List<String>.from(
+          returnData(context: context).units,
+        )..sort();
+
+        final orderedUnits = <String>[
+          ...commonDimensionUnits.where(allUnits.contains),
+          ...allUnits.where(
+            (u) => !commonDimensionUnits.contains(u),
+          ),
+        ];
+
+        final query =
+            searchController.text.trim().toLowerCase();
+        final filteredUnits =
+            query.isEmpty
+                ? orderedUnits
+                : orderedUnits
+                    .where(
+                      (item) => item.toLowerCase().contains(
+                        query,
+                      ),
+                    )
+                    .toList();
+
+        final selectedDimensionUnit =
+            returnData(
+              context: context,
+            ).selectedDimensionUnit;
+
+        return Container(
+          padding: const EdgeInsets.fromLTRB(
+            30,
+            15,
+            30,
+            45,
+          ),
+          child: Column(
+            children: [
+              Center(
+                child: Container(
+                  height: 4,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Dimension Units',
+                        style: TextStyle(
+                          fontSize:
+                              returnTheme(
+                                context,
+                              ).mobileTexts.b1.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Select Unit for Dimensions',
+                        style: TextStyle(
+                          fontSize:
+                              returnTheme(
+                                context,
+                              ).mobileTexts.b2.fontSize,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (selectedDimensionUnit != null)
+                        TextButton(
+                          onPressed: () {
+                            returnData()
+                                .clearDimensionUnit();
+                            setState(() {});
+                          },
+                          child: const Text('Clear'),
+                        ),
+                      IconButton(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: Icon(
+                          selectedDimensionUnit != null
+                              ? Icons.check
+                              : Icons.clear_rounded,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 38,
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  onTap: () {
+                    if (returnShopProvider()
+                        .isOnScreenKeyboardOn()) {
+                      showOnScreenKeyboard();
+                    }
+                  },
+                  style: TextStyle(
+                    fontSize:
+                        returnTheme(
+                          context,
+                          listen: false,
+                        ).mobileTexts.b3.fontSize,
+                  ),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    hintText: 'Search dimension units...',
+                    hintStyle: TextStyle(
+                      fontSize:
+                          returnTheme(
+                            context,
+                            listen: false,
+                          ).mobileTexts.b3.fontSize,
+                      color: Colors.grey.shade500,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Colors.grey.shade600,
+                    ),
+                    suffixIcon:
+                        searchController.text.isNotEmpty
+                            ? InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              onTap: () {
+                                searchController.clear();
+                                setState(() {});
+                              },
+                              child: Icon(
+                                Icons.close,
+                                size: 18,
+                                color: Colors.grey.shade600,
+                              ),
+                            )
+                            : null,
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    contentPadding:
+                        const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 10,
+                        ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: RawScrollbar(
+                  thumbColor: Colors.grey.shade300,
+                  radius: const Radius.circular(5),
+                  thickness: 3,
+                  thumbVisibility: true,
+                  controller: scrollController,
+                  child:
+                      filteredUnits.isEmpty
+                          ? Center(
+                            child: Text(
+                              'No units found',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize:
+                                    returnTheme(
+                                          context,
+                                          listen: false,
+                                        )
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                            ),
+                          )
+                          : ListView.builder(
+                            controller: scrollController,
+                            itemCount: filteredUnits.length,
+                            itemBuilder: (context, index) {
+                              String unit =
+                                  filteredUnits[index];
+                              final isSelected =
+                                  selectedDimensionUnit ==
+                                  unit;
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.only(
+                                      bottom: 2,
+                                    ),
+                                child: Material(
+                                  color:
+                                      isSelected
+                                          ? returnTheme(
+                                                context,
+                                              )
+                                              .lightModeColor
+                                              .prColor250
+                                              .withAlpha(20)
+                                          : Colors
+                                              .transparent,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
+                                  clipBehavior:
+                                      Clip.antiAlias,
+                                  child: ListTile(
+                                    mouseCursor:
+                                        SystemMouseCursors
+                                            .click,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            10,
+                                          ),
+                                    ),
+                                    contentPadding:
+                                        const EdgeInsets.only(
+                                          left: 20,
+                                          right: 5,
+                                        ),
+                                    title: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            isSelected
+                                                ? FontWeight
+                                                    .bold
+                                                : FontWeight
+                                                    .normal,
+                                        fontSize:
+                                            returnTheme(
+                                                  context,
+                                                )
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                      ),
+                                      unit,
+                                    ),
+                                    onTap: () {
+                                      returnData()
+                                          .selectDimensionUnit(
+                                            unit,
+                                          );
+                                      setState(() {});
+                                    },
+                                    trailing: Checkbox(
+                                      shape:
+                                          const CircleBorder(
+                                            side:
+                                                BorderSide(),
+                                          ),
+                                      side: BorderSide(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        width: 1.2,
+                                      ),
+                                      activeColor:
+                                          returnTheme(
+                                                context,
+                                              )
+                                              .lightModeColor
+                                              .prColor250,
+                                      value: isSelected,
+                                      onChanged: (value) {
+                                        returnData()
+                                            .selectDimensionUnit(
+                                              unit,
+                                            );
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -1447,7 +1829,7 @@ void selectProductSales({
   // bool useWholeSalePriceTemp = false;
   TempCartItem cartItem = cartItemTemp.copyWith();
 
-  bool isPercentageWastage = false;
+  bool isPercentageWastage = true;
   // Unit fixed (#) wastage is entered in; null follows the sale
   // unit until one is picked.
   String? wastageUnitUuid;
@@ -1530,15 +1912,11 @@ void selectProductSales({
         );
   }
 
-  // Wastage is entered for 2D items that manage it, except in
-  // order carts (orders don't apply wastage).
+  // Wastage is entered for 2D items that manage it.
   bool showWastage() {
     return is2DItem &&
-        cartItem.item.manageSalesWastage == true &&
-        returnSalesProvider()
-                .currentCart()
-                .cartItemTypeIndex !=
-            3;
+        (cartItem.item.manageSalesWastage == true ||
+            cartItem.manageSalesWastage == true);
   }
 
   // Unit the wastage is saved with: the picked unit, else the
@@ -1557,9 +1935,13 @@ void selectProductSales({
               ProductUnitsClass.areaUnit &&
           item.conversion == 1,
     );
-    return areaUnits.isNotEmpty
-        ? areaUnits.first.name
-        : 'sq. units';
+    if (areaUnits.isNotEmpty) {
+      return areaUnits.first.name;
+    }
+    if (cartItem.item.unit.isNotEmpty && cartItem.item.unit != 'Others') {
+      return cartItem.item.unit;
+    }
+    return 'sq. units';
   }
 
   String? wastageError() {
@@ -1669,12 +2051,21 @@ void selectProductSales({
     // print(cartItem.getSelectedUnit().name);
     cartItem.unitUuid = unitUuid;
     if (showWastage()) {
-      cartItem.wastageAmount = double.tryParse(
-        wastageController.text.replaceAll(',', ''),
+      final parsedWastage = double.tryParse(
+        wastageController.text.replaceAll(',', '').trim(),
       );
+      cartItem.wastageAmount =
+          (parsedWastage != null && parsedWastage > 0)
+              ? parsedWastage
+              : null;
       cartItem.isPercentageWastage = isPercentageWastage;
       cartItem.wastageUnitUuid = selectedWastageUnit();
       cartItem.manageSalesWastage = true;
+    } else {
+      cartItem.wastageAmount = null;
+      cartItem.isPercentageWastage = null;
+      cartItem.wastageUnitUuid = null;
+      cartItem.manageSalesWastage = false;
     }
     // print(cartItem.getSelectedUnit().name);
   }
@@ -2047,11 +2438,11 @@ void selectProductSales({
                                               });
                                             },
                                             title:
-                                                '${getPrimaryUnit().name} Width',
+                                                '${cartItem.item.dimensionUnit ?? getPrimaryUnit().name} Width',
                                             hint:
                                                 originalWidth !=
                                                         null
-                                                    ? 'Max ${formatDimension(originalWidth)}'
+                                                    ? 'Max ${formatDimension(originalWidth)}${cartItem.item.dimensionUnit != null ? ' ${cartItem.item.dimensionUnit}' : ''}'
                                                     : 'Enter Width',
                                             controller:
                                                 widthController,
@@ -2090,11 +2481,11 @@ void selectProductSales({
                                               });
                                             },
                                             title:
-                                                '${getPrimaryUnit().name} Height',
+                                                '${cartItem.item.dimensionUnit ?? getPrimaryUnit().name} Height',
                                             hint:
                                                 originalHeight !=
                                                         null
-                                                    ? 'Max ${formatDimension(originalHeight)}'
+                                                    ? 'Max ${formatDimension(originalHeight)}${cartItem.item.dimensionUnit != null ? ' ${cartItem.item.dimensionUnit}' : ''}'
                                                     : 'Enter Height',
                                             controller:
                                                 heightController,
@@ -2672,42 +3063,98 @@ void selectProductSales({
                                     horizontal: 20.0,
                                     vertical: 10,
                                   ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                              child: Column(
                                 children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b1
-                                              .fontSize,
+                                  Row(
+                                     mainAxisAlignment:
+                                         MainAxisAlignment
+                                             .spaceBetween,
+                                     children: [
+                                       Text(
+                                         style: TextStyle(
+                                           fontSize:
+                                               theme
+                                                   .mobileTexts
+                                                   .b3
+                                                   .fontSize,
+                                         ),
+                                         'Total Quantity:',
+                                       ),
+                                       Text(
+                                         style: TextStyle(
+                                           fontSize:
+                                               theme
+                                                   .mobileTexts
+                                                   .b2
+                                                   .fontSize,
+                                           fontWeight:
+                                               theme
+                                                   .mobileTexts
+                                                   .b2
+                                                   .fontWeightBold,
+                                         ),
+                                         '${formatLargeNumberDouble(previewLine().displayQuantity())}${previewLine().displayUnitName().isNotEmpty ? ' ${previewLine().displayUnitName()}' : ''}',
+                                        ),
+                                      ],
                                     ),
-                                    'Total',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b1
-                                              .fontSize,
-                                      fontWeight:
-                                          theme
-                                              .mobileTexts
-                                              .b1
-                                              .fontWeightBold,
-                                    ),
-                                    formatMoneyMid(
-                                      amount: double.parse(
-                                        formatSellingPrice(
-                                          cartItem,
+                                    if (previewLine().wastageArea() > 0)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 2.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize: theme.mobileTexts.b4.fontSize,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                              previewLine().item.quantityType == 2 && previewLine().hasCustomDimensions
+                                                  ? '(${formatLargeNumberDouble(previewLine().getRealQuantity())} + ${formatLargeNumberDouble(previewLine().wastageArea())} wastage)'
+                                                  : '(${formatLargeNumberDouble(previewLine().quantity)} + ${formatLargeNumberDouble(previewLine().wastageInSaleUnit())} wastage)',
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      context: context,
-                                    ),
+                                    Divider(height: 5),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                        ),
+                                        'Total Price',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontWeightBold,
+                                        ),
+                                        formatMoneyMid(
+                                          amount: double.parse(
+                                            formatSellingPrice(
+                                              cartItem,
+                                            ),
+                                          ),
+                                          context: context,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -3084,24 +3531,15 @@ void selectProductSales({
                                             resolvedWidth();
                                         cartItem.heightDimension =
                                             resolvedHeight();
-                                        if (priceController
-                                            .text
-                                            .isNotEmpty) {
-                                          cartItem.customPrice =
-                                              double.tryParse(
-                                                priceController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              );
-                                          // cartItem.setCustomPrice =
-                                          //     true;
-                                        } else {
-                                          // cartItem.setCustomPrice =
-                                          //     false;
-                                        }
+                                        cartItem.customPrice =
+                                            priceController.text.isNotEmpty
+                                                ? double.tryParse(
+                                                  priceController.text
+                                                      .replaceAll(',', ''),
+                                                )
+                                                : null;
+                                        cartItem.setCustomPrice =
+                                            priceController.text.isNotEmpty;
                                         double getQtty() {
                                           return getPrimaryUnitQuantityMultiplied(
                                             newQuantity:
@@ -3110,6 +3548,52 @@ void selectProductSales({
                                         }
 
                                         if (isEdit) {
+                                          Future<void> saveEditedCartItem() async {
+                                            final success =
+                                                await returnSalesProvider()
+                                                    .editCartItemQuantity(
+                                                      setTotalPrice:
+                                                          returnSalesProvider()
+                                                              .setTotalPrice,
+                                                      cartItem: cartItem,
+                                                      number: double.parse(
+                                                        quantityController.text
+                                                            .replaceAll(
+                                                              ',',
+                                                              '',
+                                                            ),
+                                                      ),
+                                                      customPrice: double.tryParse(
+                                                        priceController.text
+                                                            .replaceAll(
+                                                              ',',
+                                                              '',
+                                                            ),
+                                                      ),
+                                                      setCustomPrice:
+                                                          priceController
+                                                              .text
+                                                              .isNotEmpty,
+                                                    );
+                                            if (context.mounted) {
+                                              if (success) {
+                                                Navigator.of(context).pop();
+                                              } else {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (_) => InfoAlert(
+                                                        theme: theme,
+                                                        title:
+                                                            "Quantity Limit Reached",
+                                                        message:
+                                                            "Only ${getPrimaryUnit().getQuantityEquivDivided(index: 1, newQuantity: returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem, isEdit: isEdit), product: cartItem.item)} ${getPrimaryUnit().name} available in stock.",
+                                                      ),
+                                                );
+                                              }
+                                            }
+                                          }
+
                                           if (returnShopProvider()
                                                       .userShop()
                                                       ?.trackCart ==
@@ -3126,71 +3610,12 @@ void selectProductSales({
                                             if (res) {
                                               cartItem.useGroupQuantity =
                                                   true;
-
-                                              returnSalesProvider().editCartItemQuantity(
-                                                setTotalPrice:
-                                                    returnSalesProvider()
-                                                        .setTotalPrice,
-                                                cartItem:
-                                                    cartItem,
-                                                number: double.parse(
-                                                  quantityController
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                ),
-                                                customPrice: double.tryParse(
-                                                  priceController
-                                                      .text
-                                                      .replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                ),
-                                                setCustomPrice:
-                                                    priceController
-                                                        .text
-                                                        .isNotEmpty,
-                                              );
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
+                                              await saveEditedCartItem();
                                             }
                                           } else {
                                             cartItem.useGroupQuantity =
                                                 true;
-                                            returnSalesProvider().editCartItemQuantity(
-                                              setTotalPrice:
-                                                  returnSalesProvider()
-                                                      .setTotalPrice,
-                                              cartItem:
-                                                  cartItem,
-                                              number: double.parse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ),
-                                              customPrice: double.tryParse(
-                                                priceController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ),
-                                              setCustomPrice:
-                                                  priceController
-                                                      .text
-                                                      .isNotEmpty,
-                                            );
-                                            Navigator.of(
-                                              context,
-                                            ).pop();
+                                            await saveEditedCartItem();
                                           }
                                         } else {
                                           cartItem.setTotalPrice =
@@ -3213,10 +3638,13 @@ void selectProductSales({
                                               context,
                                             ).pop();
                                           } else {
-                                            cartItem.useGroupQuantity = true;
+                                            cartItem.useGroupQuantity =
+                                                true;
 
-                                            Future<bool> handleDocketPrint(
-                                              TempCartItem itemToPrint,
+                                            Future<bool>
+                                            handleDocketPrint(
+                                              TempCartItem
+                                              itemToPrint,
                                             ) async {
                                               if (returnShopProvider()
                                                           .userShop()
@@ -3224,41 +3652,44 @@ void selectProductSales({
                                                       true &&
                                                   returnCompProvider(
                                                     context,
-                                                    listen: false,
+                                                    listen:
+                                                        false,
                                                   ).getContinuousPrintDocket() &&
-                                                  screenWidth(context) >
+                                                  screenWidth(
+                                                        context,
+                                                      ) >
                                                       tabletScreenSmall) {
                                                 return kIsWeb
                                                     ? await downloadDocket(
-                                                      setTotal: false,
-                                                      items: [itemToPrint],
+                                                      setTotal:
+                                                          false,
+                                                      items: [
+                                                        itemToPrint,
+                                                      ],
                                                       cart:
-                                                          returnSalesProvider()
-                                                              .currentCart(),
-                                                      context: context,
+                                                          returnSalesProvider().currentCart(),
+                                                      context:
+                                                          context,
                                                       fileName:
                                                           'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
                                                       waiter:
-                                                          returnSalesProvider()
-                                                              .currentMainCart()
-                                                              .subStaff
-                                                              ?.staffName ??
+                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
                                                           'Not Set',
                                                     )
                                                     : await printDocket(
-                                                      setTotal: false,
-                                                      items: [itemToPrint],
+                                                      setTotal:
+                                                          false,
+                                                      items: [
+                                                        itemToPrint,
+                                                      ],
                                                       cart:
-                                                          returnSalesProvider()
-                                                              .currentCart(),
-                                                      context: context,
+                                                          returnSalesProvider().currentCart(),
+                                                      context:
+                                                          context,
                                                       fileName:
                                                           'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
                                                       waiter:
-                                                          returnSalesProvider()
-                                                              .currentMainCart()
-                                                              .subStaff
-                                                              ?.staffName ??
+                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
                                                           'Not Set',
                                                     );
                                               }
@@ -3267,30 +3698,40 @@ void selectProductSales({
 
                                             var existingLine =
                                                 returnSalesProvider().findCartLine(
-                                              returnSalesProvider().currentCart(),
-                                              cartItem,
-                                            );
+                                                  returnSalesProvider()
+                                                      .currentCart(),
+                                                  cartItem,
+                                                );
 
-                                            if (existingLine != null) {
+                                            if (existingLine !=
+                                                null) {
                                               // Item ALREADY EXISTS in cart:
                                               // Show duplicate alert first via addItemToCart.
                                               // If user chooses replace or add to quantity,
                                               // onBeforeCommitDuplicate initiates docket printing
                                               // BEFORE the cart is modified.
-                                              final result =
-                                                  await returnSalesProvider().addItemToCart(
-                                                context: context,
-                                                newItem: cartItem,
+                                              final result = await returnSalesProvider().addItemToCart(
+                                                context:
+                                                    context,
+                                                newItem:
+                                                    cartItem,
                                                 isCustomEdit:
-                                                    returnData().productList().where(
-                                                      (product) =>
-                                                          product.uuid ==
-                                                          cartItem.getItem()?.uuid,
-                                                    ).isEmpty,
-                                                onBeforeCommitDuplicate: (choice) async {
-                                                  var tempCartItem =
-                                                      cartItem.copyWith(
-                                                    quantity: qqty.toDouble(),
+                                                    returnData()
+                                                        .productList()
+                                                        .where(
+                                                          (
+                                                            product,
+                                                          ) =>
+                                                              product.uuid ==
+                                                              cartItem.getItem()?.uuid,
+                                                        )
+                                                        .isEmpty,
+                                                onBeforeCommitDuplicate: (
+                                                  choice,
+                                                ) async {
+                                                  var tempCartItem = cartItem.copyWith(
+                                                    quantity:
+                                                        qqty.toDouble(),
                                                   );
                                                   return await handleDocketPrint(
                                                     tempCartItem,
@@ -3303,8 +3744,11 @@ void selectProductSales({
                                                       'Item Replaced Successfully' ||
                                                   result ==
                                                       'Quantity Updated Successfully') {
-                                                if (context.mounted) {
-                                                  Navigator.of(context).pop();
+                                                if (context
+                                                    .mounted) {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
                                                 }
                                                 closeAction();
                                               }
@@ -3313,28 +3757,37 @@ void selectProductSales({
                                               // Show docket print dialog first (if enabled), then add.
                                               var tempCartItem =
                                                   cartItem.copyWith(
-                                                quantity: qqty.toDouble(),
-                                              );
+                                                    quantity:
+                                                        qqty.toDouble(),
+                                                  );
                                               var printRes =
                                                   await handleDocketPrint(
-                                                tempCartItem,
-                                              );
+                                                    tempCartItem,
+                                                  );
                                               if (printRes) {
-                                                final result =
-                                                    await returnSalesProvider().addItemToCart(
-                                                  context: context,
-                                                  newItem: cartItem,
+                                                final result = await returnSalesProvider().addItemToCart(
+                                                  context:
+                                                      context,
+                                                  newItem:
+                                                      cartItem,
                                                   isCustomEdit:
-                                                      returnData().productList().where(
-                                                        (product) =>
-                                                            product.uuid ==
-                                                            cartItem.getItem()?.uuid,
-                                                      ).isEmpty,
+                                                      returnData()
+                                                          .productList()
+                                                          .where(
+                                                            (
+                                                              product,
+                                                            ) =>
+                                                                product.uuid ==
+                                                                cartItem.getItem()?.uuid,
+                                                          )
+                                                          .isEmpty,
                                                 );
-                                                if (result.isNotEmpty &&
+                                                if (result
+                                                        .isNotEmpty &&
                                                     result !=
                                                         'Quantity Limit Exceeded') {
-                                                  if (context.mounted) {
+                                                  if (context
+                                                      .mounted) {
                                                     Navigator.of(
                                                       context,
                                                     ).pop();

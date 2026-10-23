@@ -400,7 +400,7 @@ class ItemSalesRowBuilder {
           line.quantityType == 2 &&
           unit.dimensionType != ProductUnitsClass.areaUnit;
       return sized
-          ? '$name${formatDimensionsLabel(line.widthDimension, line.heightDimension)}'
+          ? '$name${formatDimensionsLabel(line.widthDimension, line.heightDimension, unit: line.dimensionUnit)}'
           : name;
     }
     final stored = _text(line.unit);

@@ -34,15 +34,21 @@ void updateStorageItemQuantity({
             (context, setState) => DialogTemplate(
               theme: theme,
               message: 'Enter Details',
-              title: 'Update ${storageProduct.getProductUnit().name} Quantity',
+              title:
+                  'Update ${storageProduct.getProductUnit().name} Quantity',
               topRightWidget:
-                  returnStorageProductProvider(context: context).isLoading
+                  returnStorageProductProvider(
+                        context: context,
+                      ).isLoading
                       ? SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: theme.lightModeColor.secColor200,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .secColor200,
                         ),
                       )
                       : null,
@@ -63,7 +69,10 @@ void updateStorageItemQuantity({
 
 class StorageQuantityUpdateWidget extends StatefulWidget {
   final TempStorageProducts storageProduct;
-  const StorageQuantityUpdateWidget({super.key, required this.storageProduct});
+  const StorageQuantityUpdateWidget({
+    super.key,
+    required this.storageProduct,
+  });
 
   @override
   State<StorageQuantityUpdateWidget> createState() =>
@@ -82,7 +91,9 @@ class _StorageQuantityUpdateWidgetState
   // Entered quantity in getActualQuantity units (area for 2D).
   double storageActualFromEntered(double quantity) {
     return widget.storageProduct.actualFromUnit(
-      widget.storageProduct.getProductUnit(unitUuid: unitUuid),
+      widget.storageProduct.getProductUnit(
+        unitUuid: unitUuid,
+      ),
       quantity,
     );
   }
@@ -209,13 +220,16 @@ class _StorageQuantityUpdateWidgetState
           onChanged: (value) {
             final entered =
                 double.tryParse(
-                  quantityController.text.replaceAll(',', ''),
+                  quantityController.text.replaceAll(
+                    ',',
+                    '',
+                  ),
                 ) ??
                 0;
             if (currentIndex == 0 && productUuid != null) {
-              var tempProducts = returnData().productListMain.where(
-                (pro) => pro.uuid == productUuid,
-              );
+              var tempProducts = returnData()
+                  .productListMain
+                  .where((pro) => pro.uuid == productUuid);
               if (tempProducts.isNotEmpty) {
                 var pro = tempProducts.first;
                 if (salesActualFromEntered(pro, entered) >
@@ -225,7 +239,8 @@ class _StorageQuantityUpdateWidgetState
               }
             } else if (currentIndex == 1) {
               if (storageActualFromEntered(entered) >
-                  (widget.storageProduct.getActualQuantity() ??
+                  (widget.storageProduct
+                          .getActualQuantity() ??
                       0)) {
                 quantityController.text = '0';
               }
@@ -244,23 +259,37 @@ class _StorageQuantityUpdateWidgetState
                   SelectProductButton(
                     icon:
                         returnData().productListMain
-                                .where((product) => product.uuid == productUuid)
+                                .where(
+                                  (product) =>
+                                      product.uuid ==
+                                      productUuid,
+                                )
                                 .isNotEmpty
                             ? Icons.clear
                             : Icons.add,
                     isBold:
                         returnData().productListMain
-                            .where((product) => product.uuid == productUuid)
+                            .where(
+                              (product) =>
+                                  product.uuid ==
+                                  productUuid,
+                            )
                             .isNotEmpty,
                     theme: theme,
                     title:
                         returnData().productListMain
-                                .where((product) => product.uuid == productUuid)
+                                .where(
+                                  (product) =>
+                                      product.uuid ==
+                                      productUuid,
+                                )
                                 .isNotEmpty
                             ? cutLongText(
                               returnData().productListMain
                                   .where(
-                                    (product) => product.uuid == productUuid,
+                                    (product) =>
+                                        product.uuid ==
+                                        productUuid,
                                   )
                                   .first
                                   .name,
@@ -269,7 +298,11 @@ class _StorageQuantityUpdateWidgetState
                             : 'Product',
                     action: () {
                       returnData().productListMain
-                              .where((product) => product.uuid == productUuid)
+                              .where(
+                                (product) =>
+                                    product.uuid ==
+                                    productUuid,
+                              )
                               .isNotEmpty
                           ? setState(() {
                             productUuid = null;
@@ -283,16 +316,24 @@ class _StorageQuantityUpdateWidgetState
                                     'Choose from the List of Products below',
                                 title: 'Select Products',
                                 action: () {},
-                                showBottomActionButtons: false,
+                                showBottomActionButtons:
+                                    false,
                                 widget: SizedBox(
-                                  height: screenHeight(context) - 250,
+                                  height:
+                                      screenHeight(
+                                        context,
+                                      ) -
+                                      250,
                                   child: Builder(
                                     builder: (context) {
-                                      if (returnData().productListMain
+                                      if (returnData()
+                                          .productListMain
                                           .where(
                                             (pro) =>
                                                 pro.storageUuid ==
-                                                widget.storageProduct.uuid,
+                                                widget
+                                                    .storageProduct
+                                                    .uuid,
                                           )
                                           .isEmpty) {
                                         return EmptyWidgetDisplayOnly(
@@ -307,19 +348,19 @@ class _StorageQuantityUpdateWidgetState
                                         return Column(
                                           spacing: 5,
                                           children:
-                                              returnData().productListMain
+                                              returnData()
+                                                  .productListMain
                                                   .where(
                                                     (pro) =>
                                                         pro.storageUuid ==
-                                                        widget
-                                                            .storageProduct
-                                                            .uuid,
+                                                        widget.storageProduct.uuid,
                                                   )
                                                   .map(
-                                                    (product) => InkWell(
+                                                    (
+                                                      product,
+                                                    ) => InkWell(
                                                       mouseCursor:
-                                                          SystemMouseCursors
-                                                              .click,
+                                                          SystemMouseCursors.click,
                                                       onTap: () {
                                                         if (!storageCanManage(
                                                           widget.storageProduct,
@@ -336,7 +377,8 @@ class _StorageQuantityUpdateWidgetState
                                                         setState(() {
                                                           if (productUuid ==
                                                               product.uuid) {
-                                                            productUuid = null;
+                                                            productUuid =
+                                                                null;
                                                           } else {
                                                             productUuid =
                                                                 product.uuid;
@@ -347,29 +389,29 @@ class _StorageQuantityUpdateWidgetState
                                                         ).pop();
                                                       },
                                                       child: Padding(
-                                                        padding:
-                                                            EdgeInsetsGeometry.symmetric(
-                                                              vertical: 15,
-                                                              horizontal: 10,
-                                                            ),
+                                                        padding: EdgeInsetsGeometry.symmetric(
+                                                          vertical:
+                                                              15,
+                                                          horizontal:
+                                                              10,
+                                                        ),
                                                         child: Row(
                                                           mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          spacing: 5,
+                                                              MainAxisAlignment.spaceBetween,
+                                                          spacing:
+                                                              5,
                                                           children: [
                                                             Expanded(
                                                               child: Row(
-                                                                spacing: 5,
+                                                                spacing:
+                                                                    5,
                                                                 children: [
                                                                   Icon(
-                                                                    size: 14,
+                                                                    size:
+                                                                        14,
                                                                     color:
-                                                                        theme
-                                                                            .lightModeColor
-                                                                            .prColor300,
-                                                                    Icons
-                                                                        .width_normal_rounded,
+                                                                        theme.lightModeColor.prColor300,
+                                                                    Icons.width_normal_rounded,
                                                                   ),
                                                                   Expanded(
                                                                     child: Text(
@@ -379,8 +421,7 @@ class _StorageQuantityUpdateWidgetState
                                                                         fontWeight:
                                                                             FontWeight.bold,
                                                                       ),
-                                                                      product
-                                                                          .name,
+                                                                      product.name,
                                                                     ),
                                                                   ),
                                                                 ],
@@ -396,25 +437,19 @@ class _StorageQuantityUpdateWidgetState
                                                             ),
                                                             Visibility(
                                                               visible:
-                                                                  product
-                                                                      .departmentName !=
+                                                                  product.departmentName !=
                                                                   null,
                                                               child: Padding(
-                                                                padding:
-                                                                    const EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          5.0,
-                                                                    ),
+                                                                padding: const EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      5.0,
+                                                                ),
                                                                 child: Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme
-                                                                            .mobileTexts
-                                                                            .b4
-                                                                            .fontSize,
+                                                                        theme.mobileTexts.b4.fontSize,
                                                                     fontWeight:
-                                                                        FontWeight
-                                                                            .normal,
+                                                                        FontWeight.normal,
                                                                     color:
                                                                         product.departmentName !=
                                                                                 null
@@ -430,12 +465,12 @@ class _StorageQuantityUpdateWidgetState
                                                               ),
                                                             ),
                                                             Icon(
-                                                              size: 16,
+                                                              size:
+                                                                  16,
                                                               color:
                                                                   Colors.grey,
                                                               productUuid ==
-                                                                      product
-                                                                          .uuid
+                                                                      product.uuid
                                                                   ? Icons.check
                                                                   : Icons.add,
                                                             ),
@@ -453,36 +488,57 @@ class _StorageQuantityUpdateWidgetState
                               );
                             },
                           ).then((_) {
-                            if (currentIndex == 0 && productUuid != null) {
-                              var tempProducts = returnData().productListMain
-                                  .where((pro) => pro.uuid == productUuid);
+                            if (currentIndex == 0 &&
+                                productUuid != null) {
+                              var tempProducts =
+                                  returnData()
+                                      .productListMain
+                                      .where(
+                                        (pro) =>
+                                            pro.uuid ==
+                                            productUuid,
+                                      );
                               if (tempProducts.isNotEmpty) {
-                                var pro = tempProducts.first;
+                                var pro =
+                                    tempProducts.first;
                                 if (!returnStorageProductProvider()
                                     .isGroupUnit) {
-                                  if ((pro.getActualQuantity() ?? 0) <
+                                  if ((pro.getActualQuantity() ??
+                                          0) <
                                       (double.tryParse(
-                                            (quantityController.text.replaceAll(
-                                              ',',
-                                              '',
-                                            )),
+                                            (quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )),
                                           ) ??
                                           0)) {
                                     setState(() {
-                                      quantityController.text = '';
+                                      quantityController
+                                          .text = '';
                                     });
                                   }
                                 } else {
-                                  if ((pro.getActualQuantity() ?? 0) <
+                                  if ((pro
+                                              .getActualQuantity() ??
+                                          0) <
                                       (((double.tryParse(
-                                                (quantityController.text
-                                                    .replaceAll(',', '')),
+                                                (quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    )),
                                               )) ??
                                               0) *
-                                          (widget.storageProduct.qttyPerGroup ??
+                                          (widget
+                                                  .storageProduct
+                                                  .qttyPerGroup ??
                                               0))) {
                                     setState(() {
-                                      quantityController.text = '';
+                                      quantityController
+                                          .text = '';
                                     });
                                   }
                                 }
@@ -494,22 +550,38 @@ class _StorageQuantityUpdateWidgetState
                   SelectProductButton(
                     icon:
                         returnUserProviderSingle().usersMain
-                                .where((user) => user.userId == staffUuid)
+                                .where(
+                                  (user) =>
+                                      user.userId ==
+                                      staffUuid,
+                                )
                                 .isNotEmpty
                             ? Icons.clear
                             : Icons.add,
                     isBold:
                         returnUserProviderSingle().usersMain
-                            .where((user) => user.userId == staffUuid)
+                            .where(
+                              (user) =>
+                                  user.userId == staffUuid,
+                            )
                             .isNotEmpty,
                     theme: theme,
                     title:
                         returnUserProviderSingle().usersMain
-                                .where((user) => user.userId == staffUuid)
+                                .where(
+                                  (user) =>
+                                      user.userId ==
+                                      staffUuid,
+                                )
                                 .isNotEmpty
                             ? cutLongText(
-                              returnUserProviderSingle().usersMain
-                                  .where((user) => user.userId == staffUuid)
+                              returnUserProviderSingle()
+                                  .usersMain
+                                  .where(
+                                    (user) =>
+                                        user.userId ==
+                                        staffUuid,
+                                  )
                                   .first
                                   .name,
                               10,
@@ -517,7 +589,11 @@ class _StorageQuantityUpdateWidgetState
                             : 'Staff',
                     action: () {
                       returnUserProviderSingle().usersMain
-                              .where((user) => user.userId == staffUuid)
+                              .where(
+                                (user) =>
+                                    user.userId ==
+                                    staffUuid,
+                              )
                               .isNotEmpty
                           ? setState(() {
                             staffUuid = null;
@@ -527,19 +603,26 @@ class _StorageQuantityUpdateWidgetState
                             builder: (userContext) {
                               return DialogTemplate(
                                 theme: theme,
-                                message: 'Choose from the List of Staffs below',
+                                message:
+                                    'Choose from the List of Staffs below',
                                 title: 'Select Staff',
                                 action: () {},
-                                showBottomActionButtons: false,
+                                showBottomActionButtons:
+                                    false,
                                 widget: SizedBox(
-                                  height: screenHeight(context) - 250,
+                                  height:
+                                      screenHeight(
+                                        context,
+                                      ) -
+                                      250,
                                   child: Builder(
                                     builder: (context) {
                                       if (returnUserProviderSingle()
                                           .usersMain
                                           .isEmpty) {
                                         return EmptyWidgetDisplayOnly(
-                                          title: 'No Staffs',
+                                          title:
+                                              'No Staffs',
                                           subText:
                                               'You have not created any Staffs',
                                           theme: theme,
@@ -553,15 +636,17 @@ class _StorageQuantityUpdateWidgetState
                                               returnUserProviderSingle()
                                                   .usersMain
                                                   .map(
-                                                    (user) => InkWell(
+                                                    (
+                                                      user,
+                                                    ) => InkWell(
                                                       mouseCursor:
-                                                          SystemMouseCursors
-                                                              .click,
+                                                          SystemMouseCursors.click,
                                                       onTap: () {
                                                         setState(() {
                                                           if (staffUuid ==
                                                               user.userId) {
-                                                            staffUuid = null;
+                                                            staffUuid =
+                                                                null;
                                                           } else {
                                                             staffUuid =
                                                                 user.userId;
@@ -572,46 +657,43 @@ class _StorageQuantityUpdateWidgetState
                                                         ).pop();
                                                       },
                                                       child: Padding(
-                                                        padding:
-                                                            EdgeInsetsGeometry.symmetric(
-                                                              vertical: 10,
-                                                              horizontal: 10,
-                                                            ),
+                                                        padding: EdgeInsetsGeometry.symmetric(
+                                                          vertical:
+                                                              10,
+                                                          horizontal:
+                                                              10,
+                                                        ),
                                                         child: Row(
                                                           mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          spacing: 5,
+                                                              MainAxisAlignment.spaceBetween,
+                                                          spacing:
+                                                              5,
                                                           children: [
                                                             Row(
-                                                              spacing: 10,
+                                                              spacing:
+                                                                  10,
                                                               children: [
                                                                 Icon(
-                                                                  size: 14,
+                                                                  size:
+                                                                      14,
                                                                   color:
-                                                                      theme
-                                                                          .lightModeColor
-                                                                          .prColor300,
-                                                                  Icons
-                                                                      .width_normal_rounded,
+                                                                      theme.lightModeColor.prColor300,
+                                                                  Icons.width_normal_rounded,
                                                                 ),
                                                                 Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        theme
-                                                                            .mobileTexts
-                                                                            .b4
-                                                                            .fontSize,
+                                                                        theme.mobileTexts.b4.fontSize,
                                                                     fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                        FontWeight.bold,
                                                                   ),
                                                                   user.name,
                                                                 ),
                                                               ],
                                                             ),
                                                             Icon(
-                                                              size: 16,
+                                                              size:
+                                                                  16,
                                                               color:
                                                                   Colors.grey,
                                                               staffUuid ==
@@ -640,7 +722,9 @@ class _StorageQuantityUpdateWidgetState
             ],
           ),
         ),
-        ItemCommentWidget(commentController: commentController),
+        ItemCommentWidget(
+          commentController: commentController,
+        ),
         SizedBox(height: 10),
         Row(
           spacing: 15,
@@ -658,12 +742,16 @@ class _StorageQuantityUpdateWidgetState
                     Navigator.of(context).pop();
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
 
                     child: Center(
                       child: Text(
                         style: TextStyle(
-                          fontSize: theme.mobileTexts.b3.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade800,
                         ),
@@ -683,8 +771,11 @@ class _StorageQuantityUpdateWidgetState
                 child: InkWell(
                   mouseCursor: SystemMouseCursors.click,
                   onTap: () {
-                    if (quantityController.text.isNotEmpty) {
-                      if (currentIndex == 1 && productUuid == null) {
+                    if (quantityController
+                        .text
+                        .isNotEmpty) {
+                      if (currentIndex == 1 &&
+                          productUuid == null) {
                         showDialog(
                           context: context,
                           builder: (errorContext) {
@@ -713,14 +804,18 @@ class _StorageQuantityUpdateWidgetState
                                   widget.storageProduct
                                       .copyWith();
 
-                              Navigator.of(actionContext).pop();
+                              Navigator.of(
+                                actionContext,
+                              ).pop();
 
                               double enteredQuantity =
                                   (double.tryParse(
-                                        quantityController.text.replaceAll(
-                                          ',',
-                                          '',
-                                        ),
+                                        quantityController
+                                            .text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
                                       ) ??
                                       0);
 
@@ -735,7 +830,9 @@ class _StorageQuantityUpdateWidgetState
                                             productUuid;
                                   });
                               final originalProduct =
-                                  prs.isNotEmpty ? prs.first : null;
+                                  prs.isNotEmpty
+                                      ? prs.first
+                                      : null;
 
                               // Amount in getActualQuantity units
                               // (area for 2D items): in the sales
@@ -761,7 +858,8 @@ class _StorageQuantityUpdateWidgetState
                                       currentIndex == 0
                                           ? StorageTransferMode
                                               .stockIn
-                                          : currentIndex == 1
+                                          : currentIndex ==
+                                              1
                                           ? StorageTransferMode
                                               .stockOut
                                           : StorageTransferMode
@@ -772,7 +870,8 @@ class _StorageQuantityUpdateWidgetState
                                       currentIndex == 2
                                           ? null
                                           : originalProduct,
-                                  actualAmount: actualAmount,
+                                  actualAmount:
+                                      actualAmount,
                                 );
                               } on StorageTypeMismatch {
                                 showDimensionMismatchAlert(
@@ -798,13 +897,16 @@ class _StorageQuantityUpdateWidgetState
                                   widget.storageProduct
                                       .getActualQuantity() ??
                                   0;
-                              final double storageNewQuantity =
+                              final double
+                              storageNewQuantity =
                                   newProduct
                                       .getActualQuantity() ??
                                   0;
 
                               final salesOldQuantity =
-                                  originalProduct?.getActualQuantity() ?? 0;
+                                  originalProduct
+                                      ?.getActualQuantity() ??
+                                  0;
 
                               final newPr =
                                   originalProduct
@@ -815,16 +917,25 @@ class _StorageQuantityUpdateWidgetState
                                     transfer.salesQuantity;
                               }
                               final salesNewQuantity =
-                                  newPr?.getActualQuantity() ?? 0;
+                                  newPr
+                                      ?.getActualQuantity() ??
+                                  0;
 
-                              if ((currentIndex != 2) && newPr != null) {
-                                ItemHistory itemHistory = ItemHistory(
-                                  event: ItemHistoryEventClass.transferedIn,
-                                  isManaged: newPr.isManaged,
+                              if ((currentIndex != 2) &&
+                                  newPr != null) {
+                                ItemHistory
+                                itemHistory = ItemHistory(
+                                  event:
+                                      ItemHistoryEventClass
+                                          .transferedIn,
+                                  isManaged:
+                                      newPr.isManaged,
                                   source:
                                       (currentIndex == 1)
-                                          ? ItemHistoryEventClass.storageSource
-                                          : ItemHistoryEventClass.productSource,
+                                          ? ItemHistoryEventClass
+                                              .storageSource
+                                          : ItemHistoryEventClass
+                                              .productSource,
                                   destination:
                                       (currentIndex == 1)
                                           ? ItemHistoryEventClass
@@ -833,13 +944,15 @@ class _StorageQuantityUpdateWidgetState
                                               .storageDestination,
                                   shopId: shopId(),
                                   isIncreased:
-                                      salesNewQuantity > salesOldQuantity,
+                                      salesNewQuantity >
+                                      salesOldQuantity,
                                   oldValue: formatLargeNumberDouble(
                                     newPr
                                         .getProductUnit()
                                         .getQuantityEquivDivided(
                                           index: 1,
-                                          newQuantity: salesOldQuantity,
+                                          newQuantity:
+                                              salesOldQuantity,
                                         ),
                                   ),
                                   desc:
@@ -850,7 +963,8 @@ class _StorageQuantityUpdateWidgetState
                                       product() != null
                                           ? newPr
                                               .getProductUnit(
-                                                unitUuid: unitUuid,
+                                                unitUuid:
+                                                    unitUuid,
                                               )
                                               .getQuantityEquivDivided(
                                                 index: 1,
@@ -858,9 +972,11 @@ class _StorageQuantityUpdateWidgetState
                                                     salesNewQuantity -
                                                     salesOldQuantity,
                                               )
-                                          : widget.storageProduct
+                                          : widget
+                                              .storageProduct
                                               .getProductUnit(
-                                                unitUuid: unitUuid,
+                                                unitUuid:
+                                                    unitUuid,
                                               )
                                               .getQuantityEquivDivided(
                                                 index: 4,
@@ -873,65 +989,109 @@ class _StorageQuantityUpdateWidgetState
                                         .getProductUnit()
                                         .getQuantityEquivDivided(
                                           index: 1,
-                                          newQuantity: salesNewQuantity,
+                                          newQuantity:
+                                              salesNewQuantity,
                                         ),
                                   ),
-                                  primaryUnit: newPr.getProductUnit().name,
-                                  unit:
-                                      product() == null
-                                          ? widget.storageProduct
-                                              .getProductUnit(
-                                                unitUuid: unitUuid,
-                                              )
-                                              .name
-                                          : newPr
-                                              .getProductUnit(
-                                                unitUuid: unitUuid,
-                                              )
-                                              .name,
+                                  primaryUnit:
+                                      newPr
+                                          .getProductUnit()
+                                          .name,
+                                  unit: formatHistoryUnit(
+                                    selectedUnit:
+                                        product() == null
+                                            ? widget
+                                                .storageProduct
+                                                .getProductUnit(
+                                                  unitUuid:
+                                                      unitUuid,
+                                                )
+                                                .name
+                                            : newPr
+                                                .getProductUnit(
+                                                  unitUuid:
+                                                      unitUuid,
+                                                )
+                                                .name,
+                                    primaryUnit:
+                                        newPr
+                                            .getProductUnit()
+                                            .name,
+                                    primaryQuantity:
+                                        (newPr.getProductUnit().getQuantityEquivDivided(
+                                                  index: 1,
+                                                  newQuantity:
+                                                      salesNewQuantity,
+                                                ) -
+                                                newPr
+                                                    .getProductUnit()
+                                                    .getQuantityEquivDivided(
+                                                      index:
+                                                          1,
+                                                      newQuantity:
+                                                          salesOldQuantity,
+                                                    ))
+                                            .abs(),
+                                  ),
                                 );
-                                await returnData()
-                                    .updateProduct(
-                                      itemHistory:
-                                          itemHistory,
-                                      includeQuantity:
-                                          false,
-                                      isIncrement:
-                                          salesNewQuantity >
-                                          salesOldQuantity,
-                                      isQuantityUpdate:
-                                          true,
-                                      // Stored units (sheets for 2D).
-                                      quantityChange:
-                                          transfer.salesChange ??
-                                          0,
-                                      product: newPr,
-                                    );
+                                await returnData().updateProduct(
+                                  itemHistory: itemHistory,
+                                  includeQuantity: false,
+                                  isIncrement:
+                                      salesNewQuantity >
+                                      salesOldQuantity,
+                                  isQuantityUpdate: true,
+                                  // Stored units (sheets for 2D).
+                                  quantityChange:
+                                      transfer
+                                          .salesChange ??
+                                      0,
+                                  product: newPr,
+                                );
                               }
-                              var depts = returnDepartmentProvider().departments
-                                  .where(
-                                    (dept) =>
-                                        dept.uuid == newPr?.departmentUuid,
-                                  );
+                              var depts =
+                                  returnDepartmentProvider()
+                                      .departments
+                                      .where(
+                                        (dept) =>
+                                            dept.uuid ==
+                                            newPr
+                                                ?.departmentUuid,
+                                      );
 
                               DepartmentClass? department =
-                                  depts.isNotEmpty ? depts.first : null;
-                              var usersTemp = returnUserProviderSingle()
-                                  .usersMain
-                                  .where((user) => user.userId == staffUuid);
+                                  depts.isNotEmpty
+                                      ? depts.first
+                                      : null;
+                              var usersTemp =
+                                  returnUserProviderSingle()
+                                      .usersMain
+                                      .where(
+                                        (user) =>
+                                            user.userId ==
+                                            staffUuid,
+                                      );
                               TempUserClass? user =
-                                  usersTemp.isNotEmpty ? usersTemp.first : null;
+                                  usersTemp.isNotEmpty
+                                      ? usersTemp.first
+                                      : null;
                               String desc() {
-                                if (commentController.text.isNotEmpty) {
-                                  return commentController.text.trim();
+                                if (commentController
+                                    .text
+                                    .isNotEmpty) {
+                                  return commentController
+                                      .text
+                                      .trim();
                                 } else {
                                   if (currentIndex == 0) {
-                                    if (productUuid == null) {
+                                    if (productUuid ==
+                                        null) {
                                       return 'Stock In';
                                     } else {
                                       return 'Item Returned';
                                     }
-                                  } else if (currentIndex == 1) {
+                                  } else if (currentIndex ==
+                                      1) {
                                     return 'Stock Out';
                                   } else {
                                     return 'Stock Updated';
@@ -940,12 +1100,15 @@ class _StorageQuantityUpdateWidgetState
                               }
 
                               String title() {
-                                if (currentIndex == 0 && productUuid != null) {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
                                   return 'Return Item';
-                                } else if (currentIndex == 0 &&
+                                } else if (currentIndex ==
+                                        0 &&
                                     productUuid == null) {
                                   return 'Stock In';
-                                } else if (currentIndex == 1) {
+                                } else if (currentIndex ==
+                                    1) {
                                   return 'Stock Out';
                                 } else {
                                   return 'Stock Updated';
@@ -953,14 +1116,19 @@ class _StorageQuantityUpdateWidgetState
                               }
 
                               String event() {
-                                if (currentIndex == 0 && productUuid != null) {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
                                   return StorageItemHistoryEventClass
                                       .returnEvent;
-                                } else if (currentIndex == 0 &&
+                                } else if (currentIndex ==
+                                        0 &&
                                     productUuid == null) {
-                                  return StorageItemHistoryEventClass.stockIn;
-                                } else if (currentIndex == 1) {
-                                  return StorageItemHistoryEventClass.stockOut;
+                                  return StorageItemHistoryEventClass
+                                      .stockIn;
+                                } else if (currentIndex ==
+                                    1) {
+                                  return StorageItemHistoryEventClass
+                                      .stockOut;
                                 } else {
                                   return storageNewQuantity >
                                           storageOldQty
@@ -972,14 +1140,17 @@ class _StorageQuantityUpdateWidgetState
                               }
 
                               String source() {
-                                if (currentIndex == 0 && productUuid != null) {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
                                   return StorageItemHistoryEventClass
                                       .productSource;
-                                } else if (currentIndex == 0 &&
+                                } else if (currentIndex ==
+                                        0 &&
                                     productUuid == null) {
                                   return StorageItemHistoryEventClass
                                       .manualSource;
-                                } else if (currentIndex == 1) {
+                                } else if (currentIndex ==
+                                    1) {
                                   return StorageItemHistoryEventClass
                                       .storageSource;
                                 } else {
@@ -989,14 +1160,17 @@ class _StorageQuantityUpdateWidgetState
                               }
 
                               String destination() {
-                                if (currentIndex == 0 && productUuid != null) {
+                                if (currentIndex == 0 &&
+                                    productUuid != null) {
                                   return StorageItemHistoryEventClass
                                       .storageDestination;
-                                } else if (currentIndex == 0 &&
+                                } else if (currentIndex ==
+                                        0 &&
                                     productUuid == null) {
                                   return StorageItemHistoryEventClass
                                       .storageDestination;
-                                } else if (currentIndex == 1) {
+                                } else if (currentIndex ==
+                                    1) {
                                   return StorageItemHistoryEventClass
                                       .productDestination;
                                 } else {
@@ -1012,30 +1186,45 @@ class _StorageQuantityUpdateWidgetState
                                 shopId: shopId(),
                                 title: title(),
                                 createdAt: DateTime.now(),
-                                salesDepartmentName: department?.name,
-                                salesDepartmentUuid: department?.uuid,
-                                storageItemName: widget.storageProduct.name,
-                                storageItemUuid: widget.storageProduct.uuid,
-                                storageStaffId: currentUser().userId,
-                                storageStaffName: currentUser().name,
-                                salesStaffUuid: user?.userId,
+                                salesDepartmentName:
+                                    department?.name,
+                                salesDepartmentUuid:
+                                    department?.uuid,
+                                storageItemName:
+                                    widget
+                                        .storageProduct
+                                        .name,
+                                storageItemUuid:
+                                    widget
+                                        .storageProduct
+                                        .uuid,
+                                storageStaffId:
+                                    currentUser().userId,
+                                storageStaffName:
+                                    currentUser().name,
+                                salesStaffUuid:
+                                    user?.userId,
                                 salesStaffName: user?.name,
-                                storageItemOldValue: formatLargeNumberDouble(
-                                  widget.storageProduct
-                                      .getProductUnit()
-                                      .getQuantityEquivDivided(
-                                        index: 4,
-                                        newQuantity: storageOldQty,
-                                      ),
-                                ),
-                                storageItemNewValue: formatLargeNumberDouble(
-                                  widget.storageProduct
-                                      .getProductUnit()
-                                      .getQuantityEquivDivided(
-                                        index: 4,
-                                        newQuantity: storageNewQuantity,
-                                      ),
-                                ),
+                                storageItemOldValue:
+                                    formatLargeNumberDouble(
+                                      widget.storageProduct
+                                          .getProductUnit()
+                                          .getQuantityEquivDivided(
+                                            index: 4,
+                                            newQuantity:
+                                                storageOldQty,
+                                          ),
+                                    ),
+                                storageItemNewValue:
+                                    formatLargeNumberDouble(
+                                      widget.storageProduct
+                                          .getProductUnit()
+                                          .getQuantityEquivDivided(
+                                            index: 4,
+                                            newQuantity:
+                                                storageNewQuantity,
+                                          ),
+                                    ),
                                 uuid: uuidGen(),
                                 salesItemOldValue:
                                     productUuid == null
@@ -1053,8 +1242,12 @@ class _StorageQuantityUpdateWidgetState
                                 salesItemName: newPr?.name,
                                 quantityChange:
                                     product() == null
-                                        ? widget.storageProduct
-                                            .getProductUnit(unitUuid: unitUuid)
+                                        ? widget
+                                            .storageProduct
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
                                             .getQuantityEquivDivided(
                                               index: 4,
                                               newQuantity:
@@ -1062,50 +1255,92 @@ class _StorageQuantityUpdateWidgetState
                                                       storageOldQty),
                                             )
                                         : newPr
-                                            ?.getProductUnit(unitUuid: unitUuid)
+                                            ?.getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
                                             .getQuantityEquivDivided(
                                               index: 1,
                                               newQuantity:
                                                   (storageNewQuantity -
                                                       storageOldQty),
                                             ),
-                                isIncreased: storageNewQuantity > storageOldQty,
+                                isIncreased:
+                                    storageNewQuantity >
+                                    storageOldQty,
                                 desc: desc(),
-                                salesPrimaryUnit: newPr?.getProductUnit().name,
+                                salesPrimaryUnit:
+                                    newPr
+                                        ?.getProductUnit()
+                                        .name,
                                 salesUnit:
                                     product() == null
-                                        ? widget.storageProduct
-                                            .getProductUnit(unitUuid: unitUuid)
+                                        ? widget
+                                            .storageProduct
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
                                             .name
                                         : newPr
-                                            ?.getProductUnit(unitUuid: unitUuid)
+                                            ?.getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
                                             .name,
                                 storagePrimaryUnit:
-                                    widget.storageProduct.getProductUnit().name,
-                                storageUnit:
-                                    product() == null
-                                        ? widget.storageProduct
-                                            .getProductUnit(unitUuid: unitUuid)
-                                            .name
-                                        : newPr
-                                            ?.getProductUnit(unitUuid: unitUuid)
-                                            .name,
+                                    widget.storageProduct
+                                        .getProductUnit()
+                                        .name,
+                                storageUnit: formatHistoryUnit(
+                                  selectedUnit:
+                                      product() == null
+                                          ? widget
+                                              .storageProduct
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .name
+                                          : (newPr
+                                                  ?.getProductUnit(
+                                                    unitUuid:
+                                                        unitUuid,
+                                                  )
+                                                  .name ??
+                                              widget
+                                                  .storageProduct
+                                                  .getProductUnit(
+                                                    unitUuid:
+                                                        unitUuid,
+                                                  )
+                                                  .name),
+                                  primaryUnit:
+                                      widget.storageProduct
+                                          .getProductUnit()
+                                          .name,
+                                  primaryQuantity:
+                                      (storageNewQuantity -
+                                              storageOldQty)
+                                          .abs(),
+                                ),
                               );
 
                               var res = await returnStorageProductProvider()
                                   .updateProduct(
                                     product: newProduct,
                                     isQuantityUpdate: true,
-                                    quantityChange: qttyChange,
+                                    quantityChange:
+                                        qttyChange,
                                     isIncrement:
                                         storageOldQty <
                                         storageNewQuantity,
-                                    storageItemHistory: storageItemHistory,
+                                    storageItemHistory:
+                                        storageItemHistory,
                                   );
 
-                              returnStorageProductProvider().toggleIsLoading(
-                                false,
-                              );
+                              returnStorageProductProvider()
+                                  .toggleIsLoading(false);
                               if (res == 0) {
                                 showDialog(
                                   // ignore: use_build_context_synchronously
@@ -1115,7 +1350,8 @@ class _StorageQuantityUpdateWidgetState
                                       theme: theme,
                                       message:
                                           'An Error occoured while updating Your Stock. Please Try Again.',
-                                      title: 'An Error Occoured.',
+                                      title:
+                                          'An Error Occoured.',
                                     );
                                   },
                                 );
@@ -1129,12 +1365,16 @@ class _StorageQuantityUpdateWidgetState
                     }
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
 
                     child: Center(
                       child: Text(
                         style: TextStyle(
-                          fontSize: theme.mobileTexts.b3.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -1174,7 +1414,10 @@ class SelectProductButton extends StatelessWidget {
       mouseCursor: SystemMouseCursors.click,
       onTap: action,
       child: Padding(
-        padding: EdgeInsetsGeometry.symmetric(vertical: 10, horizontal: 20),
+        padding: EdgeInsetsGeometry.symmetric(
+          vertical: 10,
+          horizontal: 20,
+        ),
         child: Center(
           child: Row(
             spacing: 5,
@@ -1183,7 +1426,8 @@ class SelectProductButton extends StatelessWidget {
               Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
-                  fontWeight: isBold ? FontWeight.bold : null,
+                  fontWeight:
+                      isBold ? FontWeight.bold : null,
                 ),
                 title,
               ),
@@ -1226,7 +1470,12 @@ class ToggleButton extends StatelessWidget {
               bottom: BorderSide(
                 color:
                     currentIndex == myIndex
-                        ? const Color.fromARGB(255, 255, 139, 7)
+                        ? const Color.fromARGB(
+                          255,
+                          255,
+                          139,
+                          7,
+                        )
                         : Colors.grey.shade500,
                 width: currentIndex == myIndex ? 1 : 0,
               ),
@@ -1236,13 +1485,18 @@ class ToggleButton extends StatelessWidget {
             mouseCursor: SystemMouseCursors.click,
             onTap: action,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              padding: EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 10,
+              ),
               child: Center(
                 child: Text(
                   style: TextStyle(
                     fontSize: theme.mobileTexts.b4.fontSize,
                     fontWeight:
-                        currentIndex == myIndex ? FontWeight.bold : null,
+                        currentIndex == myIndex
+                            ? FontWeight.bold
+                            : null,
                   ),
                   title,
                 ),
@@ -1265,10 +1519,12 @@ class ManageProductsStorage extends StatefulWidget {
   });
 
   @override
-  State<ManageProductsStorage> createState() => _ManageProductsStorageState();
+  State<ManageProductsStorage> createState() =>
+      _ManageProductsStorageState();
 }
 
-class _ManageProductsStorageState extends State<ManageProductsStorage> {
+class _ManageProductsStorageState
+    extends State<ManageProductsStorage> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -1283,7 +1539,11 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
             setState(() {
               list.addAll(
                 returnData().productListMain
-                    .where((pr) => pr.storageUuid == widget.productUuid)
+                    .where(
+                      (pr) =>
+                          pr.storageUuid ==
+                          widget.productUuid,
+                    )
                     .map((pro) => pro.uuid!),
               );
             });
@@ -1298,19 +1558,25 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                           'Select Products that you want to be managed under this Storage',
                       title: 'Select Product(s)',
                       topRightWidget:
-                          returnStorageProductProvider().isLoading
+                          returnStorageProductProvider()
+                                  .isLoading
                               ? SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(
-                                  color:
-                                      widget.theme.lightModeColor.secColor200,
-                                  strokeWidth: 1.5,
-                                ),
+                                child:
+                                    CircularProgressIndicator(
+                                      color:
+                                          widget
+                                              .theme
+                                              .lightModeColor
+                                              .secColor200,
+                                      strokeWidth: 1.5,
+                                    ),
                               )
                               : null,
                       action: () {
-                        if (!returnStorageProductProvider().isLoading) {
+                        if (!returnStorageProductProvider()
+                            .isLoading) {
                           showDialog(
                             context: context,
                             builder: (confirmContext) {
@@ -1320,48 +1586,78 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                                     'You are about to Add/Remove This products To/From this Storage. Are you sure you want to proceed?',
                                 title: 'Update Storage',
                                 action: () async {
-                                  Navigator.of(confirmContext).pop();
+                                  Navigator.of(
+                                    confirmContext,
+                                  ).pop();
                                   returnStorageProductProvider()
-                                      .toggleIsLoading(true);
+                                      .toggleIsLoading(
+                                        true,
+                                      );
                                   setState(() {});
-                                  for (var pr in returnData().productListMain
+                                  for (var pr in returnData()
+                                      .productListMain
                                       .where(
                                         (pro) =>
-                                            list.contains(pro.uuid) &&
+                                            list.contains(
+                                              pro.uuid,
+                                            ) &&
                                             pro.storageUuid !=
-                                                widget.productUuid,
+                                                widget
+                                                    .productUuid,
                                       )) {
-                                    var newPr = pr.copyWith();
-                                    newPr.storageUuid = widget.productUuid;
-                                    await returnData().updateProduct(
-                                      itemHistory: null,
-                                      includeQuantity: false,
-                                      isIncrement: null,
-                                      isQuantityUpdate: false,
-                                      quantityChange: null,
-                                      product: newPr,
-                                    );
+                                    var newPr =
+                                        pr.copyWith();
+                                    newPr.storageUuid =
+                                        widget.productUuid;
+                                    await returnData()
+                                        .updateProduct(
+                                          itemHistory: null,
+                                          includeQuantity:
+                                              false,
+                                          isIncrement: null,
+                                          isQuantityUpdate:
+                                              false,
+                                          quantityChange:
+                                              null,
+                                          product: newPr,
+                                        );
                                   }
 
-                                  for (var pr in returnData().productListMain
-                                      .where(
-                                        (pro) => tempList.contains(pro.uuid),
-                                      )) {
-                                    var newPr = pr.copyWith();
-                                    newPr.storageUuid = null;
+                                  for (var pr
+                                      in returnData()
+                                          .productListMain
+                                          .where(
+                                            (
+                                              pro,
+                                            ) => tempList
+                                                .contains(
+                                                  pro.uuid,
+                                                ),
+                                          )) {
+                                    var newPr =
+                                        pr.copyWith();
+                                    newPr.storageUuid =
+                                        null;
 
-                                    await returnData().updateProduct(
-                                      itemHistory: null,
-                                      includeQuantity: false,
-                                      isIncrement: null,
-                                      isQuantityUpdate: false,
-                                      quantityChange: null,
-                                      product: newPr,
-                                    );
+                                    await returnData()
+                                        .updateProduct(
+                                          itemHistory: null,
+                                          includeQuantity:
+                                              false,
+                                          isIncrement: null,
+                                          isQuantityUpdate:
+                                              false,
+                                          quantityChange:
+                                              null,
+                                          product: newPr,
+                                        );
                                   }
 
-                                  if (firstContext.mounted) {
-                                    Navigator.of(context).pop();
+                                  if (firstContext
+                                      .mounted) {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
                                   }
                                 },
                               );
@@ -1373,10 +1669,11 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                         height: screenHeight(context) - 300,
                         child: SingleChildScrollView(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                              vertical: 15,
-                            ),
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                  vertical: 15,
+                                ),
                             child: Column(
                               spacing: 5,
                               children:
@@ -1385,33 +1682,49 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                                       )
                                       .map(
                                         (dept) => Material(
-                                          color: Colors.transparent,
+                                          color:
+                                              Colors
+                                                  .transparent,
                                           child: Ink(
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.shade100,
-                                            ),
+                                            decoration:
+                                                BoxDecoration(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade100,
+                                                ),
                                             child: InkWell(
                                               mouseCursor:
-                                                  SystemMouseCursors.click,
+                                                  SystemMouseCursors
+                                                      .click,
                                               onTap: () {
                                                 setState(() {
                                                   if (list.contains(
                                                     dept.uuid,
                                                   )) {
-                                                    list.remove(dept.uuid);
-                                                    tempList.add(dept.uuid!);
+                                                    list.remove(
+                                                      dept.uuid,
+                                                    );
+                                                    tempList.add(
+                                                      dept.uuid!,
+                                                    );
                                                   } else {
-                                                    list.add(dept.uuid!);
-                                                    tempList.remove(dept.uuid);
+                                                    list.add(
+                                                      dept.uuid!,
+                                                    );
+                                                    tempList.remove(
+                                                      dept.uuid,
+                                                    );
                                                   }
                                                 });
                                               },
                                               child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 10.0,
-                                                      horizontal: 12,
-                                                    ),
+                                                padding: const EdgeInsets.symmetric(
+                                                  vertical:
+                                                      10.0,
+                                                  horizontal:
+                                                      12,
+                                                ),
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
@@ -1420,60 +1733,43 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                                                     Expanded(
                                                       child: Column(
                                                         crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                            CrossAxisAlignment.start,
                                                         children: [
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  widget
-                                                                      .theme
-                                                                      .mobileTexts
-                                                                      .b3
-                                                                      .fontSize,
+                                                                  widget.theme.mobileTexts.b3.fontSize,
                                                               fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
+                                                                  FontWeight.bold,
                                                             ),
                                                             dept.name,
                                                           ),
                                                           Padding(
-                                                            padding:
-                                                                const EdgeInsets.only(
-                                                                  top: 2.0,
-                                                                ),
+                                                            padding: const EdgeInsets.only(
+                                                              top:
+                                                                  2.0,
+                                                            ),
                                                             child: Row(
-                                                              spacing: 2,
+                                                              spacing:
+                                                                  2,
                                                               children: [
                                                                 Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        widget
-                                                                            .theme
-                                                                            .mobileTexts
-                                                                            .b5
-                                                                            .fontSize,
+                                                                        widget.theme.mobileTexts.b5.fontSize,
                                                                     fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                        FontWeight.bold,
                                                                     color:
-                                                                        Colors
-                                                                            .grey
-                                                                            .shade500,
+                                                                        Colors.grey.shade500,
                                                                   ),
                                                                   'Dept:',
                                                                 ),
                                                                 Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        widget
-                                                                            .theme
-                                                                            .mobileTexts
-                                                                            .b5
-                                                                            .fontSize,
+                                                                        widget.theme.mobileTexts.b5.fontSize,
                                                                     fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                        FontWeight.bold,
                                                                     color:
                                                                         dept.departmentName !=
                                                                                 null
@@ -1499,13 +1795,16 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                                                       ),
                                                     ),
                                                     Container(
-                                                      padding: EdgeInsets.all(
-                                                        2,
-                                                      ),
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            2,
+                                                          ),
                                                       decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
+                                                        shape:
+                                                            BoxShape.circle,
                                                         border: Border.all(
-                                                          color: Colors.grey,
+                                                          color:
+                                                              Colors.grey,
                                                         ),
                                                       ),
                                                       child: Container(
@@ -1519,12 +1818,8 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                                                               list.contains(
                                                                     dept.uuid,
                                                                   )
-                                                                  ? widget
-                                                                      .theme
-                                                                      .lightModeColor
-                                                                      .prColor250
-                                                                  : Colors
-                                                                      .transparent,
+                                                                  ? widget.theme.lightModeColor.prColor250
+                                                                  : Colors.transparent,
                                                         ),
                                                       ),
                                                     ),
@@ -1545,7 +1840,8 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
                 );
               },
             ).then((_) {
-              returnStorageProductProvider().toggleIsLoading(false);
+              returnStorageProductProvider()
+                  .toggleIsLoading(false);
             });
           },
           child: Padding(
@@ -1553,10 +1849,19 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
             child: Row(
               spacing: 5,
               children: [
-                Icon(size: 16, color: Colors.grey, Icons.add),
+                Icon(
+                  size: 16,
+                  color: Colors.grey,
+                  Icons.add,
+                ),
                 Text(
                   style: TextStyle(
-                    fontSize: widget.theme.mobileTexts.b4.fontSize,
+                    fontSize:
+                        widget
+                            .theme
+                            .mobileTexts
+                            .b4
+                            .fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                   'Manage Products',
@@ -1577,12 +1882,15 @@ class _ManageProductsStorageState extends State<ManageProductsStorage> {
 // blocked (see storage_transfer.dart).
 
 TempStorageProducts? storageItemByUuid(String? uuid) {
-  return returnStorageProductProvider().storageProductListMain
+  return returnStorageProductProvider()
+      .storageProductListMain
       .where((item) => item.uuid == uuid)
       .firstOrNull;
 }
 
-List<TempProductClass> manageableProductsFor(String storageUuid) {
+List<TempProductClass> manageableProductsFor(
+  String storageUuid,
+) {
   final storage = storageItemByUuid(storageUuid);
   if (storage == null) {
     return returnData().productListMain

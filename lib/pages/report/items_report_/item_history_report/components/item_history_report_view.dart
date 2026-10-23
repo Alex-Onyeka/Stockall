@@ -1360,53 +1360,38 @@ class _ItemHistoryReportViewState
     }
 
     final qty = r.quantityChange!;
-    final unitStr =
-        (r.unit != null && r.unit!.trim().isNotEmpty)
-            ? ' ${r.unit!.trim()}'
-            : '';
+    final formattedText = returnHistoryQuantity(
+      quantityChange: r.quantityChange,
+      isIncreased: r.isIncreased,
+      unit: r.unit,
+      primaryUnit: r.primaryUnit,
+      oldValue: r.oldValue,
+      newValue: r.newValue,
+    );
 
+    Color color;
     if (qty == 0) {
-      return _txt(
-        theme,
-        '0$unitStr',
-        bold: true,
-        color: Colors.grey.shade700,
-        align: TextAlign.center,
-      );
-    }
-
-    if (r.isIncreased == true) {
-      return _txt(
-        theme,
-        '+${formatLargeNumberDouble(qty.abs())}$unitStr',
-        bold: true,
-        color: Colors.green.shade700,
-        align: TextAlign.center,
-      );
+      color = Colors.grey.shade700;
+    } else if (r.isIncreased == true) {
+      color = Colors.green.shade700;
     } else if (r.isIncreased == false) {
-      return _txt(
-        theme,
-        '-${formatLargeNumberDouble(qty.abs())}$unitStr',
-        bold: true,
-        color: theme.lightModeColor.errorColor200,
-        align: TextAlign.center,
-      );
+      color = theme.lightModeColor.errorColor200;
     } else {
-      final sign = qty > 0 ? '+' : (qty < 0 ? '-' : '');
-      final color =
+      color =
           qty > 0
               ? Colors.green.shade700
               : (qty < 0
                   ? theme.lightModeColor.errorColor200
                   : Colors.grey.shade700);
-      return _txt(
-        theme,
-        '$sign${formatLargeNumberDouble(qty.abs())}$unitStr',
-        bold: true,
-        color: color,
-        align: TextAlign.center,
-      );
     }
+
+    return _txt(
+      theme,
+      formattedText,
+      bold: true,
+      color: color,
+      align: TextAlign.center,
+    );
   }
 
   Widget _oldValueCell(ThemeProvider theme, ItemHistory r) {
@@ -2141,7 +2126,14 @@ class _ItemHistoryRecordDetailsModal
     const dash = '—';
     final qtyStr =
         history.quantityChange != null
-            ? '${formatLargeNumberDouble(history.quantityChange!.abs())} ${history.unit ?? ''}'
+            ? returnHistoryQuantity(
+              quantityChange: history.quantityChange,
+              isIncreased: history.isIncreased,
+              unit: history.unit,
+              primaryUnit: history.primaryUnit,
+              oldValue: history.oldValue,
+              newValue: history.newValue,
+            )
             : 'N/A';
     final directionStr =
         history.isIncreased == true
@@ -2228,10 +2220,10 @@ class _ItemHistoryRecordDetailsModal
                 _entry(
                   title: 'Unit',
                   value:
-                      (history.unit != null &&
-                              history.unit!.isNotEmpty)
-                          ? history.unit!
-                          : dash,
+                      ItemHistoryReportQuery.quantityChangeUnit(
+                        history,
+                      ) ??
+                      dash,
                 ),
                 _entry(
                   title: 'Primary Unit',

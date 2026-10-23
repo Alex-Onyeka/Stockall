@@ -59,6 +59,9 @@ class _ManageThisItemToggleSwitchState
                           manageSalesWastage: widget.product.manageSalesWastage,
                           heightDimension: widget.product.heightDimension,
                           widthDimension: widget.product.widthDimension,
+                          dimensionUnit: widget.product.dimensionUnit,
+                          dimensionUnitConversion:
+                              widget.product.dimensionUnitConversion,
                           quantityType: widget.product.quantityType,
                           pricesList: widget.product.pricesList,
                           unitsList: widget.product.unitsList,

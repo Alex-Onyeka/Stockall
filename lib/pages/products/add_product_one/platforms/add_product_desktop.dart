@@ -194,6 +194,9 @@ class _AddProductDesktopState
                       '',
                     ),
                   ),
+                  dimensionUnit: dataProvider.selectedDimensionUnit,
+                  dimensionUnitConversion:
+                      dataProvider.selectedDimensionConversion,
                   unitsList: dataProvider.getFinalUnitList(),
                   pricesList: dataProvider.getFinalPriceList(
                     productUuid: createdProductUuid ?? '',
@@ -377,6 +380,9 @@ class _AddProductDesktopState
                       '',
                     ),
                   ),
+                  dimensionUnit: provider.selectedDimensionUnit,
+                  dimensionUnitConversion:
+                      provider.selectedDimensionConversion,
                   unitsList: provider.getFinalUnitList(),
                   pricesList: provider.getFinalPriceList(
                     productUuid: createdProductUuid ?? '',
@@ -548,6 +554,10 @@ class _AddProductDesktopState
           widget.product?.departmentUuid;
       returnData().manageWastage =
           widget.product?.manageSalesWastage ?? false;
+      returnData().selectedDimensionUnit =
+          widget.product?.dimensionUnit;
+      returnData().selectedDimensionConversion =
+          widget.product?.dimensionUnitConversion;
       returnData().expiryDate = widget.product?.expiryDate;
       barcode = widget.product!.barcode;
       barCodeSet =

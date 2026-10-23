@@ -160,7 +160,9 @@ class ProductUnitsClass extends HiveObject {
   }) {
     var primary = primaryOf(units);
     if (primary == null) {
-      return [newUnit().copyWith(name: name, isPrimary: true)];
+      return [
+        newUnit().copyWith(name: name, isPrimary: true),
+      ];
     }
     return units.map((item) {
       if (item.uuid == primary.uuid) {
@@ -221,8 +223,7 @@ class ProductUnitsClass extends HiveObject {
       }
     }
 
-    if (product?.quantityType == 2 &&
-        dimensionType != null) {
+    if (product?.quantityType == 2) {
       final productArea = product!.dimensionArea();
       final areaPerUnit =
           dimensionType == areaUnit
@@ -246,8 +247,13 @@ class ProductUnitsClass extends HiveObject {
       return (newQuantity ?? material.quantity ?? 0) /
           conversion;
     } else if (orderItem != null) {
+      final areaPerUnit =
+          (orderItem.quantityType == 2 &&
+                  dimensionType != areaUnit)
+              ? conversion * orderItem.dimensionArea()
+              : conversion;
       return (newQuantity ?? orderItem.quantity) /
-          conversion;
+          areaPerUnit;
     } else if (quantityTwo != null) {
       return (newQuantity ?? quantityTwo) / conversion;
     } else {
@@ -308,16 +314,14 @@ class ProductUnitsClass extends HiveObject {
           customWidth ?? product!.widthDimension ?? 1;
       final height =
           customHeight ?? product!.heightDimension ?? 1;
-      return newQuantity * conversion * width * height;
-    }
-
-    // 2D lines: a given quantity is scaled by the line's
-    // width × height (area). Null dimensions leave it as-is.
-    if (newQuantity != null &&
-        customWidth != null &&
-        customHeight != null) {
-      newQuantity =
-          newQuantity * customWidth * customHeight;
+      final conv =
+          (product!.dimensionUnitConversion != null &&
+                  product.dimensionUnitConversion! > 0)
+              ? product.dimensionUnitConversion!
+              : 1.0;
+      return newQuantity *
+          conversion *
+          ((width * height) / conv);
     }
 
     List items() {
@@ -355,6 +359,12 @@ class ProductUnitsClass extends HiveObject {
               0) *
           conversion;
     } else if (orderItem != null) {
+      if (orderItem.quantityType == 2 &&
+          dimensionType != areaUnit) {
+        return (newQuantity ?? orderItem.quantity) *
+            conversion *
+            orderItem.dimensionArea();
+      }
       return (newQuantity ?? orderItem.quantity) *
           conversion;
     } else if (quantityTwo != null) {
@@ -379,10 +389,14 @@ class ProductUnitsClass extends HiveObject {
                 customWidth ?? item!.widthDimension ?? 1;
             final height =
                 customHeight ?? item!.heightDimension ?? 1;
+            final conv =
+                (item!.dimensionUnitConversion != null &&
+                        item.dimensionUnitConversion! > 0)
+                    ? item.dimensionUnitConversion!
+                    : 1.0;
             return newQuantity *
                 conversion *
-                width *
-                height;
+                ((width * height) / conv);
           } else {
             return (newQuantity ?? item.quantity ?? 0) *
                 conversion;

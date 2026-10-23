@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
@@ -135,6 +136,15 @@ class OrderItems extends HiveObject {
   @HiveField(41)
   double? wastageAmount;
 
+  @HiveField(42)
+  String? dimensionUnit;
+
+  @HiveField(43)
+  double? dimensionUnitConversion;
+
+  @HiveField(44)
+  String? wastageUnitUuid;
+
   OrderItems({
     required this.uuid,
     required this.orderId,
@@ -178,6 +188,9 @@ class OrderItems extends HiveObject {
     required this.manageSalesWastage,
     required this.isPercentageWastage,
     required this.wastageAmount,
+    this.wastageUnitUuid,
+    this.dimensionUnit,
+    this.dimensionUnitConversion,
   });
 
   factory OrderItems.fromJson(Map<String, dynamic> json) {
@@ -251,6 +264,11 @@ class OrderItems extends HiveObject {
           json['is_percentage_wastage'] as bool?,
       wastageAmount:
           (json['wastage_amount'] as num?)?.toDouble(),
+      wastageUnitUuid: json['wastage_unit_uuid'] as String?,
+      dimensionUnit: json['dimension_unit'] as String?,
+      dimensionUnitConversion:
+          (json['dimension_unit_conversion'] as num?)
+              ?.toDouble(),
     );
   }
 
@@ -304,6 +322,9 @@ class OrderItems extends HiveObject {
       'manage_sales_wastage': manageSalesWastage,
       'is_percentage_wastage': isPercentageWastage,
       'wastage_amount': wastageAmount,
+      'wastage_unit_uuid': wastageUnitUuid,
+      'dimension_unit': dimensionUnit,
+      'dimension_unit_conversion': dimensionUnitConversion,
     };
   }
 
@@ -349,6 +370,9 @@ class OrderItems extends HiveObject {
     bool? manageSalesWastage,
     bool? isPercentageWastage,
     double? wastageAmount,
+    String? wastageUnitUuid,
+    String? dimensionUnit,
+    double? dimensionUnitConversion,
   }) {
     return OrderItems(
       uuid: uuid ?? this.uuid,
@@ -404,6 +428,12 @@ class OrderItems extends HiveObject {
       isPercentageWastage:
           isPercentageWastage ?? this.isPercentageWastage,
       wastageAmount: wastageAmount ?? this.wastageAmount,
+      wastageUnitUuid:
+          wastageUnitUuid ?? this.wastageUnitUuid,
+      dimensionUnit: dimensionUnit ?? this.dimensionUnit,
+      dimensionUnitConversion:
+          dimensionUnitConversion ??
+          this.dimensionUnitConversion,
     );
   }
 
@@ -740,6 +770,218 @@ class OrderItems extends HiveObject {
     return quantity * conversion * dimensionArea();
   }
 
+  // Wastage area this line took from stock. Only lines saved
+  // with manageSalesWastage == true applied it; older lines count as 0.
+  double wastageArea() {
+    if (quantityType != 2 || manageSalesWastage != true) {
+      return 0;
+    }
+    return computeWastageArea(
+      baseArea: getActualQuantity(),
+      amount:
+          isPercentageWastage == true ||
+                  wastageAmount == null
+              ? wastageAmount
+              : wastageAmount! * wastageAreaPerUnit(),
+      isPercentage: isPercentageWastage,
+    );
+  }
+
+  // Area one unit of fixed wastage stands for, as the cart line
+  // converts it (piece units at the line's size). 1 without a
+  // stored unit: older lines kept the amount in area.
+  double wastageAreaPerUnit() {
+    if (wastageUnitUuid == null) return 1;
+    final unit =
+        getUnitsList()
+            .where((unit) => unit.uuid == wastageUnitUuid)
+            .firstOrNull;
+    if (unit == null) return 1;
+    if (quantityType == 2 &&
+        unit.dimensionType == ProductUnitsClass.areaUnit) {
+      return unit.conversion;
+    }
+    if (quantityType == 2) {
+      return unit.conversion * dimensionArea();
+    }
+    return unit.conversion;
+  }
+
+  // Quantity this line takes from stock: actual quantity + wastage.
+  double getStockQuantity() {
+    return getActualQuantity() + wastageArea();
+  }
+
+  bool get hasCustomDimensions =>
+      (widthDimension != null && widthDimension! > 0) ||
+      (heightDimension != null && heightDimension! > 0);
+
+  // Total line quantity displayed in Cart Tile, Orders and Receipts.
+  // When a 2D item has custom dimensions, this is the equivalent quantity
+  // in the primary unit (e.g. 1.0 M²).
+  // For all other lines, it is the line quantity in the selected unit.
+  double displayQuantity() {
+    if (quantityType == 2 && hasCustomDimensions) {
+      return getStockQuantity();
+    }
+    return historyQuantityChange();
+  }
+
+  // Decimal fraction / unit quantity for ItemHistory (e.g. 0.5 Slabs).
+  double historyQuantityChange() {
+    if (quantityType == 2) {
+      final unit = getSelectedUnit();
+      if (unit.dimensionType ==
+          ProductUnitsClass.areaUnit) {
+        return getStockQuantity() /
+            (unit.conversion > 0 ? unit.conversion : 1.0);
+      }
+      TempProductClass? prod;
+      try {
+        prod =
+            returnData().productListMain
+                .where((p) => p.uuid == productUuid)
+                .firstOrNull;
+      } catch (_) {}
+      final wholeArea =
+          (prod != null && prod.dimensionArea() > 0)
+              ? prod.dimensionArea() *
+                  (unit.conversion > 0
+                      ? unit.conversion
+                      : 1.0)
+              : (unit.conversion > 0
+                      ? unit.conversion
+                      : 1.0) *
+                  dimensionArea();
+      if (wholeArea > 0) {
+        return getStockQuantity() / wholeArea;
+      }
+    }
+    final wastage = wastageArea();
+    if (wastage <= 0) return quantity;
+    final base = getActualQuantity();
+    if (base <= 0) return quantity;
+    return quantity + quantity * wastage / base;
+  }
+
+  // Unit name displayed in Cart Tile, Orders and Receipts.
+  String displayUnitName() {
+    if (quantityType == 2 && hasCustomDimensions) {
+      final pUnit = getPrimaryUnit();
+      return pUnit.name == 'Others'
+          ? 'Unit(s)'
+          : pUnit.name;
+    }
+    final sel = getSelectedUnit();
+    return sel.name == 'Others' ? 'Unit(s)' : sel.name;
+  }
+
+  double baseQuantityInSaleUnit() {
+    if (quantityType == 2) {
+      final unit = getSelectedUnit();
+      if (unit.dimensionType ==
+          ProductUnitsClass.areaUnit) {
+        return getActualQuantity() /
+            (unit.conversion > 0 ? unit.conversion : 1.0);
+      }
+      TempProductClass? prod;
+      try {
+        prod =
+            returnData().productListMain
+                .where((p) => p.uuid == productUuid)
+                .firstOrNull;
+      } catch (_) {}
+      final wholeArea =
+          (prod != null && prod.dimensionArea() > 0)
+              ? prod.dimensionArea() *
+                  (unit.conversion > 0
+                      ? unit.conversion
+                      : 1.0)
+              : (unit.conversion > 0
+                      ? unit.conversion
+                      : 1.0) *
+                  dimensionArea();
+      if (wholeArea > 0) {
+        return getActualQuantity() / wholeArea;
+      }
+    }
+    return quantity;
+  }
+
+  double wastageInSaleUnit() =>
+      historyQuantityChange() - baseQuantityInSaleUnit();
+
+  // "incl. 0.1 Slab wastage", or '' without wastage.
+  String wastageNote() {
+    final wastage = wastageInSaleUnit();
+    if (wastage <= 1e-9) return '';
+    final unitName = getSelectedUnit().name;
+    return 'incl. ${formatDimension(wastage)} '
+        '${unitName == 'Others' ? 'Unit(s)' : unitName} wastage';
+  }
+
+  // Quantity text for item-history records.
+  String historyQuantityText() {
+    return formatDimension(historyQuantityChange());
+  }
+
+  // Quantity text for receipts and order display.
+  String quantityText() {
+    return formatDimension(displayQuantity());
+  }
+
+  // Unit label for ItemHistory.
+  // Shows selected unit, plus primary unit equiv in brackets if they differ:
+  // e.g. "bottles (0.2 Crates)" or "Slabs (0.5 M²)", or just "Crates" / "M²".
+  String historyUnit({TempProductClass? product}) {
+    final selUnit = getSelectedUnit();
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final selName =
+        selUnit.name == 'Others'
+            ? 'Unit(s)'
+            : selUnit.name.trim();
+    final primName =
+        primUnit.name == 'Others'
+            ? 'Unit(s)'
+            : primUnit.name.trim();
+
+    if (selName.isEmpty) return primName;
+    if (primName.isEmpty ||
+        selName.toLowerCase() == primName.toLowerCase()) {
+      return selName;
+    }
+
+    TempProductClass? targetProduct = product;
+    if (targetProduct == null) {
+      try {
+        targetProduct =
+            returnData().productListMain
+                .where((p) => p.uuid == productUuid)
+                .firstOrNull;
+      } catch (_) {}
+    }
+
+    final primaryQty = primUnit.getQuantityEquivDivided(
+      index: 1,
+      newQuantity: getStockQuantity(),
+      product: targetProduct,
+    );
+
+    return formatHistoryUnit(
+      selectedUnit: selName,
+      primaryUnit: primName,
+      primaryQuantity: primaryQty,
+    );
+  }
+
+  String historyWastageText() {
+    final wastage = wastageInSaleUnit();
+    return wastage <= 1e-9
+        ? ''
+        : ' (incl. ${formatDimension(wastage)} wastage)';
+  }
+
   double getQuantityFromPrimaryUnits(
     double quantity, {
     String? unitUuid,
@@ -762,20 +1004,27 @@ class OrderItems extends HiveObject {
     return quantity / areaPerUnit;
   }
 
-  // Width × height this line was ordered at, 1 when not set.
+  // Width × height this line was ordered at, converted to base unit area. 1 when not set.
   double dimensionArea() {
     if (widthDimension == null ||
         heightDimension == null ||
         widthDimension! * heightDimension! <= 0) {
       return 1;
     }
-    return widthDimension! * heightDimension!;
+    final dConversion =
+        (dimensionUnitConversion != null &&
+                dimensionUnitConversion! > 0)
+            ? dimensionUnitConversion!
+            : 1.0;
+    return (widthDimension! * heightDimension!) /
+        dConversion;
   }
 
   String dimensionsLabel() {
     return formatDimensionsLabel(
       widthDimension,
       heightDimension,
+      unit: dimensionUnit,
     );
   }
 

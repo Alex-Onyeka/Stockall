@@ -39,7 +39,12 @@ class _CartItemMainState extends State<CartItemMain> {
                   : Colors.white,
           boxShadow: [
             BoxShadow(
-              color: const Color.fromARGB(41, 158, 158, 158),
+              color: const Color.fromARGB(
+                41,
+                158,
+                158,
+                158,
+              ),
               blurRadius: 5,
             ),
           ],
@@ -52,7 +57,10 @@ class _CartItemMainState extends State<CartItemMain> {
                   ? const Color.fromARGB(255, 228, 228, 228)
                   : Colors.white,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+            padding: EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 5,
+            ),
 
             child: Row(
               children: [
@@ -63,7 +71,12 @@ class _CartItemMainState extends State<CartItemMain> {
                     borderRadius: BorderRadius.circular(5),
                     color:
                         widget.cartItem.isVoid == true
-                            ? const Color.fromARGB(255, 255, 211, 208)
+                            ? const Color.fromARGB(
+                              255,
+                              255,
+                              211,
+                              208,
+                            )
                             : Colors.grey.shade200,
                   ),
                   child: Icon(
@@ -75,10 +88,12 @@ class _CartItemMainState extends State<CartItemMain> {
                 SizedBox(width: 10),
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
                         // crossAxisAlignment:
                         //     CrossAxisAlignment.end,
                         children: [
@@ -88,7 +103,8 @@ class _CartItemMainState extends State<CartItemMain> {
                                 Flexible(
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        CrossAxisAlignment
+                                            .start,
                                     children: [
                                       Text(
                                         style: TextStyle(
@@ -98,7 +114,9 @@ class _CartItemMainState extends State<CartItemMain> {
                                                   .mobileTexts
                                                   .b2
                                                   .fontSize,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
                                         ),
                                         '${widget.cartItem.getItem()?.name ?? 'Item Name'}${widget.cartItem.dimensionsLabel()}',
                                       ),
@@ -110,40 +128,58 @@ class _CartItemMainState extends State<CartItemMain> {
                                         child: Text(
                                           style: TextStyle(
                                             fontSize: 10,
-                                            color: Colors.grey.shade700,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
                                           ),
-                                          widget.cartItem.wastageNote(),
+                                          widget.cartItem
+                                              .wastageNote(),
                                         ),
                                       ),
                                       Visibility(
                                         visible:
-                                            widget.cartItem.getItem()?.color !=
+                                            widget.cartItem
+                                                    .getItem()
+                                                    ?.color !=
                                                 null ||
                                             widget.cartItem
                                                     .getItem()
                                                     ?.sizeType !=
                                                 null ||
-                                            widget.cartItem.getItem()?.size !=
+                                            widget.cartItem
+                                                    .getItem()
+                                                    ?.size !=
                                                 null,
                                         child: Text(
                                           [
-                                            if (widget.cartItem
+                                            if (widget
+                                                    .cartItem
                                                     .getItem()
                                                     ?.color !=
                                                 null)
-                                              widget.cartItem.getItem()?.color,
-                                            if (widget.cartItem
+                                              widget
+                                                  .cartItem
+                                                  .getItem()
+                                                  ?.color,
+                                            if (widget
+                                                    .cartItem
                                                     .getItem()
                                                     ?.sizeType !=
                                                 null)
-                                              widget.cartItem
+                                              widget
+                                                  .cartItem
                                                   .getItem()
                                                   ?.sizeType,
-                                            if (widget.cartItem
+                                            if (widget
+                                                    .cartItem
                                                     .getItem()
                                                     ?.size !=
                                                 null)
-                                              widget.cartItem.getItem()?.size,
+                                              widget
+                                                  .cartItem
+                                                  .getItem()
+                                                  ?.size,
                                           ].join('  |  '),
                                           style: TextStyle(
                                             fontSize:
@@ -152,7 +188,9 @@ class _CartItemMainState extends State<CartItemMain> {
                                                     .mobileTexts
                                                     .b3
                                                     .fontSize,
-                                            fontWeight: FontWeight.w600,
+                                            fontWeight:
+                                                FontWeight
+                                                    .w600,
                                             color:
                                                 widget
                                                     .theme
@@ -171,31 +209,60 @@ class _CartItemMainState extends State<CartItemMain> {
                             children: [
                               Visibility(
                                 visible:
-                                    widget.deleteCartItem != null &&
-                                    widget.cartItem.isVoid != true,
+                                    widget.deleteCartItem !=
+                                        null &&
+                                    widget
+                                            .cartItem
+                                            .isVoid !=
+                                        true,
                                 child: IconButton(
-                                  mouseCursor: SystemMouseCursors.click,
-                                  onPressed: widget.deleteCartItem,
-                                  icon: Icon(Icons.delete_outline),
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  onPressed:
+                                      widget.deleteCartItem,
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                  ),
                                 ),
                               ),
                               Visibility(
-                                visible: widget.cartItem.isVoid == true,
+                                visible:
+                                    widget
+                                        .cartItem
+                                        .isVoid ==
+                                    true,
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 3,
-                                    horizontal: 6,
-                                  ),
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 3,
+                                        horizontal: 6,
+                                      ),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(2),
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade100,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          2,
+                                        ),
                                   ),
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize: theme.mobileTexts.b4.fontSize,
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.red.shade400,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontStyle:
+                                          FontStyle.italic,
+                                      color:
+                                          Colors
+                                              .red
+                                              .shade400,
                                     ),
                                     'Deleted',
                                   ),
@@ -207,8 +274,10 @@ class _CartItemMainState extends State<CartItemMain> {
                       ),
                       SizedBox(height: 10),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           Row(
                             spacing: 5,
@@ -216,9 +285,18 @@ class _CartItemMainState extends State<CartItemMain> {
                               Text(
                                 style: TextStyle(
                                   fontSize:
-                                      widget.theme.mobileTexts.b2.fontSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: widget.theme.lightModeColor.prColor300,
+                                      widget
+                                          .theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor300,
                                 ),
                                 formatMoneyMid(
                                   amount:
@@ -229,26 +307,45 @@ class _CartItemMainState extends State<CartItemMain> {
                               ),
                               Visibility(
                                 visible:
-                                    widget.cartItem.getItem()?.discount !=
+                                    widget.cartItem
+                                            .getItem()
+                                            ?.discount !=
                                         null &&
-                                    widget.cartItem.customPrice == null,
+                                    widget
+                                            .cartItem
+                                            .customPrice ==
+                                        null,
                                 child: Text('/'),
                               ),
                               Visibility(
                                 visible:
-                                    widget.cartItem.getItem()?.discount !=
+                                    widget.cartItem
+                                            .getItem()
+                                            ?.discount !=
                                         null &&
-                                    widget.cartItem.customPrice == null,
+                                    widget
+                                            .cartItem
+                                            .customPrice ==
+                                        null,
                                 child: Text(
                                   style: TextStyle(
-                                    decoration: TextDecoration.lineThrough,
+                                    decoration:
+                                        TextDecoration
+                                            .lineThrough,
                                     fontSize:
-                                        widget.theme.mobileTexts.b2.fontSize,
-                                    fontWeight: FontWeight.bold,
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
                                     color: Colors.grey,
                                   ),
                                   formatMoneyMid(
-                                    amount: widget.cartItem.totalCost(),
+                                    amount:
+                                        widget.cartItem
+                                            .totalCost(),
                                     context: context,
                                   ),
                                 ),
@@ -256,39 +353,59 @@ class _CartItemMainState extends State<CartItemMain> {
                             ],
                           ),
                           Visibility(
-                            visible: widget.editAction != null,
+                            visible:
+                                widget.editAction != null,
                             child: Material(
                               color: Colors.transparent,
                               child: Ink(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Colors.grey.shade100,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  color:
+                                      Colors.grey.shade100,
                                 ),
                                 child: InkWell(
-                                  mouseCursor: SystemMouseCursors.click,
-                                  borderRadius: BorderRadius.circular(5),
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
                                   onTap:
-                                      widget.cartItem.isVoid == true
+                                      widget
+                                                  .cartItem
+                                                  .isVoid ==
+                                              true
                                           ? () {}
-                                          : widget.editAction,
+                                          : widget
+                                              .editAction,
                                   child: Container(
                                     height: 30,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
 
                                     child: Row(
                                       children: [
                                         Visibility(
                                           visible:
-                                              widget.cartItem.isVoid != true,
+                                              widget
+                                                  .cartItem
+                                                  .isVoid !=
+                                              true,
                                           child: Row(
                                             children: [
                                               SvgPicture.asset(
                                                 height: 16,
                                                 editIconSvg,
                                               ),
-                                              SizedBox(width: 10),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -302,11 +419,15 @@ class _CartItemMainState extends State<CartItemMain> {
                                                       theme
                                                           .lightModeColor
                                                           .prColor300,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
+                                                  fontSize:
+                                                      18,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
                                                 ),
                                                 formatLargeNumberDouble(
-                                                  widget.cartItem
+                                                  widget
+                                                      .cartItem
                                                       .displayQuantity(),
                                                 ),
                                               ),
@@ -316,13 +437,16 @@ class _CartItemMainState extends State<CartItemMain> {
                                                       theme
                                                           .lightModeColor
                                                           .prColor300,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.bold,
+                                                  fontSize:
+                                                      10,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
                                                 ),
                                                 cutLongText(
-                                                  widget.cartItem
-                                                      .getSelectedUnit()
-                                                      .name,
+                                                  widget
+                                                      .cartItem
+                                                      .displayUnitName(),
                                                   7,
                                                 ),
                                               ),
