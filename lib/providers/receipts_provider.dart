@@ -296,7 +296,6 @@ class ReceiptsProvider extends ChangeNotifier {
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
     if (isOnline && MainReceiptFunc().isSynced()) {
-      await MainReceiptFunc().clearReceipts();
       try {
         final data = await supabase
             .from('receipts')
@@ -322,12 +321,26 @@ class ReceiptsProvider extends ChangeNotifier {
           );
         }
 
+        final deletedReceiptUuids =
+            DeletedReceiptsFunc()
+                .getReceiptIds()
+                .map((e) => e.receiptUuid)
+                .toSet();
+
         _receipts =
             (tempList as List)
                 .map(
                   (json) => TempMainReceipt.fromJson(json),
                 )
+                .where(
+                  (rec) =>
+                      rec.uuid != null &&
+                      !deletedReceiptUuids.contains(
+                        rec.uuid,
+                      ),
+                )
                 .toList();
+        await MainReceiptFunc().clearReceipts();
         await MainReceiptFunc().insertAllReceipts(
           _receipts,
         );
@@ -638,29 +651,36 @@ class ReceiptsProvider extends ChangeNotifier {
             DeletedReceiptsFunc().getReceiptIds().toList();
 
         for (var rec in tempReceipts) {
-          await supabase.rpc(
-            'delete_receipt_without_updating_inventory',
-            params: {
-              'target_receipt_uuid': rec.receiptUuid,
-            },
-          );
-          await DeletedReceiptsFunc()
-              .deletedDeletedReceipts(rec.receiptUuid);
+          try {
+            await supabase
+                .from('receipts')
+                .delete()
+                .eq('uuid', rec.receiptUuid);
+
+            await DeletedReceiptsFunc()
+                .deletedDeletedReceipts(rec.receiptUuid);
+            await mainLocalLog(
+              'Receipt ${rec.receiptUuid} remote deletion succeeded ✅',
+            );
+          } catch (e) {
+            await mainLocalLog(
+              'Error Syncing Deleted Receipt ${rec.receiptUuid}: ${e.toString()}',
+            );
+          }
         }
 
-        await mainLocalLog(
-          '${tempReceipts.length} Receipts Created successfully ✅',
-        );
-        await DeletedReceiptsFunc().clearDeletedReceipts();
-        await mainLocalLog(
-          'Unsynced Deleted Receipts Cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Receipts ✅',
-        );
-        await loadReceipts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        if (DeletedReceiptsFunc().getReceiptIds().isEmpty) {
+          await mainLocalLog(
+            'All Unsynced Deleted Receipts Cleared ✅',
+          );
+          await loadReceipts(
+            returnShopProvider().userShop()!.shopId!,
+          );
+        } else {
+          await mainLocalLog(
+            'Some deleted receipts could not be synced and remain in queue.',
+          );
+        }
       }
     } catch (e) {
       await mainLocalLog(

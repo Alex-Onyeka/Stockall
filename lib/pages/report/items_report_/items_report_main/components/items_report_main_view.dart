@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -1053,82 +1054,85 @@ class _ItemsReportMainViewState
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 6.0,
+                ],
+                if (!kIsWeb) ...[
+                  if (_filters.hasAnything)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 6.0,
+                      ),
+                      child: _pill(
+                        theme: theme,
+                        icon: Icons.print_rounded,
+                        label: 'Print Records',
+                        highlighted: true,
+                        onTap:
+                            () => _confirmAndPrintFiltered(
+                              theme,
+                            ),
+                      ),
                     ),
+                  if (!_filters.hasAnything)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 6.0,
+                      ),
+                      child: _labeled(
+                        null,
+                        _SearchableDropdown<String?>(
+                          title: 'Print Records',
+                          value: _selectedPrintOption,
+                          options: [
+                            const _SearchableOption(
+                              value: 'all',
+                              label: 'Print All Items',
+                            ),
+                            const _SearchableOption(
+                              value: 'categories',
+                              label:
+                                  'Print Items in Categories',
+                            ),
+                            if (_departmentsEnabled)
+                              const _SearchableOption(
+                                value: 'departments',
+                                label:
+                                    'Print Items In Departments',
+                              ),
+                            const _SearchableOption(
+                              value: 'breakdown',
+                              label: 'Print Full Breakdown',
+                            ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) {
+                              setState(() {
+                                _selectedPrintOption = v;
+                              });
+                              _confirmAndPrintUnfiltered(
+                                v,
+                                theme,
+                              );
+                            }
+                          },
+                          theme: theme,
+                          showSearch: false,
+                        ),
+                        190,
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 6.0),
                     child: _pill(
                       theme: theme,
-                      icon: Icons.print_rounded,
-                      label: 'Print Records',
-                      highlighted: true,
+                      icon: Icons.print_outlined,
+                      label: 'Printer Settings',
                       onTap:
-                          () => _confirmAndPrintFiltered(
-                            theme,
+                          () => openPrinterAndPaperSizeDialog(
+                            context,
                           ),
                     ),
                   ),
                 ],
-                if (!_filters.hasAnything)
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 6.0,
-                    ),
-                    child: _labeled(
-                      null,
-                      _SearchableDropdown<String?>(
-                        title: 'Print Records',
-                        value: _selectedPrintOption,
-                        options: [
-                          const _SearchableOption(
-                            value: 'all',
-                            label: 'Print All Items',
-                          ),
-                          const _SearchableOption(
-                            value: 'categories',
-                            label:
-                                'Print Items in Categories',
-                          ),
-                          if (_departmentsEnabled)
-                            const _SearchableOption(
-                              value: 'departments',
-                              label:
-                                  'Print Items In Departments',
-                            ),
-                          const _SearchableOption(
-                            value: 'breakdown',
-                            label: 'Print Full Breakdown',
-                          ),
-                        ],
-                        onChanged: (v) {
-                          if (v != null) {
-                            setState(() {
-                              _selectedPrintOption = v;
-                            });
-                            _confirmAndPrintUnfiltered(
-                              v,
-                              theme,
-                            );
-                          }
-                        },
-                        theme: theme,
-                        showSearch: false,
-                      ),
-                      190,
-                    ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 6.0),
-                  child: _pill(
-                    theme: theme,
-                    icon: Icons.print_outlined,
-                    label: 'Printer Settings',
-                    onTap:
-                        () => openPrinterAndPaperSizeDialog(
-                          context,
-                        ),
-                  ),
-                ),
               ],
             ],
           );

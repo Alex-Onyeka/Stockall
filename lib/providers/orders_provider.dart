@@ -185,7 +185,6 @@ class OrdersProvider extends ChangeNotifier {
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
     if (isOnline && OrdersFunc().isSynced()) {
-      await OrdersFunc().clearOrders();
       try {
         final data = await supabase
             .from(tableName)
@@ -211,10 +210,22 @@ class OrdersProvider extends ChangeNotifier {
           );
         }
 
+        final deletedOrderUuids =
+            DeletedOrdersFunc()
+                .getOrderIds()
+                .map((e) => e.orderUuid)
+                .toSet();
+
         _orders =
             (tempList as List)
                 .map((json) => Orders.fromJson(json))
+                .where(
+                  (ord) =>
+                      ord.uuid != null &&
+                      !deletedOrderUuids.contains(ord.uuid),
+                )
                 .toList();
+        await OrdersFunc().clearOrders();
         await OrdersFunc().insertAllOrders(_orders);
         await mainLocalLog('Loaded');
         notifyListeners();
@@ -399,26 +410,36 @@ class OrdersProvider extends ChangeNotifier {
             DeletedOrdersFunc().getOrderIds().toList();
 
         for (var rec in tempOrders) {
-          await supabase
-              .from(tableName)
-              .delete()
-              .eq('uuid', rec.orderUuid);
-          await DeletedOrdersFunc().deletedDeletedOrders(
-            rec.orderUuid,
-          );
+          try {
+            await supabase
+                .from(tableName)
+                .delete()
+                .eq('uuid', rec.orderUuid);
+            await DeletedOrdersFunc().deletedDeletedOrders(
+              rec.orderUuid,
+            );
+            await mainLocalLog(
+              'Order ${rec.orderUuid} remote deletion succeeded ✅',
+            );
+          } catch (e) {
+            await mainLocalLog(
+              'Error Syncing Deleted Order ${rec.orderUuid}: ${e.toString()}',
+            );
+          }
         }
 
-        await mainLocalLog(
-          '${tempOrders.length} Orders Created successfully ✅',
-        );
-        await DeletedOrdersFunc().clearDeletedOrders();
-        await mainLocalLog(
-          'Unsynced Deleted Orders Cleared',
-        );
-        await mainLocalLog('Mounted, refreshing Orders ✅');
-        await loadOrders(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        if (DeletedOrdersFunc().getOrderIds().isEmpty) {
+          await mainLocalLog(
+            'All Unsynced Deleted Orders Cleared ✅',
+          );
+          await loadOrders(
+            returnShopProvider().userShop()!.shopId!,
+          );
+        } else {
+          await mainLocalLog(
+            'Some deleted orders could not be synced and remain in queue.',
+          );
+        }
       }
     } catch (e) {
       await mainLocalLog(

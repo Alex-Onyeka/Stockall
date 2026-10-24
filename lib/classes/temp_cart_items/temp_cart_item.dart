@@ -551,23 +551,20 @@ class TempCartItem extends HiveObject {
   }
 
   // Area one unit of fixed wastage stands for: its unit converted
-  // like the sale quantity (piece units at the line's cut size).
-  // 1 without a stored unit (older lines kept the amount in area)
-  // or when the unit is no longer in the line's list.
+  // to base area. Defaults to the primary unit.
   double wastageAreaPerUnit() {
-    if (wastageUnitUuid == null) return 1;
+    final prim = getPrimaryUnit();
+    final targetUuid = wastageUnitUuid ?? prim.uuid;
     final unit =
         getUnitsList()
-            .where((unit) => unit.uuid == wastageUnitUuid)
-            .firstOrNull;
-    if (unit == null) return 1;
-    return unit.getQuantityEquivMultiplied(
-      index: 1,
-      product: item,
-      newQuantity: 1,
-      customWidth: widthDimension,
-      customHeight: heightDimension,
-    );
+            .where((unit) => unit.uuid == targetUuid)
+            .firstOrNull ??
+        prim;
+    if (unit.dimensionType == ProductUnitsClass.areaUnit) {
+      return unit.conversion > 0 ? unit.conversion : 1.0;
+    }
+    return (unit.conversion > 0 ? unit.conversion : 1.0) *
+        item.dimensionArea();
   }
 
   // Wastage area on a 2D line, from [baseArea] (the line's
@@ -659,8 +656,29 @@ class TempCartItem extends HiveObject {
     return quantity;
   }
 
-  double wastageInSaleUnit() =>
-      historyQuantityChange() - baseQuantityInSaleUnit();
+  // Wastage calculated in the primary unit (e.g. 0.1 Slabs, or 2.0 M²).
+  double wastageInPrimaryUnit({TempProductClass? product}) {
+    final wArea = wastageArea();
+    if (wArea <= 0) return 0;
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final prod = product ?? item;
+    final productArea = prod.dimensionArea();
+    final areaPerUnit =
+        primUnit.dimensionType == ProductUnitsClass.areaUnit
+            ? (primUnit.conversion > 0
+                ? primUnit.conversion
+                : 1.0)
+            : (primUnit.conversion > 0
+                    ? primUnit.conversion
+                    : 1.0) *
+                (productArea > 0 ? productArea : 1.0);
+    if (!areaPerUnit.isFinite || areaPerUnit <= 0) return 0;
+    return wArea / areaPerUnit;
+  }
+
+  // Backward compatibility alias: wastage is now always in primary unit.
+  double wastageInSaleUnit() => wastageInPrimaryUnit();
 
   // Quantity text for item-history text.
   String historyQuantityText() {
@@ -708,20 +726,29 @@ class TempCartItem extends HiveObject {
     );
   }
 
-  String historyWastageText() {
-    final wastage = wastageInSaleUnit();
-    return wastage <= 1e-9
-        ? ''
-        : ' (incl. ${formatDimension(wastage)} wastage)';
+  String historyWastageText({TempProductClass? product}) {
+    final wastage = wastageInPrimaryUnit(product: product);
+    if (wastage <= 1e-9) return '';
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final unitName =
+        primUnit.name == 'Others'
+            ? 'Unit(s)'
+            : primUnit.name;
+    return ' (incl. ${formatDimension(wastage)} $unitName wastage)';
   }
 
-  // "incl. 0.1 Slab wastage", or '' without wastage.
-  String wastageNote() {
-    final wastage = wastageInSaleUnit();
+  // "incl. 0.1 Slab wastage", or '' without wastage (always in primary unit).
+  String wastageNote({TempProductClass? product}) {
+    final wastage = wastageInPrimaryUnit(product: product);
     if (wastage <= 1e-9) return '';
-    final unitName = getSelectedUnit().name;
-    return 'incl. ${formatDimension(wastage)} '
-        '${unitName == 'Others' ? 'Unit(s)' : unitName} wastage';
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final unitName =
+        primUnit.name == 'Others'
+            ? 'Unit(s)'
+            : primUnit.name;
+    return 'incl. ${formatDimension(wastage)} $unitName wastage';
   }
 
   // A separate copy of this line with the sale dialog's pending

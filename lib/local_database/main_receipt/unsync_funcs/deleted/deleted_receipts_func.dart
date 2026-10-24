@@ -78,7 +78,10 @@ class DeletedReceiptsFunc {
     DeletedReceipts deletedReceipt,
   ) async {
     try {
-      await deletedReceiptsBox.add(deletedReceipt);
+      await deletedReceiptsBox.put(
+        deletedReceipt.receiptUuid,
+        deletedReceipt,
+      );
       await mainLocalLog(
         'Offline Deleted Receipt inserted successfully ✅',
       );
@@ -94,6 +97,16 @@ class DeletedReceiptsFunc {
   Future<int> deletedDeletedReceipts(String uuid) async {
     try {
       await deletedReceiptsBox.delete(uuid);
+      final keysToDelete = <dynamic>[];
+      for (var key in deletedReceiptsBox.keys) {
+        final val = deletedReceiptsBox.get(key);
+        if (val != null && val.receiptUuid == uuid) {
+          keysToDelete.add(key);
+        }
+      }
+      for (var key in keysToDelete) {
+        await deletedReceiptsBox.delete(key);
+      }
       await mainLocalLog('Delete Receipt cleared ✅');
       return 1;
     } catch (e) {

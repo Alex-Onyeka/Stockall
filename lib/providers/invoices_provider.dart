@@ -141,7 +141,6 @@ class InvoicesProvider extends ChangeNotifier {
     await loadInvoicesOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     if (isOnline && InvoicesFunc().isSynced()) {
-      await InvoicesFunc().clearInvoices();
       try {
         final data = await supabase
             .from('invoices')
@@ -169,7 +168,7 @@ class InvoicesProvider extends ChangeNotifier {
                       !deletedUuids.contains(inv.uuid),
                 )
                 .toList();
-        notifyListeners();
+        await InvoicesFunc().clearInvoices();
         await InvoicesFunc().insertAllInvoices(_invoices);
         notifyListeners();
         await mainLocalLog('Invoices Loaded');
@@ -525,7 +524,8 @@ class InvoicesProvider extends ChangeNotifier {
               quantityType: record.quantityType,
               widthDimension: record.widthDimension,
               dimensionUnit: record.dimensionUnit,
-              dimensionUnitConversion: record.dimensionUnitConversion,
+              dimensionUnitConversion:
+                  record.dimensionUnitConversion,
               priceUuid: record.priceUuid,
               pricesList: record.getPriceListFinal(),
               unitUuid: record.unitUuid,
@@ -983,7 +983,8 @@ class InvoicesProvider extends ChangeNotifier {
           quantityType: record.quantityType,
           widthDimension: record.widthDimension,
           dimensionUnit: record.dimensionUnit,
-          dimensionUnitConversion: record.dimensionUnitConversion,
+          dimensionUnitConversion:
+              record.dimensionUnitConversion,
           pricesList: record.getPriceListFinal(),
           unitsList: record.getUnitListFinal(),
           useGroupUnit: false,
@@ -1389,19 +1390,18 @@ class InvoicesProvider extends ChangeNotifier {
           isOnline) {
         final tempInvoice =
             DeletedInvoicesFunc().getInvoiceIds().toList();
+        final currentShopId = returnShopProvider().userShop()?.shopId;
 
         for (var inv in tempInvoice) {
           try {
-            try {
-              await supabase
-                  .from('invoices')
-                  .delete()
-                  .eq('invoice_uuid', inv.invoiceUuid);
-            } catch (rpcErr) {
-              await mainLocalLog(
-                'RPC delete_invoice failed for ${inv.invoiceUuid}, falling back to table delete: $rpcErr',
-              );
+            var query = supabase
+                .from('invoices')
+                .delete()
+                .eq('invoice_uuid', inv.invoiceUuid);
+            if (currentShopId != null) {
+              query = query.eq('shop_id', currentShopId);
             }
+            await query;
 
             await DeletedInvoicesFunc()
                 .deletedDeletedInvoices(inv.invoiceUuid);

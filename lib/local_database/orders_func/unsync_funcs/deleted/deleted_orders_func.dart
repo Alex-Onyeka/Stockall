@@ -77,7 +77,10 @@ class DeletedOrdersFunc {
     DeletedOrders deletedOrder,
   ) async {
     try {
-      await deletedOrdersBox.add(deletedOrder);
+      await deletedOrdersBox.put(
+        deletedOrder.orderUuid,
+        deletedOrder,
+      );
       await mainLocalLog(
         'Offline Deleted Order inserted successfully ✅',
       );
@@ -93,6 +96,16 @@ class DeletedOrdersFunc {
   Future<int> deletedDeletedOrders(String uuid) async {
     try {
       await deletedOrdersBox.delete(uuid);
+      final keysToDelete = <dynamic>[];
+      for (var key in deletedOrdersBox.keys) {
+        final val = deletedOrdersBox.get(key);
+        if (val != null && val.orderUuid == uuid) {
+          keysToDelete.add(key);
+        }
+      }
+      for (var key in keysToDelete) {
+        await deletedOrdersBox.delete(key);
+      }
       await mainLocalLog('Delete Order cleared ✅');
       return 1;
     } catch (e) {

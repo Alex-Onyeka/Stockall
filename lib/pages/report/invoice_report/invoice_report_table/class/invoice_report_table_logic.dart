@@ -304,8 +304,24 @@ class InvoiceReportRowBuilder {
       double count = 0;
       for (final line in lines) {
         if (line.isVoid == true) continue;
-        // getActualQuantity applies unit conversions and dimensional calculations
-        count += line.getActualQuantity();
+        try {
+          if (line.unitsList != null &&
+              line.unitsList!.isNotEmpty) {
+            count += line.getActualQuantity();
+          } else if (line.quantityType == 2 &&
+              line.hasCustomDimensions) {
+            count += line.quantity * line.dimensionArea();
+          } else {
+            count += line.quantity;
+          }
+        } catch (_) {
+          if (line.quantityType == 2 &&
+              line.hasCustomDimensions) {
+            count += line.quantity * line.dimensionArea();
+          } else {
+            count += line.quantity;
+          }
+        }
       }
       totalItems = count;
     }
@@ -1006,7 +1022,13 @@ const String invoiceNoStaffLabel = 'No staff';
 const String invoiceNoCustomerLabel = 'No customer';
 const String invoiceUnpaidChannel = 'Unpaid';
 
-enum InvoiceGroupSortField { name, count, total, paid, balance }
+enum InvoiceGroupSortField {
+  name,
+  count,
+  total,
+  paid,
+  balance,
+}
 
 /// One table row when grouped: every invoice of one staff member,
 /// customer or payment channel.

@@ -131,36 +131,91 @@ class ProductRecordFunc {
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
-      for (var record in records) {
-        if (record.isProductManaged! && !record.isVoid!) {
-          List<TempProductClass> products =
-              returnData().productListMain
-                  .where(
-                    (item) =>
-                        item.uuid == record.productUuid,
-                  )
-                  .toList();
-          if (products.isNotEmpty) {
-            var oldProduct = products.first;
-            var product = oldProduct.copyWith();
-            final oldQuantity =
-                oldProduct.getActualQuantity() ?? 0;
+      final groupedRecords =
+          <String, List<TempProductSaleRecord>>{};
+      for (final record in records) {
+        final key =
+            (record.productUuid != null &&
+                    record.productUuid!.isNotEmpty)
+                ? record.productUuid!
+                : 'record_${record.uuid}';
+        groupedRecords
+            .putIfAbsent(key, () => [])
+            .add(record);
+      }
+
+      for (final group in groupedRecords.values) {
+        final activeRecords =
+            group.where((r) => r.isVoid != true).toList();
+        if (activeRecords.isEmpty) continue;
+
+        final refRecord = activeRecords.first;
+        final isProductManaged =
+            refRecord.isProductManaged ?? false;
+        final productUuid = refRecord.productUuid;
+
+        List<TempProductClass> products =
+            returnData().productListMain
+                .where((item) => item.uuid == productUuid)
+                .toList();
+
+        if (products.isNotEmpty) {
+          var oldProduct = products.first;
+          var product = oldProduct.copyWith();
+          final oldQuantity =
+              oldProduct.getActualQuantity() ?? 0;
+
+          double totalStockChange = 0.0;
+          double totalDisplayChange = 0.0;
+          double totalWastageInSaleUnit = 0.0;
+          bool anyWithWastage = false;
+
+          for (final record in activeRecords) {
             final withWastage =
                 record.manageSalesWastage == true;
+            if (withWastage) anyWithWastage = true;
             final quantityChange =
                 withWastage
                     ? record.getStockQuantity()
                     : record.getActualQuantity();
-            final restoredArea =
-                oldQuantity + quantityChange;
+            totalStockChange += quantityChange;
+            totalDisplayChange +=
+                withWastage
+                    ? record.historyQuantityChange(
+                      product: product,
+                    )
+                    : (record.quantity ?? 0);
+            totalWastageInSaleUnit += record
+                .wastageInSaleUnit(product: product);
+          }
+
+          final restoredArea =
+              oldQuantity + totalStockChange;
+          final primaryUnit = product.getPrimaryUnit();
+          final primaryQtyEquiv = primaryUnit
+              .getQuantityEquivDivided(
+                index: 1,
+                newQuantity: totalStockChange,
+                product: product,
+              );
+          final historyUnitName = formatHistoryUnit(
+            selectedUnit: refRecord.getSelectedUnit().name,
+            primaryUnit: primaryUnit.name,
+            primaryQuantity: primaryQtyEquiv,
+          );
+          final primUnitName =
+              primaryUnit.name == 'Others' ? 'Unit(s)' : primaryUnit.name;
+          final wastageText =
+              totalWastageInSaleUnit > 1e-9
+                  ? ' (including ${formatDimension(totalWastageInSaleUnit)} $primUnitName wastage)'
+                  : '';
+
+          if (isProductManaged) {
             product.quantity =
                 product.quantityType == 2
                     ? restoredArea / product.dimensionArea()
                     : restoredArea;
-            final primaryUnit = product.getPrimaryUnit();
-            final historyUnitName = record.historyUnit(
-              product: product,
-            );
+
             ItemHistory itemHistory = ItemHistory(
               isManaged: true,
               source: 'receipt',
@@ -168,13 +223,10 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  withWastage
-                      ? '${record.historyQuantityText()} $historyUnitName${record.historyWastageText()} of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.'
-                      : '${formatDimension(record.historyQuantityChange())} $historyUnitName of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
-              quantityChange:
-                  withWastage
-                      ? record.historyQuantityChange()
-                      : record.quantity,
+                  anyWithWastage
+                      ? '${formatDimension(totalDisplayChange)} $historyUnitName$wastageText of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.'
+                      : '${formatDimension(totalDisplayChange)} $historyUnitName of This Item was Returned. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
+              quantityChange: totalDisplayChange,
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
@@ -199,6 +251,7 @@ class ProductRecordFunc {
               unit: historyUnitName,
               primaryUnit: primaryUnit.name,
             );
+
             await returnData().updateProduct(
               itemHistory: itemHistory,
               includeQuantity: false,
@@ -207,26 +260,12 @@ class ProductRecordFunc {
               isQuantityUpdate: true,
               quantityChange:
                   product.quantityType == 2
-                      ? quantityChange /
+                      ? totalStockChange /
                           product.dimensionArea()
-                      : quantityChange,
+                      : totalStockChange,
               isIncrement: true,
             );
-          }
-        }
-        if (record.isProductManaged! == false) {
-          List<TempProductClass> products =
-              returnData().productListMain
-                  .where(
-                    (item) =>
-                        item.uuid == record.productUuid,
-                  )
-                  .toList();
-          if (products.isNotEmpty) {
-            var product = products.first;
-            final historyUnitName = record.historyUnit(
-              product: product,
-            );
+          } else {
             ItemHistory itemHistory = ItemHistory(
               isManaged: false,
               source: ItemHistoryEventClass.receiptSource,
@@ -234,7 +273,7 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Receipt Deleted (Unmanaged)',
               desc:
-                  '${formatDimension(record.historyQuantityChange())} $historyUnitName of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
+                  '${formatDimension(totalDisplayChange)} $historyUnitName of This Item was Returned, but this item unmanaged when the sales was made, so the quantity did not increase. Receipt Id: #${returnOnlyDigits(receipt.uuid ?? '')}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
@@ -266,6 +305,9 @@ class ProductRecordFunc {
                 .createItemHistory(itemHistory);
           }
         }
+      }
+
+      for (var record in records) {
         await productRecordBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
             .getRecords()
@@ -357,33 +399,79 @@ class ProductRecordFunc {
       await mainLocalLog(
         'Records Gotten: ${records.length}',
       );
-      for (var record in records) {
-        if ((record.isProductManaged ?? false) &&
-            record.isVoid != true) {
-          List<TempProductClass> products =
-              returnData().productListMain
-                  .where(
-                    (item) =>
-                        item.uuid == record.productUuid,
-                  )
-                  .toList();
-          if (products.isNotEmpty) {
-            var oldProduct = products.first;
-            var product = oldProduct.copyWith();
-            final oldQuantity =
-                oldProduct.getActualQuantity() ?? 0;
-            final quantityChange =
-                record.getStockQuantity();
-            final restoredArea =
-                oldQuantity + quantityChange;
+      final groupedRecords =
+          <String, List<TempProductSaleRecord>>{};
+      for (final record in records) {
+        final key =
+            (record.productUuid != null &&
+                    record.productUuid!.isNotEmpty)
+                ? record.productUuid!
+                : 'record_${record.uuid}';
+        groupedRecords
+            .putIfAbsent(key, () => [])
+            .add(record);
+      }
+
+      for (final group in groupedRecords.values) {
+        final activeRecords =
+            group.where((r) => r.isVoid != true).toList();
+        if (activeRecords.isEmpty) continue;
+
+        final refRecord = activeRecords.first;
+        final isProductManaged =
+            refRecord.isProductManaged ?? false;
+        final productUuid = refRecord.productUuid;
+
+        List<TempProductClass> products =
+            returnData().productListMain
+                .where((item) => item.uuid == productUuid)
+                .toList();
+
+        if (products.isNotEmpty) {
+          var oldProduct = products.first;
+          var product = oldProduct.copyWith();
+          final oldQuantity =
+              oldProduct.getActualQuantity() ?? 0;
+
+          double totalStockChange = 0.0;
+          double totalDisplayChange = 0.0;
+          double totalWastageInSaleUnit = 0.0;
+
+          for (final record in activeRecords) {
+            totalStockChange += record.getStockQuantity();
+            totalDisplayChange += record
+                .historyQuantityChange(product: product);
+            totalWastageInSaleUnit += record
+                .wastageInSaleUnit(product: product);
+          }
+
+          final restoredArea =
+              oldQuantity + totalStockChange;
+          final primaryUnit = product.getPrimaryUnit();
+          final primaryQtyEquiv = primaryUnit
+              .getQuantityEquivDivided(
+                index: 1,
+                newQuantity: totalStockChange,
+                product: product,
+              );
+          final historyUnitName = formatHistoryUnit(
+            selectedUnit: refRecord.getSelectedUnit().name,
+            primaryUnit: primaryUnit.name,
+            primaryQuantity: primaryQtyEquiv,
+          );
+          final primUnitName =
+              primaryUnit.name == 'Others' ? 'Unit(s)' : primaryUnit.name;
+          final wastageText =
+              totalWastageInSaleUnit > 1e-9
+                  ? ' (including ${formatDimension(totalWastageInSaleUnit)} $primUnitName wastage)'
+                  : '';
+
+          if (isProductManaged) {
             product.quantity =
                 product.quantityType == 2
                     ? restoredArea / product.dimensionArea()
                     : restoredArea;
-            final primaryUnit = product.getPrimaryUnit();
-            final historyUnitName = record.historyUnit(
-              product: product,
-            );
+
             ItemHistory itemHistory = ItemHistory(
               isManaged: true,
               source: 'invoice',
@@ -391,8 +479,8 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Item Returned',
               desc:
-                  '${record.historyQuantityText()} $historyUnitName${record.historyWastageText()} of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
-              quantityChange: record.historyQuantityChange(),
+                  '${formatDimension(totalDisplayChange)} $historyUnitName$wastageText of This Item was Returned. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
+              quantityChange: totalDisplayChange,
               newValue: formatLargeNumberDouble(
                 product
                     .getProductUnit()
@@ -417,6 +505,7 @@ class ProductRecordFunc {
               unit: historyUnitName,
               primaryUnit: primaryUnit.name,
             );
+
             await returnData().updateProduct(
               itemHistory: itemHistory,
               includeQuantity: false,
@@ -425,27 +514,12 @@ class ProductRecordFunc {
               isQuantityUpdate: true,
               quantityChange:
                   product.quantityType == 2
-                      ? quantityChange /
+                      ? totalStockChange /
                           product.dimensionArea()
-                      : quantityChange,
+                      : totalStockChange,
               isIncrement: true,
             );
-          }
-        }
-
-        if (record.isProductManaged! == false) {
-          List<TempProductClass> products =
-              returnData().productListMain
-                  .where(
-                    (item) =>
-                        item.uuid == record.productUuid,
-                  )
-                  .toList();
-          if (products.isNotEmpty) {
-            var product = products.first;
-            final historyUnitName = record.historyUnit(
-              product: product,
-            );
+          } else {
             ItemHistory itemHistory = ItemHistory(
               event: ItemHistoryEventClass.returnEvent,
               source: ItemHistoryEventClass.invoiceSource,
@@ -453,7 +527,7 @@ class ProductRecordFunc {
               shopId: shopId(),
               title: 'Invoice Deleted (Unmanaged)',
               desc:
-                  '${formatDimension(record.historyQuantityChange())} $historyUnitName of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
+                  '${formatDimension(totalDisplayChange)} $historyUnitName of This Item was Returned, but this item was unmanaged when the sales was made, so the quantity did not increase. Invoice Id: #${returnOnlyDigits(invoice.uuid ?? '')}.',
               quantityChange: 0,
               newValue: formatLargeNumberDouble(
                 product
@@ -472,7 +546,7 @@ class ProductRecordFunc {
                     .getQuantityEquivDivided(
                       index: 1,
                       newQuantity:
-                          product.getActualQuantity(),
+                          oldProduct.getActualQuantity(),
                       product: product,
                     ),
               ),
@@ -485,6 +559,9 @@ class ProductRecordFunc {
                 .createItemHistory(itemHistory);
           }
         }
+      }
+
+      for (var record in records) {
         await productRecordBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
             .getRecords()

@@ -1921,11 +1921,11 @@ void selectProductSales({
   }
 
   // Unit the wastage is saved with: the picked unit, else the
-  // sale unit. % wastage is a share of the sale quantity, so it
-  // always takes the sale unit.
+  // primary unit. % wastage is calculated in the primary unit.
   String? selectedWastageUnit() {
-    if (isPercentageWastage) return unitUuid;
-    return wastageUnitUuid ?? unitUuid;
+    final primUuid = cartItem.getPrimaryUnit().uuid;
+    if (isPercentageWastage) return primUuid;
+    return wastageUnitUuid ?? primUuid;
   }
 
   // Name of the item's base area unit, for stock messages.
@@ -3359,12 +3359,9 @@ void selectProductSales({
                                                       .grey
                                                       .shade600,
                                             ),
-                                            previewLine().item.quantityType ==
-                                                        2 &&
-                                                    previewLine()
-                                                        .hasCustomDimensions
-                                                ? '(${formatLargeNumberDouble(previewLine().getRealQuantity())} + ${formatLargeNumberDouble(previewLine().wastageArea())} wastage)'
-                                                : '(${formatLargeNumberDouble(previewLine().quantity)} + ${formatLargeNumberDouble(previewLine().wastageInSaleUnit())} wastage)',
+                                            previewLine().wastageNote().isNotEmpty
+                                                ? '(${previewLine().wastageNote()})'
+                                                : '',
                                           ),
                                         ],
                                       ),

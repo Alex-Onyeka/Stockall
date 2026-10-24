@@ -791,20 +791,24 @@ class OrderItems extends HiveObject {
   // converts it (piece units at the line's size). 1 without a
   // stored unit: older lines kept the amount in area.
   double wastageAreaPerUnit() {
-    if (wastageUnitUuid == null) return 1;
+    final prim = getPrimaryUnit();
+    final targetUuid = wastageUnitUuid ?? prim.uuid;
     final unit =
         getUnitsList()
-            .where((unit) => unit.uuid == wastageUnitUuid)
-            .firstOrNull;
-    if (unit == null) return 1;
+            .where((unit) => unit.uuid == targetUuid)
+            .firstOrNull ??
+        prim;
     if (quantityType == 2 &&
         unit.dimensionType == ProductUnitsClass.areaUnit) {
-      return unit.conversion;
+      return unit.conversion > 0 ? unit.conversion : 1.0;
     }
     if (quantityType == 2) {
-      return unit.conversion * dimensionArea();
+      final area =
+          dimensionArea() > 0 ? dimensionArea() : 1.0;
+      return (unit.conversion > 0 ? unit.conversion : 1.0) *
+          area;
     }
-    return unit.conversion;
+    return unit.conversion > 0 ? unit.conversion : 1.0;
   }
 
   // Quantity this line takes from stock: actual quantity + wastage.
@@ -828,7 +832,9 @@ class OrderItems extends HiveObject {
   }
 
   // Decimal fraction / unit quantity for ItemHistory (e.g. 0.5 Slabs).
-  double historyQuantityChange({TempProductClass? product}) {
+  double historyQuantityChange({
+    TempProductClass? product,
+  }) {
     if (quantityType == 2) {
       final unit = getSelectedUnit();
       if (unit.dimensionType ==
@@ -869,7 +875,9 @@ class OrderItems extends HiveObject {
     return sel.name == 'Others' ? 'Unit(s)' : sel.name;
   }
 
-  double baseQuantityInSaleUnit({TempProductClass? product}) {
+  double baseQuantityInSaleUnit({
+    TempProductClass? product,
+  }) {
     if (quantityType == 2) {
       final unit = getSelectedUnit();
       if (unit.dimensionType ==
@@ -894,27 +902,58 @@ class OrderItems extends HiveObject {
     return quantity;
   }
 
-  double wastageInSaleUnit({TempProductClass? product}) =>
-      historyQuantityChange(product: product) -
-      baseQuantityInSaleUnit(product: product);
+  // Wastage calculated in the primary unit (e.g. 0.1 Slabs, or 2.0 M²).
+  double wastageInPrimaryUnit({TempProductClass? product}) {
+    final wArea = wastageArea();
+    if (wArea <= 0) return 0;
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final productArea =
+        (product != null && product.dimensionArea() > 0)
+            ? product.dimensionArea()
+            : dimensionArea();
+    final areaPerUnit =
+        primUnit.dimensionType == ProductUnitsClass.areaUnit
+            ? (primUnit.conversion > 0
+                ? primUnit.conversion
+                : 1.0)
+            : (primUnit.conversion > 0
+                    ? primUnit.conversion
+                    : 1.0) *
+                (productArea > 0 ? productArea : 1.0);
+    if (!areaPerUnit.isFinite || areaPerUnit <= 0) return 0;
+    return wArea / areaPerUnit;
+  }
 
-  // "incl. 0.1 Slab wastage", or '' without wastage.
+  // Backward compatibility alias: wastage is now always in primary unit.
+  double wastageInSaleUnit({TempProductClass? product}) =>
+      wastageInPrimaryUnit(product: product);
+
+  // "incl. 0.1 Slab wastage", or '' without wastage (always in primary unit).
   String wastageNote({TempProductClass? product}) {
-    final wastage = wastageInSaleUnit(product: product);
+    final wastage = wastageInPrimaryUnit(product: product);
     if (wastage <= 1e-9) return '';
-    final unitName = getSelectedUnit().name;
-    return 'incl. ${formatDimension(wastage)} '
-        '${unitName == 'Others' ? 'Unit(s)' : unitName} wastage';
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final unitName =
+        primUnit.name == 'Others'
+            ? 'Unit(s)'
+            : primUnit.name;
+    return 'incl. ${formatDimension(wastage)} $unitName wastage';
   }
 
   // Quantity text for item-history records.
   String historyQuantityText({TempProductClass? product}) {
-    return formatDimension(historyQuantityChange(product: product));
+    return formatDimension(
+      historyQuantityChange(product: product),
+    );
   }
 
   // Quantity text for receipts and order display.
   String quantityText({TempProductClass? product}) {
-    return formatDimension(displayQuantity(product: product));
+    return formatDimension(
+      displayQuantity(product: product),
+    );
   }
 
   // Unit label for ItemHistory.
@@ -952,11 +991,16 @@ class OrderItems extends HiveObject {
     );
   }
 
-  String historyWastageText() {
-    final wastage = wastageInSaleUnit();
-    return wastage <= 1e-9
-        ? ''
-        : ' (incl. ${formatDimension(wastage)} wastage)';
+  String historyWastageText({TempProductClass? product}) {
+    final wastage = wastageInPrimaryUnit(product: product);
+    if (wastage <= 1e-9) return '';
+    final primUnit =
+        product?.getPrimaryUnit() ?? getPrimaryUnit();
+    final unitName =
+        primUnit.name == 'Others'
+            ? 'Unit(s)'
+            : primUnit.name;
+    return ' (incl. ${formatDimension(wastage)} $unitName wastage)';
   }
 
   double getQuantityFromPrimaryUnits(
