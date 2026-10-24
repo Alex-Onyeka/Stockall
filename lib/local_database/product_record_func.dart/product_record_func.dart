@@ -184,7 +184,7 @@ class ProductRecordFunc {
                     ? record.historyQuantityChange(
                       product: product,
                     )
-                    : (record.quantity ?? 0);
+                    : record.quantity;
             totalWastageInSaleUnit += record
                 .wastageInSaleUnit(product: product);
           }
@@ -204,7 +204,9 @@ class ProductRecordFunc {
             primaryQuantity: primaryQtyEquiv,
           );
           final primUnitName =
-              primaryUnit.name == 'Others' ? 'Unit(s)' : primaryUnit.name;
+              primaryUnit.name == 'Others'
+                  ? 'Unit(s)'
+                  : primaryUnit.name;
           final wastageText =
               totalWastageInSaleUnit > 1e-9
                   ? ' (including ${formatDimension(totalWastageInSaleUnit)} $primUnitName wastage)'
@@ -460,7 +462,9 @@ class ProductRecordFunc {
             primaryQuantity: primaryQtyEquiv,
           );
           final primUnitName =
-              primaryUnit.name == 'Others' ? 'Unit(s)' : primaryUnit.name;
+              primaryUnit.name == 'Others'
+                  ? 'Unit(s)'
+                  : primaryUnit.name;
           final wastageText =
               totalWastageInSaleUnit > 1e-9
                   ? ' (including ${formatDimension(totalWastageInSaleUnit)} $primUnitName wastage)'
