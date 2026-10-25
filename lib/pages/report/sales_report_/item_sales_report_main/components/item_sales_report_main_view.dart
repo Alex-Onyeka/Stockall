@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
@@ -62,11 +63,19 @@ class ItemSalesReportMainView extends StatefulWidget {
   final ItemSalesFilters? initialFilters;
   final ReceiptsReportPeriod? initialPeriod;
 
+  /// When set, the table only shows this item's sales records and hides the Item filter.
+  final String? lockedItemUuid;
+
+  /// When true, renders without its own Scaffold/appBar (used inside another page).
+  final bool embedded;
+
   const ItemSalesReportMainView({
     super.key,
     required this.isDesktop,
     this.initialFilters,
     this.initialPeriod,
+    this.lockedItemUuid,
+    this.embedded = false,
   });
 
   @override
@@ -92,6 +101,7 @@ class _ItemSalesReportMainViewState
   bool _ascending = false;
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
 
   late ReceiptsReportPeriod _period;
 
@@ -268,6 +278,12 @@ class _ItemSalesReportMainViewState
       productsByUuid: products,
       categoryNameByUuid: categoryNames,
     );
+    if (widget.lockedItemUuid != null) {
+      _baseRows =
+          _baseRows
+              .where((r) => r.productKey == widget.lockedItemUuid)
+              .toList();
+    }
     _choices = ReceiptsFilterChoices.fromRows(
       {for (final r in _baseRows) r.parent}.toList(),
     );
@@ -459,6 +475,7 @@ class _ItemSalesReportMainViewState
       _openProduct(row.productKey, row.productExists);
 
   void _openProduct(String? uuid, bool exists) {
+    if (widget.lockedItemUuid != null) return;
     if (uuid == null || !exists) return;
     Navigator.push(
       context,
@@ -535,6 +552,53 @@ class _ItemSalesReportMainViewState
       }
     }
 
+    final body = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: widget.isDesktop ? 20 : 12,
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          _toolbar(theme),
+          if (_showFilters) _filterPanel(theme),
+          _activeChips(theme),
+          _notes(theme),
+          Expanded(child: _content(theme)),
+          if (!_loading &&
+              _error == null &&
+              _groupByItem &&
+              _groupResult != null)
+            ReportPager(
+              theme: theme,
+              page: _groupResult!.page,
+              totalPages: _groupResult!.totalPages,
+              totalCount: _groupResult!.totalCount,
+              firstIndex: _groupResult!.firstIndex,
+              lastIndex: _groupResult!.lastIndex,
+              itemLabel: 'items',
+              onPage: _goToPage,
+            ),
+          if (!_loading &&
+              _error == null &&
+              !_groupByItem &&
+              _result != null)
+            ReportPager(
+              theme: theme,
+              page: _result!.page,
+              totalPages: _result!.totalPages,
+              totalCount: _result!.totalCount,
+              firstIndex: _result!.firstIndex,
+              lastIndex: _result!.lastIndex,
+              itemLabel: 'item records',
+              onPage: _goToPage,
+            ),
+          const SizedBox(height: 6),
+        ],
+      ),
+    );
+
+    if (widget.embedded) return body;
+
     return Scaffold(
       appBar: appBar(
         context: context,
@@ -605,50 +669,7 @@ class _ItemSalesReportMainViewState
                   ],
                 ),
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: widget.isDesktop ? 20 : 12,
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 8),
-            _toolbar(theme),
-            if (_showFilters) _filterPanel(theme),
-            _activeChips(theme),
-            _notes(theme),
-            Expanded(child: _content(theme)),
-            if (!_loading &&
-                _error == null &&
-                _groupByItem &&
-                _groupResult != null)
-              ReportPager(
-                theme: theme,
-                page: _groupResult!.page,
-                totalPages: _groupResult!.totalPages,
-                totalCount: _groupResult!.totalCount,
-                firstIndex: _groupResult!.firstIndex,
-                lastIndex: _groupResult!.lastIndex,
-                itemLabel: 'items',
-                onPage: _goToPage,
-              ),
-            if (!_loading &&
-                _error == null &&
-                !_groupByItem &&
-                _result != null)
-              ReportPager(
-                theme: theme,
-                page: _result!.page,
-                totalPages: _result!.totalPages,
-                totalCount: _result!.totalCount,
-                firstIndex: _result!.firstIndex,
-                lastIndex: _result!.lastIndex,
-                itemLabel: 'item records',
-                onPage: _goToPage,
-              ),
-            const SizedBox(height: 6),
-          ],
-        ),
-      ),
+      body: body,
     );
   }
 
@@ -734,95 +755,152 @@ class _ItemSalesReportMainViewState
           child: SizedBox(
             width: widget.isDesktop ? 360 : double.infinity,
             height: 38,
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged:
-                  (v) => _apply(() => _filters.search = v),
-              decoration: InputDecoration(
-                hintText:
-                    _departmentsEnabled
-                        ? 'Search item, category, receipt, staff, customer or department'
-                        : 'Search item, category, receipt, staff or customer',
-                hintStyle: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    onChanged:
+                        (v) => _apply(() => _filters.search = v),
+                    decoration: InputDecoration(
+                      hintText:
+                          _departmentsEnabled
+                              ? 'Search item, category, receipt, staff, customer or department'
+                              : 'Search item, category, receipt, staff or customer',
+                      hintStyle: TextStyle(
+                        fontSize: theme.mobileTexts.b3.fontSize,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                      ),
+                      suffixIcon:
+                          _searchCtrl.text.isEmpty
+                              ? null
+                              : IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  _apply(
+                                    () => _filters.search = '',
+                                  );
+                                },
+                              ),
+                      contentPadding: EdgeInsets.zero,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  size: 20,
-                ),
-                suffixIcon:
-                    _searchCtrl.text.isEmpty
-                        ? null
-                        : IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
+                if (screenWidth(context) < mobileScreen) ...[
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _toolbarIsOpen = !_toolbarIsOpen;
+                      });
+                    },
+                    mouseCursor: SystemMouseCursors.click,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        6,
+                        6,
+                        6,
+                      ),
+                      child: Row(
+                        spacing: 1,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme.mobileTexts.b4.fontSize,
+                            ),
+                            _toolbarIsOpen ? 'Hide' : 'View',
                           ),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _apply(
-                              () => _filters.search = '',
-                            );
-                          },
-                        ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
-                ),
-              ),
+                          Icon(
+                            _toolbarIsOpen
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
-        ReceiptsReportPeriodButton(
-          theme: theme,
-          period: _period,
-          enabled: _canPickDate,
-          onChanged: _setPeriod,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 6.0,
-            right: 5,
-          ),
-          child: ReportPill(
+        if (_toolbarIsOpen ||
+            screenWidth(context) > mobileScreen) ...[
+          ReceiptsReportPeriodButton(
             theme: theme,
-            icon: Icons.tune_rounded,
-            label:
-                active == 0
-                    ? 'Filters'
-                    : 'Filters ($active)',
-            highlighted: _showFilters || active > 0,
-            onTap:
-                () => setState(
-                  () => _showFilters = !_showFilters,
-                ),
+            period: _period,
+            enabled: _canPickDate,
+            onChanged: _setPeriod,
           ),
-        ),
-        // A view option, not a filter: Reset All keeps it.
-        Padding(
-          padding: const EdgeInsets.only(right: 5),
-          child: ReportPill(
-            theme: theme,
-            icon: Icons.workspaces_outline,
-            label: 'Group by item',
-            highlighted: _groupByItem,
-            onTap:
-                () => _apply(
-                  () => _groupByItem = !_groupByItem,
-                ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 6.0,
+              right: 5,
+            ),
+            child: ReportPill(
+              theme: theme,
+              icon: Icons.tune_rounded,
+              label:
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
+              highlighted: _showFilters || active > 0,
+              onTap:
+                  () => setState(
+                    () => _showFilters = !_showFilters,
+                  ),
+            ),
           ),
-        ),
-        if (_filters.hasAnything)
-          ReportPill(
-            theme: theme,
-            icon: Icons.filter_alt_off,
-            label: 'Reset All Filters',
-            onTap: _resetAll,
-            color: accent,
+          // A view option, not a filter: Reset All keeps it.
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportPill(
+              theme: theme,
+              icon: Icons.workspaces_outline,
+              label: 'Group by item',
+              highlighted: _groupByItem,
+              onTap:
+                  () => _apply(
+                    () => _groupByItem = !_groupByItem,
+                  ),
+            ),
           ),
+          if (_filters.hasAnything)
+            ReportPill(
+              theme: theme,
+              icon: Icons.filter_alt_off,
+              label: 'Reset All Filters',
+              onTap: _resetAll,
+              color: accent,
+            ),
+          if (widget.embedded)
+            Padding(
+              padding: const EdgeInsets.only(left: 6.0),
+              child: ReportPill(
+                theme: theme,
+                icon: Icons.refresh_rounded,
+                label: 'Refresh',
+                onTap: () {
+                  if (!_loading) _load(refreshFromStore: true);
+                },
+              ),
+            ),
+        ],
       ],
     );
   }
@@ -859,6 +937,7 @@ class _ItemSalesReportMainViewState
               itemOptions: _itemOptions,
               rows: _baseRows,
               onApply: _apply,
+              showItemFilter: widget.lockedItemUuid == null,
             ),
             ...receiptsKeyFilterFields(
               theme: theme,
@@ -924,6 +1003,7 @@ class _ItemSalesReportMainViewState
           categoryOptions: _categoryOptions,
           itemOptions: _allItemOptions,
           onApply: _applyAndSyncFields,
+          showItemChip: widget.lockedItemUuid == null,
         ),
         ReceiptsReportFilterChips(
           theme: theme,
@@ -1125,13 +1205,17 @@ class _ItemSalesReportMainViewState
                 color:
                     r.itemName == null
                         ? Colors.grey
-                        : (r.productExists ? accent : null),
+                        : (widget.lockedItemUuid == null && r.productExists
+                            ? accent
+                            : null),
                 tooltip:
-                    r.productExists
-                        ? 'Open item details'
-                        : 'Item no longer exists',
+                    widget.lockedItemUuid != null
+                        ? null
+                        : (r.productExists
+                            ? 'Open item details'
+                            : 'Item no longer exists'),
               );
-              if (!r.productExists) return text;
+              if (!r.productExists || widget.lockedItemUuid != null) return text;
               return InkWell(
                 mouseCursor: SystemMouseCursors.click,
                 onTap: () => _openItem(r),
@@ -1827,13 +1911,17 @@ class _ItemSalesReportMainViewState
                 color:
                     g.itemName == null
                         ? Colors.grey
-                        : (g.productExists ? accent : null),
+                        : (widget.lockedItemUuid == null && g.productExists
+                            ? accent
+                            : null),
                 tooltip:
-                    g.productExists
-                        ? 'Open item details'
-                        : 'Item no longer exists',
+                    widget.lockedItemUuid != null
+                        ? null
+                        : (g.productExists
+                            ? 'Open item details'
+                            : 'Item no longer exists'),
               );
-              if (!g.productExists) return text;
+              if (!g.productExists || widget.lockedItemUuid != null) return text;
               return InkWell(
                 mouseCursor: SystemMouseCursors.click,
                 onTap:

@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
@@ -96,6 +97,7 @@ class _InvoiceReportTableViewState
   bool _ascending = false;
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
 
   DateTimeRange? _range;
 
@@ -292,7 +294,10 @@ class _InvoiceReportTableViewState
       _page = page.page;
       _groupResult = page;
     } else {
-      final page = InvoiceReportQuery.paginate(sorted, _page);
+      final page = InvoiceReportQuery.paginate(
+        sorted,
+        _page,
+      );
       _page = page.page;
       _result = page;
     }
@@ -643,60 +648,186 @@ class _InvoiceReportTableViewState
           child: SizedBox(
             width: widget.isDesktop ? 320 : double.infinity,
             height: 38,
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged:
-                  (v) => _apply(() => _filters.search = v),
-              decoration: InputDecoration(
-                hintText:
-                    _departmentsEnabled
-                        ? 'Search customer, staff, ID, barcode or department'
-                        : 'Search customer, staff, ID or barcode',
-                hintStyle: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  size: 20,
-                ),
-                suffixIcon:
-                    _searchCtrl.text.isEmpty
-                        ? null
-                        : IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
-                          ),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _apply(
-                              () => _filters.search = '',
-                            );
-                          },
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    onChanged:
+                        (v) => _apply(
+                          () => _filters.search = v,
                         ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
+                    decoration: InputDecoration(
+                      hintText:
+                          _departmentsEnabled
+                              ? 'Search customer, staff, ID, barcode or department'
+                              : 'Search customer, staff, ID or barcode',
+                      hintStyle: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                      ),
+                      suffixIcon:
+                          _searchCtrl.text.isEmpty
+                              ? null
+                              : IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  _apply(
+                                    () =>
+                                        _filters.search =
+                                            '',
+                                  );
+                                },
+                              ),
+                      contentPadding: EdgeInsets.zero,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (screenWidth(context) <
+                    mobileScreen) ...[
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _toolbarIsOpen = !_toolbarIsOpen;
+                      });
+                    },
+                    mouseCursor: SystemMouseCursors.click,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        6,
+                        6,
+                        6,
+                      ),
+                      child: Row(
+                        spacing: 1,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                            _toolbarIsOpen
+                                ? 'Hide'
+                                : 'View',
+                          ),
+                          Icon(
+                            _toolbarIsOpen
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
-        _pill(
-          theme: theme,
-          icon: Icons.event_rounded,
-          label: 'Date: $_rangeLabel',
-          highlighted:
-              _filters.dateRange != null && !_isDateToday,
-          onTap: _pickRange,
-        ),
-        if (_filters.dateRange != null)
+        if (_toolbarIsOpen ||
+            screenWidth(context) > mobileScreen) ...[
+          _pill(
+            theme: theme,
+            icon: Icons.event_rounded,
+            label: 'Date: $_rangeLabel',
+            highlighted:
+                _filters.dateRange != null && !_isDateToday,
+            onTap: _pickRange,
+          ),
+          if (_filters.dateRange != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 5.0),
+              child: Material(
+                color: Colors.transparent,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.grey.shade100,
+                  ),
+                  child: InkWell(
+                    onTap: _clearDate,
+                    mouseCursor: SystemMouseCursors.click,
+                    borderRadius: BorderRadius.circular(5),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10,
+                        10,
+                        10,
+                        10,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.close,
+                            size: 16,
+                            color: accent,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'All Dates',
+                            style: TextStyle(
+                              color: accent,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: Material(
+            padding: const EdgeInsets.only(left: 6.0),
+            child: _pill(
+              theme: theme,
+              icon: Icons.tune_rounded,
+              label:
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
+              highlighted: _showFilters || active > 0,
+              onTap:
+                  () => setState(
+                    () => _showFilters = !_showFilters,
+                  ),
+            ),
+          ),
+          // A view option, not a filter: Reset Filters keeps it.
+          ReportGroupByButton(
+            theme: theme,
+            value: _groupBy,
+            onChanged: (g) => _apply(() => _groupBy = g),
+          ),
+          if (_filters.hasAnything)
+            Material(
               color: Colors.transparent,
               child: Ink(
                 decoration: BoxDecoration(
@@ -704,7 +835,7 @@ class _InvoiceReportTableViewState
                   color: Colors.grey.shade100,
                 ),
                 child: InkWell(
-                  onTap: _clearDate,
+                  onTap: _resetAll,
                   mouseCursor: SystemMouseCursors.click,
                   borderRadius: BorderRadius.circular(5),
                   child: Padding(
@@ -718,13 +849,13 @@ class _InvoiceReportTableViewState
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.close,
+                          Icons.filter_alt_off,
                           size: 16,
                           color: accent,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'All Dates',
+                          'Reset Filters',
                           style: TextStyle(
                             color: accent,
                             fontSize:
@@ -741,72 +872,7 @@ class _InvoiceReportTableViewState
                 ),
               ),
             ),
-          ),
-        Padding(
-          padding: const EdgeInsets.only(left: 6.0),
-          child: _pill(
-            theme: theme,
-            icon: Icons.tune_rounded,
-            label:
-                active == 0
-                    ? 'Filters'
-                    : 'Filters ($active)',
-            highlighted: _showFilters || active > 0,
-            onTap:
-                () => setState(
-                  () => _showFilters = !_showFilters,
-                ),
-          ),
-        ),
-        // A view option, not a filter: Reset Filters keeps it.
-        ReportGroupByButton(
-          theme: theme,
-          value: _groupBy,
-          onChanged: (g) => _apply(() => _groupBy = g),
-        ),
-        if (_filters.hasAnything)
-          Material(
-            color: Colors.transparent,
-            child: Ink(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.grey.shade100,
-              ),
-              child: InkWell(
-                onTap: _resetAll,
-                mouseCursor: SystemMouseCursors.click,
-                borderRadius: BorderRadius.circular(5),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    10,
-                    10,
-                    10,
-                    10,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.filter_alt_off,
-                        size: 16,
-                        color: accent,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Reset Filters',
-                        style: TextStyle(
-                          color: accent,
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+        ],
       ],
     );
   }
@@ -2172,7 +2238,9 @@ class _InvoiceReportTableViewState
         mouseCursor: SystemMouseCursors.click,
         onTap: () => _setGroupSort(c.sort),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+          ),
           child: Align(
             alignment: _alignOf(c.align),
             child: Row(
@@ -2190,10 +2258,13 @@ class _InvoiceReportTableViewState
                     overflow: TextOverflow.ellipsis,
                     textAlign: c.align,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                       color:
-                          isSorted ? accent : Colors.black87,
+                          isSorted
+                              ? accent
+                              : Colors.black87,
                     ),
                   ),
                 ),
@@ -2303,7 +2374,10 @@ class _InvoiceReportTableViewState
                             ],
                           ),
                         ),
-                        const Divider(height: 1, thickness: 1),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
                         Expanded(
                           child: ListView.separated(
                             controller: _vScroll,
@@ -2311,7 +2385,8 @@ class _InvoiceReportTableViewState
                             separatorBuilder:
                                 (_, __) => Divider(
                                   height: 1,
-                                  color: Colors.grey.shade100,
+                                  color:
+                                      Colors.grey.shade100,
                                 ),
                             // No row tap: a group has no single
                             // invoice to open.
@@ -2322,7 +2397,9 @@ class _InvoiceReportTableViewState
                                 color:
                                     index.isEven
                                         ? Colors.white
-                                        : Colors.grey.shade50
+                                        : Colors
+                                            .grey
+                                            .shade50
                                             .withAlpha(120),
                                 child: _groupCells(
                                   cols,
@@ -2332,10 +2409,15 @@ class _InvoiceReportTableViewState
                             },
                           ),
                         ),
-                        const Divider(height: 1, thickness: 1),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
                         Container(
                           height: 46,
-                          color: theme.lightModeColor.prColor300
+                          color: theme
+                              .lightModeColor
+                              .prColor300
                               .withAlpha(25),
                           child: _groupCells(
                             cols,
@@ -2365,7 +2447,8 @@ class _InvoiceReportTableViewState
     final total = _grouped ? g!.totalPages : r!.totalPages;
     final firstIndex =
         _grouped ? g!.firstIndex : r!.firstIndex;
-    final lastIndex = _grouped ? g!.lastIndex : r!.lastIndex;
+    final lastIndex =
+        _grouped ? g!.lastIndex : r!.lastIndex;
     final totalCount =
         _grouped ? g!.totalCount : r!.totalCount;
     final accent = theme.lightModeColor.prColor300;

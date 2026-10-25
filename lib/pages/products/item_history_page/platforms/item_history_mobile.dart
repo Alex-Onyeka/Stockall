@@ -10,6 +10,7 @@ import 'package:stockall/pages/products/item_history_page/components/item_histor
 import 'package:stockall/pages/products/item_history_page/components/item_history_tile.dart';
 import 'package:stockall/pages/products/item_history_page/platforms/item_history_desktop.dart';
 import 'package:stockall/pages/report/items_report_/item_history_report/components/item_history_report_view.dart';
+import 'package:stockall/pages/report/sales_report_/item_sales_report_main/components/item_sales_report_main_view.dart';
 
 class ItemHistoryMobile extends StatefulWidget {
   final String? productUuid;
@@ -339,6 +340,67 @@ class ItemHistoryMobileState
                           ),
                         ),
                         PopupMenuItem(
+                          value: ItemHistoryViewMode.sales,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.point_of_sale_outlined,
+                                size: 18,
+                                color:
+                                    _mode ==
+                                            ItemHistoryViewMode
+                                                .sales
+                                        ? theme
+                                            .lightModeColor
+                                            .prColor300
+                                        : Colors
+                                            .grey
+                                            .shade700,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  'Sales',
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        _mode ==
+                                                ItemHistoryViewMode
+                                                      .sales
+                                            ? FontWeight
+                                                .bold
+                                            : FontWeight
+                                                .normal,
+                                    color:
+                                        _mode ==
+                                                ItemHistoryViewMode
+                                                    .sales
+                                            ? theme
+                                                .lightModeColor
+                                                .prColor300
+                                            : Colors
+                                                .black87,
+                                  ),
+                                ),
+                              ),
+                              if (_mode ==
+                                  ItemHistoryViewMode.sales)
+                                Icon(
+                                  Icons.check,
+                                  size: 16,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .prColor300,
+                                ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
                           value:
                               ItemHistoryViewMode.summary,
                           child: Row(
@@ -424,6 +486,9 @@ class ItemHistoryMobileState
                           _mode == ItemHistoryViewMode.table
                               ? Icons.table_chart_outlined
                               : _mode ==
+                                  ItemHistoryViewMode.sales
+                              ? Icons.point_of_sale_outlined
+                              : _mode ==
                                   ItemHistoryViewMode
                                       .summary
                               ? Icons.summarize_outlined
@@ -437,6 +502,9 @@ class ItemHistoryMobileState
                         Text(
                           _mode == ItemHistoryViewMode.table
                               ? 'Table'
+                              : _mode ==
+                                  ItemHistoryViewMode.sales
+                              ? 'Sales'
                               : _mode ==
                                   ItemHistoryViewMode
                                       .summary
@@ -474,6 +542,12 @@ class ItemHistoryMobileState
       body:
           _mode == ItemHistoryViewMode.table
               ? ItemHistoryReportView(
+                isDesktop: false,
+                lockedItemUuid: widget.productUuid,
+                embedded: true,
+              )
+              : _mode == ItemHistoryViewMode.sales
+              ? ItemSalesReportMainView(
                 isDesktop: false,
                 lockedItemUuid: widget.productUuid,
                 embedded: true,

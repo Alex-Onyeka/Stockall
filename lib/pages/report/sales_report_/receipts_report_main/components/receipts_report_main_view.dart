@@ -3,6 +3,7 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
@@ -88,6 +89,7 @@ class _ReceiptsReportMainViewState
   bool _ascending = false;
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
 
   late ReceiptsReportPeriod _period;
 
@@ -251,7 +253,8 @@ class _ReceiptsReportMainViewState
       _ascending = false;
     }
     if (!profitVisible &&
-        (_groupSortField == ReceiptsTableGroupSortField.profit ||
+        (_groupSortField ==
+                ReceiptsTableGroupSortField.profit ||
             _groupSortField ==
                 ReceiptsTableGroupSortField.margin)) {
       _groupSortField = ReceiptsTableGroupSortField.revenue;
@@ -351,7 +354,8 @@ class _ReceiptsReportMainViewState
       } else {
         _groupSortField = f;
         // Names A-Z first; counts and amounts largest first.
-        _groupAscending = f == ReceiptsTableGroupSortField.name;
+        _groupAscending =
+            f == ReceiptsTableGroupSortField.name;
       }
     });
   }
@@ -627,87 +631,145 @@ class _ReceiptsReportMainViewState
           child: SizedBox(
             width: widget.isDesktop ? 320 : double.infinity,
             height: 38,
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged:
-                  (v) => _apply(() => _filters.search = v),
-              decoration: InputDecoration(
-                hintText:
-                    _departmentsEnabled
-                        ? 'Search customer, staff, department or ID'
-                        : 'Search customer, staff or ID',
-                hintStyle: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  size: 20,
-                ),
-                suffixIcon:
-                    _searchCtrl.text.isEmpty
-                        ? null
-                        : IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
-                          ),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _apply(
-                              () => _filters.search = '',
-                            );
-                          },
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    onChanged:
+                        (v) => _apply(
+                          () => _filters.search = v,
                         ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
+                    decoration: InputDecoration(
+                      hintText:
+                          _departmentsEnabled
+                              ? 'Search customer, staff, department or ID'
+                              : 'Search customer, staff or ID',
+                      hintStyle: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                      ),
+                      suffixIcon:
+                          _searchCtrl.text.isEmpty
+                              ? null
+                              : IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  _apply(
+                                    () =>
+                                        _filters.search =
+                                            '',
+                                  );
+                                },
+                              ),
+                      contentPadding: EdgeInsets.zero,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (screenWidth(context) <
+                    mobileScreen) ...[
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _toolbarIsOpen = !_toolbarIsOpen;
+                      });
+                    },
+                    mouseCursor: SystemMouseCursors.click,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        6,
+                        6,
+                        6,
+                      ),
+                      child: Row(
+                        spacing: 1,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                            _toolbarIsOpen
+                                ? 'Hide'
+                                : 'View',
+                          ),
+                          Icon(
+                            _toolbarIsOpen
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
-        ReceiptsReportPeriodButton(
-          theme: theme,
-          period: _period,
-          enabled: _canPickDate,
-          onChanged: _setPeriod,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 6.0,
-            right: 5,
-          ),
-          child: ReportPill(
+        if (_toolbarIsOpen ||
+            screenWidth(context) > mobileScreen) ...[
+          ReceiptsReportPeriodButton(
             theme: theme,
-            icon: Icons.tune_rounded,
-            label:
-                active == 0
-                    ? 'Filters'
-                    : 'Filters ($active)',
-            highlighted: _showFilters || active > 0,
-            onTap:
-                () => setState(
-                  () => _showFilters = !_showFilters,
-                ),
+            period: _period,
+            enabled: _canPickDate,
+            onChanged: _setPeriod,
           ),
-        ),
-        // A view option, not a filter: Reset All keeps it.
-        ReportGroupByButton(
-          theme: theme,
-          value: _groupBy,
-          onChanged: (g) => _apply(() => _groupBy = g),
-        ),
-        if (_filters.hasAnything)
-          ReportPill(
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 6.0,
+              right: 5,
+            ),
+            child: ReportPill(
+              theme: theme,
+              icon: Icons.tune_rounded,
+              label:
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
+              highlighted: _showFilters || active > 0,
+              onTap:
+                  () => setState(
+                    () => _showFilters = !_showFilters,
+                  ),
+            ),
+          ),
+          // A view option, not a filter: Reset All keeps it.
+          ReportGroupByButton(
             theme: theme,
-            icon: Icons.filter_alt_off,
-            label: 'Reset All Filters',
-            onTap: _resetAll,
-            color: accent,
+            value: _groupBy,
+            onChanged: (g) => _apply(() => _groupBy = g),
           ),
+          if (_filters.hasAnything)
+            ReportPill(
+              theme: theme,
+              icon: Icons.filter_alt_off,
+              label: 'Reset All Filters',
+              onTap: _resetAll,
+              color: accent,
+            ),
+        ],
       ],
     );
   }
@@ -1300,9 +1362,17 @@ class _ReceiptsReportMainViewState
             align: TextAlign.start,
           );
         case 'Discount':
-          return _txt(theme, _money(res.totalDiscount), bold: true);
+          return _txt(
+            theme,
+            _money(res.totalDiscount),
+            bold: true,
+          );
         case 'VAT':
-          return _txt(theme, _money(res.totalVat), bold: true);
+          return _txt(
+            theme,
+            _money(res.totalVat),
+            bold: true,
+          );
         case 'Items':
           return _txt(
             theme,
@@ -1310,7 +1380,11 @@ class _ReceiptsReportMainViewState
             bold: true,
           );
         case 'Balance':
-          return _txt(theme, _money(res.totalBalance), bold: true);
+          return _txt(
+            theme,
+            _money(res.totalBalance),
+            bold: true,
+          );
         case 'Profit/Loss':
           return _txt(
             theme,
@@ -1330,9 +1404,17 @@ class _ReceiptsReportMainViewState
             color: _signColor(theme, m),
           );
         case 'Subtotal':
-          return _txt(theme, _money(res.totalSubtotal), bold: true);
+          return _txt(
+            theme,
+            _money(res.totalSubtotal),
+            bold: true,
+          );
         case 'Total Revenue':
-          return _txt(theme, _money(res.totalRevenue), bold: true);
+          return _txt(
+            theme,
+            _money(res.totalRevenue),
+            bold: true,
+          );
         default:
           return const SizedBox.shrink();
       }
@@ -1449,7 +1531,10 @@ class _ReceiptsReportMainViewState
                             ),
                           ),
                         ),
-                        const Divider(height: 1, thickness: 1),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
                         _totalsRow(theme, cols, res),
                       ],
                     ),
@@ -1540,7 +1625,9 @@ class _ReceiptsReportMainViewState
                 res.totalItems == null
                     ? const SizedBox.shrink()
                     : bold(
-                      formatLargeNumberDouble(res.totalItems!),
+                      formatLargeNumberDouble(
+                        res.totalItems!,
+                      ),
                     ),
       ),
       _GCol(
@@ -1598,7 +1685,11 @@ class _ReceiptsReportMainViewState
           total:
               (res) =>
                   res.totalProfitCount == 0
-                      ? _txt(theme, 'N/A', color: Colors.grey)
+                      ? _txt(
+                        theme,
+                        'N/A',
+                        color: Colors.grey,
+                      )
                       : bold(
                         _money(res.totalProfit),
                         color: _signColor(
@@ -1614,10 +1705,8 @@ class _ReceiptsReportMainViewState
           sort: ReceiptsTableGroupSortField.margin,
           cell: (g) => marginText(g.margin),
           total:
-              (res) => marginText(
-                res.totalMargin,
-                isBold: true,
-              ),
+              (res) =>
+                  marginText(res.totalMargin, isBold: true),
         ),
     ];
   }
@@ -1687,7 +1776,8 @@ class _ReceiptsReportMainViewState
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: i.isEven ? Colors.white : Colors.grey.shade50,
+        color:
+            i.isEven ? Colors.white : Colors.grey.shade50,
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade100),
         ),
@@ -1830,7 +1920,10 @@ class _ReceiptsReportMainViewState
                             ),
                           ),
                         ),
-                        const Divider(height: 1, thickness: 1),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
                         _groupTotalsRow(theme, cols, res),
                       ],
                     ),

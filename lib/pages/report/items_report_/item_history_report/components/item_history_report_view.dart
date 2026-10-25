@@ -9,6 +9,7 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -66,6 +67,7 @@ class _ItemHistoryReportViewState
   bool _ascending = false; // Default newest first
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
 
   bool _loading = true;
   String? _error;
@@ -681,57 +683,176 @@ class _ItemHistoryReportViewState
           child: SizedBox(
             width: widget.isDesktop ? 340 : double.infinity,
             height: 38,
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged:
-                  (v) => _apply(() => _filters.search = v),
-              decoration: InputDecoration(
-                hintText:
-                    'Search title, item, event, desc, creator...',
-                hintStyle: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  size: 20,
-                ),
-                suffixIcon:
-                    _searchCtrl.text.isEmpty
-                        ? null
-                        : IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
-                          ),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _apply(
-                              () => _filters.search = '',
-                            );
-                          },
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    onChanged:
+                        (v) => _apply(
+                          () => _filters.search = v,
                         ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
+                    decoration: InputDecoration(
+                      hintText:
+                          'Search title, item, event, desc, creator...',
+                      hintStyle: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                      ),
+                      suffixIcon:
+                          _searchCtrl.text.isEmpty
+                              ? null
+                              : IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  _apply(
+                                    () =>
+                                        _filters.search =
+                                            '',
+                                  );
+                                },
+                              ),
+                      contentPadding: EdgeInsets.zero,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (screenWidth(context) <
+                    mobileScreen) ...[
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _toolbarIsOpen = !_toolbarIsOpen;
+                      });
+                    },
+                    mouseCursor: SystemMouseCursors.click,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        6,
+                        6,
+                        6,
+                      ),
+                      child: Row(
+                        spacing: 1,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                            _toolbarIsOpen
+                                ? 'Hide'
+                                : 'View',
+                          ),
+                          Icon(
+                            _toolbarIsOpen
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
-        _pill(
-          theme: theme,
-          icon: Icons.event_rounded,
-          label: 'Date: $_dateLabel',
-          highlighted: _filters.dateRange != null,
-          onTap: _pickRange,
-        ),
-        if (_filters.dateRange != null)
+        if (_toolbarIsOpen ||
+            screenWidth(context) > mobileScreen) ...[
+          _pill(
+            theme: theme,
+            icon: Icons.event_rounded,
+            label: 'Date: $_dateLabel',
+            highlighted: _filters.dateRange != null,
+            onTap: _pickRange,
+          ),
+          if (_filters.dateRange != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 5.0),
+              child: Material(
+                color: Colors.transparent,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.grey.shade100,
+                  ),
+                  child: InkWell(
+                    onTap: _clearDate,
+                    mouseCursor: SystemMouseCursors.click,
+                    borderRadius: BorderRadius.circular(5),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10,
+                        12,
+                        10,
+                        12,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.close,
+                            size: 16,
+                            color: accent,
+                          ),
+                          Text(
+                            'Clear',
+                            style: TextStyle(
+                              color: accent,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: Material(
+            padding: const EdgeInsets.only(left: 6.0),
+            child: _pill(
+              theme: theme,
+              icon: Icons.tune_rounded,
+              label:
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
+              highlighted: _showFilters || active > 0,
+              onTap:
+                  () => setState(
+                    () => _showFilters = !_showFilters,
+                  ),
+            ),
+          ),
+          if (_filters.hasAnything)
+            Material(
               color: Colors.transparent,
               child: Ink(
                 decoration: BoxDecoration(
@@ -739,7 +860,7 @@ class _ItemHistoryReportViewState
                   color: Colors.grey.shade100,
                 ),
                 child: InkWell(
-                  onTap: _clearDate,
+                  onTap: _resetAll,
                   mouseCursor: SystemMouseCursors.click,
                   borderRadius: BorderRadius.circular(5),
                   child: Padding(
@@ -753,12 +874,12 @@ class _ItemHistoryReportViewState
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.close,
+                          Icons.filter_alt_off,
                           size: 16,
                           color: accent,
                         ),
                         Text(
-                          'Clear',
+                          'Reset Filter',
                           style: TextStyle(
                             color: accent,
                             fontSize:
@@ -775,77 +896,20 @@ class _ItemHistoryReportViewState
                 ),
               ),
             ),
-          ),
-        Padding(
-          padding: const EdgeInsets.only(left: 6.0),
-          child: _pill(
-            theme: theme,
-            icon: Icons.tune_rounded,
-            label:
-                active == 0
-                    ? 'Filters'
-                    : 'Filters ($active)',
-            highlighted: _showFilters || active > 0,
-            onTap:
-                () => setState(
-                  () => _showFilters = !_showFilters,
-                ),
-          ),
-        ),
-        if (_filters.hasAnything)
-          Material(
-            color: Colors.transparent,
-            child: Ink(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.grey.shade100,
-              ),
-              child: InkWell(
-                onTap: _resetAll,
-                mouseCursor: SystemMouseCursors.click,
-                borderRadius: BorderRadius.circular(5),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    10,
-                    12,
-                    10,
-                    12,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.filter_alt_off,
-                        size: 16,
-                        color: accent,
-                      ),
-                      Text(
-                        'Reset Filter',
-                        style: TextStyle(
-                          color: accent,
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+          if (widget.embedded)
+            Padding(
+              padding: const EdgeInsets.only(left: 6.0),
+              child: _pill(
+                theme: theme,
+                icon: Icons.refresh_rounded,
+                label: 'Refresh',
+                onTap: () {
+                  if (!_loading)
+                    _load(refreshFromStore: true);
+                },
               ),
             ),
-          ),
-        if (widget.embedded)
-          Padding(
-            padding: const EdgeInsets.only(left: 6.0),
-            child: _pill(
-              theme: theme,
-              icon: Icons.refresh_rounded,
-              label: 'Refresh',
-              onTap: () {
-                if (!_loading) _load(refreshFromStore: true);
-              },
-            ),
-          ),
+        ],
       ],
     );
   }

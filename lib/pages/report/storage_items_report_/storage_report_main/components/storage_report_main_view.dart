@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_storage_item_history/storage_item_history.
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
@@ -64,6 +65,7 @@ class _StorageReportMainViewState
   bool _ascending = true;
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
 
   late DateTimeRange _range;
 
@@ -590,53 +592,97 @@ class _StorageReportMainViewState
           child: SizedBox(
             width: widget.isDesktop ? 320 : double.infinity,
             height: 38,
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged:
-                  (v) => _apply(() => _filters.search = v),
-              decoration: InputDecoration(
-                hintText:
-                    'Search storage item or sales item',
-                hintStyle: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    onChanged:
+                        (v) => _apply(() => _filters.search = v),
+                    decoration: InputDecoration(
+                      hintText:
+                          'Search storage item or sales item',
+                      hintStyle: TextStyle(
+                        fontSize: theme.mobileTexts.b3.fontSize,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                      ),
+                      suffixIcon:
+                          _searchCtrl.text.isEmpty
+                              ? null
+                              : IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  _apply(
+                                    () => _filters.search = '',
+                                  );
+                                },
+                              ),
+                      contentPadding: EdgeInsets.zero,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  size: 20,
-                ),
-                suffixIcon:
-                    _searchCtrl.text.isEmpty
-                        ? null
-                        : IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
+                if (screenWidth(context) < mobileScreen) ...[
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _toolbarIsOpen = !_toolbarIsOpen;
+                      });
+                    },
+                    mouseCursor: SystemMouseCursors.click,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        6,
+                        6,
+                        6,
+                      ),
+                      child: Row(
+                        spacing: 1,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme.mobileTexts.b4.fontSize,
+                            ),
+                            _toolbarIsOpen ? 'Hide' : 'View',
                           ),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _apply(
-                              () => _filters.search = '',
-                            );
-                          },
-                        ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
-                ),
-              ),
+                          Icon(
+                            _toolbarIsOpen
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
-        _pill(
-          theme: theme,
-          icon: Icons.event_rounded,
-          label: 'Date: $_rangeLabel',
-          highlighted: !_isDateToday,
-          onTap: _pickRange,
-        ),
+        if (_toolbarIsOpen ||
+            screenWidth(context) > mobileScreen) ...[
+          _pill(
+            theme: theme,
+            icon: Icons.event_rounded,
+            label: 'Date: $_rangeLabel',
+            highlighted: !_isDateToday,
+            onTap: _pickRange,
+          ),
         if (!_isDateToday)
           Padding(
             padding: const EdgeInsets.only(right: 5.0),
@@ -743,6 +789,7 @@ class _StorageReportMainViewState
               ),
             ),
           ),
+        ],
       ],
     );
   }

@@ -19,6 +19,7 @@ List<Widget> itemSalesFilterFields({
   required List<ReceiptsFilterOption> itemOptions,
   required List<ItemSalesRow> rows,
   required void Function(VoidCallback change) onApply,
+  bool showItemFilter = true,
 }) {
   Widget keyDropdown({
     required String title,
@@ -83,16 +84,17 @@ List<Widget> itemSalesFilterFields({
       options: categoryOptions,
       onChanged: (v) => filters.setCategory(v, rows),
     ),
-    keyDropdown(
-      title: 'Item',
-      allLabel:
-          filters.categoryKey == null
-              ? 'All items'
-              : 'All items in category',
-      value: filters.productKey,
-      options: itemOptions,
-      onChanged: (v) => filters.productKey = v,
-    ),
+    if (showItemFilter)
+      keyDropdown(
+        title: 'Item',
+        allLabel:
+            filters.categoryKey == null
+                ? 'All items'
+                : 'All items in category',
+        value: filters.productKey,
+        options: itemOptions,
+        onChanged: (v) => filters.productKey = v,
+      ),
     ReportLabeledField(
       label: 'Void',
       width: 150,
@@ -138,6 +140,7 @@ class ItemSalesFilterChips extends StatelessWidget {
   /// chip always finds its label.
   final List<ReceiptsFilterOption> itemOptions;
   final void Function(VoidCallback change) onApply;
+  final bool showItemChip;
 
   const ItemSalesFilterChips({
     super.key,
@@ -146,6 +149,7 @@ class ItemSalesFilterChips extends StatelessWidget {
     required this.categoryOptions,
     required this.itemOptions,
     required this.onApply,
+    this.showItemChip = true,
   });
 
   @override
@@ -180,7 +184,7 @@ class ItemSalesFilterChips extends StatelessWidget {
       );
     }
     final item = filters.productKey;
-    if (item != null) {
+    if (showItemChip && item != null) {
       chip(
         'Item: ${ReceiptsFilterChoices.labelFor(itemOptions, item, 'Item')}',
         () => filters.productKey = null,

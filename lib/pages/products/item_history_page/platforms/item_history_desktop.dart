@@ -11,6 +11,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/item_history_page/components/item_history_item_summary.dart';
 import 'package:stockall/pages/products/item_history_page/components/item_history_tile.dart';
 import 'package:stockall/pages/report/items_report_/item_history_report/components/item_history_report_view.dart';
+import 'package:stockall/pages/report/sales_report_/item_sales_report_main/components/item_sales_report_main_view.dart';
 
 class ItemHistoryDesktop extends StatefulWidget {
   final String? productUuid;
@@ -22,10 +23,12 @@ class ItemHistoryDesktop extends StatefulWidget {
   });
 
   @override
-  State<ItemHistoryDesktop> createState() => _ItemHistoryDesktopState();
+  State<ItemHistoryDesktop> createState() =>
+      _ItemHistoryDesktopState();
 }
 
-class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
+class _ItemHistoryDesktopState
+    extends State<ItemHistoryDesktop> {
   late Future<TempProductClass> productFuture;
 
   bool isLoading = false;
@@ -33,7 +36,8 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
   bool setDate = false;
   ItemHistoryViewMode _mode = ItemHistoryViewMode.list;
 
-  TextEditingController searchController = TextEditingController();
+  TextEditingController searchController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -41,52 +45,67 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
     searchController.dispose();
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     List<ItemHistory>? itemHistories =
-        returnItemHistoryProvider(context: context).returnItemHistories().where(
-          (history) {
-            if (widget.productUuid != null) {
-              return history.itemUuid == widget.productUuid &&
-                  (history.itemName?.toLowerCase().contains(
-                            searchController.text.toLowerCase(),
-                          ) ==
-                          true ||
-                      history.departmentName?.toLowerCase().contains(
-                            searchController.text.toLowerCase(),
-                          ) ==
-                          true ||
-                      history.staffName?.toLowerCase().contains(
-                            searchController.text.toLowerCase(),
-                          ) ==
-                          true ||
-                      history.title.toLowerCase().contains(
-                            searchController.text.toLowerCase(),
-                          ) ==
-                          true);
-            } else {
-              return (history.itemName?.toLowerCase().contains(
-                        searchController.text.toLowerCase(),
-                      ) ==
-                      true ||
-                  history.departmentName?.toLowerCase().contains(
-                        searchController.text.toLowerCase(),
-                      ) ==
-                      true ||
-                  history.staffName?.toLowerCase().contains(
-                        searchController.text.toLowerCase(),
-                      ) ==
-                      true ||
-                  history.title.toLowerCase().contains(
-                        searchController.text.toLowerCase(),
-                      ) ==
-                      true);
-            }
-          },
-        ).toList();
+        returnItemHistoryProvider(
+          context: context,
+        ).returnItemHistories().where((history) {
+          if (widget.productUuid != null) {
+            return history.itemUuid == widget.productUuid &&
+                (history.itemName?.toLowerCase().contains(
+                          searchController.text
+                              .toLowerCase(),
+                        ) ==
+                        true ||
+                    history.departmentName
+                            ?.toLowerCase()
+                            .contains(
+                              searchController.text
+                                  .toLowerCase(),
+                            ) ==
+                        true ||
+                    history.staffName
+                            ?.toLowerCase()
+                            .contains(
+                              searchController.text
+                                  .toLowerCase(),
+                            ) ==
+                        true ||
+                    history.title.toLowerCase().contains(
+                          searchController.text
+                              .toLowerCase(),
+                        ) ==
+                        true);
+          } else {
+            return (history.itemName
+                        ?.toLowerCase()
+                        .contains(
+                          searchController.text
+                              .toLowerCase(),
+                        ) ==
+                    true ||
+                history.departmentName
+                        ?.toLowerCase()
+                        .contains(
+                          searchController.text
+                              .toLowerCase(),
+                        ) ==
+                    true ||
+                history.staffName?.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
+                    true ||
+                history.title.toLowerCase().contains(
+                      searchController.text.toLowerCase(),
+                    ) ==
+                    true);
+          }
+        }).toList();
     return Scaffold(
       key: _scaffoldKey,
       body: Row(
@@ -96,8 +115,10 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) > tabletScreenSmall &&
-                        screenWidth(context) < tabletScreen + 100)
+                    : (screenWidth(context) >
+                            tabletScreenSmall &&
+                        screenWidth(context) <
+                            tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -110,7 +131,12 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(39, 4, 1, 41),
+                    color: const Color.fromARGB(
+                      39,
+                      4,
+                      1,
+                      41,
+                    ),
                     blurRadius: 10,
                   ),
                 ],
@@ -124,9 +150,11 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                     children: [
                       if (_mode == ItemHistoryViewMode.list)
                         InkWell(
-                          mouseCursor: SystemMouseCursors.click,
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
-                            returnItemHistoryProvider().getItemHistories();
+                            returnItemHistoryProvider()
+                                .getItemHistories();
                           },
                           child: Container(
                             padding: EdgeInsets.only(
@@ -141,47 +169,70 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
                                   ),
                                   'Refresh',
                                 ),
-                                Icon(size: 17, Icons.refresh),
+                                Icon(
+                                  size: 17,
+                                  Icons.refresh,
+                                ),
                               ],
                             ),
                           ),
                         ),
                       Visibility(
                         visible:
-                            _mode == ItemHistoryViewMode.list &&
+                            _mode ==
+                                ItemHistoryViewMode.list &&
                             authorization(
-                              authorized: Authorizations().viewDate,
+                              authorized:
+                                  Authorizations().viewDate,
                             ),
                         child: InkWell(
-                          mouseCursor: SystemMouseCursors.click,
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onTap: () {
-                            if (returnItemHistoryProvider().dateSet != null ||
-                                returnItemHistoryProvider().rangeStartDate !=
+                            if (returnItemHistoryProvider()
+                                        .dateSet !=
+                                    null ||
+                                returnItemHistoryProvider()
+                                        .rangeStartDate !=
                                     null) {
-                              returnItemHistoryProvider().clearDate();
+                              returnItemHistoryProvider()
+                                  .clearDate();
                             } else {
                               mainDatePicker(
                                 context: context,
                                 theme: theme,
                                 singleDate: (date) {
-                                  returnItemHistoryProvider().setDate(date!);
+                                  returnItemHistoryProvider()
+                                      .setDate(date!);
                                 },
-                                rangeDate: (firstDate, lastDate) {
-                                  returnItemHistoryProvider().setRange(
-                                    firstDate!,
-                                    lastDate ?? DateTime.now(),
-                                  );
+                                rangeDate: (
+                                  firstDate,
+                                  lastDate,
+                                ) {
+                                  returnItemHistoryProvider()
+                                      .setRange(
+                                        firstDate!,
+                                        lastDate ??
+                                            DateTime.now(),
+                                      );
                                 },
                               );
                             }
                           },
                           child: Container(
-                            margin: EdgeInsets.only(right: 5),
+                            margin: EdgeInsets.only(
+                              right: 5,
+                            ),
                             padding: EdgeInsets.only(
                               right: 10,
                               left: 10,
@@ -194,15 +245,22 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
                                   ),
                                   returnItemHistoryProvider(
-                                                context: context,
+                                                context:
+                                                    context,
                                               ).dateSet !=
                                               null ||
                                           returnItemHistoryProvider(
-                                                context: context,
+                                                context:
+                                                    context,
                                               ).rangeStartDate !=
                                               null
                                       ? 'Clear'
@@ -211,15 +269,18 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                                 Icon(
                                   size: 16,
                                   returnItemHistoryProvider(
-                                                context: context,
+                                                context:
+                                                    context,
                                               ).dateSet !=
                                               null ||
                                           returnItemHistoryProvider(
-                                                context: context,
+                                                context:
+                                                    context,
                                               ).rangeStartDate !=
                                               null
                                       ? Icons.clear
-                                      : Icons.date_range_outlined,
+                                      : Icons
+                                          .date_range_outlined,
                                 ),
                               ],
                             ),
@@ -228,7 +289,9 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                       ),
                       if (widget.productUuid != null)
                         Padding(
-                          padding: const EdgeInsets.only(right: 5),
+                          padding: const EdgeInsets.only(
+                            right: 5,
+                          ),
                           child: ItemHistoryViewSwitch(
                             mode: _mode,
                             compact: false,
@@ -246,62 +309,82 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
                     _mode == ItemHistoryViewMode.table
                         ? ItemHistoryReportView(
                           isDesktop: true,
-                          lockedItemUuid: widget.productUuid,
+                          lockedItemUuid:
+                              widget.productUuid,
                           embedded: true,
                         )
-                        : _mode == ItemHistoryViewMode.summary
+                        : _mode == ItemHistoryViewMode.sales
+                        ? ItemSalesReportMainView(
+                          isDesktop: true,
+                          lockedItemUuid:
+                              widget.productUuid,
+                          embedded: true,
+                        )
+                        : _mode ==
+                            ItemHistoryViewMode.summary
                         ? ItemHistoryItemSummary(
                           productUuid: widget.productUuid!,
                           isDesktop: true,
                         )
                         : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Builder(
-                          builder: (context) {
-                            if (itemHistories.isEmpty) {
-                              return Center(
-                                child: EmptyWidgetDisplayOnly(
-                                  title: 'No Events Found',
-                                  subText:
-                                      'No event has been created for this date.',
-                                  theme: theme,
-                                  height: 30,
-                                  altAction: () {
-                                    returnItemHistoryProvider()
-                                        .getItemHistories();
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 15.0,
+                              ),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: Builder(
+                                  builder: (context) {
+                                    if (itemHistories
+                                        .isEmpty) {
+                                      return Center(
+                                        child: EmptyWidgetDisplayOnly(
+                                          title:
+                                              'No Events Found',
+                                          subText:
+                                              'No event has been created for this date.',
+                                          theme: theme,
+                                          height: 30,
+                                          altAction: () {
+                                            returnItemHistoryProvider()
+                                                .getItemHistories();
+                                          },
+                                          altActionText:
+                                              'Reload',
+                                          icon: Icons.clear,
+                                        ),
+                                      );
+                                    } else {
+                                      return ListView(
+                                        children:
+                                            itemHistories
+                                                .map(
+                                                  (
+                                                    item,
+                                                  ) => ItemHistoryTile(
+                                                    itemHistory:
+                                                        item,
+                                                    fromDetails:
+                                                        widget.fromItemDetails,
+                                                  ),
+                                                )
+                                                .toList(),
+                                      );
+                                    }
                                   },
-                                  altActionText: 'Reload',
-                                  icon: Icons.clear,
                                 ),
-                              );
-                            } else {
-                              return ListView(
-                                children:
-                                    itemHistories
-                                        .map(
-                                          (item) => ItemHistoryTile(
-                                            itemHistory: item,
-                                            fromDetails: widget.fromItemDetails,
-                                          ),
-                                        )
-                                        .toList(),
-                              );
-                            }
-                          },
+                              ),
+                              SearchFilterWidgetHistory(
+                                searchController:
+                                    searchController,
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SearchFilterWidgetHistory(
-                        searchController: searchController,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
           ),
@@ -309,8 +392,10 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
             width:
                 screenWidth(context) < tabletScreenSmall
                     ? 50
-                    : (screenWidth(context) > tabletScreenSmall &&
-                        screenWidth(context) < tabletScreen + 100)
+                    : (screenWidth(context) >
+                            tabletScreenSmall &&
+                        screenWidth(context) <
+                            tabletScreen + 100)
                     ? 100
                     : 230,
           ),
@@ -322,9 +407,9 @@ class _ItemHistoryDesktopState extends State<ItemHistoryDesktop> {
 
 // }
 
-enum ItemHistoryViewMode { list, table, summary }
+enum ItemHistoryViewMode { list, table, sales, summary }
 
-/// List / Table / Summary switch shown on an item's history page.
+/// List / Table / Sales / Summary switch shown on an item's history page.
 class ItemHistoryViewSwitch extends StatelessWidget {
   final ItemHistoryViewMode mode;
   final Function(ItemHistoryViewMode mode) onChanged;
@@ -343,7 +428,11 @@ class ItemHistoryViewSwitch extends StatelessWidget {
     var theme = returnTheme(context);
     final accent = theme.lightModeColor.prColor300;
 
-    Widget segment(ItemHistoryViewMode value, String label, IconData icon) {
+    Widget segment(
+      ItemHistoryViewMode value,
+      String label,
+      IconData icon,
+    ) {
       final selected = mode == value;
       return Tooltip(
         message: label,
@@ -359,7 +448,10 @@ class ItemHistoryViewSwitch extends StatelessWidget {
               vertical: 5,
             ),
             decoration: BoxDecoration(
-              color: selected ? accent.withAlpha(30) : Colors.transparent,
+              color:
+                  selected
+                      ? accent.withAlpha(30)
+                      : Colors.transparent,
               borderRadius: BorderRadius.circular(5),
             ),
             child: Row(
@@ -368,15 +460,22 @@ class ItemHistoryViewSwitch extends StatelessWidget {
               children: [
                 Icon(
                   size: 16,
-                  color: selected ? accent : Colors.grey.shade700,
+                  color:
+                      selected
+                          ? accent
+                          : Colors.grey.shade700,
                   icon,
                 ),
                 if (!compact)
                   Text(
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: theme.mobileTexts.b3.fontSize,
-                      color: selected ? accent : Colors.grey.shade700,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
+                      color:
+                          selected
+                              ? accent
+                              : Colors.grey.shade700,
                     ),
                     label,
                   ),
@@ -398,11 +497,20 @@ class ItemHistoryViewSwitch extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            segment(ItemHistoryViewMode.list, 'List', Icons.list_rounded),
+            segment(
+              ItemHistoryViewMode.list,
+              'List',
+              Icons.list_rounded,
+            ),
             segment(
               ItemHistoryViewMode.table,
               'Table',
               Icons.table_chart_outlined,
+            ),
+            segment(
+              ItemHistoryViewMode.sales,
+              'Sales',
+              Icons.point_of_sale_outlined,
             ),
             segment(
               ItemHistoryViewMode.summary,
@@ -432,7 +540,8 @@ class SearchFilterWidgetHistory extends StatefulWidget {
       _SearchFilterWidgetHistoryState();
 }
 
-class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
+class _SearchFilterWidgetHistoryState
+    extends State<SearchFilterWidgetHistory> {
   bool isSearchFilterOn = false;
   @override
   Widget build(BuildContext context) {
@@ -441,7 +550,10 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Padding(
-          padding: const EdgeInsets.only(bottom: 10.0, right: 10),
+          padding: const EdgeInsets.only(
+            bottom: 10.0,
+            right: 10,
+          ),
           child: Builder(
             builder: (context) {
               if (isSearchFilterOn) {
@@ -450,17 +562,28 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                   child: Container(
                     constraints: BoxConstraints(
                       maxWidth:
-                          screenWidth(context) > mobileScreenSmall
+                          screenWidth(context) >
+                                  mobileScreenSmall
                               ? 430
                               : screenWidth(context) - 40,
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 20,
+                    ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
                       color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color.fromARGB(34, 0, 0, 0),
+                          color: const Color.fromARGB(
+                            34,
+                            0,
+                            0,
+                            0,
+                          ),
                           blurRadius: 10,
                         ),
                       ],
@@ -468,7 +591,8 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                     child: Column(
                       spacing: 5,
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.end,
                       children: [
                         Row(
                           spacing: 5,
@@ -476,7 +600,8 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                             Expanded(
                               child: GeneralTextfieldOnly(
                                 hint: 'Enter Search Text',
-                                controller: widget.searchController,
+                                controller:
+                                    widget.searchController,
                                 lines: 1,
                                 theme: theme,
                                 onChanged: widget.onChanged,
@@ -485,20 +610,35 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                             Material(
                               color: Colors.white,
                               child: InkWell(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      20,
+                                    ),
                                 onTap: () {
                                   setState(() {
-                                    isSearchFilterOn = false;
+                                    isSearchFilterOn =
+                                        false;
                                   });
-                                  widget.searchController.clear();
-                                  widget.onChanged!('value');
+                                  widget.searchController
+                                      .clear();
+                                  widget.onChanged!(
+                                    'value',
+                                  );
                                 },
-                                mouseCursor: SystemMouseCursors.click,
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding:
+                                      const EdgeInsets.all(
+                                        8.0,
+                                      ),
                                   child: Icon(
                                     size: 20,
-                                    color: Colors.grey.shade600,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade600,
                                     Icons.clear,
                                   ),
                                 ),
@@ -508,7 +648,11 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                         ),
                         Text(
                           style: TextStyle(
-                            fontSize: theme.mobileTexts.b3.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
                           ),
                           'NB: You Can Search ${widget.text ?? 'Title, Item name, Staff Name, Department Name.'}',
                         ),
@@ -521,7 +665,12 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromARGB(50, 0, 0, 0),
+                        color: const Color.fromARGB(
+                          50,
+                          0,
+                          0,
+                          0,
+                        ),
                         blurRadius: 10,
                       ),
                     ],
@@ -532,16 +681,21 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                     child: Ink(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(3),
+                        borderRadius: BorderRadius.circular(
+                          3,
+                        ),
                       ),
                       child: InkWell(
-                        mouseCursor: SystemMouseCursors.click,
+                        mouseCursor:
+                            SystemMouseCursors.click,
                         onTap: () {
                           setState(() {
                             isSearchFilterOn = true;
                           });
                         },
-                        borderRadius: BorderRadius.circular(3),
+                        borderRadius: BorderRadius.circular(
+                          3,
+                        ),
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             vertical: 5,
@@ -554,14 +708,22 @@ class _SearchFilterWidgetHistoryState extends State<SearchFilterWidgetHistory> {
                             children: [
                               Text(
                                 style: TextStyle(
-                                  fontSize: theme.mobileTexts.b3.fontSize,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
                                 ),
                                 'Search Filter',
                               ),
                               Icon(
                                 size: 20,
-                                color: theme.lightModeColor.secColor200,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor200,
                                 Icons.search,
                               ),
                             ],

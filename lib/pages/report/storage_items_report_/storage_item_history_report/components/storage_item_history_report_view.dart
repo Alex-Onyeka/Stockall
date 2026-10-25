@@ -8,6 +8,7 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
@@ -26,7 +27,8 @@ class _Col {
   final double width;
   final StorageItemHistorySortField? sort;
   final TextAlign align;
-  final Widget Function(StorageItemHistory row, int index) cell;
+  final Widget Function(StorageItemHistory row, int index)
+  cell;
 
   const _Col({
     required this.label,
@@ -72,6 +74,7 @@ class _StorageItemHistoryReportViewState
   bool _ascending = false; // Default newest first
   int _page = 1;
   bool _showFilters = false;
+  bool _toolbarIsOpen = false;
   late ReceiptsReportPeriod _period;
 
   bool _loading = true;
@@ -98,8 +101,11 @@ class _StorageItemHistoryReportViewState
   @override
   void initState() {
     super.initState();
-    _filters.storageItemUuid = widget.initialStorageItemUuid;
-    _period = widget.initialPeriod ?? ReceiptsReportPeriod.today();
+    _filters.storageItemUuid =
+        widget.initialStorageItemUuid;
+    _period =
+        widget.initialPeriod ??
+        ReceiptsReportPeriod.today();
     _syncDateRange();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
@@ -229,7 +235,9 @@ class _StorageItemHistoryReportViewState
       return (t == null || t.isEmpty) ? null : t;
     }
 
-    final eventsSet = <String>{...storageItemHistoryKnownEvents};
+    final eventsSet = <String>{
+      ...storageItemHistoryKnownEvents,
+    };
     final sourcesSet = <String>{
       StorageItemHistoryEventClass.manualSource,
       StorageItemHistoryEventClass.productSource,
@@ -268,7 +276,8 @@ class _StorageItemHistoryReportViewState
       if (deptId != null) {
         _departmentsMap.putIfAbsent(
           deptId,
-          () => clean(h.salesDepartmentName) ?? 'Department',
+          () =>
+              clean(h.salesDepartmentName) ?? 'Department',
         );
       }
 
@@ -293,11 +302,13 @@ class _StorageItemHistoryReportViewState
       final source = clean(h.source);
       if (source != null) sourcesSet.add(source);
       final destination = clean(h.destination);
-      if (destination != null) destinationsSet.add(destination);
+      if (destination != null)
+        destinationsSet.add(destination);
     }
 
     // Departments from department provider
-    for (final d in returnDepartmentProvider().departments) {
+    for (final d
+        in returnDepartmentProvider().departments) {
       if (d.uuid.isNotEmpty) {
         _departmentsMap[d.uuid] = d.name;
       }
@@ -318,16 +329,24 @@ class _StorageItemHistoryReportViewState
       ..addAll(sourcesSet)
       ..sort(
         (a, b) => byLabel(
-          StorageItemHistoryReportQuery.formatSourceOrDestination(a),
-          StorageItemHistoryReportQuery.formatSourceOrDestination(b),
+          StorageItemHistoryReportQuery.formatSourceOrDestination(
+            a,
+          ),
+          StorageItemHistoryReportQuery.formatSourceOrDestination(
+            b,
+          ),
         ),
       );
     _destinationsList
       ..addAll(destinationsSet)
       ..sort(
         (a, b) => byLabel(
-          StorageItemHistoryReportQuery.formatSourceOrDestination(a),
-          StorageItemHistoryReportQuery.formatSourceOrDestination(b),
+          StorageItemHistoryReportQuery.formatSourceOrDestination(
+            a,
+          ),
+          StorageItemHistoryReportQuery.formatSourceOrDestination(
+            b,
+          ),
         ),
       );
   }
@@ -343,13 +362,14 @@ class _StorageItemHistoryReportViewState
   }
 
   void _recompute() {
-    final sorted = StorageItemHistoryReportQuery.filterAndSort(
-      rows: _baseRecords,
-      filters: _filters,
-      sortField: _sortField,
-      ascending: _ascending,
-      departmentsEnabled: _departmentsEnabled,
-    );
+    final sorted =
+        StorageItemHistoryReportQuery.filterAndSort(
+          rows: _baseRecords,
+          filters: _filters,
+          sortField: _sortField,
+          ascending: _ascending,
+          departmentsEnabled: _departmentsEnabled,
+        );
     final page = StorageItemHistoryReportQuery.paginate(
       sorted,
       _page,
@@ -414,7 +434,8 @@ class _StorageItemHistoryReportViewState
       context,
       MaterialPageRoute(
         builder:
-            (context) => StorageDetailsPage(productUuid: uuid),
+            (context) =>
+                StorageDetailsPage(productUuid: uuid),
       ),
     );
   }
@@ -441,11 +462,13 @@ class _StorageItemHistoryReportViewState
               theme: theme,
               currentStorageName: currentNameIfDifferent(
                 snapshotName: row.storageItemName,
-                currentName: _currentStorageNames[storageId],
+                currentName:
+                    _currentStorageNames[storageId],
               ),
               currentSalesName: currentNameIfDifferent(
                 snapshotName: row.salesItemName,
-                currentName: _currentSalesNames[row.salesItemUuid],
+                currentName:
+                    _currentSalesNames[row.salesItemUuid],
               ),
               onViewItem:
                   exists
@@ -649,79 +672,137 @@ class _StorageItemHistoryReportViewState
           child: SizedBox(
             width: widget.isDesktop ? 340 : double.infinity,
             height: 38,
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged:
-                  (v) => _apply(() => _filters.search = v),
-              decoration: InputDecoration(
-                hintText:
-                    'Search item, staff, department, event...',
-                hintStyle: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  size: 20,
-                ),
-                suffixIcon:
-                    _searchCtrl.text.isEmpty
-                        ? null
-                        : IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 18,
-                          ),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            _apply(
-                              () => _filters.search = '',
-                            );
-                          },
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchCtrl,
+                    onChanged:
+                        (v) => _apply(
+                          () => _filters.search = v,
                         ),
-                contentPadding: EdgeInsets.zero,
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: BorderSide.none,
+                    decoration: InputDecoration(
+                      hintText:
+                          'Search item, staff, department, event...',
+                      hintStyle: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                      ),
+                      suffixIcon:
+                          _searchCtrl.text.isEmpty
+                              ? null
+                              : IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
+                                onPressed: () {
+                                  _searchCtrl.clear();
+                                  _apply(
+                                    () =>
+                                        _filters.search =
+                                            '',
+                                  );
+                                },
+                              ),
+                      contentPadding: EdgeInsets.zero,
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (screenWidth(context) <
+                    mobileScreen) ...[
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _toolbarIsOpen = !_toolbarIsOpen;
+                      });
+                    },
+                    mouseCursor: SystemMouseCursors.click,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        6,
+                        6,
+                        6,
+                      ),
+                      child: Row(
+                        spacing: 1,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                            _toolbarIsOpen
+                                ? 'Hide'
+                                : 'View',
+                          ),
+                          Icon(
+                            _toolbarIsOpen
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
         ),
-        ReceiptsReportPeriodButton(
-          theme: theme,
-          period: _period,
-          enabled: _canPickDate,
-          onChanged: _setPeriod,
-        ),
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 6.0,
-            right: 5,
-          ),
-          child: ReportPill(
+        if (_toolbarIsOpen ||
+            screenWidth(context) > mobileScreen) ...[
+          ReceiptsReportPeriodButton(
             theme: theme,
-            icon: Icons.tune_rounded,
-            label:
-                active == 0
-                    ? 'Filters'
-                    : 'Filters ($active)',
-            highlighted: _showFilters || active > 0,
-            onTap:
-                () => setState(
-                  () => _showFilters = !_showFilters,
-                ),
+            period: _period,
+            enabled: _canPickDate,
+            onChanged: _setPeriod,
           ),
-        ),
-        if (_filters.hasAnything)
-          ReportPill(
-            theme: theme,
-            icon: Icons.filter_alt_off,
-            label: 'Reset Filter',
-            onTap: _resetAll,
-            color: accent,
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 6.0,
+              right: 5,
+            ),
+            child: ReportPill(
+              theme: theme,
+              icon: Icons.tune_rounded,
+              label:
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
+              highlighted: _showFilters || active > 0,
+              onTap:
+                  () => setState(
+                    () => _showFilters = !_showFilters,
+                  ),
+            ),
           ),
+          if (_filters.hasAnything)
+            ReportPill(
+              theme: theme,
+              icon: Icons.filter_alt_off,
+              label: 'Reset Filter',
+              onTap: _resetAll,
+              color: accent,
+            ),
+        ],
       ],
     );
   }
@@ -881,7 +962,9 @@ class _StorageItemHistoryReportViewState
             allLabel: 'All events',
             value: _filters.event,
             options: _eventsList,
-            format: StorageItemHistoryReportQuery.formatEventName,
+            format:
+                StorageItemHistoryReportQuery
+                    .formatEventName,
             onChanged: (v) => _filters.event = v,
           ),
           _listDropdown(
@@ -1168,7 +1251,11 @@ class _StorageItemHistoryReportViewState
       snapshotName: snapshot,
       currentName: current,
     );
-    final text = _txt(theme, _orDash(snapshot ?? now), bold: true);
+    final text = _txt(
+      theme,
+      _orDash(snapshot ?? now),
+      bold: true,
+    );
     if (now == null || snapshot == null) return text;
     return Tooltip(
       message: 'Now named: $now',
@@ -1209,17 +1296,19 @@ class _StorageItemHistoryReportViewState
       newValue: r.storageItemNewValue,
     );
 
-    final up = r.isIncreased ?? ((r.quantityChange ?? 0) > 0);
+    final up =
+        r.isIncreased ?? ((r.quantityChange ?? 0) > 0);
     final isZero = (r.quantityChange ?? 0) == 0;
     return _txt(
       theme,
       formatted,
       bold: true,
-      color: isZero
-          ? Colors.grey.shade700
-          : (up
-              ? Colors.green.shade700
-              : theme.lightModeColor.errorColor200),
+      color:
+          isZero
+              ? Colors.grey.shade700
+              : (up
+                  ? Colors.green.shade700
+                  : theme.lightModeColor.errorColor200),
       align: TextAlign.center,
     );
   }
@@ -1309,11 +1398,8 @@ class _StorageItemHistoryReportViewState
         sort: StorageItemHistorySortField.title,
         align: TextAlign.start,
         cell:
-            (r, i) => _txt(
-              theme,
-              _orDash(r.title),
-              bold: true,
-            ),
+            (r, i) =>
+                _txt(theme, _orDash(r.title), bold: true),
       ),
       _Col(
         label: 'Event',
@@ -1321,7 +1407,11 @@ class _StorageItemHistoryReportViewState
         sort: StorageItemHistorySortField.event,
         cell: (r, i) {
           if (r.event == null || r.event!.isEmpty) {
-            return _txt(theme, dash, align: TextAlign.center);
+            return _txt(
+              theme,
+              dash,
+              align: TextAlign.center,
+            );
           }
           return Center(
             child: _badge(
@@ -1416,7 +1506,8 @@ class _StorageItemHistoryReportViewState
       _Col(
         label: 'Primary Unit',
         width: 120,
-        sort: StorageItemHistorySortField.storagePrimaryUnit,
+        sort:
+            StorageItemHistorySortField.storagePrimaryUnit,
         cell:
             (r, i) => _txt(
               theme,
@@ -1431,16 +1522,22 @@ class _StorageItemHistoryReportViewState
         width: 110,
         sort: StorageItemHistorySortField.salesOldValue,
         cell:
-            (r, i) =>
-                _valueCell(theme, r.salesItemOldValue, null),
+            (r, i) => _valueCell(
+              theme,
+              r.salesItemOldValue,
+              null,
+            ),
       ),
       _Col(
         label: 'Sales New',
         width: 110,
         sort: StorageItemHistorySortField.salesNewValue,
         cell:
-            (r, i) =>
-                _valueCell(theme, r.salesItemNewValue, null),
+            (r, i) => _valueCell(
+              theme,
+              r.salesItemNewValue,
+              null,
+            ),
       ),
       _Col(
         label: 'Storekeeper',
@@ -1448,7 +1545,8 @@ class _StorageItemHistoryReportViewState
         sort: StorageItemHistorySortField.storekeeperName,
         align: TextAlign.start,
         cell:
-            (r, i) => _txt(theme, _orDash(r.storageStaffName)),
+            (r, i) =>
+                _txt(theme, _orDash(r.storageStaffName)),
       ),
       _Col(
         label: 'Other Staff',
@@ -1456,7 +1554,8 @@ class _StorageItemHistoryReportViewState
         sort: StorageItemHistorySortField.otherStaffName,
         align: TextAlign.start,
         cell:
-            (r, i) => _txt(theme, _orDash(r.salesStaffName)),
+            (r, i) =>
+                _txt(theme, _orDash(r.salesStaffName)),
       ),
     ];
   }
@@ -1502,7 +1601,9 @@ class _StorageItemHistoryReportViewState
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Align(
         alignment:
-            isCenter ? Alignment.center : Alignment.centerLeft,
+            isCenter
+                ? Alignment.center
+                : Alignment.centerLeft,
         child: content,
       ),
     );
@@ -1554,13 +1655,15 @@ class _StorageItemHistoryReportViewState
               controller: _vScroll,
               thumbVisibility: true,
               notificationPredicate:
-                  (notif) => notif.metrics.axis == Axis.vertical,
+                  (notif) =>
+                      notif.metrics.axis == Axis.vertical,
               child: Scrollbar(
                 controller: _hScroll,
                 thumbVisibility: true,
                 notificationPredicate:
                     (notif) =>
-                        notif.metrics.axis == Axis.horizontal,
+                        notif.metrics.axis ==
+                        Axis.horizontal,
                 child: SingleChildScrollView(
                   controller: _hScroll,
                   scrollDirection: Axis.horizontal,
@@ -1571,13 +1674,18 @@ class _StorageItemHistoryReportViewState
                       children: [
                         Container(
                           height: 48,
-                          color: theme.lightModeColor.prColor300
+                          color: theme
+                              .lightModeColor
+                              .prColor300
                               .withAlpha(22),
                           child: Row(
                             children:
                                 cols
                                     .map(
-                                      (c) => _headerCell(theme, c),
+                                      (c) => _headerCell(
+                                        theme,
+                                        c,
+                                      ),
                                     )
                                     .toList(),
                           ),
@@ -1585,9 +1693,12 @@ class _StorageItemHistoryReportViewState
                         const Divider(height: 1),
                         Expanded(
                           child: ScrollConfiguration(
-                            behavior: ScrollConfiguration.of(
-                              context,
-                            ).copyWith(scrollbars: false),
+                            behavior:
+                                ScrollConfiguration.of(
+                                  context,
+                                ).copyWith(
+                                  scrollbars: false,
+                                ),
                             child: ListView.builder(
                               controller: _vScroll,
                               itemCount: res.rows.length,
@@ -1598,20 +1709,30 @@ class _StorageItemHistoryReportViewState
                                   color:
                                       i.isEven
                                           ? Colors.white
-                                          : Colors.grey.shade50,
+                                          : Colors
+                                              .grey
+                                              .shade50,
                                   child: InkWell(
                                     mouseCursor:
-                                        SystemMouseCursors.click,
+                                        SystemMouseCursors
+                                            .click,
                                     hoverColor: theme
                                         .lightModeColor
                                         .prColor300
                                         .withAlpha(20),
-                                    onTap: () => _openRecordDetails(r),
+                                    onTap:
+                                        () =>
+                                            _openRecordDetails(
+                                              r,
+                                            ),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         border: Border(
                                           bottom: BorderSide(
-                                            color: Colors.grey.shade100,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade100,
                                           ),
                                         ),
                                       ),
@@ -1620,22 +1741,26 @@ class _StorageItemHistoryReportViewState
                                             cols.map((c) {
                                               final isCenter =
                                                   c.align ==
-                                                  TextAlign.center;
+                                                  TextAlign
+                                                      .center;
                                               return SizedBox(
-                                                width: c.width,
+                                                width:
+                                                    c.width,
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                      ),
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        10,
+                                                  ),
                                                   child: Align(
                                                     alignment:
                                                         isCenter
-                                                            ? Alignment
-                                                                .center
-                                                            : Alignment
-                                                                .centerLeft,
-                                                    child: c.cell(r, i),
+                                                            ? Alignment.center
+                                                            : Alignment.centerLeft,
+                                                    child: c
+                                                        .cell(
+                                                          r,
+                                                          i,
+                                                        ),
                                                   ),
                                                 ),
                                               );
@@ -1662,7 +1787,8 @@ class _StorageItemHistoryReportViewState
 }
 
 /// Detailed modal presenting every field of a [StorageItemHistory] record.
-class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
+class _StorageItemHistoryRecordDetailsModal
+    extends StatelessWidget {
   final StorageItemHistory history;
   final ThemeProvider theme;
   final String? currentStorageName;
@@ -1688,7 +1814,12 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.fromLTRB(10, 7, 10, 5),
+            padding: const EdgeInsets.fromLTRB(
+              10,
+              7,
+              10,
+              5,
+            ),
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(5),
@@ -1702,7 +1833,8 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                   child: Text(
                     '$title:',
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade900,
                     ),
@@ -1712,7 +1844,9 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                   InkWell(
                     mouseCursor: SystemMouseCursors.click,
                     onTap: () {
-                      Clipboard.setData(ClipboardData(text: value));
+                      Clipboard.setData(
+                        ClipboardData(text: value),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -1742,7 +1876,12 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
           ),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(10, 5, 10, 8),
+            padding: const EdgeInsets.fromLTRB(
+              10,
+              5,
+              10,
+              8,
+            ),
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(2),
@@ -1755,7 +1894,8 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                     ? SelectableText(
                       value,
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontFamily: 'monospace',
                         color: Colors.grey.shade800,
                       ),
@@ -1763,7 +1903,8 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                     : Text(
                       value,
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.normal,
                         color: Colors.grey.shade800,
                       ),
@@ -1794,17 +1935,20 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const dash = '—';
-    final unit = StorageItemHistoryReportQuery.quantityChangeUnit(history);
+    final unit =
+        StorageItemHistoryReportQuery.quantityChangeUnit(
+          history,
+        );
     final qtyStr =
         history.quantityChange != null
             ? returnHistoryQuantity(
-                quantityChange: history.quantityChange,
-                isIncreased: history.isIncreased,
-                unit: history.storageUnit,
-                primaryUnit: history.storagePrimaryUnit,
-                oldValue: history.storageItemOldValue,
-                newValue: history.storageItemNewValue,
-              )
+              quantityChange: history.quantityChange,
+              isIncreased: history.isIncreased,
+              unit: history.storageUnit,
+              primaryUnit: history.storagePrimaryUnit,
+              oldValue: history.storageItemOldValue,
+              newValue: history.storageItemNewValue,
+            )
             : 'N/A';
     final directionStr =
         history.isIncreased == true
@@ -1819,7 +1963,9 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
           const Divider(height: 1),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                vertical: 6,
+              ),
               children: [
                 _entry(
                   title: 'Storage Item',
@@ -1837,9 +1983,14 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                 ),
                 _entry(
                   title: 'Department',
-                  value: _orDash(history.salesDepartmentName),
+                  value: _orDash(
+                    history.salesDepartmentName,
+                  ),
                 ),
-                _entry(title: 'History Title', value: history.title),
+                _entry(
+                  title: 'History Title',
+                  value: history.title,
+                ),
                 _entry(
                   title: 'Event Type',
                   value:
@@ -1867,14 +2018,22 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                   title: 'Destination',
                   value:
                       (history.destination != null &&
-                              history.destination!.isNotEmpty)
+                              history
+                                  .destination!
+                                  .isNotEmpty)
                           ? StorageItemHistoryReportQuery.formatSourceOrDestination(
                             history.destination!,
                           )
                           : dash,
                 ),
-                _entry(title: 'Quantity Change', value: qtyStr),
-                _entry(title: 'Direction', value: directionStr),
+                _entry(
+                  title: 'Quantity Change',
+                  value: qtyStr,
+                ),
+                _entry(
+                  title: 'Direction',
+                  value: directionStr,
+                ),
                 _entry(
                   title: 'Storage Old Value',
                   value: _withUnit(
@@ -1895,7 +2054,9 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                 ),
                 _entry(
                   title: 'Storage Primary Unit',
-                  value: _orDash(history.storagePrimaryUnit),
+                  value: _orDash(
+                    history.storagePrimaryUnit,
+                  ),
                 ),
                 _entry(
                   title: 'Sales Old Value',
@@ -1925,17 +2086,22 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                   title: 'Created Date & Time',
                   value:
                       history.createdAt != null
-                          ? formatDateWithTime(history.createdAt!)
+                          ? formatDateWithTime(
+                            history.createdAt!,
+                          )
                           : dash,
                 ),
                 const SizedBox(height: 10),
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 4,
+                  ),
                   child: Text(
                     'Technical Identifiers',
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade600,
                     ),
@@ -1973,7 +2139,8 @@ class _StorageItemHistoryRecordDetailsModal extends StatelessWidget {
                 ),
                 _entry(
                   title: 'Sales Department UUID',
-                  value: history.salesDepartmentUuid ?? dash,
+                  value:
+                      history.salesDepartmentUuid ?? dash,
                   isSelectable: true,
                 ),
               ],
