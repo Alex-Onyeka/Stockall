@@ -571,3 +571,45 @@ var uuid = Uuid();
 String uuidGen() {
   return uuid.v4();
 }
+
+double? calculateMarkup({
+  required double costPrice,
+  required double sellingPrice,
+}) {
+  if (costPrice <= 0) return null;
+  return ((sellingPrice - costPrice) / costPrice) * 100;
+}
+
+double? calculateMargin({
+  required double costPrice,
+  required double sellingPrice,
+}) {
+  if (sellingPrice <= 0) return null;
+  return ((sellingPrice - costPrice) / sellingPrice) * 100;
+}
+
+double? calculateSellingPriceFromMarkup({
+  required double costPrice,
+  required double markup,
+}) {
+  if (costPrice <= 0) return null;
+  return costPrice * (1 + (markup / 100));
+}
+
+double? calculateSellingPriceFromMargin({
+  required double costPrice,
+  required double margin,
+}) {
+  if (costPrice <= 0 || margin >= 100) return null;
+  return costPrice / (1 - (margin / 100));
+}
+
+String formatPercentage(double value) {
+  if (value.isNaN || value.isInfinite) return '';
+  String fixed = value.toStringAsFixed(2);
+  if (fixed.contains('.')) {
+    fixed = fixed.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+  }
+  return fixed;
+}
+

@@ -9,11 +9,14 @@ class ProductPricesPageMobile extends StatefulWidget {
   final String productUuid;
   final TextEditingController priceController;
   final TextEditingController nameController;
+  final double? costPrice;
+
   const ProductPricesPageMobile({
     super.key,
     required this.productUuid,
     required this.priceController,
     required this.nameController,
+    this.costPrice,
   });
 
   @override
@@ -38,6 +41,7 @@ class _ProductPricesPageMobileState extends State<ProductPricesPageMobile> {
             nameController: widget.nameController,
             priceController: widget.priceController,
             productUuid: widget.productUuid,
+            costPrice: widget.costPrice,
             setStateAction: () {
               setState(() {});
             },
@@ -67,6 +71,7 @@ class _ProductPricesPageMobileState extends State<ProductPricesPageMobile> {
                               nameController: widget.nameController,
                               productUuid: widget.productUuid,
                               priceController: widget.priceController,
+                              costPrice: widget.costPrice,
                               setStateAction: () {
                                 setState(() {});
                               },
@@ -86,6 +91,7 @@ class _ProductPricesPageMobileState extends State<ProductPricesPageMobile> {
                                 .map(
                                   (productPrice) => ProductPriceListTileWidget(
                                     priceUuid: productPrice.uuid,
+                                    costPrice: widget.costPrice,
                                   ),
                                 )
                                 .toList(),

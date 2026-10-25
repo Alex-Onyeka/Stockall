@@ -9,11 +9,14 @@ class ProductPricesPageDesktop extends StatefulWidget {
   final String productUuid;
   final TextEditingController priceController;
   final TextEditingController nameController;
+  final double? costPrice;
+
   const ProductPricesPageDesktop({
     super.key,
     required this.productUuid,
     required this.priceController,
     required this.nameController,
+    this.costPrice,
   });
 
   @override
@@ -21,7 +24,8 @@ class ProductPricesPageDesktop extends StatefulWidget {
       _ProductPricesPageDesktopState();
 }
 
-class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
+class _ProductPricesPageDesktopState
+    extends State<ProductPricesPageDesktop> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -31,7 +35,8 @@ class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
         children: [
           SizedBox(height: 5),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               Material(
                 color: Colors.transparent,
@@ -41,7 +46,10 @@ class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
                     Navigator.of(context).pop();
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 6,
+                      horizontal: 20,
+                    ),
                     child: Icon(
                       color: Colors.grey,
                       size: 20,
@@ -67,7 +75,11 @@ class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
                       child: Row(
                         spacing: 5,
                         children: [
-                          Icon(color: Colors.grey, size: 18, Icons.refresh),
+                          Icon(
+                            color: Colors.grey,
+                            size: 18,
+                            Icons.refresh,
+                          ),
                         ],
                       ),
                     ),
@@ -80,14 +92,26 @@ class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
                   children: [
                     Text(
                       style: TextStyle(
-                        color: theme.lightModeColor.shadesColorBlack,
-                        fontSize: theme.mobileTexts.h4.fontSize,
-                        fontWeight: theme.mobileTexts.h4.fontWeightBold,
+                        color:
+                            theme
+                                .lightModeColor
+                                .shadesColorBlack,
+                        fontSize:
+                            theme.mobileTexts.h4.fontSize,
+                        fontWeight:
+                            theme
+                                .mobileTexts
+                                .h4
+                                .fontWeightBold,
                       ),
                       'Prices',
                     ),
                     Text(
-                      style: theme.mobileTexts.b3.textStyleNormal,
+                      style:
+                          theme
+                              .mobileTexts
+                              .b3
+                              .textStyleNormal,
                       "Manage Your Items Prices",
                     ),
                   ],
@@ -97,6 +121,7 @@ class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
                 productUuid: widget.productUuid,
                 nameController: widget.nameController,
                 priceController: widget.priceController,
+                costPrice: widget.costPrice,
                 setStateAction: () {
                   setState(() {});
                 },
@@ -112,15 +137,19 @@ class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
                     color: Colors.transparent,
                     child: EmptyWidgetDisplayOnly(
                       title: 'No Prices Added',
-                      subText: 'You have not added any Product Price.',
+                      subText:
+                          'You have not added any Product Price.',
                       theme: theme,
                       height: 25,
                       altAction: () {
                         addProductPriceAction(
                           context: context,
-                          nameController: widget.nameController,
+                          nameController:
+                              widget.nameController,
                           productUuid: widget.productUuid,
-                          priceController: widget.priceController,
+                          priceController:
+                              widget.priceController,
+                          costPrice: widget.costPrice,
                           setStateAction: () {
                             setState(() {});
                           },
@@ -138,9 +167,13 @@ class _ProductPricesPageDesktopState extends State<ProductPricesPageDesktop> {
                         returnData(context: context)
                             .tempPricesListSorted()
                             .map(
-                              (productPrice) => ProductPriceListTileWidget(
-                                priceUuid: productPrice.uuid,
-                              ),
+                              (productPrice) =>
+                                  ProductPriceListTileWidget(
+                                    priceUuid:
+                                        productPrice.uuid,
+                                    costPrice:
+                                        widget.costPrice,
+                                  ),
                             )
                             .toList(),
                   );
