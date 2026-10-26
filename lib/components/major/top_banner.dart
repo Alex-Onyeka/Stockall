@@ -17,6 +17,7 @@ class TopBanner extends StatelessWidget {
   final bool? turnOnBackNavButton;
   final String? altText;
   final Function()? altAction;
+  final Widget? customChild;
   const TopBanner({
     super.key,
     required this.subTitle,
@@ -31,6 +32,7 @@ class TopBanner extends StatelessWidget {
     this.turnOnBackNavButton,
     this.altText,
     this.altAction,
+    this.customChild,
   });
 
   @override
@@ -170,6 +172,7 @@ class TopBanner extends StatelessWidget {
                                       ),
                                       subTitle,
                                     ),
+                                    if (customChild != null) customChild!,
                                   ],
                                 ),
                               ),

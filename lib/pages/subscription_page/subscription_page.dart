@@ -11,6 +11,7 @@ import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/subscription_page/components/comparison_section_widget.dart';
 import 'package:stockall/pages/subscription_page/components/faq_section.dart';
 import 'package:stockall/pages/subscription_page/components/pricing_section_widget.dart';
+import 'package:stockall/pages/subscription_page/payment_history_page.dart';
 
 class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({super.key});
@@ -63,6 +64,55 @@ class _SubscriptionPageState
               bottomSpace: 50,
               topSpace: 20,
               isMain: true,
+              customChild: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
+                  borderRadius: BorderRadius.circular(6),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder:
+                            (_) =>
+                                const PaymentHistoryPage(),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 6.0,
+                      bottom: 4.0,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'View Payment History',
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.w600,
+                            decoration:
+                                TextDecoration.underline,
+                            decorationColor: Colors.white70,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons
+                              .keyboard_arrow_right_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 30),
             Expanded(

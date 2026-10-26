@@ -49,10 +49,19 @@ class _PaymentResultPageState
           reference,
         );
 
-        setState(() {
-          isVerified = verified;
-          isLoading = false;
-        });
+        if (verified && mounted) {
+          await returnSubcsription(
+            context,
+            listen: false,
+          ).getSubscription(context);
+        }
+
+        if (mounted) {
+          setState(() {
+            isVerified = verified;
+            isLoading = false;
+          });
+        }
       } else {
         String? reference;
         reference = widget.response?.reference;
@@ -72,10 +81,19 @@ class _PaymentResultPageState
           reference,
         );
 
-        setState(() {
-          isVerified = verified;
-          isLoading = false;
-        });
+        if (verified && mounted) {
+          await returnSubcsription(
+            context,
+            listen: false,
+          ).getSubscription(context);
+        }
+
+        if (mounted) {
+          setState(() {
+            isVerified = verified;
+            isLoading = false;
+          });
+        }
       }
     });
   }

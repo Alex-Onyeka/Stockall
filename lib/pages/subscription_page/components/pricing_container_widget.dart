@@ -88,7 +88,7 @@ class _PricingContainerWidgetState
             sameTab: true,
           );
         } else {
-          Navigator.push<bool>(
+          await Navigator.push<bool>(
             context,
             MaterialPageRoute(
               builder:
@@ -98,6 +98,12 @@ class _PricingContainerWidgetState
                   ),
             ),
           );
+          if (context.mounted) {
+            await returnSubcsription(
+              context,
+              listen: false,
+            ).getSubscription(context);
+          }
         }
       } else {
         await returnSubPaymentProvider()
