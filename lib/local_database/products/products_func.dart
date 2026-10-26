@@ -16,6 +16,9 @@ class ProductsFunc {
   ProductsFunc._internal();
   late Box<TempProductClass> productBox;
   final String productBoxName = 'productBoxStockall';
+  Box? syncMetaBox;
+  final String syncMetaBoxName =
+      'productSyncMetaBoxStockall';
 
   Future<void> init() async {
     try {
@@ -23,6 +26,7 @@ class ProductsFunc {
       Hive.registerAdapter(ProductUnitsClassAdapter());
       Hive.registerAdapter(ProductPricesClassAdapter());
       productBox = await Hive.openBox(productBoxName);
+      syncMetaBox = await Hive.openBox(syncMetaBoxName);
       await CreatedProductFunc().init();
       await DeletedProductsFunc().init();
       await UpdatedProductsFunc().init();
@@ -34,6 +38,75 @@ class ProductsFunc {
         error: e,
         stackTrace: s,
       );
+    }
+  }
+
+  DateTime? getLastSyncTime() {
+    try {
+      final str = syncMetaBox?.get(
+        'last_product_sync_time',
+      );
+      if (str != null && str is String) {
+        return DateTime.tryParse(str);
+      }
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  }
+
+  Future<void> setLastSyncTime(DateTime time) async {
+    try {
+      if (syncMetaBox == null) {
+        syncMetaBox = await Hive.openBox(syncMetaBoxName);
+      }
+      await syncMetaBox?.put(
+        'last_product_sync_time',
+        time.toUtc().toIso8601String(),
+      );
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  Future<void> clearLastSyncTime() async {
+    try {
+      await syncMetaBox?.delete('last_product_sync_time');
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  DateTime? getLatestProductUpdatedAt() {
+    try {
+      DateTime? latest;
+      for (final p in productBox.values) {
+        if (p.updatedAt != null) {
+          if (latest == null ||
+              p.updatedAt!.isAfter(latest)) {
+            latest = p.updatedAt;
+          }
+        }
+      }
+      return latest;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<int> patchProducts(
+    List<TempProductClass> products,
+  ) async {
+    try {
+      for (var product in products) {
+        await productBox.put(product.uuid, product);
+      }
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Offline Products Patch Failed: ${e.toString()}',
+      );
+      return 0;
     }
   }
 
@@ -138,6 +211,7 @@ class ProductsFunc {
         await productBox.clear();
         await mainLocalLog('Offline Products Cleared');
       }
+      await clearLastSyncTime();
       return 1;
     } catch (e) {
       await mainLocalLog(

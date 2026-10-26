@@ -587,7 +587,7 @@ class ItemHistoryMobileState
                                 height: 30,
                                 altAction: () {
                                   returnItemHistoryProvider()
-                                      .getItemHistories();
+                                      .getItemHistories(productUuid: widget.productUuid);
                                 },
                                 altActionText: 'Reload',
                                 icon: Icons.clear,
@@ -601,7 +601,7 @@ class ItemHistoryMobileState
                               strokeWidth: 1.5,
                               onRefresh: () {
                                 return returnItemHistoryProvider()
-                                    .getItemHistories();
+                                    .getItemHistories(productUuid: widget.productUuid);
                               },
                               child: ListView(
                                 children:

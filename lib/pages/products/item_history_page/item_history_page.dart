@@ -22,7 +22,7 @@ class _ItemHistoryPageState extends State<ItemHistoryPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnItemHistoryProvider().getItemHistories();
+      returnItemHistoryProvider().getItemHistories(productUuid: widget.productUuid);
     });
   }
 

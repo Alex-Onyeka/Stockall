@@ -68,6 +68,10 @@ class QuantityUpdateProvider with ChangeNotifier {
           );
           mainLocalLog('Quantity Updates Successfully');
         }
+
+        // Reconcile local products with server so this device immediately
+        // reflects server state and any sales made by other staff.
+        await returnData().syncProductsIncremental();
       }
     } catch (e) {
       await mainLocalLog('Batch Quantity Updates insert failed ❌: $e');

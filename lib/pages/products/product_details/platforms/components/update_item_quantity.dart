@@ -613,11 +613,33 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                           }
                                         }
 
-                                        bool isIncrement =
-                                            setQuantity() >=
-                                            (widget.product
-                                                    .getActualQuantity() ??
-                                                0);
+                                        final oldStockArea =
+                                            widget.product.getActualQuantity() ??
+                                                0;
+                                        final newStockArea = setQuantity();
+                                        final deltaArea =
+                                            (newStockArea - oldStockArea).abs();
+
+                                        if (deltaArea < 1e-9) {
+                                          setState(() {
+                                            isEditQuantityLoading = false;
+                                          });
+                                          if (safeContext.mounted) {
+                                            Navigator.of(safeContext).pop();
+                                          }
+                                          return;
+                                        }
+
+                                        final bool isIncrement =
+                                            newStockArea >= oldStockArea;
+                                        final double areaPerSheet =
+                                            widget.product.dimensionArea();
+                                        final double rpcQuantityChange =
+                                            (widget.product.quantityType == 2 &&
+                                                    areaPerSheet > 0)
+                                                ? (deltaArea / areaPerSheet)
+                                                : deltaArea;
+
                                         ItemHistory itemHistory = ItemHistory(
                                           primaryUnit:
                                               widget.product
@@ -639,10 +661,8 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                               .getQuantityEquivDivided(
                                                 index: 1,
                                                 newQuantity:
-                                                    (setQuantity() -
-                                                        (widget.product
-                                                                .getActualQuantity() ??
-                                                            0)),
+                                                    (newStockArea -
+                                                        oldStockArea),
                                                 product: widget.product,
                                               ),
                                           event:
@@ -669,7 +689,7 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                                 .getProductUnit()
                                                 .getQuantityEquivDivided(
                                                   index: 1,
-                                                  newQuantity: setQuantity(),
+                                                  newQuantity: newStockArea,
                                                   product: widget.product,
                                                 ),
                                           ),
@@ -683,10 +703,7 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                                 .getProductUnit()
                                                 .getQuantityEquivDivided(
                                                   index: 1,
-                                                  newQuantity:
-                                                      (widget.product
-                                                              .getActualQuantity() ??
-                                                          0),
+                                                  newQuantity: oldStockArea,
                                                   product: widget.product,
                                                 ),
                                           ),
@@ -694,15 +711,10 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
 
                                         await dataProvider.updateProduct(
                                           itemHistory: itemHistory,
-                                          includeQuantity: true,
+                                          includeQuantity: false,
                                           isIncrement: isIncrement,
-                                          isQuantityUpdate: false,
-                                          quantityChange:
-                                              (setQuantity() -
-                                                      (widget.product
-                                                              .getActualQuantity() ??
-                                                          0))
-                                                  .abs(),
+                                          isQuantityUpdate: true,
+                                          quantityChange: rpcQuantityChange,
                                           product: TempProductClass(
                                             manageSalesWastage:
                                                 widget
@@ -758,10 +770,11 @@ class _UpdateItemQuantityWidgetState extends State<UpdateItemQuantityWidget> {
                                                 widget.product.wholeSalePrice,
                                             quantity:
                                                 widget.product.quantityType == 2
-                                                    ? setQuantity() /
-                                                        widget.product
-                                                            .dimensionArea()
-                                                    : setQuantity(),
+                                                    ? (areaPerSheet > 0
+                                                        ? newStockArea /
+                                                            areaPerSheet
+                                                        : newStockArea)
+                                                    : newStockArea,
                                             shopId: widget.product.shopId,
                                             barcode: widget.product.barcode,
                                             createdAt: widget.product.createdAt,

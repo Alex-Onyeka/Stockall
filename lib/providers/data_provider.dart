@@ -290,11 +290,11 @@ class DataProvider extends ChangeNotifier {
         }
 
         await mainLocalLog(
-          '$count items added successfully ✅',
+          '$count items added successfully âœ…',
         );
         // await CreatedProductFunc().clearProducts();
         await mainLocalLog(
-          'Mounted, refreshing products ✅',
+          'Mounted, refreshing products âœ…',
         );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -304,7 +304,9 @@ class DataProvider extends ChangeNotifier {
         await mainLocalLog('Unsynced Products Cleared');
       }
     } catch (e) {
-      await mainLocalLog('Batch Items insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Items insert failed âŒ: $e',
+      );
     }
   }
 
@@ -330,13 +332,13 @@ class DataProvider extends ChangeNotifier {
                 .select();
 
         await mainLocalLog(
-          '${data.length} items deleted successfully ✅',
+          '${data.length} items deleted successfully âœ…',
         );
 
         await DeletedProductsFunc().clearDeletedProducts();
 
         await mainLocalLog(
-          'Mounted, refreshing products ✅',
+          'Mounted, refreshing products âœ…',
         );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -348,7 +350,9 @@ class DataProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      await mainLocalLog('Batch Items delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Items delete failed âŒ: $e',
+      );
     }
   }
 
@@ -425,7 +429,7 @@ class DataProvider extends ChangeNotifier {
 
             localProduct.updatedAt =
                 (localProduct.updatedAt ?? DateTime.now())
-                    .toUtc(); // ✅ keep both UTC
+                    .toUtc(); // âœ… keep both UTC
             await mainLocalLog(
               "Local updatedAt: ${localProduct.updatedAt}",
             );
@@ -467,8 +471,12 @@ class DataProvider extends ChangeNotifier {
               }
             } else {
               await mainLocalLog(
-                'Skipped product ${localProduct.uuid}, remote is newer ✅',
+                'Skipped product ${localProduct.uuid}, remote is newer',
               );
+              await UpdatedProductsFunc()
+                  .deleteUpdatedProduct(
+                    localProduct.uuid ?? '',
+                  );
             }
           }
         }
@@ -478,7 +486,7 @@ class DataProvider extends ChangeNotifier {
           'Unsynced updated products cleared',
         );
         await mainLocalLog(
-          'Mounted, refreshing products ✅',
+          'Mounted, refreshing products âœ…',
         );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -486,7 +494,9 @@ class DataProvider extends ChangeNotifier {
         clearFields();
       }
     } catch (e) {
-      await mainLocalLog('Batch Items update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Items update failed âŒ: $e',
+      );
     }
   }
 
@@ -2538,6 +2548,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   void clearProducts() {
+    stopPeriodicIncrementalSync();
     productListMain.clear();
     mainLocalLog('Products Cleared');
     notifyListeners();
@@ -2667,6 +2678,10 @@ class DataProvider extends ChangeNotifier {
       await ProductsFunc().insertAllProducts(
         productListMain,
       );
+      await ProductsFunc().setLastSyncTime(
+        DateTime.now().toUtc(),
+      );
+      startPeriodicIncrementalSync();
     } else {
       await mainLocalLog(
         "Offline Data Gotten: ${ProductsFunc().getProducts().length}",
@@ -2702,6 +2717,110 @@ class DataProvider extends ChangeNotifier {
       notifyListeners();
     }
     return productListMain;
+  }
+
+  bool _isIncrementalSyncing = false;
+  Timer? _autoSyncTimer;
+
+  void startPeriodicIncrementalSync() {
+    _autoSyncTimer?.cancel();
+    _autoSyncTimer = Timer.periodic(
+      const Duration(seconds: 90),
+      (_) {
+        syncProductsIncremental();
+      },
+    );
+  }
+
+  void stopPeriodicIncrementalSync() {
+    _autoSyncTimer?.cancel();
+    _autoSyncTimer = null;
+  }
+
+  Future<void> syncProductsIncremental({
+    int? shopId,
+  }) async {
+    if (_isIncrementalSyncing) return;
+    try {
+      final targetShopId =
+          shopId ?? returnShopProvider().userShop()?.shopId;
+      if (targetShopId == null) return;
+
+      bool isOnline = await connectivity.isOnline();
+      if (!isOnline) return;
+
+      if (!ProductsFunc().isSynced()) {
+        return;
+      }
+
+      _isIncrementalSyncing = true;
+
+      DateTime? lastSync = ProductsFunc().getLastSyncTime();
+      lastSync ??=
+          ProductsFunc().getLatestProductUpdatedAt();
+
+      if (lastSync == null || productListMain.isEmpty) {
+        await getProducts(targetShopId);
+        await ProductsFunc().setLastSyncTime(
+          DateTime.now().toUtc(),
+        );
+        return;
+      }
+
+      final safeSince =
+          lastSync
+              .subtract(const Duration(seconds: 5))
+              .toUtc();
+
+      final res = await supabase
+          .from('products')
+          .select()
+          .eq('shop_id', targetShopId)
+          .gt('updated_at', safeSince.toIso8601String())
+          .order('updated_at', ascending: true);
+
+      if (res.isNotEmpty) {
+        final List<TempProductClass> updatedItems =
+            (res as List)
+                .map(
+                  (json) => TempProductClass.fromJson(json),
+                )
+                .toList();
+
+        await ProductsFunc().patchProducts(updatedItems);
+
+        for (final item in updatedItems) {
+          final idx = productListMain.indexWhere(
+            (p) => p.uuid == item.uuid,
+          );
+          if (idx != -1) {
+            productListMain[idx] = item;
+          } else {
+            productListMain.add(item);
+          }
+        }
+        productListMain.sort(
+          (a, b) => a.name.toLowerCase().compareTo(
+            b.name.toLowerCase(),
+          ),
+        );
+
+        await mainLocalLog(
+          'Incremental Products Sync: updated ${updatedItems.length} products',
+        );
+        notifyListeners();
+      }
+
+      await ProductsFunc().setLastSyncTime(
+        DateTime.now().toUtc(),
+      );
+    } catch (e) {
+      await mainLocalLog(
+        'Incremental Products Sync error: ${e.toString()}',
+      );
+    } finally {
+      _isIncrementalSyncing = false;
+    }
   }
 
   Future<List<TempProductClass>> getProductsForOtherShops(
@@ -2805,6 +2924,12 @@ class DataProvider extends ChangeNotifier {
     bool? isMultipleUpdate,
   }) async {
     try {
+      if (!includeQuantity && !isQuantityUpdate && product.uuid != null) {
+        final live = ProductsFunc().getSingleProduct(uuid: product.uuid!);
+        if (live != null) {
+          product.quantity = live.quantity;
+        }
+      }
       product.updatedAt = DateTime.now();
       var res = await ProductsFunc().updateProduct(product);
       if (res == 1) {
@@ -3187,29 +3312,29 @@ class DataProvider extends ChangeNotifier {
     'Can(s)',
     'Carton(s)',
     'Centimeter(s)',
-    'Cm²(s)',
+    'CmÂ²(s)',
     'Crate(s)',
     'Cup(s)',
     'Dozen(s)',
     'Foot(s)',
-    'Foot²(s)',
+    'FootÂ²(s)',
     'Gallon(s)',
     'Inch(es)',
-    'Inch²(s)',
+    'InchÂ²(s)',
     'Item(s)',
     'Jar(s)',
     'Kg(s)',
     'Kilometer(s)',
-    'Km²(s)',
+    'KmÂ²(s)',
     'Lb(s)',
     'Liter(s)',
     'Meter(s)',
-    'M²(s)',
+    'MÂ²(s)',
     'Mg(s)',
     'Millimeter(s)',
-    'Mm²(s)',
+    'MmÂ²(s)',
     'Mile(s)',
-    'Mile²(s)',
+    'MileÂ²(s)',
     'Ml(s)',
     'Pack(s)',
     'Pair(s)',
@@ -3237,7 +3362,7 @@ class DataProvider extends ChangeNotifier {
     'Plank(s)',
     'Shutter(s)',
     'Yard(s)',
-    'Yard²(s)',
+    'YardÂ²(s)',
     'Other(s)',
   ];
 
@@ -3250,8 +3375,12 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectDimensionUnit(String? unit, {double? conversion}) {
-    if (selectedDimensionUnit == unit && conversion == null) {
+  void selectDimensionUnit(
+    String? unit, {
+    double? conversion,
+  }) {
+    if (selectedDimensionUnit == unit &&
+        conversion == null) {
       selectedDimensionUnit = null;
       selectedDimensionConversion = null;
     } else {
@@ -3598,7 +3727,9 @@ class DataProvider extends ChangeNotifier {
       isPrimary: true,
       productUuid: productUuid,
       dimensionType:
-          isDimensional ? ProductUnitsClass.sheetUnit : null,
+          isDimensional
+              ? ProductUnitsClass.sheetUnit
+              : null,
     );
   }
 

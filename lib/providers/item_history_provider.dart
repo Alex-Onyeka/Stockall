@@ -117,7 +117,7 @@ class ItemHistoryProvider with ChangeNotifier {
     }
   }
 
-  Future<List<ItemHistory>> getItemHistories() async {
+  Future<List<ItemHistory>> getItemHistories({String? productUuid}) async {
     await getItemHistoriesOffline();
     bool isOnline = await ConnectivityProvider().isOnline();
     var shop = returnShopProvider().userShop()!;
@@ -131,25 +131,31 @@ class ItemHistoryProvider with ChangeNotifier {
           authorized: Authorizations().viewItemsHistory,
         )) {
       try {
-        var res = await client
+        var query = client
             .from(tableName)
             .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+            .eq('shop_id', shopId);
+        if (productUuid != null && productUuid.isNotEmpty) {
+          query = query.eq('item_uuid', productUuid);
+        }
+        var res = await query.order('created_at', ascending: false);
         if (res.isEmpty) {
           await mainLocalLog('No Item Histories Returned');
-          itemHistories.clear();
-          ItemHistoriesFunc().clearItemHistories();
+          if (productUuid == null) {
+            itemHistories.clear();
+            ItemHistoriesFunc().clearItemHistories();
+          }
           notifyListeners();
           return [];
         }
-        itemHistories =
+        final fetched =
             res
                 .map((m) => ItemHistory.fromJson(m))
                 .toList();
         await ItemHistoriesFunc().insertAllItemHistories(
-          itemHistories,
+          fetched,
         );
+        itemHistories = ItemHistoriesFunc().getItemHistories();
         await mainLocalLog(
           '✅✅ Item Histories Gotten Successfully Online',
         );

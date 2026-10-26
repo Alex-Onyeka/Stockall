@@ -31,6 +31,7 @@ import 'package:stockall/pages/products/add_product_one/platforms/components/use
 import 'package:stockall/pages/products/add_product_one/product_prices_page/product_prices_page.dart';
 import 'package:stockall/pages/products/add_product_one/product_units_page/product_units_page.dart';
 import 'package:stockall/pages/products/storage_page/add_storage_item/components/storage_dimension_rules.dart';
+import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/providers/data_provider.dart';
 
 class AddProductDesktop extends StatefulWidget {
@@ -476,7 +477,14 @@ class _AddProductDesktopState
                                 .replaceAll(',', ''),
                           )
                           : null,
-                  quantity: widget.product?.quantity,
+                  quantity:
+                      ProductsFunc()
+                          .getSingleProduct(
+                            uuid:
+                                widget.product?.uuid ?? '',
+                          )
+                          ?.quantity ??
+                      widget.product?.quantity,
                   shopId: shopId(),
                   barcode: barcode,
                   // categoryUuid:

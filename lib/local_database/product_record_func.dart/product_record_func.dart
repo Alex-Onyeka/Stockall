@@ -8,6 +8,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
+import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
 
 class ProductRecordFunc {
@@ -154,13 +155,18 @@ class ProductRecordFunc {
             refRecord.isProductManaged ?? false;
         final productUuid = refRecord.productUuid;
 
-        List<TempProductClass> products =
+        TempProductClass? oldProduct =
+            (productUuid != null && productUuid.isNotEmpty)
+                ? ProductsFunc().getSingleProduct(
+                  uuid: productUuid,
+                )
+                : null;
+        oldProduct ??=
             returnData().productListMain
                 .where((item) => item.uuid == productUuid)
-                .toList();
+                .firstOrNull;
 
-        if (products.isNotEmpty) {
-          var oldProduct = products.first;
+        if (oldProduct != null) {
           var product = oldProduct.copyWith();
           final oldQuantity =
               oldProduct.getActualQuantity() ?? 0;
@@ -424,13 +430,18 @@ class ProductRecordFunc {
             refRecord.isProductManaged ?? false;
         final productUuid = refRecord.productUuid;
 
-        List<TempProductClass> products =
+        TempProductClass? oldProduct =
+            (productUuid != null && productUuid.isNotEmpty)
+                ? ProductsFunc().getSingleProduct(
+                  uuid: productUuid,
+                )
+                : null;
+        oldProduct ??=
             returnData().productListMain
                 .where((item) => item.uuid == productUuid)
-                .toList();
+                .firstOrNull;
 
-        if (products.isNotEmpty) {
-          var oldProduct = products.first;
+        if (oldProduct != null) {
           var product = oldProduct.copyWith();
           final oldQuantity =
               oldProduct.getActualQuantity() ?? 0;

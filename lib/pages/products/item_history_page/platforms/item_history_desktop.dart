@@ -154,7 +154,7 @@ class _ItemHistoryDesktopState
                               SystemMouseCursors.click,
                           onTap: () {
                             returnItemHistoryProvider()
-                                .getItemHistories();
+                                .getItemHistories(productUuid: widget.productUuid);
                           },
                           child: Container(
                             padding: EdgeInsets.only(

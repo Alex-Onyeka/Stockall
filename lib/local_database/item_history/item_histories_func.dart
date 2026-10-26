@@ -29,9 +29,12 @@ class ItemHistoriesFunc {
   }
 
   Future<int> insertAllItemHistories(
-    List<ItemHistory> itemHistory,
-  ) async {
-    await clearItemHistories();
+    List<ItemHistory> itemHistory, {
+    bool clearExisting = false,
+  }) async {
+    if (clearExisting) {
+      await clearItemHistories();
+    }
     try {
       for (var history in itemHistory) {
         await itemHistoryBox.put(history.uuid, history);
