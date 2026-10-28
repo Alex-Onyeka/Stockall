@@ -44,6 +44,18 @@ class BulkProductTemplate {
       'Low stock alert level. Blank means 10.',
       '10',
     ],
+    [
+      'width',
+      'No',
+      'Item width in cm. Optional; leave blank for 1D items.',
+      '120',
+    ],
+    [
+      'height',
+      'No',
+      'Item height in cm. Optional; leave blank for 1D items.',
+      '240',
+    ],
   ];
 
   static Uint8List buildXlsx() {

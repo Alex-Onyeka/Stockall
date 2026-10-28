@@ -14,6 +14,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/platforms/components/dimension_unit_dialog.dart';
 import 'package:stockall/providers/excel_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -21,10 +22,12 @@ class BulkUploadProductsPage extends StatefulWidget {
   const BulkUploadProductsPage({super.key});
 
   @override
-  State<BulkUploadProductsPage> createState() => _BulkUploadProductsPageState();
+  State<BulkUploadProductsPage> createState() =>
+      _BulkUploadProductsPageState();
 }
 
-class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
+class _BulkUploadProductsPageState
+    extends State<BulkUploadProductsPage> {
   String? fileName;
   BulkValidationResult? result;
   bool isBusy = false;
@@ -32,9 +35,13 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
 
   static const _previewLimit = 200;
 
-  Future<void> _downloadTemplate({required bool csv}) async {
+  Future<void> _downloadTemplate({
+    required bool csv,
+  }) async {
     final bytes =
-        csv ? BulkProductTemplate.buildCsv() : BulkProductTemplate.buildXlsx();
+        csv
+            ? BulkProductTemplate.buildCsv()
+            : BulkProductTemplate.buildXlsx();
     final saved = await ExcelProvider().save(
       bytes: bytes,
       name: 'Stockall Products Template',
@@ -66,7 +73,8 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
       if (!mounted) return;
       _showInfo(
         title: 'Error',
-        message: 'Could not open the file chooser on this device.',
+        message:
+            'Could not open the file chooser on this device.',
         isSuccess: false,
       );
       return;
@@ -87,7 +95,10 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
       importedCount = null;
     });
     try {
-      final table = SpreadsheetReader.read(bytes: bytes, fileName: file.name);
+      final table = SpreadsheetReader.read(
+        bytes: bytes,
+        fileName: file.name,
+      );
       final products = returnData().productList();
       final validation = BulkProductValidator.validate(
         table: table,
@@ -108,7 +119,10 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
       if (!mounted) return;
       setState(() {
         fileName = file?.name ?? 'Not Set';
-        result = BulkValidationResult(fileErrors: [e.message], rows: []);
+        result = BulkValidationResult(
+          fileErrors: [e.message],
+          rows: [],
+        );
       });
     } finally {
       if (mounted) setState(() => isBusy = false);
@@ -141,12 +155,17 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
 
   void _startImport() {
     final validation = result;
-    if (validation == null || validation.hasErrors || validation.isEmpty) {
+    if (validation == null ||
+        validation.hasErrors ||
+        validation.isEmpty) {
       return;
     }
 
-    final allowed = ItemsAuthAction().itemsAllowedToAdd(context);
-    if (allowed == null || validation.rows.length > allowed) {
+    final allowed = ItemsAuthAction().itemsAllowedToAdd(
+      context,
+    );
+    if (allowed == null ||
+        validation.rows.length > allowed) {
       showDialog(
         context: context,
         builder:
@@ -190,10 +209,13 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
     });
   }
 
-  Future<void> _import(BulkValidationResult validation) async {
+  Future<void> _import(
+    BulkValidationResult validation,
+  ) async {
     setState(() => isBusy = true);
     try {
-      final products = validation.rows.map(_buildProduct).toList();
+      final products =
+          validation.rows.map(_buildProduct).toList();
       await returnData().bulkCreateProducts(products);
       if (!mounted) return;
       setState(() {
@@ -217,11 +239,43 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
   TempProductClass _buildProduct(BulkProductRow row) {
     final uuid = uuidGen();
     final now = DateTime.now();
+    final is2D = row.is2D;
+
+    final String baseUnit =
+        is2D ? 'Square Meter' : 'Unit(s)';
+    final int quantityType = is2D ? 2 : 1;
+    final double? widthDimension = is2D ? row.width : null;
+    final double? heightDimension =
+        is2D ? row.height : null;
+    final String? dimensionUnit = is2D ? 'cm' : null;
+    final double? dimensionUnitConversion =
+        is2D
+            ? DimensionUnitHelper.getPresetConversion(
+              'cm',
+              baseUnit: 'Square Meter',
+            )
+            : null;
+
+    final unitsList = [
+      ProductUnitsClass(
+        uuid: uuidGen(),
+        staffUuid: currentUser().userId,
+        createdAt: now,
+        staffName: currentUser().name,
+        conversion: 1,
+        name: baseUnit,
+        isPrimary: true,
+        productUuid: uuid,
+        dimensionType:
+            is2D ? ProductUnitsClass.areaUnit : null,
+      ),
+    ];
+
     return TempProductClass(
       manageSalesWastage: null,
       name: row.name,
       barcode: row.barcode,
-      unit: 'Unit(s)',
+      unit: baseUnit,
       isRefundable: false,
       costPrice: row.costPrice,
       sellingPrice: row.sellingPrice,
@@ -242,18 +296,17 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
       categories: [],
       useGroupUnit: false,
       uuid: uuid,
-      unitsList: ProductUnitsClass.getUnitList(
-        productUuid: uuid,
-        tempUnitList: null,
-      ),
+      unitsList: unitsList,
       pricesList: ProductPricesClass.getPricesList(
         itemUuid: uuid,
         price: row.sellingPrice,
         tempPricesList: null,
       ),
-      widthDimension: null,
-      heightDimension: null,
-      quantityType: 1,
+      widthDimension: widthDimension,
+      heightDimension: heightDimension,
+      quantityType: quantityType,
+      dimensionUnit: dimensionUnit,
+      dimensionUnitConversion: dimensionUnitConversion,
     );
   }
 
@@ -263,7 +316,10 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
     final validation = result;
 
     return Scaffold(
-      appBar: appBar(context: context, title: 'Bulk Upload Products'),
+      appBar: appBar(
+        context: context,
+        title: 'Bulk Upload Products',
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 700),
@@ -281,8 +337,10 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
               Text(
                 'Fill in one product per row. Only the name is required. '
                 'Blank quantity and prices count as 0, and a blank low_qtty is 10. '
-                'This only supports simple (1-D) items.',
-                style: TextStyle(fontSize: theme.mobileTexts.b1.fontSize),
+                'Dimensions (width & height in cm) are optional; if set, the item becomes a 2D item with Square Meter units.',
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b1.fontSize,
+                ),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -290,12 +348,14 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
                 runSpacing: 10,
                 children: [
                   OutlinedButton.icon(
-                    onPressed: () => _downloadTemplate(csv: false),
+                    onPressed:
+                        () => _downloadTemplate(csv: false),
                     icon: const Icon(Icons.download),
                     label: const Text('Excel (.xlsx)'),
                   ),
                   OutlinedButton.icon(
-                    onPressed: () => _downloadTemplate(csv: true),
+                    onPressed:
+                        () => _downloadTemplate(csv: true),
                     icon: const Icon(Icons.download),
                     label: const Text('CSV (.csv)'),
                   ),
@@ -321,7 +381,9 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
               if (isBusy)
                 const Padding(
                   padding: EdgeInsets.only(top: 15),
-                  child: Center(child: CircularProgressIndicator()),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
               if (importedCount != null)
                 Padding(
@@ -331,11 +393,13 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
                     style: TextStyle(
                       color: Colors.green.shade700,
                       fontWeight: FontWeight.bold,
-                      fontSize: theme.mobileTexts.b1.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b1.fontSize,
                     ),
                   ),
                 ),
-              if (validation != null) ..._buildPreview(theme, validation),
+              if (validation != null)
+                ..._buildPreview(theme, validation),
             ],
           ),
         ),
@@ -348,7 +412,9 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
     BulkValidationResult validation,
   ) {
     final problems =
-        validation.rows.where((r) => r.hasErrors || r.hasWarnings).toList();
+        validation.rows
+            .where((r) => r.hasErrors || r.hasWarnings)
+            .toList();
     final shown = problems.take(_previewLimit).toList();
 
     return [
@@ -358,7 +424,9 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
           Expanded(
             child: Text(
               fileName ?? '',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           TextButton.icon(
@@ -370,7 +438,10 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
       ),
       const SizedBox(height: 5),
       for (final e in validation.fileErrors)
-        Text(e, style: TextStyle(color: Colors.red.shade700)),
+        Text(
+          e,
+          style: TextStyle(color: Colors.red.shade700),
+        ),
       if (validation.fileErrors.isEmpty) ...[
         if (validation.hasErrors)
           Text(
@@ -381,10 +452,12 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
           MainButtonP(
             themeProvider: theme,
             action: isBusy ? () {} : _startImport,
-            text: 'Upload ${validation.rows.length} Products',
+            text:
+                'Upload ${validation.rows.length} Products',
           ),
         Text(
           '${validation.rows.length} products found  •  '
+          '${validation.rows.where((r) => r.is2D).length} 2-D  •  '
           '${validation.errorRowCount} with errors  •  '
           '${validation.warningRowCount} with warnings',
         ),
@@ -394,7 +467,10 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
             margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: row.hasErrors ? Colors.red.shade50 : Colors.orange.shade50,
+              color:
+                  row.hasErrors
+                      ? Colors.red.shade50
+                      : Colors.orange.shade50,
               borderRadius: BorderRadius.circular(6),
             ),
             child: Column(
@@ -403,17 +479,31 @@ class _BulkUploadProductsPageState extends State<BulkUploadProductsPage> {
                 Text(
                   'Row ${row.rowNumber}'
                   '${row.name.isEmpty ? '' : ' – ${row.name}'}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 for (final e in row.errors)
-                  Text(e, style: TextStyle(color: Colors.red.shade700)),
+                  Text(
+                    e,
+                    style: TextStyle(
+                      color: Colors.red.shade700,
+                    ),
+                  ),
                 for (final w in row.warnings)
-                  Text(w, style: TextStyle(color: Colors.orange.shade900)),
+                  Text(
+                    w,
+                    style: TextStyle(
+                      color: Colors.orange.shade900,
+                    ),
+                  ),
               ],
             ),
           ),
         if (problems.length > shown.length)
-          Text('…and ${problems.length - shown.length} more rows with issues.'),
+          Text(
+            '…and ${problems.length - shown.length} more rows with issues.',
+          ),
         const SizedBox(height: 15),
       ],
     ];

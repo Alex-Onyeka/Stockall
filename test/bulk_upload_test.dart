@@ -9,6 +9,8 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 
 const _header =
     'name,quantity,cost_price,selling_price,barcode,expiry_date,low_qtty';
+const _headerWithDimensions =
+    'name,quantity,cost_price,selling_price,barcode,expiry_date,low_qtty,width,height';
 
 Uint8List _csv(String text) => Uint8List.fromList(utf8.encode(text));
 
@@ -126,6 +128,9 @@ void main() {
       expect(row.lowQtty, 10);
       expect(row.barcode, isNull);
       expect(row.expiryDate, isNull);
+      expect(row.width, isNull);
+      expect(row.height, isNull);
+      expect(row.is2D, isFalse);
     });
 
     test('reports header problems', () {
@@ -182,6 +187,55 @@ void main() {
     test('header-only file has no product rows', () {
       final r = _validateCsv('$_header\n');
       expect(r.hasErrors, isTrue);
+    });
+
+    test('parses optional dimensions and identifies 2D products', () {
+      final r = _validateCsv(
+        '$_headerWithDimensions\nGlass,10,100,150,,,10,120,240\nWood,5,50,80,,,,,\n',
+      );
+      expect(r.hasErrors, isFalse);
+      expect(r.rows.length, 2);
+
+      final glass = r.rows[0];
+      expect(glass.is2D, isTrue);
+      expect(glass.width, 120.0);
+      expect(glass.height, 240.0);
+
+      final wood = r.rows[1];
+      expect(wood.is2D, isFalse);
+      expect(wood.width, isNull);
+      expect(wood.height, isNull);
+    });
+
+    test('reports error if only one dimension is provided', () {
+      final r = _validateCsv(
+        '$_headerWithDimensions\nTile,10,,,,,10,120,\n',
+      );
+      expect(r.rows.single.hasErrors, isTrue);
+      expect(
+        r.rows.single.errors,
+        contains('Both width and height must be provided for 2D items.'),
+      );
+    });
+
+    test('reports error if dimension is non-numeric or <= 0', () {
+      final r = _validateCsv(
+        '$_headerWithDimensions\nItemA,10,,,,,10,abc,200\nItemB,10,,,,,10,-10,200\n',
+      );
+      expect(r.rows[0].errors, contains('width must be a number.'));
+      expect(r.rows[1].errors, contains('width must be greater than 0.'));
+    });
+
+    test('accepts dimension aliases in header', () {
+      final customHeader =
+          'name,quantity,cost_price,selling_price,barcode,expiry_date,low_qtty,width_dimension,height_dimension';
+      final r = _validateCsv(
+        '$customHeader\nGranite,2,,,,,10,60,180\n',
+      );
+      expect(r.hasErrors, isFalse);
+      expect(r.rows.single.is2D, isTrue);
+      expect(r.rows.single.width, 60.0);
+      expect(r.rows.single.height, 180.0);
     });
   });
 }

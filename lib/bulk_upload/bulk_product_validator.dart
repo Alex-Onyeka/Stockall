@@ -8,6 +8,8 @@ class BulkProductRow {
   final double lowQtty;
   final String? barcode;
   final DateTime? expiryDate;
+  final double? width;
+  final double? height;
   final List<String> errors;
   final List<String> warnings;
 
@@ -20,10 +22,14 @@ class BulkProductRow {
     required this.lowQtty,
     required this.barcode,
     required this.expiryDate,
+    this.width,
+    this.height,
     required this.errors,
     required this.warnings,
   });
 
+  bool get is2D =>
+      width != null && height != null && width! > 0 && height! > 0;
   bool get hasErrors => errors.isNotEmpty;
   bool get hasWarnings => warnings.isNotEmpty;
 }
@@ -54,12 +60,46 @@ class BulkProductValidator {
     'barcode',
     'expiry_date',
     'low_qtty',
+    'width',
+    'height',
+  ];
+
+  static const requiredHeaders = [
+    'name',
+    'quantity',
+    'cost_price',
+    'selling_price',
+    'barcode',
+    'expiry_date',
+    'low_qtty',
   ];
 
   static const defaultLowQtty = 10.0;
 
-  static String _normalizeHeader(String h) =>
-      h.trim().toLowerCase().replaceAll(RegExp(r'[\s-]+'), '_');
+  static String _normalizeHeader(String h) {
+    final normalized =
+        h.trim().toLowerCase().replaceAll(RegExp(r'[\s-]+'), '_');
+    if (normalized == 'width_dimension' ||
+        normalized == 'dimension_width' ||
+        normalized == 'width_(cm)' ||
+        normalized == 'width_cm' ||
+        normalized == 'width(cm)') {
+      return 'width';
+    }
+    if (normalized == 'height_dimension' ||
+        normalized == 'dimension_height' ||
+        normalized == 'height_(cm)' ||
+        normalized == 'height_cm' ||
+        normalized == 'height(cm)' ||
+        normalized == 'length' ||
+        normalized == 'length_dimension' ||
+        normalized == 'length_(cm)' ||
+        normalized == 'length_cm' ||
+        normalized == 'length(cm)') {
+      return 'height';
+    }
+    return normalized;
+  }
 
   static String _key(String s) => s.trim().toLowerCase();
 
@@ -96,7 +136,7 @@ class BulkProductValidator {
         columns[h] = i;
       }
     }
-    for (final h in headers) {
+    for (final h in requiredHeaders) {
       if (!columns.containsKey(h)) {
         fileErrors.add('Missing column "$h".');
       }
@@ -106,7 +146,8 @@ class BulkProductValidator {
     }
 
     String cell(List<String> row, String h) {
-      final i = columns[h]!;
+      final i = columns[h];
+      if (i == null) return '';
       return i < row.length ? row[i].trim() : '';
     }
 
@@ -159,6 +200,37 @@ class BulkProductValidator {
         }
       }
 
+      double? optionalDimension(String h) {
+        final raw = cell(row, h);
+        if (raw.isEmpty) return null;
+        final cleaned = raw.replaceAll(
+          RegExp(r'[,\s]|cm$', caseSensitive: false),
+          '',
+        );
+        final v = double.tryParse(cleaned);
+        if (v == null || v.isNaN || v.isInfinite) {
+          errors.add('$h must be a number.');
+          return null;
+        }
+        if (v <= 0) {
+          errors.add('$h must be greater than 0.');
+          return null;
+        }
+        return v;
+      }
+
+      final widthRaw = cell(row, 'width');
+      final heightRaw = cell(row, 'height');
+      final width = optionalDimension('width');
+      final height = optionalDimension('height');
+
+      final hasAnyDimension = widthRaw.isNotEmpty || heightRaw.isNotEmpty;
+      if (hasAnyDimension) {
+        if (widthRaw.isEmpty || heightRaw.isEmpty) {
+          errors.add('Both width and height must be provided for 2D items.');
+        }
+      }
+
       if (name.isNotEmpty) {
         final k = _key(name);
         fileNameCount[k] = (fileNameCount[k] ?? 0) + 1;
@@ -178,6 +250,8 @@ class BulkProductValidator {
           lowQtty: low,
           barcode: barcode,
           expiryDate: expiry,
+          width: width,
+          height: height,
           errors: errors,
           warnings: warnings,
         ),
