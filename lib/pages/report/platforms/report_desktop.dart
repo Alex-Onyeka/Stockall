@@ -8,6 +8,7 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/report_auth.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
@@ -16,6 +17,7 @@ import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
+import 'package:stockall/pages/report/order_report/order_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report/storage_report_page.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -294,6 +296,38 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               'View a breakdown of your invoice and credit reports',
                                           title:
                                               'Invoice/Credit Report',
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper() &&
+                                            authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .viewInvoiceSalesReport,
+                                            ) &&
+                                            SalesAuthAction().manageOrdersAction(
+                                              context: context,
+                                            ),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (
+                                                      context,
+                                                    ) =>
+                                                        const OrderReportPage(),
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a breakdown of your order reports',
+                                          title:
+                                              'Order Report',
                                         ),
                                       ),
                                       Visibility(
