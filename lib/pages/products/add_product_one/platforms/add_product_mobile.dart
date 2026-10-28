@@ -733,136 +733,152 @@ class _AddProductMobileState
                                       widget.costController,
                                 ),
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(
-                                      top: 15.0,
-                                    ),
-                                child: UseMultipleToggleAddItemPage(
-                                  theme: theme,
-                                  title:
-                                      'Manage Multiple Prices',
-                                  description:
-                                      'Turn on to set more than one selling price for this item.',
-                                  value:
-                                      returnData(
-                                        context: context,
-                                      ).useMultiplePrices,
-                                  onTap: () {
-                                    toggleMultiplePricesAction(
-                                      context: context,
-                                      sellingController:
-                                          widget
-                                              .sellingController,
-                                      productUuid:
-                                          createdProductUuid ??
-                                          '',
-                                    );
-                                  },
-                                ),
-                              ),
                               Visibility(
-                                visible:
-                                    !returnData(
-                                      context: context,
-                                    ).useMultiplePrices,
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .editSellingPrice,
+                                ),
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment
-                                          .start,
-                                  mainAxisSize:
-                                      MainAxisSize.min,
                                   children: [
                                     Padding(
                                       padding:
                                           const EdgeInsets.only(
-                                            bottom: 10.0,
-                                            top: 10,
+                                            top: 15.0,
                                           ),
-                                      child: MoneyTextfield(
+                                      child: UseMultipleToggleAddItemPage(
                                         theme: theme,
-                                        hint:
-                                            'Enter Selling Price',
                                         title:
-                                            'Selling Price',
-                                        controller:
-                                            widget
-                                                .sellingController,
+                                            'Manage Multiple Prices',
+                                        description:
+                                            'Turn on to set more than one selling price for this item.',
+                                        value:
+                                            returnData(
+                                              context:
+                                                  context,
+                                            ).useMultiplePrices,
+                                        onTap: () {
+                                          toggleMultiplePricesAction(
+                                            context:
+                                                context,
+                                            sellingController:
+                                                widget
+                                                    .sellingController,
+                                            productUuid:
+                                                createdProductUuid ??
+                                                '',
+                                          );
+                                        },
                                       ),
                                     ),
-                                    MarkupMarginFields(
-                                      sellingPriceController:
-                                          widget
-                                              .sellingController,
-                                      costPriceController:
-                                          widget
-                                              .costController,
-                                      theme: theme,
+                                    Visibility(
+                                      visible:
+                                          !returnData(
+                                            context:
+                                                context,
+                                          ).useMultiplePrices,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start,
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(
+                                                  bottom:
+                                                      10.0,
+                                                  top: 10,
+                                                ),
+                                            child: MoneyTextfield(
+                                              theme: theme,
+                                              hint:
+                                                  'Enter Selling Price',
+                                              title:
+                                                  'Selling Price',
+                                              controller:
+                                                  widget
+                                                      .sellingController,
+                                            ),
+                                          ),
+                                          MarkupMarginFields(
+                                            sellingPriceController:
+                                                widget
+                                                    .sellingController,
+                                            costPriceController:
+                                                widget
+                                                    .costController,
+                                            theme: theme,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          returnData(
+                                            context:
+                                                context,
+                                          ).useMultiplePrices,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              bottom: 10.0,
+                                              top: 10,
+                                            ),
+                                        child: MainDropdown(
+                                          valueSet:
+                                              returnData()
+                                                  .tempPricesList
+                                                  .isNotEmpty,
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ProductPricesPage(
+                                                    productUuid:
+                                                        createdProductUuid ??
+                                                        '',
+                                                    costPrice: double.tryParse(
+                                                      widget
+                                                          .costController
+                                                          .text
+                                                          .replaceAll(
+                                                            ',',
+                                                            '',
+                                                          )
+                                                          .trim(),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          isOpen:
+                                              returnData()
+                                                  .tempPricesList
+                                                  .isNotEmpty,
+                                          title:
+                                              'Selling Price(s)',
+                                          hint:
+                                              returnData(
+                                                    context:
+                                                        context,
+                                                  ).tempPricesList.isEmpty
+                                                  ? 'Price Not Set'
+                                                  : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
+                                          theme: theme,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                              Visibility(
-                                visible:
-                                    returnData(
-                                      context: context,
-                                    ).useMultiplePrices,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        bottom: 10.0,
-                                        top: 10,
-                                      ),
-                                  child: MainDropdown(
-                                    valueSet:
-                                        returnData()
-                                            .tempPricesList
-                                            .isNotEmpty,
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return ProductPricesPage(
-                                              productUuid:
-                                                  createdProductUuid ??
-                                                  '',
-                                              costPrice: double.tryParse(
-                                                widget
-                                                    .costController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    )
-                                                    .trim(),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    isOpen:
-                                        returnData()
-                                            .tempPricesList
-                                            .isNotEmpty,
-                                    title:
-                                        'Selling Price(s)',
-                                    hint:
-                                        returnData(
-                                                  context:
-                                                      context,
-                                                )
-                                                .tempPricesList
-                                                .isEmpty
-                                            ? 'Price Not Set'
-                                            : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
-                                    theme: theme,
-                                  ),
-                                ),
-                              ),
+
                               Column(
                                 children: [
                                   SizedBox(height: 20),

@@ -137,6 +137,7 @@ class Authorizations {
   String manageMultipleUnits = 'Manage Multiple Units';
   String selectMultiplePriceDuringSales =
       'Select Multiple Price During Sales';
+  String editSellingPrice = 'Edit Selling Price';
   String setCustomPriceDuringSales =
       'Set Custom Price During Sales';
   String sellBelowLowestSellingPrice =

@@ -43,483 +43,565 @@ Widget priceSectionWidget(
           ],
         ),
         PricesGridSectionWidget(product: product),
-        Row(
-          children: [
-            Expanded(
-              child: Material(
-                child: EditButton(
-                  theme: theme,
-                  action: () {
-                    costController.text =
-                        product.costPrice.toString().toString();
-                    bool isEditPriceLoading = false;
-                    // Shown under the single Selling Price field.
-                    String? sellingPriceError;
-                    returnData().initPricesList(
-                      productUuid: product.uuid,
-                      pricesListNew: product.getPricesList(),
-                    );
-                    returnData().initPriceUnitModes();
-                    final primaryValue =
-                        product.getPrimaryPrice().priceValue;
-                    sellingController.text =
-                        primaryValue != 0
-                            ? primaryValue.toString()
-                            : '';
-                    showGeneralDialog(
-                      context: context,
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return StatefulBuilder(
-                          builder:
-                              (context, setState) => Material(
-                                color: Colors.transparent,
-                                child: GestureDetector(
-                                  onTap:
-                                      () =>
-                                          FocusManager.instance.primaryFocus
-                                              ?.unfocus(),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 20.0,
-                                        top: 40,
-                                        right: 20,
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(20),
-                                            margin: EdgeInsets.only(
-                                              bottom: 100,
+        Visibility(
+          visible:
+              authorization(
+                authorized:
+                    Authorizations().manageCostPrice,
+              ) &&
+              authorization(
+                authorized:
+                    Authorizations().editSellingPrice,
+              ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Material(
+                  child: EditButton(
+                    theme: theme,
+                    action: () {
+                      costController.text =
+                          product.costPrice
+                              .toString()
+                              .toString();
+                      bool isEditPriceLoading = false;
+                      // Shown under the single Selling Price field.
+                      String? sellingPriceError;
+                      returnData().initPricesList(
+                        productUuid: product.uuid,
+                        pricesListNew:
+                            product.getPricesList(),
+                      );
+                      returnData().initPriceUnitModes();
+                      final primaryValue =
+                          product
+                              .getPrimaryPrice()
+                              .priceValue;
+                      sellingController.text =
+                          primaryValue != 0
+                              ? primaryValue.toString()
+                              : '';
+                      showGeneralDialog(
+                        context: context,
+                        pageBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                        ) {
+                          return StatefulBuilder(
+                            builder:
+                                (
+                                  context,
+                                  setState,
+                                ) => Material(
+                                  color: Colors.transparent,
+                                  child: GestureDetector(
+                                    onTap:
+                                        () =>
+                                            FocusManager
+                                                .instance
+                                                .primaryFocus
+                                                ?.unfocus(),
+                                    child: Container(
+                                      decoration:
+                                          BoxDecoration(
+                                            color:
+                                                Colors
+                                                    .white,
+                                          ),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              left: 20.0,
+                                              top: 40,
+                                              right: 20,
                                             ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: const Color.fromARGB(
-                                                    39,
-                                                    4,
-                                                    1,
-                                                    41,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  EdgeInsets.all(
+                                                    20,
                                                   ),
-                                                  blurRadius: 10,
-                                                ),
-                                              ],
-                                            ),
-                                            width: 500,
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Opacity(
-                                                      opacity: 0,
-                                                      child: IconButton(
-                                                        mouseCursor:
-                                                            SystemMouseCursors
-                                                                .click,
-                                                        onPressed: () {},
-                                                        icon: Icon(Icons.clear),
-                                                      ),
+                                              margin:
+                                                  EdgeInsets.only(
+                                                    bottom:
+                                                        100,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    Colors
+                                                        .white,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      15,
                                                     ),
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme
-                                                                .mobileTexts
-                                                                .b1
-                                                                .fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      'Edit Prices',
-                                                    ),
-                                                    Builder(
-                                                      builder: (context) {
-                                                        if (isEditPriceLoading ==
-                                                            true) {
-                                                          return SizedBox(
-                                                            height: 20,
-                                                            width: 20,
-                                                            child: CircularProgressIndicator(
-                                                              strokeWidth: 1.5,
-                                                              color:
-                                                                  theme
-                                                                      .lightModeColor
-                                                                      .secColor200,
-                                                            ),
-                                                          );
-                                                        } else {
-                                                          return IconButton(
-                                                            mouseCursor:
-                                                                SystemMouseCursors
-                                                                    .click,
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop();
-                                                            },
-                                                            icon: Icon(
-                                                              Icons.clear,
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 15),
-                                                Column(
-                                                  children: [
-                                                    Visibility(
-                                                      visible: authorization(
-                                                        authorized:
-                                                            Authorizations()
-                                                                .manageCostPrice,
-                                                      ),
-                                                      child: MoneyTextfield(
-                                                        title: 'Cost Price',
-                                                        hint:
-                                                            'Enter Cost Price',
-                                                        controller:
-                                                            costController,
-                                                        theme: theme,
-                                                      ),
-                                                    ),
-                                                    Visibility(
-                                                      visible: authorization(
-                                                        authorized:
-                                                            Authorizations()
-                                                                .manageCostPrice,
-                                                      ),
-                                                      child: SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                    ),
-                                                    UseMultipleToggleAddItemPage(
-                                                      theme:
-                                                          theme,
-                                                      title:
-                                                          'Manage Multiple Prices',
-                                                      description:
-                                                          'Turn on to set more than one selling price for this item.',
-                                                      value:
-                                                          returnData(
-                                                            context:
-                                                                context,
-                                                          ).useMultiplePrices,
-                                                      onTap: () {
-                                                        setState(() {
-                                                          sellingPriceError =
-                                                              null;
-                                                        });
-                                                        toggleMultiplePricesAction(
-                                                          context:
-                                                              context,
-                                                          sellingController:
-                                                              sellingController,
-                                                          productUuid:
-                                                              product.uuid ??
-                                                              '',
-                                                        );
-                                                      },
-                                                    ),
-                                                    SizedBox(
-                                                      height:
-                                                          10,
-                                                    ),
-                                                    Visibility(
-                                                      visible:
-                                                          !returnData(
-                                                            context:
-                                                                context,
-                                                          ).useMultiplePrices,
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.only(
-                                                          bottom:
-                                                              10.0,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color:
+                                                        const Color.fromARGB(
+                                                          39,
+                                                          4,
+                                                          1,
+                                                          41,
                                                         ),
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment.start,
-                                                          children: [
-                                                            MoneyTextfield(
-                                                              title:
-                                                                  'Selling Price',
-                                                              hint:
-                                                                  'Enter Selling Price',
-                                                              controller:
-                                                                  sellingController,
-                                                              theme:
-                                                                  theme,
-                                                              onChanged: (
-                                                                _,
-                                                              ) {
-                                                                if (sellingPriceError !=
-                                                                    null) {
-                                                                  setState(() {
-                                                                    sellingPriceError =
-                                                                        null;
-                                                                  });
-                                                                }
-                                                              },
-                                                            ),
-                                                            if (sellingPriceError !=
-                                                                null)
-                                                              Padding(
-                                                                padding: const EdgeInsets.only(
-                                                                  top:
-                                                                      5,
-                                                                ),
-                                                                child: Text(
-                                                                  sellingPriceError!,
-                                                                  style: TextStyle(
-                                                                    color:
-                                                                        Colors.red.shade700,
-                                                                    fontSize:
-                                                                        theme.mobileTexts.b3.fontSize,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                          ],
+                                                    blurRadius:
+                                                        10,
+                                                  ),
+                                                ],
+                                              ),
+                                              width: 500,
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Opacity(
+                                                        opacity:
+                                                            0,
+                                                        child: IconButton(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
+                                                          onPressed:
+                                                              () {},
+                                                          icon: Icon(
+                                                            Icons.clear,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    Visibility(
-                                                      visible:
-                                                          returnData(
-                                                            context:
-                                                                context,
-                                                          ).useMultiplePrices,
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.only(
-                                                          bottom:
-                                                              10.0,
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b1.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                         ),
-                                                        child: MainDropdown(
-                                                          valueSet:
-                                                              returnData().tempPricesList.isNotEmpty,
-                                                          onTap: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return ProductPricesPage(
-                                                                    productUuid:
-                                                                        product.uuid ??
-                                                                        '',
-                                                                  );
-                                                                },
+                                                        'Edit Prices',
+                                                      ),
+                                                      Builder(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          if (isEditPriceLoading ==
+                                                              true) {
+                                                            return SizedBox(
+                                                              height:
+                                                                  20,
+                                                              width:
+                                                                  20,
+                                                              child: CircularProgressIndicator(
+                                                                strokeWidth:
+                                                                    1.5,
+                                                                color:
+                                                                    theme.lightModeColor.secColor200,
                                                               ),
                                                             );
-                                                          },
-                                                          isOpen:
-                                                              returnData().tempPricesList.isNotEmpty,
+                                                          } else {
+                                                            return IconButton(
+                                                              mouseCursor:
+                                                                  SystemMouseCursors.click,
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop();
+                                                              },
+                                                              icon: Icon(
+                                                                Icons.clear,
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        15,
+                                                  ),
+                                                  Column(
+                                                    children: [
+                                                      Visibility(
+                                                        visible: authorization(
+                                                          authorized:
+                                                              Authorizations().manageCostPrice,
+                                                        ),
+                                                        child: MoneyTextfield(
                                                           title:
-                                                              'Selling Price(s)',
+                                                              'Cost Price',
                                                           hint:
-                                                              returnData(
-                                                                    context:
-                                                                        context,
-                                                                  ).tempPricesList.isEmpty
-                                                                  ? 'Add Price(s)'
-                                                                  : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
+                                                              'Enter Cost Price',
+                                                          controller:
+                                                              costController,
                                                           theme:
                                                               theme,
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                SizedBox(height: 20),
-                                                MainButtonP(
-                                                  themeProvider: theme,
-                                                  action: () {
-                                                    final safeContext = context;
-                                                    // Single price: don't save an empty or
-                                                    // invalid price (it would become 0).
-                                                    if (!returnData()
-                                                        .useMultiplePrices) {
-                                                      final sellingPrice =
-                                                          double.tryParse(
-                                                            sellingController.text
-                                                                .replaceAll(
-                                                                  ',',
-                                                                  '',
-                                                                )
-                                                                .trim(),
-                                                          );
-                                                      if (sellingPrice == null ||
-                                                          sellingPrice < 0) {
-                                                        setState(() {
-                                                          sellingPriceError =
-                                                              'Enter a valid selling price.';
-                                                        });
-                                                        return;
-                                                      }
-                                                    }
-                                                    if (isEditPriceLoading ==
-                                                        false) {
-                                                      showDialog(
-                                                        context: safeContext,
-                                                        builder: (
-                                                          confirmDialog,
-                                                        ) {
-                                                          return ConfirmationAlert(
-                                                            theme: theme,
-                                                            message:
-                                                                'Are you sure you want to proceed?',
-                                                            title: 'Proceed?',
-                                                            action: () async {
-                                                              final dataProvider =
-                                                                  returnData();
-                                                              Navigator.of(
-                                                                confirmDialog,
-                                                              ).pop();
-                                                              setState(() {
-                                                                isEditPriceLoading =
-                                                                    true;
-                                                              });
-                                                              await dataProvider.updateProduct(
-                                                                itemHistory:
-                                                                    null,
-                                                                includeQuantity:
-                                                                    false,
-                                                                isIncrement:
-                                                                    null,
-                                                                isQuantityUpdate:
-                                                                    false,
-                                                                quantityChange:
-                                                                    null,
-                                                                product: product.copyWith(
-                                                                  updatedAt:
-                                                                      DateTime.now(),
-                                                                  // Copy the temp list: the provider's
-                                                                  // tempPricesList is cleared/reused
-                                                                  // elsewhere, which would otherwise
-                                                                  // empty this product's prices.
-                                                                  // getFinalPriceList returns copies in
-                                                                  // both single and multiple price modes.
-                                                                  pricesList: dataProvider.getFinalPriceList(
-                                                                    productUuid:
-                                                                        product.uuid ??
-                                                                        '',
-                                                                    sellingText:
-                                                                        sellingController.text,
-                                                                  ),
-                                                                  costPrice:
-                                                                      double.tryParse(
-                                                                        costController
-                                                                            .text
-                                                                            .replaceAll(
-                                                                              ',',
-                                                                              '',
-                                                                            ),
-                                                                      ) ??
-                                                                      0,
-                                                                  sellingPrice:
-                                                                      dataProvider.useMultiplePrices
-                                                                          ? product.sellingPrice
-                                                                          : double.tryParse(
-                                                                            sellingController.text.replaceAll(
-                                                                              ',',
-                                                                              '',
-                                                                            ),
-                                                                          ),
-                                                                  // Keep the raw stored quantity.
-                                                                  // getActualQuantity() multiplies by
-                                                                  // the sheet area for quantityType 2,
-                                                                  // inflating stock on every update.
-                                                                  quantity:
-                                                                      product
-                                                                          .quantity,
+                                                      Visibility(
+                                                        visible: authorization(
+                                                          authorized:
+                                                              Authorizations().manageCostPrice,
+                                                        ),
+                                                        child: SizedBox(
+                                                          height:
+                                                              10,
+                                                        ),
+                                                      ),
+                                                      Visibility(
+                                                        visible: authorization(
+                                                          authorized:
+                                                              Authorizations().editSellingPrice,
+                                                        ),
+                                                        child: Column(
+                                                          children: [
+                                                            SizedBox(
+                                                              height:
+                                                                  10,
+                                                            ),
+                                                            UseMultipleToggleAddItemPage(
+                                                              theme:
+                                                                  theme,
+                                                              title:
+                                                                  'Manage Multiple Prices',
+                                                              description:
+                                                                  'Turn on to set more than one selling price for this item.',
+                                                              value:
+                                                                  returnData(
+                                                                    context:
+                                                                        context,
+                                                                  ).useMultiplePrices,
+                                                              onTap: () {
+                                                                setState(
+                                                                  () {
+                                                                    sellingPriceError =
+                                                                        null;
+                                                                  },
+                                                                );
+                                                                toggleMultiplePricesAction(
+                                                                  context:
+                                                                      context,
+                                                                  sellingController:
+                                                                      sellingController,
+                                                                  productUuid:
+                                                                      product.uuid ??
+                                                                      '',
+                                                                );
+                                                              },
+                                                            ),
+                                                            SizedBox(
+                                                              height:
+                                                                  10,
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  !returnData(
+                                                                    context:
+                                                                        context,
+                                                                  ).useMultiplePrices,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.only(
+                                                                  bottom:
+                                                                      10.0,
                                                                 ),
-                                                                oldProduct:
-                                                                    product,
-                                                              );
-
-                                                              // if (safeContext.mounted) {
-                                                              //   await dataProvider.getProducts(
-                                                              //     shopI,
-                                                              //   );
-                                                              // }
-
-                                                              // setState(
-                                                              //   () {
-                                                              //     isLoading =
-                                                              //         false;
-                                                              //     showSuccess =
-                                                              //         true;
-                                                              //   },
-                                                              // );
-
-                                                              if (safeContext
-                                                                  .mounted) {
-                                                                Navigator.of(
-                                                                  safeContext,
-                                                                ).pop();
-                                                                setState(() {
-                                                                  // productFuture =
-                                                                  //     getProduct();
-                                                                });
-                                                              }
-
-                                                              // setState(
-                                                              //   () {
-                                                              //     showSuccess =
-                                                              //         false;
-                                                              //   },
-                                                              // );
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    MoneyTextfield(
+                                                                      title:
+                                                                          'Selling Price',
+                                                                      hint:
+                                                                          'Enter Selling Price',
+                                                                      controller:
+                                                                          sellingController,
+                                                                      theme:
+                                                                          theme,
+                                                                      onChanged: (
+                                                                        _,
+                                                                      ) {
+                                                                        if (sellingPriceError !=
+                                                                            null) {
+                                                                          setState(
+                                                                            () {
+                                                                              sellingPriceError =
+                                                                                  null;
+                                                                            },
+                                                                          );
+                                                                        }
+                                                                      },
+                                                                    ),
+                                                                    if (sellingPriceError !=
+                                                                        null)
+                                                                      Padding(
+                                                                        padding: const EdgeInsets.only(
+                                                                          top:
+                                                                              5,
+                                                                        ),
+                                                                        child: Text(
+                                                                          sellingPriceError!,
+                                                                          style: TextStyle(
+                                                                            color:
+                                                                                Colors.red.shade700,
+                                                                            fontSize:
+                                                                                theme.mobileTexts.b3.fontSize,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  returnData(
+                                                                    context:
+                                                                        context,
+                                                                  ).useMultiplePrices,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.only(
+                                                                  bottom:
+                                                                      10.0,
+                                                                ),
+                                                                child: MainDropdown(
+                                                                  valueSet:
+                                                                      returnData().tempPricesList.isNotEmpty,
+                                                                  onTap: () {
+                                                                    Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder: (
+                                                                          context,
+                                                                        ) {
+                                                                          return ProductPricesPage(
+                                                                            productUuid:
+                                                                                product.uuid ??
+                                                                                '',
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                  isOpen:
+                                                                      returnData().tempPricesList.isNotEmpty,
+                                                                  title:
+                                                                      'Selling Price(s)',
+                                                                  hint:
+                                                                      returnData(
+                                                                            context:
+                                                                                context,
+                                                                          ).tempPricesList.isEmpty
+                                                                          ? 'Add Price(s)'
+                                                                          : "${returnData(context: context).tempPricesList.firstWhere((item) => item.isPrimary).priceValue} and (${returnData(context: context).tempPricesList.length - 1}) More",
+                                                                  theme:
+                                                                      theme,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        20,
+                                                  ),
+                                                  MainButtonP(
+                                                    themeProvider:
+                                                        theme,
+                                                    action: () {
+                                                      final safeContext =
+                                                          context;
+                                                      // Single price: don't save an empty or
+                                                      // invalid price (it would become 0).
+                                                      if (!returnData()
+                                                          .useMultiplePrices) {
+                                                        final sellingPrice = double.tryParse(
+                                                          sellingController.text
+                                                              .replaceAll(
+                                                                ',',
+                                                                '',
+                                                              )
+                                                              .trim(),
+                                                        );
+                                                        if (sellingPrice ==
+                                                                null ||
+                                                            sellingPrice <
+                                                                0) {
+                                                          setState(
+                                                            () {
+                                                              sellingPriceError =
+                                                                  'Enter a valid selling price.';
                                                             },
                                                           );
-                                                        },
-                                                      );
-                                                    }
-                                                  },
-                                                  text: 'Update Prices',
-                                                ),
-                                                SizedBox(height: 15),
-                                                Material(
-                                                  color: Colors.transparent,
-                                                  child: EditButton(
-                                                    text: 'Cancel',
-                                                    action: () {
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
+                                                          return;
+                                                        }
+                                                      }
+                                                      if (isEditPriceLoading ==
+                                                          false) {
+                                                        showDialog(
+                                                          context:
+                                                              safeContext,
+                                                          builder: (
+                                                            confirmDialog,
+                                                          ) {
+                                                            return ConfirmationAlert(
+                                                              theme:
+                                                                  theme,
+                                                              message:
+                                                                  'Are you sure you want to proceed?',
+                                                              title:
+                                                                  'Proceed?',
+                                                              action: () async {
+                                                                final dataProvider =
+                                                                    returnData();
+                                                                Navigator.of(
+                                                                  confirmDialog,
+                                                                ).pop();
+                                                                setState(
+                                                                  () {
+                                                                    isEditPriceLoading =
+                                                                        true;
+                                                                  },
+                                                                );
+                                                                await dataProvider.updateProduct(
+                                                                  itemHistory:
+                                                                      null,
+                                                                  includeQuantity:
+                                                                      false,
+                                                                  isIncrement:
+                                                                      null,
+                                                                  isQuantityUpdate:
+                                                                      false,
+                                                                  quantityChange:
+                                                                      null,
+                                                                  product: product.copyWith(
+                                                                    updatedAt:
+                                                                        DateTime.now(),
+                                                                    // Copy the temp list: the provider's
+                                                                    // tempPricesList is cleared/reused
+                                                                    // elsewhere, which would otherwise
+                                                                    // empty this product's prices.
+                                                                    // getFinalPriceList returns copies in
+                                                                    // both single and multiple price modes.
+                                                                    pricesList: dataProvider.getFinalPriceList(
+                                                                      productUuid:
+                                                                          product.uuid ??
+                                                                          '',
+                                                                      sellingText:
+                                                                          sellingController.text,
+                                                                    ),
+                                                                    costPrice:
+                                                                        double.tryParse(
+                                                                          costController.text.replaceAll(
+                                                                            ',',
+                                                                            '',
+                                                                          ),
+                                                                        ) ??
+                                                                        0,
+                                                                    sellingPrice:
+                                                                        dataProvider.useMultiplePrices
+                                                                            ? product.sellingPrice
+                                                                            : double.tryParse(
+                                                                              sellingController.text.replaceAll(
+                                                                                ',',
+                                                                                '',
+                                                                              ),
+                                                                            ),
+                                                                    // Keep the raw stored quantity.
+                                                                    // getActualQuantity() multiplies by
+                                                                    // the sheet area for quantityType 2,
+                                                                    // inflating stock on every update.
+                                                                    quantity:
+                                                                        product.quantity,
+                                                                  ),
+                                                                  oldProduct:
+                                                                      product,
+                                                                );
+
+                                                                // if (safeContext.mounted) {
+                                                                //   await dataProvider.getProducts(
+                                                                //     shopI,
+                                                                //   );
+                                                                // }
+
+                                                                // setState(
+                                                                //   () {
+                                                                //     isLoading =
+                                                                //         false;
+                                                                //     showSuccess =
+                                                                //         true;
+                                                                //   },
+                                                                // );
+
+                                                                if (safeContext.mounted) {
+                                                                  Navigator.of(
+                                                                    safeContext,
+                                                                  ).pop();
+                                                                  setState(
+                                                                    () {
+                                                                      // productFuture =
+                                                                      //     getProduct();
+                                                                    },
+                                                                  );
+                                                                }
+
+                                                                // setState(
+                                                                //   () {
+                                                                //     showSuccess =
+                                                                //         false;
+                                                                //   },
+                                                                // );
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      }
                                                     },
-                                                    theme: theme,
+                                                    text:
+                                                        'Update Prices',
                                                   ),
-                                                ),
-                                              ],
+                                                  SizedBox(
+                                                    height:
+                                                        15,
+                                                  ),
+                                                  Material(
+                                                    color:
+                                                        Colors.transparent,
+                                                    child: EditButton(
+                                                      text:
+                                                          'Cancel',
+                                                      action: () {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                      },
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                        );
-                      },
-                    );
-                  },
-                  text: 'Edit Price',
+                          );
+                        },
+                      );
+                    },
+                    text: 'Edit Price',
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     ),
@@ -528,24 +610,32 @@ Widget priceSectionWidget(
 
 class PricesGridSectionWidget extends StatefulWidget {
   final TempProductClass product;
-  const PricesGridSectionWidget({super.key, required this.product});
+  const PricesGridSectionWidget({
+    super.key,
+    required this.product,
+  });
 
   @override
   State<PricesGridSectionWidget> createState() =>
       _PricesGridSectionWidgetState();
 }
 
-class _PricesGridSectionWidgetState extends State<PricesGridSectionWidget> {
+class _PricesGridSectionWidgetState
+    extends State<PricesGridSectionWidget> {
   int getNumberOfPrices() {
     return widget.product.getPricesList().length;
   }
 
   int getFirstEndRand() {
-    return widget.product.getPricesList().length > 2 ? 2 : 1;
+    return widget.product.getPricesList().length > 2
+        ? 2
+        : 1;
   }
 
   int getSecondEndRand() {
-    return widget.product.getPricesList().length > 4 ? 4 : 3;
+    return widget.product.getPricesList().length > 4
+        ? 4
+        : 3;
   }
 
   @override
@@ -555,24 +645,42 @@ class _PricesGridSectionWidgetState extends State<PricesGridSectionWidget> {
     return Column(
       children: [
         Visibility(
-          visible: authorization(authorized: Authorizations().manageCostPrice),
+          visible: authorization(
+            authorized: Authorizations().manageCostPrice,
+          ),
           child: Padding(
             padding: const EdgeInsets.only(bottom: 10.0),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 8,
+                    ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      border: Border.all(
-                        color: const Color.fromARGB(75, 255, 214, 79),
+                      borderRadius: BorderRadius.circular(
+                        3,
                       ),
-                      color: const Color.fromARGB(64, 255, 226, 138),
+                      border: Border.all(
+                        color: const Color.fromARGB(
+                          75,
+                          255,
+                          214,
+                          79,
+                        ),
+                      ),
+                      color: const Color.fromARGB(
+                        64,
+                        255,
+                        226,
+                        138,
+                      ),
                     ),
                     child: Row(
                       spacing: 5,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
                       children: [
                         Text(
                           style: TextStyle(
@@ -596,7 +704,8 @@ class _PricesGridSectionWidgetState extends State<PricesGridSectionWidget> {
                             color: null,
                           ),
                           formatMoneyBig(
-                            amount: widget.product.costPrice,
+                            amount:
+                                widget.product.costPrice,
                             context: context,
                           ),
                         ),
@@ -608,12 +717,16 @@ class _PricesGridSectionWidgetState extends State<PricesGridSectionWidget> {
             ),
           ),
         ),
-        ...List.generate((prices.length / 2).ceil(), (rowIndex) {
+        ...List.generate((prices.length / 2).ceil(), (
+          rowIndex,
+        ) {
           final start = rowIndex * 2;
           final end = (start + 2).clamp(0, prices.length);
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 3.0),
+            padding: const EdgeInsets.symmetric(
+              vertical: 3.0,
+            ),
             child: Row(
               spacing: 5,
               children:
@@ -621,7 +734,9 @@ class _PricesGridSectionWidgetState extends State<PricesGridSectionWidget> {
                       .sublist(start, end)
                       .map(
                         (item) => Expanded(
-                          child: PriceWidgetProductDetails(price: item),
+                          child: PriceWidgetProductDetails(
+                            price: item,
+                          ),
                         ),
                       )
                       .toList(),
@@ -635,7 +750,10 @@ class _PricesGridSectionWidgetState extends State<PricesGridSectionWidget> {
 
 class PriceWidgetProductDetails extends StatelessWidget {
   final ProductPricesClass price;
-  const PriceWidgetProductDetails({super.key, required this.price});
+  const PriceWidgetProductDetails({
+    super.key,
+    required this.price,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -643,7 +761,10 @@ class PriceWidgetProductDetails extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+          padding: EdgeInsets.symmetric(
+            vertical: 5,
+            horizontal: 8,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3),
             border: Border.all(
@@ -664,7 +785,10 @@ class PriceWidgetProductDetails extends StatelessWidget {
                 child: Text(
                   style: TextStyle(
                     fontSize: theme.mobileTexts.b4.fontSize,
-                    color: price.isPrimary ? Colors.grey.shade200 : null,
+                    color:
+                        price.isPrimary
+                            ? Colors.grey.shade200
+                            : null,
                   ),
                   "${price.name}:",
                 ),
@@ -673,9 +797,15 @@ class PriceWidgetProductDetails extends StatelessWidget {
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b4.fontSize,
                   fontWeight: FontWeight.bold,
-                  color: price.isPrimary ? Colors.grey.shade200 : null,
+                  color:
+                      price.isPrimary
+                          ? Colors.grey.shade200
+                          : null,
                 ),
-                formatMoneyBig(amount: price.priceValue, context: context),
+                formatMoneyBig(
+                  amount: price.priceValue,
+                  context: context,
+                ),
               ),
               SizedBox(width: 2),
             ],
@@ -685,7 +815,11 @@ class PriceWidgetProductDetails extends StatelessWidget {
           visible: price.isPrimary,
           child: Align(
             alignment: AlignmentGeometry.xy(1, 1),
-            child: Icon(size: 13, color: Colors.white, Icons.check),
+            child: Icon(
+              size: 13,
+              color: Colors.white,
+              Icons.check,
+            ),
           ),
         ),
       ],
