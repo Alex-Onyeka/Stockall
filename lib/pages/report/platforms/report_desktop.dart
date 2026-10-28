@@ -16,6 +16,7 @@ import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report/storage_report_page.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -294,6 +295,35 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               'View a breakdown of your invoice and credit reports',
                                           title:
                                               'Invoice/Credit Report',
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper() &&
+                                            authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .managePurchases,
+                                            ),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (
+                                                      context,
+                                                    ) =>
+                                                        const PurchaseReportPage(),
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a breakdown of your purchases, payments and balances owed to suppliers',
+                                          title:
+                                              'Purchase Report',
                                         ),
                                       ),
                                       Visibility(
