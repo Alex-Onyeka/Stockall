@@ -3322,7 +3322,7 @@ void selectProductSales({
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b2
+                                                  .b3
                                                   .fontSize,
                                           fontWeight:
                                               theme
@@ -3359,7 +3359,9 @@ void selectProductSales({
                                                       .grey
                                                       .shade600,
                                             ),
-                                            previewLine().wastageNote().isNotEmpty
+                                            previewLine()
+                                                    .wastageNote()
+                                                    .isNotEmpty
                                                 ? '(${previewLine().wastageNote()})'
                                                 : '',
                                           ),
@@ -3387,7 +3389,7 @@ void selectProductSales({
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b2
+                                                  .b3
                                                   .fontSize,
                                           fontWeight:
                                               theme
