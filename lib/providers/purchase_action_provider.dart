@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_purchase/purchase_edit_rules.dart';
 import 'package:stockall/classes/temp_purchase/purchase_list_item/purchase_list_item.dart';
 import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/purchases/create_purchase/create_purchase.dart';
 
@@ -112,14 +115,7 @@ class PurchaseActionProvider extends ChangeNotifier {
   }) async {
     try {
       if (purchase != null) {
-        var res = await returnPurchaseProvider().deletePurchase(
-          purchase,
-          updateInventory,
-          false,
-        );
-        if (res == 0) {
-          return 0;
-        }
+        return await _updatePurchaseInPlace(purchase);
       }
       var tempUuid = uuidGen();
       var tempPurchase = TempPurchase(
@@ -222,11 +218,133 @@ class PurchaseActionProvider extends ChangeNotifier {
     }
   }
 
+  // Saves the edit of [purchase] under the same uuid. Date, staff,
+  // department and payments are kept from the current local copy;
+  // stock changes only by the difference between the old and new
+  // lines, after the purchase is saved.
+  Future<int> _updatePurchaseInPlace(TempPurchase purchase) async {
+    final purchaseUuid = purchase.uuid;
+    if (purchaseUuid == null || purchaseUuid.isEmpty) {
+      return 0;
+    }
+    final base =
+        PurchaseFunc().getSinglePurchase(uuid: purchaseUuid) ?? purchase;
+    // Backstop for editPurchase: without stored lines the old stock
+    // is unknown.
+    if (!canEditPurchase(base)) {
+      await mainLocalLog('Purchase Edit Blocked, No Stored Items');
+      return 0;
+    }
+    final oldItems = List<TempItemPurchaseRecord>.from(base.items!);
+
+    // The supplier may have been deleted since: keep the saved one
+    // unless another was picked.
+    final supplierDeleted =
+        base.supplierId != null &&
+        !returnSuppliersProvider().suppliers.any(
+          (supp) => supp.uuid == base.supplierId,
+        );
+    final keepSupplier = tempSupplier == null && supplierDeleted;
+
+    final isManageStorage =
+        returnShopProvider().userShop()?.manageInventoryStorage == true;
+    List<TempItemPurchaseRecord> purchaseRecords =
+        purchaseListItems
+            .map(
+              (item) => TempItemPurchaseRecord(
+                unitUuid: item.unitUuid,
+                unitsList: item.getUnitListFinal(),
+                unit: item.getSelectedUnit().name,
+                customPrice: item.customPrice,
+                originalPrice: item.originalPrice,
+                createdAt: base.createdAt,
+                shopId: base.shopId,
+                staffId: base.staffId,
+                itemId:
+                    isManageStorage
+                        ? null
+                        : (item.itemUuid ?? item.storageItemUuid),
+                storageItemId:
+                    isManageStorage
+                        ? (item.storageItemUuid ?? item.itemUuid)
+                        : null,
+                itemName: item.itemName,
+                purchaseId: purchaseUuid,
+                quantity: item.quantity,
+                supplierId:
+                    keepSupplier ? base.supplierId : tempSupplier?.uuid,
+                total: item.getPrice(),
+                uuid: uuidGen(),
+                isGroup: item.isGroup,
+                qttyPerGroup: item.qttyPerGroup,
+              ),
+            )
+            .toList();
+
+    var updatedPurchase = TempPurchase(
+      createdAt: base.createdAt,
+      shopId: base.shopId,
+      staffId: base.staffId,
+      staffName: base.staffName,
+      departmentUuid: base.departmentUuid,
+      departmentName: base.departmentName,
+      supplierId: keepSupplier ? base.supplierId : tempSupplier?.uuid,
+      supplierName: keepSupplier ? base.supplierName : tempSupplier?.name,
+      total: totalPurchaseAmount(),
+      uuid: purchaseUuid,
+      isCustomPriceSet: customTotalAmount != null,
+      updatedAt: DateTime.now(),
+      purchasePayments: base.purchasePayments,
+      items: purchaseRecords,
+    );
+
+    var purchaseRes = await returnPurchaseProvider().updatePurchase(
+      updatedPurchase,
+    );
+    if (purchaseRes == null) {
+      return 0;
+    }
+
+    await returnPurchaseProvider().applyPurchaseEditInventory(
+      oldItems: oldItems,
+      newItems: purchaseRecords,
+      purchaseUuid: purchaseUuid,
+      createdAt: base.createdAt,
+    );
+    clearAll();
+    if (isManageStorage) {
+      await returnStorageProductProvider().getStorageProductsOffline(
+        shopId(),
+      );
+    } else {
+      await returnData().getProductsOffline(shopId());
+    }
+    syncData();
+    await returnPurchaseProvider().loadPurchases(shopId());
+    return 1;
+  }
+
   void editPurchase({
     required TempPurchase purchase,
     required BuildContext context,
   }) {
     try {
+      // Purchases saved before lines were stored can't be edited:
+      // the old stock is unknown and saving would wipe the lines.
+      if (!canEditPurchase(purchase)) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return InfoAlert(
+              theme: returnTheme(context, listen: false),
+              message:
+                  "This purchase was recorded before item lines were saved, so it can't be edited. Delete it (with 'update inventory' off) and record it again if needed.",
+              title: "Can't Edit Purchase",
+            );
+          },
+        );
+        return;
+      }
       // List<TempItemPurchaseRecord> records =
       //     returnPurchaseProvider()
       //         .itemPurchaseRecords()

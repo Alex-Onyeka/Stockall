@@ -118,7 +118,7 @@ class TempPurchase extends HiveObject {
       'is_custom_price_set': isCustomPriceSet,
       'payments':
           purchasePayments.map((e) => e.toJson()).toList(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
       // Left out when empty so an upsert never clears stored items.
       if (items?.isNotEmpty == true)
         'items': TempItemPurchaseRecord.itemsToJson(items!),

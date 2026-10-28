@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_item_history/item_history_event_class.dart
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/classes/temp_purchase/purchase_edit_rules.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/created_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
@@ -147,9 +148,6 @@ class PurchaseProvider extends ChangeNotifier {
         return null;
       }
     } else {
-      purchase.updatedAt = DateTime.now().add(
-        Duration(days: 1),
-      );
       try {
         var res = await PurchaseFunc().createPurchase(
           purchase,
@@ -1000,8 +998,35 @@ class PurchaseProvider extends ChangeNotifier {
         final updatedPurchases =
             UpdatedPurchasesFunc().getPurchaseIds();
 
+        final pendingDeleted =
+            DeletedPurchasesFunc()
+                .getPurchaseIds()
+                .map((d) => d.purchaseUuid)
+                .toSet();
+
         for (final updated in updatedPurchases) {
-          final localPurchases = updated.purchase;
+          final uuid = updated.purchase.uuid;
+          final localCopy =
+              uuid == null
+                  ? null
+                  : PurchaseFunc().getSinglePurchase(
+                    uuid: uuid,
+                  );
+          // Deleted locally and waiting to sync: don't send it
+          // back to the server.
+          if (localCopy == null &&
+              pendingDeleted.contains(uuid)) {
+            await UpdatedPurchasesFunc().deleteIfUnchanged(
+              updated,
+            );
+            continue;
+          }
+          // The current local copy holds every later local
+          // change, so the newest edit is what gets sent.
+          final localPurchases = purchaseToPush(
+            updated.purchase,
+            localCopy,
+          );
 
           localPurchases.updatedAt ??=
               DateTime.now().toLocal();
@@ -1025,10 +1050,9 @@ class PurchaseProvider extends ChangeNotifier {
             await mainLocalLog(
               'Inserted product with uuid ${localPurchases.uuid}',
             );
-            await UpdatedPurchasesFunc()
-                .deleteUpdatedPurchase(
-                  localPurchases.uuid ?? '',
-                );
+            await UpdatedPurchasesFunc().deleteIfUnchanged(
+              updated,
+            );
           } else {
             final remoteUpdatedAtRaw =
                 remoteData['updated_at'];
@@ -1049,10 +1073,10 @@ class PurchaseProvider extends ChangeNotifier {
               "Remote updatedAt: $remoteUpdatedAt",
             );
 
-            if (remoteUpdatedAt == null ||
-                localPurchases.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
+            if (shouldPushPurchaseUpdate(
+              localUpdatedAt: localPurchases.updatedAt!,
+              remoteUpdatedAt: remoteUpdatedAt,
+            )) {
               await supabase
                   .from(tableName)
                   .update(localPurchases.toJson())
@@ -1060,20 +1084,17 @@ class PurchaseProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Purchase with uuid ${localPurchases.uuid}',
               );
-              await UpdatedPurchasesFunc()
-                  .deleteUpdatedPurchase(
-                    localPurchases.uuid ?? '',
-                  );
             } else {
               await mainLocalLog(
                 'Skipped Purchase ${localPurchases.uuid}, remote is newer ✅',
               );
             }
+            await UpdatedPurchasesFunc().deleteIfUnchanged(
+              updated,
+            );
           }
         }
 
-        await UpdatedPurchasesFunc()
-            .clearUpdatedPurchases();
         await mainLocalLog(
           'Unsynced Purchase products cleared',
         );
@@ -1317,6 +1338,283 @@ class PurchaseProvider extends ChangeNotifier {
       }
     } catch (e) {
       await mainLocalLog('Error ${e.toString()}');
+    }
+
+    notifyListeners();
+  }
+
+  // Item uuid and stored quantity (sheets for 2D items) of one
+  // purchase line, converted the same way as
+  // createItemPurchaseRecord. Null when the item is not found.
+  MapEntry<String, double>? _purchaseLineStock(
+    TempItemPurchaseRecord item,
+    bool isManageStorage,
+  ) {
+    if (isManageStorage) {
+      final storageProduct = _findStorageProduct(
+        item.storageItemId ?? item.itemId,
+      );
+      if (storageProduct?.uuid == null) return null;
+      final selectedUnit = _resolveSelectedUnitForStorage(
+        item,
+        storageProduct!,
+      );
+      return MapEntry(
+        storageProduct.uuid!,
+        storageProduct.actualFromUnit(
+              selectedUnit,
+              item.quantity ?? 0,
+            ) /
+            storageProduct.dimensionArea(),
+      );
+    }
+    final product = _findProduct(
+      item.itemId ?? item.storageItemId,
+    );
+    if (product?.uuid == null) return null;
+    final selectedUnit = _resolveSelectedUnitForProduct(
+      item,
+      product!,
+    );
+    final isDimensionalSheet =
+        product.quantityType == 2 &&
+        selectedUnit.dimensionType !=
+            ProductUnitsClass.areaUnit;
+    final area = selectedUnit.getQuantityEquivMultiplied(
+      index: 1,
+      product: product,
+      newQuantity: item.quantity ?? 0,
+      customWidth:
+          isDimensionalSheet ? product.widthDimension : null,
+      customHeight:
+          isDimensionalSheet ? product.heightDimension : null,
+    );
+    return MapEntry(
+      product.uuid!,
+      area / product.dimensionArea(),
+    );
+  }
+
+  /// Applies an edit of purchase [purchaseUuid] to stock by
+  /// difference: each item changes by its new minus old stored
+  /// quantity, with one history entry per changed item. Nothing is
+  /// reversed or added again in full.
+  Future<void> applyPurchaseEditInventory({
+    required List<TempItemPurchaseRecord> oldItems,
+    required List<TempItemPurchaseRecord> newItems,
+    required String purchaseUuid,
+    required DateTime createdAt,
+  }) async {
+    try {
+      final isManageStorage =
+          returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true;
+      List<MapEntry<String, double>> linesStock(
+        List<TempItemPurchaseRecord> items,
+      ) =>
+          items
+              .map(
+                (item) =>
+                    _purchaseLineStock(item, isManageStorage),
+              )
+              .whereType<MapEntry<String, double>>()
+              .toList();
+      final deltas = purchaseStockDeltas(
+        stockByItem(linesStock(oldItems)),
+        stockByItem(linesStock(newItems)),
+      );
+      final idDigits = returnOnlyDigits(purchaseUuid);
+
+      for (final entry in deltas.entries) {
+        final delta = entry.value;
+        final isIncrease = delta > 0;
+
+        if (isManageStorage) {
+          final storageProduct = _findStorageProduct(
+            entry.key,
+          );
+          if (storageProduct == null) continue;
+          final primaryUnit =
+              storageProduct.getPrimaryUnit();
+          final oldQty = storageProduct.quantity ?? 0;
+          final newQty = oldQty + delta;
+          final primaryChange = primaryUnit
+              .getQuantityEquivDivided(
+                index: 4,
+                quantityTwo: delta.abs(),
+              );
+
+          var newPr = storageProduct.copyWith();
+          newPr.quantity = newQty;
+          newPr.updatedAt = DateTime.now();
+
+          var newUpdate = StorageItemHistory(
+            event:
+                isIncrease
+                    ? StorageItemHistoryEventClass.purchase
+                    : StorageItemHistoryEventClass
+                        .purchaseDeleted,
+            source:
+                isIncrease
+                    ? StorageItemHistoryEventClass
+                        .purchaseSource
+                    : StorageItemHistoryEventClass
+                        .storageSource,
+            destination:
+                isIncrease
+                    ? StorageItemHistoryEventClass
+                        .storageDestination
+                    : StorageItemHistoryEventClass
+                        .purchaseDestination,
+            shopId: shopId(),
+            title: 'Purchase Updated',
+            createdAt: createdAt,
+            storageDepartmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            storageDepartmentUuid:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
+            storageItemName: newPr.name,
+            storageItemUuid: newPr.uuid,
+            storageStaffId: currentUser().userId,
+            storageStaffName: currentUser().name,
+            storageItemOldValue: formatLargeNumberDouble(
+              primaryUnit.getQuantityEquivDivided(
+                index: 4,
+                quantityTwo: oldQty,
+              ),
+            ),
+            storageItemNewValue: formatLargeNumberDouble(
+              primaryUnit.getQuantityEquivDivided(
+                index: 4,
+                quantityTwo: newQty,
+              ),
+            ),
+            uuid: uuidGen(),
+            desc:
+                isIncrease
+                    ? '${formatDimension(primaryChange)} ${primaryUnit.name} of This Item Added due to Purchase Update. Purchase Id: #$idDigits'
+                    : '${formatDimension(primaryChange)} ${primaryUnit.name} of This Item Removed due to Purchase Update. Purchase Id: #$idDigits',
+            isIncreased: isIncrease,
+            quantityChange:
+                isIncrease ? primaryChange : -primaryChange,
+            storagePrimaryUnit: primaryUnit.name,
+            storageUnit: formatHistoryUnit(
+              selectedUnit: primaryUnit.name,
+              primaryUnit: primaryUnit.name,
+              primaryQuantity: delta.abs(),
+            ),
+          );
+
+          await returnStorageProductProvider()
+              .updateProduct(
+                product: newPr,
+                storageItemHistory: newUpdate,
+                isQuantityUpdate: true,
+                quantityChange: delta.abs(),
+                isIncrement: isIncrease,
+              );
+        } else {
+          final product = _findProduct(entry.key);
+          if (product == null) continue;
+          final primaryUnit = product.getPrimaryUnit();
+          final areaPerSheet = product.dimensionArea();
+          final deltaArea = delta * areaPerSheet;
+          final oldArea = product.getActualQuantity() ?? 0;
+          final newArea = oldArea + deltaArea;
+          final primaryChange = primaryUnit
+              .getQuantityEquivDivided(
+                index: 1,
+                newQuantity: deltaArea.abs(),
+                product: product,
+              );
+
+          var newPr = product.copyWith();
+          newPr.quantity = newArea / areaPerSheet;
+          newPr.updatedAt = DateTime.now();
+
+          ItemHistory itemHistory = ItemHistory(
+            createdAt: createdAt,
+            event:
+                isIncrease
+                    ? ItemHistoryEventClass.purchase
+                    : ItemHistoryEventClass.returnEvent,
+            isManaged: true,
+            source:
+                isIncrease
+                    ? ItemHistoryEventClass.purchaseSource
+                    : ItemHistoryEventClass.productSource,
+            destination:
+                isIncrease
+                    ? ItemHistoryEventClass.productDestination
+                    : ItemHistoryEventClass
+                        .purchaseDestination,
+            desc:
+                isIncrease
+                    ? '${formatDimension(primaryChange)} ${primaryUnit.name} of this Item Added due to Purchase Update. Purchase Id: #$idDigits'
+                    : '${formatDimension(primaryChange)} ${primaryUnit.name} of this Item Returned due to Purchase Update. Purchase Id: #$idDigits',
+            shopId: shopId(),
+            isIncreased: isIncrease,
+            oldValue: formatLargeNumberDouble(
+              primaryUnit.getQuantityEquivDivided(
+                index: 1,
+                newQuantity: oldArea,
+                product: product,
+              ),
+            ),
+            newValue: formatLargeNumberDouble(
+              newPr
+                  .getPrimaryUnit()
+                  .getQuantityEquivDivided(
+                    index: 1,
+                    newQuantity:
+                        newPr.getActualQuantity() ?? 0,
+                    product: newPr,
+                  ),
+            ),
+            title:
+                isIncrease
+                    ? 'Item Purchased (Purchase Updated)'
+                    : 'Item Returned (Purchase Updated)',
+            quantityChange:
+                isIncrease ? primaryChange : -primaryChange,
+            departmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            departmentUuid:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
+            itemName: newPr.name,
+            itemUuid: newPr.uuid,
+            primaryUnit: primaryUnit.name,
+            unit: formatHistoryUnit(
+              selectedUnit: primaryUnit.name,
+              primaryUnit: primaryUnit.name,
+              primaryQuantity: deltaArea.abs(),
+            ),
+          );
+
+          await returnData().updateProduct(
+            itemHistory: itemHistory,
+            includeQuantity: false,
+            isIncrement: isIncrease,
+            isQuantityUpdate: true,
+            quantityChange: delta.abs(),
+            product: newPr,
+          );
+        }
+      }
+    } catch (e) {
+      await mainLocalLog(
+        'Error Applying Purchase Edit Inventory: ${e.toString()}',
+      );
     }
 
     notifyListeners();
