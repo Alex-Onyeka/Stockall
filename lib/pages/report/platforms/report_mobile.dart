@@ -13,6 +13,7 @@ import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
 import 'package:stockall/pages/report/order_report/order_report_page.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report/storage_report_page.dart';
 
@@ -37,9 +38,7 @@ class ReportMobile extends StatelessWidget {
           SizedBox(height: 20),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -47,11 +46,7 @@ class ReportMobile extends StatelessWidget {
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b1
-                                    .fontSize,
+                            fontSize: theme.mobileTexts.b1.fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           'Reports List:',
@@ -63,9 +58,7 @@ class ReportMobile extends StatelessWidget {
                       children: [
                         Visibility(
                           visible: authorization(
-                            authorized:
-                                Authorizations()
-                                    .viewItemsReport,
+                            authorized: Authorizations().viewItemsReport,
                           ),
                           child: ReportListTile(
                             isActive: true,
@@ -74,9 +67,7 @@ class ReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          const ItemsReportPage(),
+                                  builder: (context) => const ItemsReportPage(),
                                 ),
                               );
                             },
@@ -88,14 +79,9 @@ class ReportMobile extends StatelessWidget {
                         Visibility(
                           visible:
                               authorization(
-                                authorized:
-                                    Authorizations()
-                                        .viewStorageReport,
+                                authorized: Authorizations().viewStorageReport,
                               ) &&
-                              shop(
-                                    context,
-                                  )?.manageInventoryStorage ==
-                                  true,
+                              shop(context)?.manageInventoryStorage == true,
                           child: ReportListTile(
                             isActive: true,
                             theme: theme,
@@ -104,17 +90,13 @@ class ReportMobile extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder:
-                                      (
-                                        context,
-                                      ) =>
-                                          const StorageReportPage(),
+                                      (context) => const StorageReportPage(),
                                 ),
                               );
                             },
                             subText:
                                 'View your Storage stock summary, items main report, analysis and history',
-                            title:
-                                'Storage Report',
+                            title: 'Storage Report',
                           ),
                         ),
                         Visibility(
@@ -122,13 +104,11 @@ class ReportMobile extends StatelessWidget {
                               !isStoreKeeper() &&
                               (authorization(
                                     authorized:
-                                        Authorizations()
-                                            .viewReceiptSalesReport,
+                                        Authorizations().viewReceiptSalesReport,
                                   ) ||
                                   authorization(
                                     authorized:
-                                        Authorizations()
-                                            .viewItemSalesReport,
+                                        Authorizations().viewItemSalesReport,
                                   )),
                           child: ReportListTile(
                             isActive: true,
@@ -137,9 +117,7 @@ class ReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder:
-                                      (context) =>
-                                          const SalesReportPage(),
+                                  builder: (context) => const SalesReportPage(),
                                 ),
                               );
                             },
@@ -153,8 +131,7 @@ class ReportMobile extends StatelessWidget {
                               !isStoreKeeper() &&
                               authorization(
                                 authorized:
-                                    Authorizations()
-                                        .viewInvoiceSalesReport,
+                                    Authorizations().viewInvoiceSalesReport,
                               ),
                           child: ReportListTile(
                             isActive: true,
@@ -179,8 +156,7 @@ class ReportMobile extends StatelessWidget {
                               !isStoreKeeper() &&
                               authorization(
                                 authorized:
-                                    Authorizations()
-                                        .viewInvoiceSalesReport,
+                                    Authorizations().viewInvoiceSalesReport,
                               ) &&
                               SalesAuthAction().manageOrdersAction(
                                 context: context,
@@ -192,15 +168,35 @@ class ReportMobile extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
+                                  builder: (context) => const OrderReportPage(),
+                                ),
+                              );
+                            },
+                            subText: 'View a breakdown of your order reports',
+                            title: 'Order Report',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized: Authorizations().managePurchases,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
                                   builder:
-                                      (context) =>
-                                          const OrderReportPage(),
+                                      (context) => const PurchaseReportPage(),
                                 ),
                               );
                             },
                             subText:
-                                'View a breakdown of your order reports',
-                            title: 'Order Report',
+                                'View a breakdown of your purchases, payments and balances owed to suppliers',
+                            title: 'Purchase Report',
                           ),
                         ),
                         Visibility(
@@ -230,31 +226,25 @@ class ReportMobile extends StatelessWidget {
                               isActive: true,
                               theme: theme,
                               action: () {
-                                ReportAuthAction()
-                                    .viewEventsLogAction(
-                                      context: context,
-                                      action: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return EventsLog();
-                                            },
-                                          ),
-                                        );
-                                      },
+                                ReportAuthAction().viewEventsLogAction(
+                                  context: context,
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return EventsLog();
+                                        },
+                                      ),
                                     );
+                                  },
+                                );
                               },
-                              subText:
-                                  'View a List of all Event Logs',
+                              subText: 'View a List of all Event Logs',
                               title: 'Events Log',
                             ),
                           ),
-                          isVisible:
-                              !ReportAuthAction()
-                                  .viewEventsLogAction(),
+                          isVisible: !ReportAuthAction().viewEventsLogAction(),
                         ),
                         Visibility(
                           visible: !isStoreKeeper(),
@@ -271,8 +261,7 @@ class ReportMobile extends StatelessWidget {
                                 ),
                               );
                             },
-                            subText:
-                                'View a List of all Error Logs',
+                            subText: 'View a List of all Error Logs',
                             title: 'Error Log',
                           ),
                         ),
@@ -280,10 +269,8 @@ class ReportMobile extends StatelessWidget {
                           isActive: false,
                           theme: theme,
                           action: () {},
-                          subText:
-                              'View a break down of Staff activities',
-                          title:
-                              'Staff Report (Coming Soon)',
+                          subText: 'View a break down of Staff activities',
+                          title: 'Staff Report (Coming Soon)',
                         ),
                         ReportListTile(
                           isActive: false,
@@ -291,8 +278,7 @@ class ReportMobile extends StatelessWidget {
                           action: () {},
                           subText:
                               'View a detailed breakdown of your expenses.',
-                          title:
-                              'Expenses Report (Coming Soon)',
+                          title: 'Expenses Report (Coming Soon)',
                         ),
                         SizedBox(height: 30),
                       ],
