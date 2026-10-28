@@ -157,6 +157,16 @@ class SuppliersProvider extends ChangeNotifier {
     }
     await fetchSuppliers(shopProvider.userShop()!.shopId!);
     notifyListeners();
+    // Purchases keep the name saved when they were made: give them
+    // the new one. A failure here never fails the supplier edit.
+    try {
+      await returnPurchaseProvider().renameSupplierOnPurchases(
+        supplierUuid: supplier.uuid!,
+        name: supplier.name,
+      );
+    } catch (e) {
+      await mainLocalLog('Rename supplier on purchases failed ❌: $e');
+    }
   }
 
   /// Delete a Supplier by ID

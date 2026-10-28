@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/locations/country_model.dart';
+import 'package:stockall/classes/temp_suppliers/supplier_rules.dart';
 import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -133,9 +134,15 @@ class _AddSupplierDesktopState
                           .userShop()!
                           .shopId!,
                   name: widget.nameController.text,
-                  email: widget.emailController.text,
-                  phone: widget.phoneController.text,
-                  address: widget.addressController.text,
+                  email: supplierFieldOrNull(
+                    widget.emailController.text,
+                  ),
+                  phone: supplierFieldOrNull(
+                    widget.phoneController.text,
+                  ),
+                  address: supplierFieldOrNull(
+                    widget.addressController.text,
+                  ),
                   country:
                       returnCountryProvider()
                           .selectedCountry
