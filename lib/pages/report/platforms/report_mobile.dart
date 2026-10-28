@@ -16,6 +16,7 @@ import 'package:stockall/pages/report/order_report/order_report_page.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report/storage_report_page.dart';
+import 'package:stockall/pages/report/supplier_report/supplier_report_table/supplier_report_table_page.dart';
 
 class ReportMobile extends StatelessWidget {
   const ReportMobile({super.key});
@@ -197,6 +198,32 @@ class ReportMobile extends StatelessWidget {
                             subText:
                                 'View a breakdown of your purchases, payments and balances owed to suppliers',
                             title: 'Purchase Report',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .managePurchases,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const SupplierReportTablePage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                "View your suppliers, what you've bought from each, and what you still owe",
+                            title: 'Supplier Report',
                           ),
                         ),
                         Visibility(

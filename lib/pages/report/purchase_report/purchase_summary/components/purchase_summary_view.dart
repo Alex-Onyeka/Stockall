@@ -2,19 +2,18 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/report_trend_chart.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/components/purchase_report_table_view.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/purchase_report_table_page.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_summary/class/purchase_summary_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
-import 'package:stockall/pages/report/sales_report_/receipts_report_summary/class/receipts_report_summary_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 /// Shared body of the Purchase Summary and Analysis page (desktop +
@@ -178,8 +177,6 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
 
   String _percent(double v) =>
       '${formatLargeNumberDouble(double.parse(v.toStringAsFixed(2)))}%';
-
-  String _compact(double v) => NumberFormat.compact().format(v);
 
   BoxDecoration get _card => BoxDecoration(
     color: Colors.white,
@@ -661,78 +658,6 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
   // charts
   // ---------------------------------------------------------------
 
-  String _bucketLabel(ReceiptsTrendInterval? interval, DateTime d) {
-    switch (interval) {
-      case ReceiptsTrendInterval.hourly:
-        return DateFormat('ha').format(d);
-      case ReceiptsTrendInterval.monthly:
-        return DateFormat('MMM yy').format(d);
-      case ReceiptsTrendInterval.daily:
-      case ReceiptsTrendInterval.weekly:
-      case null:
-        return formatMonthAndDay(d);
-    }
-  }
-
-  String _intervalLabel(ReceiptsTrendInterval? interval) {
-    switch (interval) {
-      case ReceiptsTrendInterval.hourly:
-        return 'Hourly';
-      case ReceiptsTrendInterval.daily:
-      case null:
-        return 'Daily';
-      case ReceiptsTrendInterval.weekly:
-        return 'Weekly (from Monday)';
-      case ReceiptsTrendInterval.monthly:
-        return 'Monthly';
-    }
-  }
-
-  Widget Function(double, TitleMeta) _bottomTitle(
-    PurchaseSummaryResult r,
-  ) {
-    return (value, meta) {
-      final i = value.round();
-      if (i < 0 || i >= r.trend.length || value != i) {
-        return const SizedBox.shrink();
-      }
-      final step = math.max(1, (r.trend.length / 6).ceil());
-      if (i % step != 0) return const SizedBox.shrink();
-      return SideTitleWidget(
-        meta: meta,
-        child: Text(
-          _bucketLabel(r.interval, r.trend[i].start),
-          style: const TextStyle(fontSize: 9),
-        ),
-      );
-    };
-  }
-
-  Widget _legend(List<(String, Color)> items) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 4,
-      children: [
-        for (final (label, color) in items)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 4,
-            children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Text(label, style: const TextStyle(fontSize: 10)),
-            ],
-          ),
-      ],
-    );
-  }
-
   Widget _chartCard(
     ThemeProvider theme, {
     required String title,
@@ -754,7 +679,8 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
     final spendColor = theme.lightModeColor.prColor300;
     const paidColor = _paidColor;
     final trend = r.trend;
-    final subtitle = '${_intervalLabel(r.interval)}, by business day';
+    final subtitle =
+        '${reportTrendIntervalLabel(r.interval)}, by business day';
     if (trend.isEmpty) {
       return _chartCard(
         theme,
@@ -763,100 +689,24 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
         child: _emptyText(theme, 'No purchases in this period.'),
       );
     }
-    double maxY = 0;
-    for (final p in trend) {
-      maxY = math.max(maxY, math.max(p.spend, p.paid));
-    }
-    if (maxY == 0) maxY = 1;
-
-    LineChartBarData series(
-      double Function(PurchaseTrendPoint) value,
-      Color color,
-    ) {
-      return LineChartBarData(
-        spots: [
-          for (var i = 0; i < trend.length; i++)
-            FlSpot(i.toDouble(), value(trend[i])),
-        ],
-        color: color,
-        barWidth: 2,
-        isCurved: false,
-        dotData: FlDotData(show: trend.length <= 31),
-      );
-    }
-
     return _chartCard(
       theme,
       title: 'Spend Trend',
       subtitle: subtitle,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
-        children: [
-          _legend([('Spend', spendColor), ('Paid', paidColor)]),
-          SizedBox(
-            height: 220,
-            child: LineChart(
-              LineChartData(
-                minY: 0,
-                maxY: maxY * 1.1,
-                gridData: const FlGridData(drawVerticalLine: false),
-                borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
-                  topTitles: const AxisTitles(),
-                  rightTitles: const AxisTitles(),
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 44,
-                      getTitlesWidget:
-                          (value, meta) => SideTitleWidget(
-                            meta: meta,
-                            child: Text(
-                              _compact(value),
-                              style: const TextStyle(fontSize: 9),
-                            ),
-                          ),
-                    ),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 24,
-                      interval: 1,
-                      getTitlesWidget: _bottomTitle(r),
-                    ),
-                  ),
-                ),
-                lineTouchData: LineTouchData(
-                  touchTooltipData: LineTouchTooltipData(
-                    getTooltipColor: (_) => Colors.white,
-                    getTooltipItems:
-                        (spots) =>
-                            spots.map((s) {
-                              final label =
-                                  s.barIndex == 0 ? 'Spend' : 'Paid';
-                              final when = _bucketLabel(
-                                r.interval,
-                                trend[s.x.round()].start,
-                              );
-                              return LineTooltipItem(
-                                '$when\n$label: ${_money(s.y)}',
-                                TextStyle(
-                                  fontSize: 10,
-                                  color: s.bar.color,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              );
-                            }).toList(),
-                  ),
-                ),
-                lineBarsData: [
-                  series((p) => p.spend, spendColor),
-                  series((p) => p.paid, paidColor),
-                ],
-              ),
-            ),
+      child: ReportTrendChart(
+        starts: [for (final p in trend) p.start],
+        interval: r.interval,
+        money: _money,
+        series: [
+          ReportTrendSeries(
+            label: 'Spend',
+            color: spendColor,
+            values: [for (final p in trend) p.spend],
+          ),
+          ReportTrendSeries(
+            label: 'Paid',
+            color: paidColor,
+            values: [for (final p in trend) p.paid],
           ),
         ],
       ),
@@ -869,7 +719,8 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
   ) {
     final trend = r.trend;
     final subtitle =
-        '${_intervalLabel(r.interval)} purchase counts by status';
+        '${reportTrendIntervalLabel(r.interval)} '
+        'purchase counts by status';
     if (trend.isEmpty) {
       return _chartCard(
         theme,
@@ -921,10 +772,12 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8,
         children: [
-          _legend([
-            for (final s in PurchaseStatus.values)
-              (s.label, _statusColor(s)),
-          ]),
+          ReportChartLegend(
+            items: [
+              for (final s in PurchaseStatus.values)
+                (s.label, _statusColor(s)),
+            ],
+          ),
           SizedBox(
             height: 220,
             child: BarChart(
@@ -957,7 +810,10 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 24,
-                      getTitlesWidget: _bottomTitle(r),
+                      getTitlesWidget: reportTrendBottomTitle(
+                        [for (final p in r.trend) p.start],
+                        r.interval,
+                      ),
                     ),
                   ),
                 ),
@@ -967,7 +823,7 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
                     getTooltipItem: (group, _, rod, _) {
                       final p = trend[group.x];
                       return BarTooltipItem(
-                        '${_bucketLabel(r.interval, p.start)}\n'
+                        '${reportTrendBucketLabel(r.interval, p.start)}\n'
                         'Paid: ${p.paidCount}\n'
                         'Partly Paid: ${p.partlyPaidCount}\n'
                         'Unpaid: ${p.unpaidCount}',

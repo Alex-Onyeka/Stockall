@@ -21,17 +21,20 @@ import 'package:stockall/pages/report/order_report/order_report_page.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report/storage_report_page.dart';
+import 'package:stockall/pages/report/supplier_report/supplier_report_table/supplier_report_table_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ReportDesktop extends StatefulWidget {
   const ReportDesktop({super.key});
 
   @override
-  State<ReportDesktop> createState() => _ReportDesktopState();
+  State<ReportDesktop> createState() =>
+      _ReportDesktopState();
 }
 
 class _ReportDesktopState extends State<ReportDesktop> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -71,9 +74,13 @@ class _ReportDesktopState extends State<ReportDesktop> {
         },
         theme: theme,
         notifications:
-            returnNotificationProvider(context).notifications().isEmpty
+            returnNotificationProvider(
+                  context,
+                ).notifications().isEmpty
                 ? []
-                : returnNotificationProvider(context).notifications(),
+                : returnNotificationProvider(
+                  context,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -98,11 +105,13 @@ class _ReportDesktopState extends State<ReportDesktop> {
                             isLoading = true;
                           });
                           if (safeContext.mounted) {
-                            var res = await AuthService().signOut(
-                              context: safeContext,
-                              allowLogout: false,
-                            );
-                            if (res == 0 && safeContext.mounted) {
+                            var res = await AuthService()
+                                .signOut(
+                                  context: safeContext,
+                                  allowLogout: false,
+                                );
+                            if (res == 0 &&
+                                safeContext.mounted) {
                               setState(() {
                                 isLoading = false;
                               });
@@ -115,9 +124,13 @@ class _ReportDesktopState extends State<ReportDesktop> {
                 },
                 theme: theme,
                 notifications:
-                    returnNotificationProvider(context).notifications().isEmpty
+                    returnNotificationProvider(
+                          context,
+                        ).notifications().isEmpty
                         ? []
-                        : returnNotificationProvider(context).notifications(),
+                        : returnNotificationProvider(
+                          context,
+                        ).notifications(),
               ),
               Expanded(
                 child: DesktopPageContainer(
@@ -126,7 +139,8 @@ class _ReportDesktopState extends State<ReportDesktop> {
                       children: [
                         TopBanner(
                           turnOnBackNavButton: false,
-                          subTitle: 'Manage your business from report',
+                          subTitle:
+                              'Manage your business from report',
                           title: 'Reports',
                           theme: theme,
                           bottomSpace: 40,
@@ -137,9 +151,10 @@ class _ReportDesktopState extends State<ReportDesktop> {
                         SizedBox(height: 20),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                            ),
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                ),
                             child: SingleChildScrollView(
                               child: Column(
                                 children: [
@@ -148,8 +163,13 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme.mobileTexts.b1.fontSize,
-                                          fontWeight: FontWeight.bold,
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
                                         ),
                                         'Reports List:',
                                       ),
@@ -161,7 +181,8 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                       Visibility(
                                         visible: authorization(
                                           authorized:
-                                              Authorizations().viewItemsReport,
+                                              Authorizations()
+                                                  .viewItemsReport,
                                         ),
                                         child: ReportListTile(
                                           isActive: true,
@@ -171,14 +192,17 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               context,
                                               MaterialPageRoute(
                                                 builder:
-                                                    (context) =>
+                                                    (
+                                                      context,
+                                                    ) =>
                                                         const ItemsReportPage(),
                                               ),
                                             );
                                           },
                                           subText:
                                               'View your stock summary, items main report, analysis and history',
-                                          title: 'Items Report',
+                                          title:
+                                              'Items Report',
                                         ),
                                       ),
                                       Visibility(
@@ -200,14 +224,17 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               context,
                                               MaterialPageRoute(
                                                 builder:
-                                                    (context) =>
+                                                    (
+                                                      context,
+                                                    ) =>
                                                         const StorageReportPage(),
                                               ),
                                             );
                                           },
                                           subText:
                                               'View your Storage stock summary, items main report, analysis and history',
-                                          title: 'Storage Report',
+                                          title:
+                                              'Storage Report',
                                         ),
                                       ),
                                       Visibility(
@@ -231,14 +258,17 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               context,
                                               MaterialPageRoute(
                                                 builder:
-                                                    (context) =>
+                                                    (
+                                                      context,
+                                                    ) =>
                                                         const SalesReportPage(),
                                               ),
                                             );
                                           },
                                           subText:
                                               'View a breakdown of your Receipt and Item Sales reports',
-                                          title: 'Sales Report',
+                                          title:
+                                              'Sales Report',
                                         ),
                                       ),
                                       Visibility(
@@ -257,14 +287,17 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               context,
                                               MaterialPageRoute(
                                                 builder:
-                                                    (context) =>
+                                                    (
+                                                      context,
+                                                    ) =>
                                                         const InvoiceCreditReportPage(),
                                               ),
                                             );
                                           },
                                           subText:
                                               'View a breakdown of your invoice and credit reports',
-                                          title: 'Invoice/Credit Report',
+                                          title:
+                                              'Invoice/Credit Report',
                                         ),
                                       ),
                                       Visibility(
@@ -277,7 +310,8 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                             ) &&
                                             SalesAuthAction()
                                                 .manageOrdersAction(
-                                                  context: context,
+                                                  context:
+                                                      context,
                                                 ),
                                         child: ReportListTile(
                                           isActive: true,
@@ -287,14 +321,17 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               context,
                                               MaterialPageRoute(
                                                 builder:
-                                                    (context) =>
+                                                    (
+                                                      context,
+                                                    ) =>
                                                         const OrderReportPage(),
                                               ),
                                             );
                                           },
                                           subText:
                                               'View a breakdown of your order reports',
-                                          title: 'Order Report',
+                                          title:
+                                              'Order Report',
                                         ),
                                       ),
                                       Visibility(
@@ -313,18 +350,27 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               context,
                                               MaterialPageRoute(
                                                 builder:
-                                                    (context) =>
+                                                    (
+                                                      context,
+                                                    ) =>
                                                         const PurchaseReportPage(),
                                               ),
                                             );
                                           },
                                           subText:
                                               'View a breakdown of your purchases, payments and balances owed to suppliers',
-                                          title: 'Purchase Report',
+                                          title:
+                                              'Purchase Report',
                                         ),
                                       ),
                                       Visibility(
-                                        visible: !isStoreKeeper(),
+                                        visible:
+                                            !isStoreKeeper() &&
+                                            authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .managePurchases,
+                                            ),
                                         child: ReportListTile(
                                           isActive: true,
                                           theme: theme,
@@ -332,7 +378,33 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) {
+                                                builder:
+                                                    (
+                                                      context,
+                                                    ) =>
+                                                        const SupplierReportTablePage(),
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              "View your suppliers, what you've bought from each, and what you still owe",
+                                          title:
+                                              'Supplier Report',
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
                                                   return CustomerReportPage();
                                                 },
                                               ),
@@ -340,34 +412,39 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                           },
                                           subText:
                                               'View a detailed summary of your customers purchases.',
-                                          title: 'Customer Report',
+                                          title:
+                                              'Customer Report',
                                         ),
                                       ),
                                       SubWrapper(
                                         mainWidget: Visibility(
-                                          visible: !isStoreKeeper(),
+                                          visible:
+                                              !isStoreKeeper(),
                                           child: ReportListTile(
                                             isActive: true,
                                             theme: theme,
                                             action: () {
-                                              ReportAuthAction()
-                                                  .viewEventsLogAction(
-                                                    context: context,
-                                                    action: () {
-                                                      Navigator.push(
+                                              ReportAuthAction().viewEventsLogAction(
+                                                context:
+                                                    context,
+                                                action: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
                                                         context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) {
-                                                            return EventsLog();
-                                                          },
-                                                        ),
-                                                      );
-                                                    },
+                                                      ) {
+                                                        return EventsLog();
+                                                      },
+                                                    ),
                                                   );
+                                                },
+                                              );
                                             },
                                             subText:
                                                 'View A List of all events.',
-                                            title: 'Events Log',
+                                            title:
+                                                'Events Log',
                                           ),
                                         ),
                                         isVisible:
@@ -375,7 +452,8 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                                 .viewEventsLogAction(),
                                       ),
                                       Visibility(
-                                        visible: !isStoreKeeper(),
+                                        visible:
+                                            !isStoreKeeper(),
                                         child: ReportListTile(
                                           isActive: true,
                                           theme: theme,
@@ -383,7 +461,9 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) {
+                                                builder: (
+                                                  context,
+                                                ) {
                                                   return ErrorLog();
                                                 },
                                               ),
@@ -391,7 +471,8 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                           },
                                           subText:
                                               'View a List of all Error Logs',
-                                          title: 'Error Log',
+                                          title:
+                                              'Error Log',
                                         ),
                                       ),
                                       ReportListTile(
@@ -400,7 +481,8 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                         action: () {},
                                         subText:
                                             'View a break down of Staff activities',
-                                        title: 'Staff Report (Coming Soon)',
+                                        title:
+                                            'Staff Report (Coming Soon)',
                                       ),
                                       ReportListTile(
                                         isActive: false,
@@ -408,7 +490,8 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                         action: () {},
                                         subText:
                                             'View a detailed breakdown of your expenses.',
-                                        title: 'Expenses Report (Coming Soon)',
+                                        title:
+                                            'Expenses Report (Coming Soon)',
                                       ),
                                       SizedBox(height: 30),
                                     ],

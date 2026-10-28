@@ -3,6 +3,24 @@ import 'package:stockall/providers/theme_provider.dart';
 
 // Shared copy of the Items Report's pager, for the report tables.
 
+/// Page number (1-based, clamped) and slice bounds for [length]
+/// items split in pages of [pageSize].
+({int page, int pages, int start, int end}) reportPageBounds(
+  int length,
+  int requestedPage, {
+  required int pageSize,
+}) {
+  final pages =
+      length == 0 ? 1 : (length / pageSize).ceil();
+  final page = requestedPage.clamp(1, pages);
+  final start = (page - 1) * pageSize;
+  final end =
+      (start + pageSize) > length
+          ? length
+          : start + pageSize;
+  return (page: page, pages: pages, start: start, end: end);
+}
+
 /// "Showing 1-100 of 250 receipts" plus Previous / Next.
 class ReportPager extends StatelessWidget {
   final ThemeProvider theme;
