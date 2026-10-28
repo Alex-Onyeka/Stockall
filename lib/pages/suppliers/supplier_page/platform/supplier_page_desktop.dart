@@ -1,50 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/temp_suppliers/supplier_rules.dart';
 import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/suppliers/add_supplier/add_supplier.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class SupplierPageDesktop extends StatelessWidget {
-  final String uuid;
+  final SuppliersClass supplier;
   const SupplierPageDesktop({
     super.key,
-    required this.uuid,
+    required this.supplier,
   });
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var tempSupplier = returnSuppliersProvider(
-      context: context,
-    ).suppliers.where((cust) => cust.uuid! == uuid);
-    var supplier =
-        tempSupplier.isNotEmpty
-            ? tempSupplier.first
-            : SuppliersClass(
-              name: 'Name',
-              email: 'email@gmail.com',
-              phone: '08012323215',
-              address: 'Address',
-              city: 'City',
-              state: 'State',
-              createdAt: DateTime.now(),
-              shopId: 1,
-              departmentName:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.name,
-              departmentId:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid,
-            );
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -83,6 +61,18 @@ class SupplierPageDesktop extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Purchases bought from [supplier], for the delete warning. The
+/// loaded purchases, else the ones saved on this device.
+int _purchaseCount(SuppliersClass supplier) {
+  var purchases = returnPurchaseProvider().purchases;
+  if (purchases.isEmpty) {
+    try {
+      purchases = PurchaseFunc().getPurchases();
+    } catch (_) {}
+  }
+  return supplierPurchaseCount(purchases, supplier.uuid ?? '');
 }
 
 class DetailsPageContainer extends StatelessWidget {
@@ -262,16 +252,24 @@ class DetailsPageContainer extends StatelessWidget {
                   iconSize: 18,
                   text: 'Delete',
                   action: () {
-                    // final safeContext = context;
+                    final warning = supplierDeleteWarning(
+                      _purchaseCount(supplier),
+                    );
                     showDialog(
                       context: context,
                       builder: (confirmDialog) {
                         return ConfirmationAlert(
                           theme: theme,
                           message:
-                              'You are about to delete your Supplier, are you sure you want to proceed?',
+                              '${warning == null ? '' : '$warning '}You are about to delete your Supplier, are you sure you want to proceed?',
                           title: 'Are you sure?',
                           action: () async {
+                            // The page's navigator, still usable
+                            // once the page rebuilds without the
+                            // supplier.
+                            final navigator = Navigator.of(
+                              context,
+                            );
                             Navigator.of(
                               confirmDialog,
                             ).pop();
@@ -280,12 +278,8 @@ class DetailsPageContainer extends StatelessWidget {
                                   supplier,
                                   context,
                                 );
-                            await Future.delayed(
-                              Duration(microseconds: 500),
-                              () {},
-                            );
-                            if (context.mounted) {
-                              Navigator.of(context).pop();
+                            if (navigator.mounted) {
+                              navigator.pop();
                             }
                           },
                         );

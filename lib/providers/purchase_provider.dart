@@ -11,6 +11,7 @@ import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchase
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
+import 'package:stockall/classes/temp_suppliers/supplier_rules.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -187,6 +188,84 @@ class PurchaseProvider extends ChangeNotifier {
         return null;
       }
     }
+  }
+
+  /// Saves [name] as the supplier name of every purchase of
+  /// [supplierUuid] (after the supplier is renamed). Only
+  /// supplier_name and updated_at change: no stock, payment, total
+  /// or date. Online it is one partial update on the server, so
+  /// payments saved elsewhere are never overwritten; offline (or
+  /// if that fails) the purchases are queued like any purchase
+  /// edit. Returns the number of local purchases changed.
+  Future<int> renameSupplierOnPurchases({
+    required String supplierUuid,
+    required String name,
+  }) async {
+    final now = DateTime.now();
+    var local = _purchases;
+    if (local.isEmpty) local = PurchaseFunc().getPurchases();
+    final renamed =
+        purchasesToRename(
+          local,
+          supplierUuid: supplierUuid,
+          newName: name,
+          pendingDeletedUuids:
+              DeletedPurchasesFunc()
+                  .getPurchaseIds()
+                  .map((d) => d.purchaseUuid)
+                  .toSet(),
+        ).map((p) => renamedPurchase(p, name, now)).toList();
+
+    bool isOnline = await connectivity.isOnline();
+    if (!isOnline && renamed.isEmpty) return 0;
+
+    var updatedOnline = false;
+    if (isOnline) {
+      try {
+        // The local list may be incomplete: the server update
+        // covers every purchase of the supplier.
+        await supabase
+            .from(tableName)
+            .update({
+              'supplier_name': name,
+              'updated_at': now.toUtc().toIso8601String(),
+            })
+            .eq('supplier_id', supplierUuid)
+            .eq('shop_id', shopId());
+        updatedOnline = true;
+        for (final purchase in renamed) {
+          await PurchaseFunc().createPurchase(purchase);
+        }
+      } catch (e) {
+        await mainLocalLog(
+          '❌❌ Rename Supplier On Purchases Error Online: ${e.toString()}',
+        );
+      }
+    }
+
+    if (!updatedOnline) {
+      final created =
+          CreatedPurchasesFunc()
+              .getPurchases()
+              .map((c) => c.purchase.uuid)
+              .toSet();
+      for (final purchase in renamed) {
+        await PurchaseFunc().createPurchase(purchase);
+        if (created.contains(purchase.uuid)) {
+          await CreatedPurchasesFunc().createPurchases(
+            CreatedPurchases(purchase: purchase),
+          );
+        } else {
+          await UpdatedPurchasesFunc().createUpdatedPurchase(
+            UpdatedPurchases(purchase: purchase),
+          );
+        }
+      }
+      syncData();
+    }
+
+    await loadPurchases(shopId());
+    return renamed.length;
   }
 
   // READ all Purchases for a shop
