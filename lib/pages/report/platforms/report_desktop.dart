@@ -12,7 +12,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
-import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
+import 'package:stockall/pages/report/customer_report/customer_report_table/customer_report_table_page.dart';
 import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
@@ -405,7 +405,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                                 builder: (
                                                   context,
                                                 ) {
-                                                  return CustomerReportPage();
+                                                  return const CustomerReportTablePage();
                                                 },
                                               ),
                                             );
