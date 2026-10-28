@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/customer_account_receipts.dart';
+import 'package:stockall/classes/temp_customer_account_receipts/customer_ledger_rules.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/unsynced/customer_account_update/customer_account_update.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/unsynced/created/created_customer_account_receipts.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/unsynced/deleted/deleted_customer_account_receipts.dart';
@@ -79,20 +80,11 @@ class CustomerAccountReceiptsProvider extends ChangeNotifier {
             true) {
       try {
         await mainLocalLog('Customer Account Receipt/Reward Creation Started');
-        if (customerAccountReceipt.isAdd &&
-            customerAccountReceipt.title == null) {
-          if (customerAccountReceipt.isBalance ?? true) {
-            customerAccountReceipt.title = 'Account Credited';
-          } else {
-            customerAccountReceipt.title = 'Reward Earned';
-          }
-        } else {
-          if (customerAccountReceipt.isBalance ?? true) {
-            customerAccountReceipt.title = 'Account Debited';
-          } else {
-            customerAccountReceipt.title = 'Reward Deducted';
-          }
-        }
+        customerAccountReceipt.title = customerLedgerTitle(
+          title: customerAccountReceipt.title,
+          isAdd: customerAccountReceipt.isAdd,
+          isBalance: customerAccountReceipt.isBalance,
+        );
         customerAccountReceipt.uuid = uuidGen();
         customerAccountReceipt.createdAt = DateTime.now();
         customerAccountReceipt.shopId = shopId();
@@ -345,15 +337,14 @@ class CustomerAccountReceiptsProvider extends ChangeNotifier {
 
                 double balance = customer.balance ?? 0;
 
-                if (customerAccountReceipt.isAdd) {
-                  customer.balance = balance - amount;
-                  customerAccountUpdate.isBalance = true;
-                  customerAccountUpdate.isIncrement = false;
-                } else {
-                  customer.balance = balance + amount;
-                  customerAccountUpdate.isBalance = true;
-                  customerAccountUpdate.isIncrement = true;
-                }
+                final reversal = customerLedgerDeleteReversal(
+                  balance: balance,
+                  amount: amount,
+                  isAdd: customerAccountReceipt.isAdd,
+                );
+                customer.balance = reversal.newBalance;
+                customerAccountUpdate.isBalance = true;
+                customerAccountUpdate.isIncrement = reversal.isIncrement;
                 customerAccountUpdate.amount = amount;
                 customerAccountReceipt.newBalance = customer.balance;
               } else {
@@ -362,9 +353,14 @@ class CustomerAccountReceiptsProvider extends ChangeNotifier {
 
                 double cashReward = customer.cashReward ?? 0;
 
-                customer.cashReward = cashReward - amount;
+                final reversal = customerLedgerDeleteReversal(
+                  balance: cashReward,
+                  amount: amount,
+                  isAdd: customerAccountReceipt.isAdd,
+                );
+                customer.cashReward = reversal.newBalance;
                 customerAccountUpdate.isBalance = false;
-                customerAccountUpdate.isIncrement = false;
+                customerAccountUpdate.isIncrement = reversal.isIncrement;
                 customerAccountUpdate.amount = amount;
                 customerAccountReceipt.newBalance = customer.cashReward;
               }
