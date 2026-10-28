@@ -86,7 +86,7 @@ class PaymentBreakdown {
   String get label {
     var used = methodsUsed;
     if (used.isEmpty) {
-      return PaymentMethods.cash;
+      return entries.isNotEmpty ? entries.first.method : PaymentMethods.cash;
     } else if (used.length == 1) {
       return used.first;
     } else {
@@ -96,7 +96,15 @@ class PaymentBreakdown {
 
   // Entries with a positive amount, merged per method.
   List<PaymentEntry> get compact {
-    return methodsUsed
+    var used = methodsUsed;
+    if (used.isEmpty) {
+      if (entries.isNotEmpty) {
+        return [PaymentEntry(method: entries.first.method, amount: 0)];
+      }
+      return [PaymentEntry(method: PaymentMethods.cash, amount: 0)];
+    }
+    return used
+
         .map(
           (method) => PaymentEntry(
             method: method,

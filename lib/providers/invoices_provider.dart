@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
@@ -43,7 +44,7 @@ class InvoicesProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => Supabase.instance.client;
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<TempInvoice> _invoices = [];
@@ -286,6 +287,18 @@ class InvoicesProvider extends ChangeNotifier {
       await ProductRecordFunc().deleteRecordsInInvoice(
         invoice: invoice,
       );
+      final associatedReceipts =
+          returnReceiptProviderSingle().receipts
+              .where(
+                (rec) => rec.invoiceUuid == invoice.uuid,
+              )
+              .toList();
+      for (final r in associatedReceipts) {
+        await returnReceiptProviderSingle().deleteReceipt(
+          r,
+          [],
+        );
+      }
       if (productNames.isNotEmpty) {
         await returnEventsLogProvider().createLog(
           returnEventsLogProvider().invoiceAdapter(
@@ -471,9 +484,19 @@ class InvoicesProvider extends ChangeNotifier {
     required double customerAmount,
     String? comment,
     bool? isMultiple,
+    DateTime? paymentDate,
+    String? paymentMethod,
   }) async {
     try {
-      final createdAt = DateTime.now().toUtc();
+      final createdAt =
+          paymentDate ?? DateTime.now().toUtc();
+      final effectivePaymentMethod =
+          paymentMethod ??
+          PaymentBreakdown.fromAmounts(
+            bank: bankAmount,
+            cash: cashAmount,
+            account: customerAmount,
+          ).label;
 
       TempMainReceipt receipt = TempMainReceipt(
         tempItems: null,
@@ -486,8 +509,7 @@ class InvoicesProvider extends ChangeNotifier {
         staffId: AuthService().currentUser!,
         staffName:
             "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
-        paymentMethod: returnSalesProvider()
-            .returnPaymentMethod(index: paymentOption),
+        paymentMethod: effectivePaymentMethod,
         bank: bankAmount,
         customerAccount: customerAmount,
         cashAlt: cashAmount,
@@ -662,6 +684,7 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodRevenue,
   }) {
+    if (invoceTotalAmount <= 0) return 0.0;
     double paymentPercent =
         ((receiptPayment * 100) / invoceTotalAmount);
     double result =
@@ -674,6 +697,7 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodCostPrice,
   }) {
+    if (invoceTotalAmount <= 0) return 0.0;
     double paymentPercent =
         ((receiptPayment * 100) / invoceTotalAmount);
     double result =
@@ -686,6 +710,7 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodDiscountedAmount,
   }) {
+    if (invoceTotalAmount <= 0) return 0.0;
     double paymentPercent =
         ((receiptPayment * 100) / invoceTotalAmount);
     double result =
@@ -699,6 +724,7 @@ class InvoicesProvider extends ChangeNotifier {
     required double receiptPayment,
     required double salesRecodOriginalCost,
   }) {
+    if (invoceTotalAmount <= 0) return 0.0;
     double paymentPercent =
         ((receiptPayment * 100) / invoceTotalAmount);
     double result =
@@ -903,7 +929,7 @@ class InvoicesProvider extends ChangeNotifier {
     List<TempCartItem> cartItems = [];
 
     for (var record in saleRecords) {
-      var product = returnData().productList().where(
+      var product = returnData().productListMain.where(
         (p) => p.uuid == record.productUuid,
       );
 
@@ -1390,7 +1416,8 @@ class InvoicesProvider extends ChangeNotifier {
           isOnline) {
         final tempInvoice =
             DeletedInvoicesFunc().getInvoiceIds().toList();
-        final currentShopId = returnShopProvider().userShop()?.shopId;
+        final currentShopId =
+            returnShopProvider().userShop()?.shopId;
 
         for (var inv in tempInvoice) {
           try {
@@ -1527,12 +1554,13 @@ class InvoicesProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Skipped Invoices ${localInvoices.uuid}, remote is newer ✅',
               );
+              await UpdatedInvoicesFunc()
+                  .deleteUpdatedInvoice(
+                    localInvoices.uuid ?? '',
+                  );
             }
           }
         }
-
-        await UpdatedInvoicesFunc()
-            .clearupdatedInvoiceUpdatedInvoices();
         await mainLocalLog(
           'Unsynced updated Invoices cleared',
         );

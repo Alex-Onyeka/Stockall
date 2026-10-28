@@ -334,6 +334,9 @@ class TempMainReceipt extends HiveObject {
   }
 
   double getCustomerReward() {
+    if (isInvoice || invoiceUuid != null) {
+      return 0.0;
+    }
     double value =
         returnShopProvider()
             .userShop()

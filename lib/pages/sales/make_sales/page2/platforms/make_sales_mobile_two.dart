@@ -994,6 +994,16 @@ class _MakeSalesMobileTwoState
                                     message:
                                         returnSalesProvider()
                                                 .currentCart()
+                                                .invoiceUuidEdit !=
+                                            null
+                                            ? "You are about to update this Invoice, are you sure you want to Proceed?"
+                                            : returnSalesProvider()
+                                                    .currentCart()
+                                                    .orderUuidEdit !=
+                                                null
+                                            ? "You are about to update this Order, are you sure you want to Proceed?"
+                                            : returnSalesProvider()
+                                                .currentCart()
                                                 .isReceiptEdit
                                             ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
                                             : returnSalesProvider()
@@ -1004,6 +1014,16 @@ class _MakeSalesMobileTwoState
                                             : 'You are about to record a Sale, are you sure you want to proceed?',
                                     title:
                                         returnSalesProvider()
+                                                .currentCart()
+                                                .invoiceUuidEdit !=
+                                            null
+                                            ? 'Update Invoice?'
+                                            : returnSalesProvider()
+                                                    .currentCart()
+                                                    .orderUuidEdit !=
+                                                null
+                                            ? 'Update Order?'
+                                            : returnSalesProvider()
                                                 .currentCart()
                                                 .isReceiptEdit
                                             ? 'Update Receipt?'
@@ -1127,6 +1147,20 @@ class _MakeSalesMobileTwoState
                                       ).cartItemTypeIndex ==
                                       4
                                   ? 'Save Draft'
+                                  : returnSalesProviderContext(
+                                        context,
+                                      )
+                                      .currentCart()
+                                      .invoiceUuidEdit !=
+                                  null
+                                  ? 'Update Invoice'
+                                  : returnSalesProviderContext(
+                                        context,
+                                      )
+                                      .currentCart()
+                                      .orderUuidEdit !=
+                                  null
+                                  ? 'Update Order'
                                   : returnSalesProviderContext(
                                         context,
                                       )

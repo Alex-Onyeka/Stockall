@@ -11,6 +11,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/local_database/customer_account_receipts/customer_account_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
@@ -89,7 +90,8 @@ class ReceiptsProvider extends ChangeNotifier {
                     .userShop()
                     ?.manageCustomerReward ==
                 true &&
-            !receipt.isInvoice) {
+            !receipt.isInvoice &&
+            receipt.invoiceUuid == null) {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
                 receiptUuid: receipt.uuid,
@@ -170,8 +172,18 @@ class ReceiptsProvider extends ChangeNotifier {
                 (item) => item.receiptUuid == receipt.uuid,
               )
               .toList();
+      if (accountReceipts.isEmpty) {
+        accountReceipts =
+            CustomerAccountReceiptsFunc()
+                .getCustomerAccountReceipts()
+                .where(
+                  (item) =>
+                      item.receiptUuid == receipt.uuid,
+                )
+                .toList();
+      }
       if (accountReceipts.isNotEmpty) {
-        returnCustomerAccountReceiptsProvider()
+        await returnCustomerAccountReceiptsProvider()
             .deleteCustomerAccountReceipts(
               customerReceipts: accountReceipts,
               updateCustomerBalance: true,
@@ -183,7 +195,8 @@ class ReceiptsProvider extends ChangeNotifier {
                     .userShop()
                     ?.manageCustomerReward ==
                 true &&
-            !receipt.isInvoice) {
+            !receipt.isInvoice &&
+            receipt.invoiceUuid == null) {
           CustomerAccountReceipts customerAccountReceipt =
               CustomerAccountReceipts(
                 receiptUuid: receipt.uuid,
@@ -484,9 +497,19 @@ class ReceiptsProvider extends ChangeNotifier {
                 (item) => item.receiptUuid == receipt.uuid,
               )
               .toList();
+      if (accountReceipts.isEmpty) {
+        accountReceipts =
+            CustomerAccountReceiptsFunc()
+                .getCustomerAccountReceipts()
+                .where(
+                  (item) =>
+                      item.receiptUuid == receipt.uuid,
+                )
+                .toList();
+      }
       if (receipt.customerUuid != null &&
           accountReceipts.isNotEmpty) {
-        returnCustomerAccountReceiptsProvider()
+        await returnCustomerAccountReceiptsProvider()
             .deleteCustomerAccountReceipts(
               customerReceipts: accountReceipts,
               updateCustomerBalance: true,
@@ -552,6 +575,31 @@ class ReceiptsProvider extends ChangeNotifier {
         .deleteRecordsInReceiptWithoutUpdatingInventory(
           receipt: receipt,
         );
+
+    List<CustomerAccountReceipts> accountReceipts =
+        returnCustomerAccountReceiptsProvider()
+            .customerAccountReceipts
+            .where(
+              (item) => item.receiptUuid == receipt.uuid,
+            )
+            .toList();
+    if (accountReceipts.isEmpty) {
+      accountReceipts =
+          CustomerAccountReceiptsFunc()
+              .getCustomerAccountReceipts()
+              .where(
+                (item) => item.receiptUuid == receipt.uuid,
+              )
+              .toList();
+    }
+    if (receipt.customerUuid != null &&
+        accountReceipts.isNotEmpty) {
+      await returnCustomerAccountReceiptsProvider()
+          .deleteCustomerAccountReceipts(
+            customerReceipts: accountReceipts,
+            updateCustomerBalance: true,
+          );
+    }
     // }
 
     await mainLocalLog(
@@ -831,58 +879,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // READ sales for a shop
   Future<List<TempProductSaleRecord>>
   loadProductSalesRecord(int shopId) async {
-    bool isOnline = await connectivity.isOnline();
-    List<Map<String, dynamic>> tempList = [];
-    if (isOnline && ProductRecordFunc().isSynced()) {
-      final data = await supabase
-          .from('product_sales')
-          .select()
-          .eq('shop_id', shopId)
-          .order('created_at', ascending: false)
-          .range(0, 1000);
-      tempList.addAll(data);
-
-      await mainLocalLog(
-        'Items Records gotten First: ${tempList.length}',
-      );
-      if (data.length >= 1000) {
-        final data2 = await supabase
-            .from('product_sales')
-            .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false)
-            .range(1001, 2000);
-        tempList.addAll(data2);
-        await mainLocalLog(
-          'Items Records gotten Second: ${tempList.length}',
-        );
-      }
-      if (tempList.length >= 2000) {
-        final data3 = await supabase
-            .from('product_sales')
-            .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false)
-            .range(2001, 3000);
-        tempList.addAll(data3);
-        await mainLocalLog(
-          'Items Records gotten Third: ${tempList.length}',
-        );
-      }
-      _sales =
-          (tempList as List)
-              .map(
-                (json) =>
-                    TempProductSaleRecord.fromJson(json),
-              )
-              .toList();
-      await ProductRecordFunc().insertAllProductRecords(
-        _sales,
-      );
-    } else {
-      _sales = ProductRecordFunc().getProductRecords();
-    }
-
+    _sales = ProductRecordFunc().getProductRecords();
     notifyListeners();
     return _sales;
   }

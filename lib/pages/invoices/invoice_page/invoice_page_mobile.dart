@@ -262,8 +262,7 @@ class _InvoicePageMobileState
                                     returnReceiptProvider(
                                           context,
                                           listen: false,
-                                        )
-                                        .returnOwnReceiptsByDayOrWeek()
+                                        ).receipts
                                         .where(
                                           (rec) =>
                                               rec.invoiceUuid ==
@@ -350,7 +349,7 @@ class _InvoicePageMobileState
                                               });
                                               final invoiceReceipts =
                                                   returnReceiptProviderSingle()
-                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .receipts
                                                       .where(
                                                         (
                                                           rec,
@@ -444,7 +443,7 @@ class _InvoicePageMobileState
                                               safeContext,
                                           receipts:
                                               returnReceiptProviderSingle()
-                                                  .returnOwnReceiptsByDayOrWeek()
+                                                  .receipts
                                                   .where(
                                                     (rec) =>
                                                         rec.invoiceUuid ==
@@ -485,8 +484,7 @@ class _InvoicePageMobileState
                                                     context:
                                                         safeContext,
                                                     receipts:
-                                                        returnReceiptProviderSingle()
-                                                            .returnOwnReceiptsByDayOrWeek()
+                                                        returnReceiptProviderSingle().receipts
                                                             .where(
                                                               (
                                                                 rec,
@@ -538,8 +536,7 @@ class _InvoicePageMobileState
                                     ) &&
                                     returnReceiptProvider(
                                           context,
-                                        )
-                                        .returnOwnReceiptsByDayOrWeek()
+                                        ).receipts
                                         .where(
                                           (rec) =>
                                               rec.invoiceUuid ==
@@ -878,11 +875,14 @@ class _InvoicePageMobileState
                                                                   '${record.productName}${record.dimensionsLabel()}',
                                                                 ),
                                                                 Visibility(
-                                                                  visible: record.wastageNote().isNotEmpty,
+                                                                  visible:
+                                                                      record.wastageNote().isNotEmpty,
                                                                   child: Text(
                                                                     style: TextStyle(
-                                                                      fontSize: theme.mobileTexts.b4.fontSize,
-                                                                      color: Colors.grey.shade700,
+                                                                      fontSize:
+                                                                          theme.mobileTexts.b4.fontSize,
+                                                                      color:
+                                                                          Colors.grey.shade700,
                                                                     ),
                                                                     record.wastageNote(),
                                                                   ),

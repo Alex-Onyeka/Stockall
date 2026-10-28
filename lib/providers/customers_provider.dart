@@ -15,7 +15,8 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {
-  static final CustomersProvider _instance = CustomersProvider._internal();
+  static final CustomersProvider _instance =
+      CustomersProvider._internal();
   factory CustomersProvider() => _instance;
   CustomersProvider._internal();
   //
@@ -24,7 +25,8 @@ class CustomersProvider extends ChangeNotifier {
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
   List<TempCustomersClass> customers = [];
 
   void clearCustomers() {
@@ -34,18 +36,28 @@ class CustomersProvider extends ChangeNotifier {
   }
 
   List<TempCustomersClass> customersMain() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
         return customers.where((cat) {
           if (cat.departmentUuid == null) {
             return true;
           } else {
             return cat.departmentUuid ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
           }
         }).toList();
       } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
           return customers;
         } else {
           return customers.where((cat) {
@@ -53,7 +65,9 @@ class CustomersProvider extends ChangeNotifier {
               return true;
             } else {
               return cat.departmentUuid ==
-                  returnDepartmentProvider().currentDepartment()?.uuid;
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid;
             }
           }).toList();
         }
@@ -64,7 +78,9 @@ class CustomersProvider extends ChangeNotifier {
   }
 
   /// Fetch all customers by shop ID
-  Future<List<TempCustomersClass>> fetchCustomers(int shopId) async {
+  Future<List<TempCustomersClass>> fetchCustomers(
+    int shopId,
+  ) async {
     await fetchCustomersOffline();
     bool isOnline = await connectivity.isOnline();
     if (isOnline && CustomerFunc().isSynced()) {
@@ -77,14 +93,15 @@ class CustomersProvider extends ChangeNotifier {
 
       customers =
           (data as List)
-              .map((json) => TempCustomersClass.fromJson(json))
+              .map(
+                (json) => TempCustomersClass.fromJson(json),
+              )
               .toList();
 
       await CustomerFunc().insertAllCustomers(customers);
       await mainLocalLog('Customer Gotten Successfully');
-      await returnCustomerAccountReceiptsProvider().getCustomerAccountReceipts(
-        shopId,
-      );
+      await returnCustomerAccountReceiptsProvider()
+          .getCustomerAccountReceipts(shopId);
     } else {
       fetchCustomersOffline();
     }
@@ -92,7 +109,8 @@ class CustomersProvider extends ChangeNotifier {
     return customers;
   }
 
-  Future<List<TempCustomersClass>> fetchCustomersOffline() async {
+  Future<List<TempCustomersClass>>
+  fetchCustomersOffline() async {
     customers = CustomerFunc().getCustomers();
     // }
     await returnCustomerAccountReceiptsProvider()
@@ -116,20 +134,29 @@ class CustomersProvider extends ChangeNotifier {
     );
     await returnEventsLogProvider(
       // ignore: use_build_context_synchronously
-    ).createLog(returnEventsLogProvider().customerAdapter(customer, 1));
+    ).createLog(
+      returnEventsLogProvider().customerAdapter(
+        customer,
+        1,
+      ),
+    );
     await fetchCustomersOffline();
     notifyListeners();
     syncData();
   }
 
   /// Update a customer by ID
-  Future<void> updateCustomerMain(TempCustomersClass customer) async {
+  Future<void> updateCustomerMain(
+    TempCustomersClass customer,
+  ) async {
     try {
       await CustomerFunc().updateCustomer(customer);
       var containsCreated =
           CreatedCustomersFunc()
               .getCustomers()
-              .where((cus) => cus.customer.uuid == customer.uuid)
+              .where(
+                (cus) => cus.customer.uuid == customer.uuid,
+              )
               .toList();
       if (containsCreated.isEmpty) {
         await UpdatedCustomersFunc().createUpdatedCustomer(
@@ -154,25 +181,31 @@ class CustomersProvider extends ChangeNotifier {
       notifyListeners();
       syncData();
     } catch (e) {
-      await mainLocalLog('Error Updating Customer: ${e.toString()}');
+      await mainLocalLog(
+        'Error Updating Customer: ${e.toString()}',
+      );
     }
   }
 
   /// Delete a customer by ID
-  Future<void> deleteCustomerMain(TempCustomersClass customer) async {
+  Future<void> deleteCustomerMain(
+    TempCustomersClass customer,
+  ) async {
     var containsCreated =
         CreatedCustomersFunc()
             .getCustomers()
-            .where((customer) => customer.customer.uuid == uuid)
+            .where((c) => c.customer.uuid == customer.uuid)
             .toList();
     var containsUpdated =
         UpdatedCustomersFunc()
             .getCustomers()
-            .where((customer) => customer.customer.uuid == uuid)
+            .where((c) => c.customer.uuid == customer.uuid)
             .toList();
     await CustomerFunc().deleteCustomer(customer.uuid!);
     if (containsCreated.isNotEmpty) {
-      await CreatedCustomersFunc().deleteCustomer(customer.uuid!);
+      await CreatedCustomersFunc().deleteCustomer(
+        customer.uuid!,
+      );
     } else {
       await DeletedCustomersFunc().createDeletedCustomer(
         DeletedCustomers(
@@ -182,7 +215,9 @@ class CustomersProvider extends ChangeNotifier {
       );
     }
     if (containsUpdated.isNotEmpty) {
-      await UpdatedCustomersFunc().deleteUpdatedCustomer(customer.uuid!);
+      await UpdatedCustomersFunc().deleteUpdatedCustomer(
+        customer.uuid!,
+      );
     }
     await returnEventsLogProvider(
       // ignore: use_build_context_synchronously
@@ -209,10 +244,17 @@ class CustomersProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> clearSelectedCustomer(BuildContext context) async {
-    returnSalesProvider().currentCart().selectedCustomer = null;
-    returnSalesProvider().currentCart().selectedCustomerName = null;
-    await CartFunc().updateMainCart(returnSalesProvider().currentMainCart());
+  Future<void> clearSelectedCustomer(
+    BuildContext context,
+  ) async {
+    returnSalesProvider().currentCart().selectedCustomer =
+        null;
+    returnSalesProvider()
+        .currentCart()
+        .selectedCustomerName = null;
+    await CartFunc().updateMainCart(
+      returnSalesProvider().currentMainCart(),
+    );
     notifyListeners();
   }
 
@@ -225,10 +267,15 @@ class CustomersProvider extends ChangeNotifier {
     required String name,
     required BuildContext context,
   }) async {
-    returnSalesProvider().currentCart().selectedCustomer = id;
-    returnSalesProvider().currentCart().selectedCustomerName = name;
+    returnSalesProvider().currentCart().selectedCustomer =
+        id;
+    returnSalesProvider()
+        .currentCart()
+        .selectedCustomerName = name;
 
-    await CartFunc().updateMainCart(returnSalesProvider().currentMainCart());
+    await CartFunc().updateMainCart(
+      returnSalesProvider().currentMainCart(),
+    );
     notifyListeners();
   }
 
@@ -243,8 +290,12 @@ class CustomersProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedCustomersFunc().getCustomers().isNotEmpty && isOnline) {
-        final tempCustomers = CreatedCustomersFunc().getCustomers().toList();
+      if (CreatedCustomersFunc()
+              .getCustomers()
+              .isNotEmpty &&
+          isOnline) {
+        final tempCustomers =
+            CreatedCustomersFunc().getCustomers().toList();
         for (var customer in tempCustomers) {
           await mainLocalLog(
             'Updated Time: ${customer.customer.updatedAt?.toString()}',
@@ -252,20 +303,36 @@ class CustomersProvider extends ChangeNotifier {
         }
         final payload =
             tempCustomers
-                .map((p) => p.customer.toJson(isMoneyUpdate: true))
+                .map(
+                  (p) => p.customer.toJson(
+                    isMoneyUpdate: true,
+                  ),
+                )
                 .toList();
 
         // Insert all at once
-        final data = await supabase.from('customers').insert(payload).select();
+        final data =
+            await supabase
+                .from('customers')
+                .insert(payload)
+                .select();
 
-        await mainLocalLog('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedCustomersFunc().clearCustomers();
         await mainLocalLog('Unsynced Customers Cleared');
-        await mainLocalLog('Mounted, refreshing Customers ✅');
-        await fetchCustomers(shopProvider.userShop()!.shopId!);
+        await mainLocalLog(
+          'Mounted, refreshing Customers ✅',
+        );
+        await fetchCustomers(
+          shopProvider.userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Customers insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Customers insert failed ❌: $e',
+      );
     }
   }
 
@@ -280,19 +347,29 @@ class CustomersProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedCustomersFunc().getCustomers().length.toString(),
+        UpdatedCustomersFunc()
+            .getCustomers()
+            .length
+            .toString(),
       );
 
-      if (UpdatedCustomersFunc().getCustomers().isNotEmpty && isOnline) {
-        final updatedCustomers = UpdatedCustomersFunc().getCustomers();
+      if (UpdatedCustomersFunc()
+              .getCustomers()
+              .isNotEmpty &&
+          isOnline) {
+        final updatedCustomers =
+            UpdatedCustomersFunc().getCustomers();
 
         for (final updated in updatedCustomers) {
           final localCustomer = updated.customer;
 
-          localCustomer.updatedAt ??= DateTime.now().toLocal();
+          localCustomer.updatedAt ??=
+              DateTime.now().toLocal();
 
           if (localCustomer.uuid == null) {
-            await mainLocalLog('Local Customer Uuid is Null');
+            await mainLocalLog(
+              'Local Customer Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -304,38 +381,57 @@ class CustomersProvider extends ChangeNotifier {
           if (remoteData == null) {
             await supabase
                 .from('customers')
-                .insert(localCustomer.toJson(isMoneyUpdate: false));
+                .insert(
+                  localCustomer.toJson(
+                    isMoneyUpdate: false,
+                  ),
+                );
             await mainLocalLog(
               'Inserted Customer with uuid ${localCustomer.uuid}',
             );
-            await UpdatedCustomersFunc().deleteUpdatedCustomer(
-              localCustomer.uuid ?? '',
-            );
+            await UpdatedCustomersFunc()
+                .deleteUpdatedCustomer(
+                  localCustomer.uuid ?? '',
+                );
           } else {
-            final remoteUpdatedAtRaw = remoteData['updated_at'];
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localCustomer.updatedAt =
                 (localCustomer.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog("Local updatedAt: ${localCustomer.updatedAt}");
-            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Local updatedAt: ${localCustomer.updatedAt}",
+            );
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
-                localCustomer.updatedAt!.isAfter(remoteUpdatedAt)) {
+                localCustomer.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
               await supabase
                   .from('customers')
-                  .update(localCustomer.toJson(isMoneyUpdate: false))
+                  .update(
+                    localCustomer.toJson(
+                      isMoneyUpdate: false,
+                    ),
+                  )
                   .eq('uuid', localCustomer.uuid!);
               await mainLocalLog(
                 'Updated customer with uuid ${localCustomer.uuid}',
               );
-              await UpdatedCustomersFunc().deleteUpdatedCustomer(
-                localCustomer.uuid ?? '',
-              );
+              await UpdatedCustomersFunc()
+                  .deleteUpdatedCustomer(
+                    localCustomer.uuid ?? '',
+                  );
             } else {
               await mainLocalLog(
                 'Skipped customer ${localCustomer.uuid}, remote is newer ✅',
@@ -344,13 +440,22 @@ class CustomersProvider extends ChangeNotifier {
           }
         }
 
-        await UpdatedCustomersFunc().clearupdatedCustomers();
-        await mainLocalLog('Unsynced updated Customers cleared');
-        await mainLocalLog('Mounted, refreshing Customers ✅');
-        await fetchCustomers(shopProvider.userShop()!.shopId!);
+        await UpdatedCustomersFunc()
+            .clearupdatedCustomers();
+        await mainLocalLog(
+          'Unsynced updated Customers cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Customers ✅',
+        );
+        await fetchCustomers(
+          shopProvider.userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Customers update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Customers update failed ❌: $e',
+      );
     }
   }
 
@@ -364,7 +469,10 @@ class CustomersProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedCustomersFunc().getCustomerIds().isNotEmpty && isOnline) {
+      if (DeletedCustomersFunc()
+              .getCustomerIds()
+              .isNotEmpty &&
+          isOnline) {
         final uuids =
             DeletedCustomersFunc()
                 .getCustomerIds()
@@ -375,18 +483,32 @@ class CustomersProvider extends ChangeNotifier {
             await supabase
                 .from('customers')
                 .delete()
-                .inFilter('uuid', uuids) // delete where id is in the list
+                .inFilter(
+                  'uuid',
+                  uuids,
+                ) // delete where id is in the list
                 .select();
 
-        await mainLocalLog('${data.length} items deleted successfully ✅');
+        await mainLocalLog(
+          '${data.length} items deleted successfully ✅',
+        );
 
-        await DeletedCustomersFunc().clearDeletedCustomers();
-        await mainLocalLog('Unsynced deleted Customers cleared');
-        await mainLocalLog('Mounted, refreshing Customers ✅');
-        await fetchCustomers(shopProvider.userShop()!.shopId!);
+        await DeletedCustomersFunc()
+            .clearDeletedCustomers();
+        await mainLocalLog(
+          'Unsynced deleted Customers cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Customers ✅',
+        );
+        await fetchCustomers(
+          shopProvider.userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Customers Delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Customers Delete failed ❌: $e',
+      );
     }
   }
 }

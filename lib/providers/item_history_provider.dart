@@ -193,8 +193,8 @@ class ItemHistoryProvider with ChangeNotifier {
   ) async {
     itemHistory.uuid = uuidGen();
     itemHistory.createdAt ??= DateTime.now();
-    itemHistory.staffId = currentUser().userId;
-    itemHistory.staffName = currentUser().name;
+    itemHistory.staffId ??= currentUser().userId;
+    itemHistory.staffName ??= currentUser().name;
     itemHistory.destination ??=
         ItemHistoryEventClass.unKnownDestination;
     itemHistory.source ??=

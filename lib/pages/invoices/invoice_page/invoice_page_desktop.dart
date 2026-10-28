@@ -291,7 +291,7 @@ class _InvoicePageDesktopState
                                         context: context,
                                         receipts:
                                             returnReceiptProviderSingle()
-                                                .returnOwnReceiptsByDayOrWeek()
+                                                .receipts
                                                 .where(
                                                   (rec) =>
                                                       rec.invoiceUuid ==
@@ -316,7 +316,7 @@ class _InvoicePageDesktopState
                                         invoice: invoice,
                                         receipts:
                                             returnReceiptProviderSingle()
-                                                .returnOwnReceiptsByDayOrWeek()
+                                                .receipts
                                                 .where(
                                                   (rec) =>
                                                       rec.invoiceUuid ==
@@ -347,7 +347,7 @@ class _InvoicePageDesktopState
                                         context: context,
                                         receipts:
                                             returnReceiptProviderSingle()
-                                                .returnOwnReceiptsByDayOrWeek()
+                                                .receipts
                                                 .where(
                                                   (rec) =>
                                                       rec.invoiceUuid ==
@@ -414,7 +414,7 @@ class _InvoicePageDesktopState
                                                 context,
                                             receipts:
                                                 returnReceiptProviderSingle()
-                                                    .returnOwnReceiptsByDayOrWeek()
+                                                    .receipts
                                                     .where(
                                                       (
                                                         rec,
@@ -438,7 +438,7 @@ class _InvoicePageDesktopState
                                                 context,
                                             receipts:
                                                 returnReceiptProviderSingle()
-                                                    .returnOwnReceiptsByDayOrWeek()
+                                                    .receipts
                                                     .where(
                                                       (
                                                         rec,
@@ -482,7 +482,7 @@ class _InvoicePageDesktopState
                         Visibility(
                           visible:
                               returnReceiptProvider(context)
-                                  .returnOwnReceiptsByDayOrWeek()
+                                  .receipts
                                   .where(
                                     (rec) =>
                                         rec.invoiceUuid ==
@@ -534,7 +534,7 @@ class _InvoicePageDesktopState
                                         .deleteInvoice,
                               ) &&
                               returnReceiptProvider(context)
-                                  .returnOwnReceiptsByDayOrWeek()
+                                  .receipts
                                   .where(
                                     (rec) =>
                                         rec.invoiceUuid ==
@@ -856,11 +856,14 @@ class _InvoicePageDesktopState
                                                             '${record.productName}${record.dimensionsLabel()}',
                                                           ),
                                                           Visibility(
-                                                            visible: record.wastageNote().isNotEmpty,
+                                                            visible:
+                                                                record.wastageNote().isNotEmpty,
                                                             child: Text(
                                                               style: TextStyle(
-                                                                fontSize: theme.mobileTexts.b4.fontSize,
-                                                                color: Colors.grey.shade700,
+                                                                fontSize:
+                                                                    theme.mobileTexts.b4.fontSize,
+                                                                color:
+                                                                    Colors.grey.shade700,
                                                               ),
                                                               record.wastageNote(),
                                                             ),

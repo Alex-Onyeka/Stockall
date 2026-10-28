@@ -500,11 +500,11 @@ class TempCartItem extends HiveObject {
   }
 
   double revenue() {
+    final netAmount = totalCost() - discountCost();
     if (returnShopProvider().userShop()!.applyVAT!) {
-      return (totalCost() - discountCost()) +
-          (totalCost() * (vat / 100));
+      return netAmount + (netAmount * (vat / 100));
     } else {
-      return totalCost() - discountCost();
+      return netAmount;
     }
   }
 

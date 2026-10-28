@@ -233,12 +233,7 @@ class TempInvoice extends HiveObject {
   }
 
   double getCustomerReward() {
-    double value =
-        returnShopProvider()
-            .userShop()
-            ?.customerPercentageReward ??
-        0;
-    return (getTotalMainRevenueInvoice() * (value / 100));
+    return 0.0;
   }
 
   double getTotalMainRevenueInvoice() {
@@ -290,9 +285,13 @@ class TempInvoice extends HiveObject {
   }
 
   double getVATInvoice({TempInvoice? invoice}) {
-    return invoice == null
-        ? 0
-        : (originalCost ?? 0) * ((vat ?? 0) / 100);
+    final inv = invoice ?? this;
+    final discountAmount =
+        inv.generalDiscount ?? inv.fixedDiscount ?? 0.0;
+    final discountedSubtotal = ((inv.originalCost ?? 0.0) -
+            discountAmount)
+        .clamp(0.0, double.infinity);
+    return discountedSubtotal * ((inv.vat ?? 0.0) / 100.0);
   }
 
   double getOriginalCostInvoice() {

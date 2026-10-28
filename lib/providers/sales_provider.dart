@@ -987,8 +987,10 @@ class SalesProvider extends ChangeNotifier {
     required double fixedDiscountAmount,
     required double itemCost,
   }) {
+    double sub = calcSubTotal();
+    if (sub <= 0) return 0;
     double itemPercent =
-        ((fixedDiscountAmount * 100) / calcSubTotal());
+        ((fixedDiscountAmount * 100) / sub);
     mainLocalLog("Item Percent: $itemPercent");
     double result = ((itemPercent * itemCost) / 100);
     mainLocalLog("Result $result");
@@ -996,22 +998,25 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void addFixedDiscount(double? discount) {
-    currentCart().fixedDiscount = discount;
-    currentCart().discount = null;
-    // var disc = (((discount ?? 0) / calcSubTotal()) * 100);
-    for (var item in currentCart().getCartItems()) {
-      item.discount = null;
-      item.fixedDiscount =
-          calcSalesRecalcFixedDiscountPercentageAmountcordRevenue(
-            fixedDiscountAmount: (discount ?? 0),
-            itemCost: item.totalCost(),
-          );
-      // await mainLocalLog(
-      //   "General Fixed ${item.item.name}: ${item.fixedDiscount}  ${item.revenue()}",
-      // );
+    if (discount == null || discount <= 0) {
+      currentCart().fixedDiscount = null;
+      currentCart().discount = null;
+      for (var item in currentCart().getCartItems()) {
+        item.discount = null;
+        item.fixedDiscount = null;
+      }
+    } else {
+      currentCart().fixedDiscount = discount;
+      currentCart().discount = null;
+      for (var item in currentCart().getCartItems()) {
+        item.discount = null;
+        item.fixedDiscount =
+            calcSalesRecalcFixedDiscountPercentageAmountcordRevenue(
+              fixedDiscountAmount: discount,
+              itemCost: item.totalCost(),
+            );
+      }
     }
-    //  mainLocalLog(currentCart().fixedDiscount);
-    //  mainLocalLog(currentCart().discount);
     CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
@@ -1043,14 +1048,20 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void addPercentageDiscount(double? discount) {
-    currentCart().discount = discount;
-    currentCart().fixedDiscount = null;
-    for (var item in currentCart().getCartItems()) {
-      item.discount = discount;
-      item.fixedDiscount = null;
-      // await mainLocalLog(
-      //   "${item.item.name}: ${item.discount} ${item.revenue()}",
-      // );
+    if (discount == null || discount <= 0) {
+      currentCart().discount = null;
+      currentCart().fixedDiscount = null;
+      for (var item in currentCart().getCartItems()) {
+        item.discount = null;
+        item.fixedDiscount = null;
+      }
+    } else {
+      currentCart().discount = discount;
+      currentCart().fixedDiscount = null;
+      for (var item in currentCart().getCartItems()) {
+        item.discount = discount;
+        item.fixedDiscount = null;
+      }
     }
     CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
@@ -1293,18 +1304,19 @@ class SalesProvider extends ChangeNotifier {
     required String receiptUuid,
     required int shopId,
     required bool isInvoice,
+    DateTime? createdAt,
   }) async {
     final allProductUuids = <String>{};
     for (final item in oldCartItems) {
-      if (item.item.uuid != null &&
-          item.item.uuid!.isNotEmpty) {
-        allProductUuids.add(item.item.uuid!);
+      final u = item.itemUuid ?? item.item.uuid;
+      if (u != null && u.isNotEmpty) {
+        allProductUuids.add(u);
       }
     }
     for (final item in newCartItems) {
-      if (item.item.uuid != null &&
-          item.item.uuid!.isNotEmpty) {
-        allProductUuids.add(item.item.uuid!);
+      final u = item.itemUuid ?? item.item.uuid;
+      if (u != null && u.isNotEmpty) {
+        allProductUuids.add(u);
       }
     }
 
@@ -1313,11 +1325,21 @@ class SalesProvider extends ChangeNotifier {
     for (final productUuid in allProductUuids) {
       final oldLines =
           oldCartItems
-              .where((i) => i.item.uuid == productUuid)
+              .where(
+                (i) =>
+                    (i.itemUuid ?? i.item.uuid) ==
+                        productUuid &&
+                    i.isVoid != true,
+              )
               .toList();
       final newLines =
           newCartItems
-              .where((i) => i.item.uuid == productUuid)
+              .where(
+                (i) =>
+                    (i.itemUuid ?? i.item.uuid) ==
+                        productUuid &&
+                    i.isVoid != true,
+              )
               .toList();
 
       final oldStockQty = oldLines.fold<double>(
@@ -1394,6 +1416,7 @@ class SalesProvider extends ChangeNotifier {
 
         if (isManaged) {
           ItemHistory itemHistory = ItemHistory(
+            createdAt: createdAt,
             event: ItemHistoryEventClass.sold,
             isManaged: refCartItem.item.isManaged,
             source: ItemHistoryEventClass.productSource,
@@ -1446,6 +1469,7 @@ class SalesProvider extends ChangeNotifier {
           // Unmanaged item
           if (products.isNotEmpty) {
             ItemHistory itemHistory = ItemHistory(
+              createdAt: createdAt,
               event: ItemHistoryEventClass.sold,
               isManaged: refCartItem.item.isManaged,
               source: ItemHistoryEventClass.productSource,
@@ -1504,6 +1528,7 @@ class SalesProvider extends ChangeNotifier {
 
         if (isManaged) {
           ItemHistory itemHistory = ItemHistory(
+            createdAt: createdAt,
             event: ItemHistoryEventClass.returnEvent,
             isManaged: refCartItem.item.isManaged,
             source:
@@ -1555,6 +1580,7 @@ class SalesProvider extends ChangeNotifier {
           // Unmanaged item
           if (products.isNotEmpty) {
             ItemHistory itemHistory = ItemHistory(
+              createdAt: createdAt,
               event: ItemHistoryEventClass.returnEvent,
               isManaged: refCartItem.item.isManaged,
               source:
@@ -1669,7 +1695,7 @@ class SalesProvider extends ChangeNotifier {
             currentMainCart().subStaff?.staffName,
         departmentName: departmentName(),
         departmentUuidNew: departmentUuid(),
-        createdAt: existingReceipt?.createdAt ?? createdAt,
+        createdAt: createdAt,
         shopId: shopId,
         staffId: staffUuid(), // staffId,
         staffName: staffName(), // staffName,
@@ -1837,6 +1863,7 @@ class SalesProvider extends ChangeNotifier {
                 receiptUuid: receipt.uuid ?? '',
                 shopId: shopId,
                 isInvoice: false,
+                createdAt: createdAt,
               );
             } else {
               final groupedCartItems =
@@ -1924,6 +1951,7 @@ class SalesProvider extends ChangeNotifier {
                           ? ' (including ${formatDimension(totalWastage)} $primUnitName wastage)'
                           : '';
                   ItemHistory itemHistory = ItemHistory(
+                    createdAt: createdAt,
                     event: ItemHistoryEventClass.sold,
                     isManaged: refCartItem.item.isManaged,
                     source:
@@ -1957,16 +1985,7 @@ class SalesProvider extends ChangeNotifier {
                   );
                   await returnData().updateProduct(
                     itemHistory:
-                        returnData()
-                                .productList()
-                                .where(
-                                  (pro) =>
-                                      pro.name ==
-                                      refCartItem
-                                          .getItem()
-                                          ?.name,
-                                )
-                                .isEmpty
+                        products.isEmpty
                             ? null
                             : itemHistory,
                     includeQuantity: false,
@@ -1979,14 +1998,7 @@ class SalesProvider extends ChangeNotifier {
                     isIncrement: false,
                   );
                 } else {
-                  if (returnData()
-                      .productList()
-                      .where(
-                        (pro) =>
-                            pro.name ==
-                            refCartItem.getItem()?.name,
-                      )
-                      .isNotEmpty) {
+                  if (products.isNotEmpty) {
                     final primaryUnit =
                         refCartItem.getPrimaryUnit();
                     final primaryQtyEquiv = primaryUnit
@@ -2009,6 +2021,7 @@ class SalesProvider extends ChangeNotifier {
                             ? ' (including ${formatDimension(totalWastage)} wastage)'
                             : '';
                     ItemHistory itemHistory = ItemHistory(
+                      createdAt: createdAt,
                       event: ItemHistoryEventClass.sold,
                       isManaged: refCartItem.item.isManaged,
                       source:
@@ -2204,10 +2217,6 @@ class SalesProvider extends ChangeNotifier {
               }
 
               if (context.mounted) {
-                returnCustomers(
-                  context,
-                  listen: false,
-                ).clearSelectedCustomer(context);
                 await returnReceiptProvider(
                   context,
                   listen: false,
@@ -2305,7 +2314,10 @@ class SalesProvider extends ChangeNotifier {
             currentMainCart().subStaff?.staffName,
         departmentName: departmentName(),
         departmentUuidNew: departmentUuid(),
-        createdAt: existingInvoice?.createdAt ?? createdAt,
+        createdAt:
+            currentCart().createdDate != null
+                ? createdAt
+                : (existingInvoice?.createdAt ?? createdAt),
         shopId: shopId,
         staffId: staffUuid(),
         staffName: staffName(),
@@ -2525,6 +2537,8 @@ class SalesProvider extends ChangeNotifier {
             invoice: invoice,
             salesRecords: productSaleRecords,
             currentPayment: partPayment,
+            paymentDate: createdAt,
+            paymentMethod: breakdown.label,
           );
         }
 
@@ -2575,6 +2589,7 @@ class SalesProvider extends ChangeNotifier {
                 receiptUuid: invoice.uuid ?? '',
                 shopId: shopId,
                 isInvoice: true,
+                createdAt: createdAt,
               );
             } else {
               final groupedCartItems =
@@ -2662,6 +2677,7 @@ class SalesProvider extends ChangeNotifier {
                           ? ' (including ${formatDimension(totalWastage)} $primUnitName wastage)'
                           : '';
                   ItemHistory itemHistory = ItemHistory(
+                    createdAt: createdAt,
                     event: ItemHistoryEventClass.sold,
                     isManaged: refCartItem.item.isManaged,
                     source:
@@ -2695,16 +2711,7 @@ class SalesProvider extends ChangeNotifier {
                   );
                   await returnData().updateProduct(
                     itemHistory:
-                        returnData()
-                                .productList()
-                                .where(
-                                  (pro) =>
-                                      pro.name ==
-                                      refCartItem
-                                          .getItem()
-                                          ?.name,
-                                )
-                                .isEmpty
+                        products.isEmpty
                             ? null
                             : itemHistory,
                     includeQuantity: false,
@@ -2717,14 +2724,7 @@ class SalesProvider extends ChangeNotifier {
                     isIncrement: false,
                   );
                 } else {
-                  if (returnData()
-                      .productList()
-                      .where(
-                        (pro) =>
-                            pro.name ==
-                            refCartItem.getItem()?.name,
-                      )
-                      .isNotEmpty) {
+                  if (products.isNotEmpty) {
                     final primaryUnit =
                         refCartItem.getPrimaryUnit();
                     final primaryQtyEquiv = primaryUnit
@@ -2747,6 +2747,7 @@ class SalesProvider extends ChangeNotifier {
                             ? ' (including ${formatDimension(totalWastage)} wastage)'
                             : '';
                     ItemHistory itemHistory = ItemHistory(
+                      createdAt: createdAt,
                       event: ItemHistoryEventClass.sold,
                       isManaged: refCartItem.item.isManaged,
                       source:
@@ -2943,10 +2944,6 @@ class SalesProvider extends ChangeNotifier {
               }
 
               if (context.mounted) {
-                returnCustomers(
-                  context,
-                  listen: false,
-                ).clearSelectedCustomer(context);
                 await returnReceiptProvider(
                   context,
                   listen: false,
@@ -3363,10 +3360,6 @@ class SalesProvider extends ChangeNotifier {
               }
 
               if (context.mounted) {
-                returnCustomers(
-                  context,
-                  listen: false,
-                ).clearSelectedCustomer(context);
                 await returnOrdersProvider()
                     .loadOrdersOffline(shopId);
                 if (context.mounted) {
@@ -3545,31 +3538,17 @@ class SalesProvider extends ChangeNotifier {
     } else {
       double tempTotalDiscount = 0;
       for (var item in currentCart().getCartItems()) {
-        if (item.getItem()?.discount != null &&
-            item.customPrice == null &&
-            item.item.quantityType == 2) {
-          // 2D lines are priced per area, as discountCost uses.
-          tempTotalDiscount +=
-              item.totalCost() *
-              ((item.getItem()?.discount ?? 0) / 100);
-        } else if (item.getItem()?.discount != null &&
-            item.customPrice == null) {
-          double discountPerUnit =
-              (item
-                      .getItem()
-                      ?.getPrimaryPrice()
-                      .priceValue ??
-                  0) *
-              ((item.getItem()?.discount ?? 1) / 100);
-          tempTotalDiscount +=
-              discountPerUnit * item.quantity;
-        }
+        tempTotalDiscount += item.discountCost();
       }
       return tempTotalDiscount;
     }
   }
 
   double calcCashBackReward() {
+    if (currentCart().cartItemTypeIndex == 2 ||
+        currentCart().invoiceUuidEdit != null) {
+      return 0.0;
+    }
     return calcFinalTotal() *
         ((returnShopProvider()
                     .userShop()
@@ -3609,6 +3588,15 @@ class SalesProvider extends ChangeNotifier {
       if (editedReceipts.isNotEmpty) {
         balance +=
             editedReceipts.first.customerAccount ?? 0;
+      } else {
+        var r = MainReceiptFunc().getSingleReceipt(
+          uuid: currentCart().receiptUuidEdit!,
+        );
+        if (r != null &&
+            r.customerUuid ==
+                currentCart().selectedCustomer) {
+          balance += r.customerAccount ?? 0;
+        }
       }
     }
     return balance;
@@ -3736,7 +3724,7 @@ class SalesProvider extends ChangeNotifier {
     double tempTotal = 0;
     for (var item in currentCart().getCartItems()) {
       tempTotal +=
-          (item.totalCost() *
+          ((item.totalCost() - item.discountCost()) *
               (returnShopProvider().getVat() / 100));
     }
     return tempTotal;
@@ -3751,8 +3739,10 @@ class SalesProvider extends ChangeNotifier {
   }
 
   double calcFinalTotal() {
-    return ((calcSubTotal() - calcDiscountMain()) +
-        calcVatAmount());
+    double total =
+        ((calcSubTotal() - calcDiscountMain()) +
+            calcVatAmount());
+    return total < 0 ? 0.0 : total;
   }
 
   bool isSetCustomPrice() {
@@ -4823,6 +4813,9 @@ class SalesProvider extends ChangeNotifier {
     required bool setCustomPrice,
   }) async {
     final double oldQuantity = cartItem.quantity;
+    final double? oldCustomPrice = cartItem.customPrice;
+    final bool oldSetTotalPrice = cartItem.setTotalPrice;
+    final bool oldSetCustomPrice = cartItem.setCustomPrice;
     cartItem.quantity = number;
     cartItem.customPrice = customPrice;
     cartItem.setTotalPrice = setTotalPrice;
@@ -4873,6 +4866,7 @@ class SalesProvider extends ChangeNotifier {
           currentCart().cartItems.add(deletedItem);
         }
       }
+      addAnyDiscount();
       await updateCurrentCartItem(cartItem);
       await returnMultiDisplayProvider().updateWindow(
         cartClass: AltCartClass(
@@ -4906,6 +4900,10 @@ class SalesProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } else {
+      cartItem.quantity = oldQuantity;
+      cartItem.customPrice = oldCustomPrice;
+      cartItem.setTotalPrice = oldSetTotalPrice;
+      cartItem.setCustomPrice = oldSetCustomPrice;
       await mainLocalLog(
         'Cannot Add to Cart Because Quantity Ti Wa',
       );
@@ -5174,7 +5172,7 @@ class SalesProvider extends ChangeNotifier {
     List<TempCartItem> cartItems = [];
 
     for (var record in saleRecords) {
-      var product = returnData().productList().where(
+      var product = returnData().productListMain.where(
         (p) => p.uuid == record.productUuid,
       );
 

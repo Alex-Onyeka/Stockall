@@ -79,7 +79,7 @@ class _SearchInvoiceMobileState
             ).returnInvoicesByDayOrWeekAll().toList();
     double totalRevenue() {
       return invoices
-          .map((rec) => (rec.bank + rec.bank))
+          .map((rec) => (rec.bank + rec.cashAlt))
           .toList()
           .fold(0, (first, second) => first + second);
     }
