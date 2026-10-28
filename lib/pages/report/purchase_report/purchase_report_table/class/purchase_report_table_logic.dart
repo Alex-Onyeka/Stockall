@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_re
 import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_lines.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 
@@ -190,6 +191,10 @@ class PurchaseReportRow {
           : departmentName ?? 'No Department';
   String get channelLabel =>
       channel?.label ?? purchasesUnpaidLabel;
+
+  /// The key rule of [supplierKey] etc., for matching other
+  /// records (e.g. suppliers) to rows.
+  static String? keyOf(String? value) => _key(value);
 
   static String? _key(String? value) =>
       (value == null || value.trim().isEmpty)
@@ -644,24 +649,6 @@ class PurchaseReportPage {
       firstIndex == 0 ? 0 : firstIndex + rows.length - 1;
 }
 
-/// Page number and slice bounds for [length] items.
-({int page, int pages, int start, int end}) _pageBounds(
-  int length,
-  int requestedPage,
-) {
-  final pages =
-      length == 0
-          ? 1
-          : (length / purchaseReportPageSize).ceil();
-  final page = requestedPage.clamp(1, pages);
-  final start = (page - 1) * purchaseReportPageSize;
-  final end =
-      (start + purchaseReportPageSize) > length
-          ? length
-          : start + purchaseReportPageSize;
-  return (page: page, pages: pages, start: start, end: end);
-}
-
 class PurchaseReportQuery {
   static int cmp<T extends Comparable>(
     T? a,
@@ -749,7 +736,11 @@ class PurchaseReportQuery {
     List<PurchaseReportRow> sorted,
     int requestedPage,
   ) {
-    final b = _pageBounds(sorted.length, requestedPage);
+    final b = reportPageBounds(
+      sorted.length,
+      requestedPage,
+      pageSize: purchaseReportPageSize,
+    );
 
     double items = 0;
     double lineTotal = 0;
@@ -1018,7 +1009,11 @@ class PurchaseGrouping {
     List<PurchaseGroupRow> sorted,
     int requestedPage,
   ) {
-    final b = _pageBounds(sorted.length, requestedPage);
+    final b = reportPageBounds(
+      sorted.length,
+      requestedPage,
+      pageSize: purchaseReportPageSize,
+    );
 
     int purchases = 0;
     double? items;
