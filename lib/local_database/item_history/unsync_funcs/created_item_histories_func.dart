@@ -97,6 +97,18 @@ class CreatedItemHistoriesFunc {
     }
   }
 
+  Future<int> deleteItemHistory(String uuid) async {
+    try {
+      await createdItemHistoriesBox.delete(uuid);
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Error while deleting Created Item History ❌: $e',
+      );
+      return 0;
+    }
+  }
+
   Future<int> clearItemHistory() async {
     try {
       await createdItemHistoriesBox.clear();

@@ -255,21 +255,16 @@ class DataProvider extends ChangeNotifier {
   Future<void> createProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
-      if (CreatedProductFunc().getProducts().isNotEmpty &&
-          isOnline) {
-        final tempProducts =
-            CreatedProductFunc().getProducts().toList();
+      if (CreatedProductFunc().getProducts().isNotEmpty && isOnline) {
+        final tempProducts = CreatedProductFunc().getProducts().toList();
         int count = 0;
         for (var item in tempProducts) {
           try {
-            // Insert all at once
             await supabase
                 .from('products')
                 .insert(
                   item.product.toJson(
-                    isIncludeQuantity:
-                        item.includeQuantity ?? true,
+                    isIncludeQuantity: item.includeQuantity ?? true,
                   ),
                 )
                 .select();
@@ -278,7 +273,8 @@ class DataProvider extends ChangeNotifier {
               item.product.uuid!,
             );
           } on PostgrestException catch (e) {
-            if (e.code == '23505') {
+            // 23505: duplicate, 23503: foreign key violation, 23502: not-null
+            if (e.code == '23505' || e.code == '23503' || e.code == '23502') {
               await CreatedProductFunc().deleteProduct(
                 item.product.uuid!,
               );
@@ -286,16 +282,15 @@ class DataProvider extends ChangeNotifier {
             await mainLocalLog(
               'Error Synchronizing Product ${item.product.name}: $e',
             );
+          } catch (e) {
+            await mainLocalLog(
+              'Network error while synchronizing product ${item.product.name}: $e',
+            );
+            break;
           }
         }
 
-        await mainLocalLog(
-          '$count items added successfully âœ…',
-        );
-        // await CreatedProductFunc().clearProducts();
-        await mainLocalLog(
-          'Mounted, refreshing products âœ…',
-        );
+        await mainLocalLog('$count items added successfully');
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -305,7 +300,7 @@ class DataProvider extends ChangeNotifier {
       }
     } catch (e) {
       await mainLocalLog(
-        'Batch Items insert failed âŒ: $e',
+        'Batch Items insert failed: $e',
       );
     }
   }
@@ -314,32 +309,49 @@ class DataProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedProductsFunc()
-              .getProductIds()
-              .isNotEmpty &&
-          isOnline) {
-        final uuids =
-            DeletedProductsFunc()
-                .getProductIds()
-                .map((p) => p.productUuid)
-                .toList();
+      if (DeletedProductsFunc().getProductIds().isNotEmpty && isOnline) {
+        final pendingDeletes = DeletedProductsFunc().getProductIds().toList();
+        final uuids = pendingDeletes.map((p) => p.productUuid).toList();
 
-        final data =
-            await supabase
-                .from('products')
-                .delete()
-                .inFilter('uuid', uuids)
-                .select();
+        try {
+          // Attempt bulk delete first
+          final data = await supabase
+              .from('products')
+              .delete()
+              .inFilter('uuid', uuids)
+              .select();
 
-        await mainLocalLog(
-          '${data.length} items deleted successfully âœ…',
-        );
+          await mainLocalLog(
+            '${data.length} items deleted successfully',
+          );
+          await DeletedProductsFunc().clearDeletedProducts();
+        } catch (batchErr) {
+          await mainLocalLog(
+            'Batch delete failed, falling back to item-by-item: $batchErr',
+          );
+          // Fall back to item-by-item delete so non-failing products are deleted
+          for (final p in pendingDeletes) {
+            try {
+              await supabase
+                  .from('products')
+                  .delete()
+                  .eq('uuid', p.productUuid);
+              await DeletedProductsFunc().deleteProductUuid(p.productUuid);
+            } on PostgrestException catch (pe) {
+              // 23503: foreign key constraint, 23505 / other terminal constraint
+              if (pe.code == '23503' || pe.code == '23505') {
+                await DeletedProductsFunc().deleteProductUuid(p.productUuid);
+              }
+              await mainLocalLog(
+                'Postgrest error deleting product ${p.productUuid}: $pe',
+              );
+            } catch (err) {
+              await mainLocalLog('Network error deleting product: $err');
+              break;
+            }
+          }
+        }
 
-        await DeletedProductsFunc().clearDeletedProducts();
-
-        await mainLocalLog(
-          'Mounted, refreshing products âœ…',
-        );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -351,7 +363,7 @@ class DataProvider extends ChangeNotifier {
       }
     } catch (e) {
       await mainLocalLog(
-        'Batch Items delete failed âŒ: $e',
+        'Batch Items delete failed: $e',
       );
     }
   }
@@ -366,128 +378,102 @@ class DataProvider extends ChangeNotifier {
             .toString(),
       );
 
-      if (UpdatedProductsFunc().getProducts().isNotEmpty &&
-          isOnline) {
-        final updatedProducts =
-            UpdatedProductsFunc().getProducts();
+      if (UpdatedProductsFunc().getProducts().isNotEmpty && isOnline) {
+        final updatedProducts = UpdatedProductsFunc().getProducts();
 
         for (final updated in updatedProducts) {
           final localProduct = updated.product;
 
-          localProduct.updatedAt ??=
-              DateTime.now().toLocal();
+          localProduct.updatedAt ??= DateTime.now().toUtc();
 
           if (localProduct.uuid == null) {
-            await mainLocalLog(
-              'Local Product Uuid is Null',
-            );
+            await mainLocalLog('Local Product Uuid is Null');
+            continue;
           }
-          final remoteData =
-              await supabase
-                  .from('products')
-                  .select('uuid, updated_at')
-                  .eq('uuid', localProduct.uuid!)
-                  .maybeSingle();
 
-          if (remoteData == null) {
-            try {
-              await supabase
-                  .from('products')
-                  .insert(
-                    localProduct.toJson(
-                      isIncludeQuantity:
-                          updated.includeQuantity,
-                    ),
-                  );
-              await mainLocalLog(
-                'Inserted product with uuid ${localProduct.uuid}',
-              );
-              await UpdatedProductsFunc()
-                  .deleteUpdatedProduct(
+          try {
+            final remoteData = await supabase
+                .from('products')
+                .select('uuid, updated_at')
+                .eq('uuid', localProduct.uuid!)
+                .maybeSingle();
+
+            if (remoteData == null) {
+              try {
+                await supabase.from('products').insert(
+                  localProduct.toJson(
+                    isIncludeQuantity: updated.includeQuantity,
+                  ),
+                );
+                await mainLocalLog(
+                  'Inserted product with uuid ${localProduct.uuid}',
+                );
+                await UpdatedProductsFunc().deleteUpdatedProduct(
+                  localProduct.uuid ?? '',
+                );
+              } on PostgrestException catch (e) {
+                if (e.code == '23505' || e.code == '23503' || e.code == '23502') {
+                  await UpdatedProductsFunc().deleteUpdatedProduct(
                     localProduct.uuid ?? '',
                   );
-            } on PostgrestException catch (e) {
-              if (e.code == '23505') {
-                await UpdatedProductsFunc()
-                    .deleteUpdatedProduct(
-                      localProduct.uuid ?? '',
-                    );
-              }
-              await mainLocalLog(
-                'Error Synchronizing Receipt ${localProduct.name}: $e',
-              );
-            }
-          } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
-            final remoteUpdatedAt =
-                remoteUpdatedAtRaw == null
-                    ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
-
-            localProduct.updatedAt =
-                (localProduct.updatedAt ?? DateTime.now())
-                    .toUtc(); // âœ… keep both UTC
-            await mainLocalLog(
-              "Local updatedAt: ${localProduct.updatedAt}",
-            );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
-
-            if (remoteUpdatedAt == null ||
-                localProduct.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
-              try {
-                await supabase
-                    .from('products')
-                    .update(
-                      localProduct.toJson(
-                        isIncludeQuantity:
-                            updated.includeQuantity,
-                      ),
-                    )
-                    .eq('uuid', localProduct.uuid!);
-                await mainLocalLog(
-                  'Updated product with uuid ${localProduct.uuid}',
-                );
-                await UpdatedProductsFunc()
-                    .deleteUpdatedProduct(
-                      localProduct.uuid ?? '',
-                    );
-              } on PostgrestException catch (e) {
-                if (e.code == '23505') {
-                  await UpdatedProductsFunc()
-                      .deleteUpdatedProduct(
-                        localProduct.uuid ?? '',
-                      );
                 }
                 await mainLocalLog(
-                  'Error Synchronizing Receipt ${localProduct.name}: $e',
+                  'Error Synchronizing Product ${localProduct.name}: $e',
                 );
               }
             } else {
-              await mainLocalLog(
-                'Skipped product ${localProduct.uuid}, remote is newer',
-              );
-              await UpdatedProductsFunc()
-                  .deleteUpdatedProduct(
+              final remoteUpdatedAtRaw = remoteData['updated_at'];
+              final remoteUpdatedAt = remoteUpdatedAtRaw == null
+                  ? null
+                  : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+
+              localProduct.updatedAt = (localProduct.updatedAt ?? DateTime.now()).toUtc();
+
+              if (remoteUpdatedAt == null ||
+                  !localProduct.updatedAt!.isBefore(remoteUpdatedAt)) {
+                try {
+                  await supabase
+                      .from('products')
+                      .update(
+                        localProduct.toJson(
+                          isIncludeQuantity: updated.includeQuantity,
+                        ),
+                      )
+                      .eq('uuid', localProduct.uuid!);
+                  await mainLocalLog(
+                    'Updated product with uuid ${localProduct.uuid}',
+                  );
+                  await UpdatedProductsFunc().deleteUpdatedProduct(
                     localProduct.uuid ?? '',
                   );
+                } on PostgrestException catch (e) {
+                  if (e.code == '23505' || e.code == '23503' || e.code == '23502') {
+                    await UpdatedProductsFunc().deleteUpdatedProduct(
+                      localProduct.uuid ?? '',
+                    );
+                  }
+                  await mainLocalLog(
+                    'Error Synchronizing Product ${localProduct.name}: $e',
+                  );
+                }
+              } else {
+                await mainLocalLog(
+                  'Skipped product ${localProduct.uuid}, remote is newer',
+                );
+                await UpdatedProductsFunc().deleteUpdatedProduct(
+                  localProduct.uuid ?? '',
+                );
+              }
             }
+          } catch (netErr) {
+            await mainLocalLog(
+              'Network error updating product ${localProduct.name}: $netErr',
+            );
+            break;
           }
         }
 
-        // await UpdatedProductsFunc().clearupdatedProducts();
-        await mainLocalLog(
-          'Unsynced updated products cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing products âœ…',
-        );
+        await mainLocalLog('Unsynced updated products cleared');
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -495,17 +481,11 @@ class DataProvider extends ChangeNotifier {
       }
     } catch (e) {
       await mainLocalLog(
-        'Batch Items update failed âŒ: $e',
+        'Batch Items update failed: $e',
       );
     }
   }
 
-  //
-  //
-  //
-  //
-  //
-  //
 
   Future<void> clearTotalCache() async {
     await CreatedCustomersFunc().clearCustomers();
@@ -633,7 +613,8 @@ class DataProvider extends ChangeNotifier {
     if (isSynced() == 0) {
       syncProgress = 0;
       toggleSyncing(true);
-      bool isOnline = await connectivity.isOnline();
+      try {
+        bool isOnline = await connectivity.isOnline();
       if (isOnline) {
         List<TempShopClass> shop =
             await returnShopProvider().getUserShops();
@@ -1427,13 +1408,10 @@ class DataProvider extends ChangeNotifier {
             setSyncProgress(72);
           }
 
-          toggleSyncing(false);
         } else {
           // await ShopFunc().clearShop();
-          toggleSyncing(false);
         }
       } else {
-        toggleSyncing(false);
         if (context != null && context.mounted) {
           showDialog(
             context: context,
@@ -1451,6 +1429,11 @@ class DataProvider extends ChangeNotifier {
           );
         }
       }
+    } catch (e) {
+      await mainLocalLog('Error during syncData: $e');
+    } finally {
+      toggleSyncing(false);
+    }
     }
   }
 
@@ -2572,7 +2555,7 @@ class DataProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     await getProductsOffline(shopId);
-    if (isOnline && ProductsFunc().isSynced()) {
+    if (isOnline && !isSyncing) {
       final data = await supabase
           .from('products')
           .select()
@@ -2675,6 +2658,22 @@ class DataProvider extends ChangeNotifier {
         returnItemHistoryProvider().getItemHistories();
       }
 
+      final deletedUuids = DeletedProductsFunc().getProductIds().map((d) => d.productUuid).toSet();
+      productListMain.removeWhere((p) => deletedUuids.contains(p.uuid));
+
+      for (final cp in CreatedProductFunc().getProducts()) {
+        if (!productListMain.any((p) => p.uuid == cp.product.uuid)) {
+          productListMain.add(cp.product);
+        }
+      }
+
+      for (final up in UpdatedProductsFunc().getProducts()) {
+        final idx = productListMain.indexWhere((p) => p.uuid == up.product.uuid);
+        if (idx != -1) {
+          productListMain[idx] = up.product;
+        }
+      }
+
       await ProductsFunc().insertAllProducts(
         productListMain,
       );
@@ -2749,10 +2748,6 @@ class DataProvider extends ChangeNotifier {
       bool isOnline = await connectivity.isOnline();
       if (!isOnline) return;
 
-      if (!ProductsFunc().isSynced()) {
-        return;
-      }
-
       _isIncrementalSyncing = true;
 
       DateTime? lastSync = ProductsFunc().getLastSyncTime();
@@ -2780,35 +2775,46 @@ class DataProvider extends ChangeNotifier {
           .order('updated_at', ascending: true);
 
       if (res.isNotEmpty) {
-        final List<TempProductClass> updatedItems =
+        final List<TempProductClass> allUpdatedItems =
             (res as List)
                 .map(
                   (json) => TempProductClass.fromJson(json),
                 )
                 .toList();
 
-        await ProductsFunc().patchProducts(updatedItems);
+        // Do not overwrite items that have pending local updates
+        final pendingUuids = {
+          ...UpdatedProductsFunc().getProducts().map((u) => u.product.uuid),
+          ...CreatedProductFunc().getProducts().map((c) => c.product.uuid),
+        };
+        final updatedItems = allUpdatedItems
+            .where((item) => !pendingUuids.contains(item.uuid))
+            .toList();
 
-        for (final item in updatedItems) {
-          final idx = productListMain.indexWhere(
-            (p) => p.uuid == item.uuid,
-          );
-          if (idx != -1) {
-            productListMain[idx] = item;
-          } else {
-            productListMain.add(item);
+        if (updatedItems.isNotEmpty) {
+          await ProductsFunc().patchProducts(updatedItems);
+
+          for (final item in updatedItems) {
+            final idx = productListMain.indexWhere(
+              (p) => p.uuid == item.uuid,
+            );
+            if (idx != -1) {
+              productListMain[idx] = item;
+            } else {
+              productListMain.add(item);
+            }
           }
-        }
-        productListMain.sort(
-          (a, b) => a.name.toLowerCase().compareTo(
-            b.name.toLowerCase(),
-          ),
-        );
+          productListMain.sort(
+            (a, b) => a.name.toLowerCase().compareTo(
+              b.name.toLowerCase(),
+            ),
+          );
 
-        await mainLocalLog(
-          'Incremental Products Sync: updated ${updatedItems.length} products',
-        );
-        notifyListeners();
+          await mainLocalLog(
+            'Incremental Products Sync: updated ${updatedItems.length} products',
+          );
+          notifyListeners();
+        }
       }
 
       await ProductsFunc().setLastSyncTime(
@@ -3080,6 +3086,9 @@ class DataProvider extends ChangeNotifier {
       );
       await mainLocalLog('Deleted Update Log');
     }
+    await QuantityUpdateFunc().deleteQuantityUpdatesByProductUuid(
+      productUuid: product.uuid!,
+    );
     await returnEventsLogProvider().createLog(
       returnEventsLogProvider(
         // ignore: use_build_context_synchronously
@@ -3092,7 +3101,7 @@ class DataProvider extends ChangeNotifier {
     );
     if (itemHistory != null) {
       itemHistory.itemName = product.name;
-      itemHistory.itemUuid = null;
+      itemHistory.itemUuid = product.uuid;
       await returnItemHistoryProvider().createItemHistory(
         itemHistory,
       );

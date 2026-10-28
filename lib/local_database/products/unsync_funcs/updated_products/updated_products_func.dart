@@ -74,9 +74,7 @@ class UpdatedProductsFunc {
     UpdatedProducts updatedProduct,
   ) async {
     try {
-      updatedProduct.product.updatedAt = DateTime.now()
-          .toUtc()
-          .add(const Duration(hours: 1));
+      updatedProduct.product.updatedAt = DateTime.now().toUtc();
       await updatedProductsBox.put(
         updatedProduct.product.uuid,
         updatedProduct,
@@ -97,9 +95,7 @@ class UpdatedProductsFunc {
     UpdatedProducts updatedProduct,
   ) async {
     try {
-      updatedProduct.product.updatedAt = DateTime.now()
-          .toUtc()
-          .add(const Duration(hours: 1));
+      updatedProduct.product.updatedAt = DateTime.now().toUtc();
       await updatedProductsBox.put(
         updatedProduct.product.uuid,
         updatedProduct,

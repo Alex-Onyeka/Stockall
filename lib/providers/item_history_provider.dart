@@ -123,7 +123,6 @@ class ItemHistoryProvider with ChangeNotifier {
     var shop = returnShopProvider().userShop()!;
     var shopId = shop.shopId!;
     if (isOnline &&
-        ItemHistoriesFunc().isSynced() &&
         ItemsAuthAction().trackItemHistoryAction(
           context: null,
         ) &&
@@ -228,8 +227,7 @@ class ItemHistoryProvider with ChangeNotifier {
 
   Future<void> itemHistoriesSync() async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await ConnectivityProvider().isOnline();
       if (CreatedItemHistoriesFunc()
               .getCreatedItemHistoriess()
               .isNotEmpty &&
@@ -238,40 +236,54 @@ class ItemHistoryProvider with ChangeNotifier {
             CreatedItemHistoriesFunc()
                 .getCreatedItemHistoriess()
                 .toList();
-        var newItemHistories = tempItemHistories.map((
-          itemHistory,
-        ) {
+        var newItemHistories = tempItemHistories.map((itemHistory) {
           itemHistory.itemHistory.createdAt =
               itemHistory.itemHistory.createdAt!;
           return itemHistory;
-        });
+        }).toList();
         final payload =
-            newItemHistories
-                .map((p) => p.itemHistory.toJson())
-                .toList();
+            newItemHistories.map((p) => p.itemHistory.toJson()).toList();
 
-        // Insert all at once
-        final data =
-            await client
-                .from(tableName)
-                .insert(payload)
-                .select();
+        try {
+          // Attempt batch insert first
+          final data = await client.from(tableName).insert(payload).select();
+          await mainLocalLog(
+            '${data.length} Item Histories added successfully ✅',
+          );
+          await CreatedItemHistoriesFunc().clearItemHistory();
+        } catch (batchErr) {
+          await mainLocalLog(
+            'Batch Item Histories insert failed, falling back to item-by-item: $batchErr',
+          );
+          // Fall back to item-by-item insert so valid items sync and problematic ones don't poison queue
+          for (var item in tempItemHistories) {
+            final uuid = item.itemHistory.uuid;
+            if (uuid == null || uuid.isEmpty) continue;
+            try {
+              await client
+                  .from(tableName)
+                  .insert(item.itemHistory.toJson())
+                  .select();
+              await CreatedItemHistoriesFunc().deleteItemHistory(uuid);
+            } on PostgrestException catch (pe) {
+              // 23505 = duplicate, 23503 = foreign key violation, 23502 = not null violation
+              if (pe.code == '23505' || pe.code == '23503' || pe.code == '23502') {
+                await CreatedItemHistoriesFunc().deleteItemHistory(uuid);
+              }
+              await mainLocalLog('Error syncing single item history $uuid: $pe');
+            } catch (err) {
+              // Network or connection error: stop to retry later
+              await mainLocalLog('Single item history network error: $err');
+              break;
+            }
+          }
+        }
 
-        await mainLocalLog(
-          '${data.length} Item Histories added successfully ✅',
-        );
-        await CreatedItemHistoriesFunc().clearItemHistory();
-        await mainLocalLog(
-          'Unsynced Item Histories Cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Item Histories ✅',
-        );
         await getItemHistories();
       }
     } catch (e) {
       await mainLocalLog(
-        'Batch Item Histories insert failed ❌: $e',
+        'Item Histories sync error ❌: $e',
       );
     }
   }

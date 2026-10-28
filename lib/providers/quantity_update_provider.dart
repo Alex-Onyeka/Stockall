@@ -57,16 +57,40 @@ class QuantityUpdateProvider with ChangeNotifier {
               };
             }).toList();
 
-        List<Map<String, dynamic>> res = await client.rpc(
+        final dynamic rawRes = await client.rpc(
           'update_product_quantities',
           params: {'updates': tempQuantityUpdates},
         );
 
-        for (var item in res) {
-          await QuantityUpdateFunc().deleteQuantityUpdate(
-            uuid: item['hiveUuid'],
-          );
-          mainLocalLog('Quantity Updates Successfully');
+        if (rawRes is List) {
+          final returnedUuids = <String>{};
+          for (var item in rawRes) {
+            if (item is Map && item['hiveUuid'] != null) {
+              final hiveUuid = item['hiveUuid'].toString();
+              returnedUuids.add(hiveUuid);
+              await QuantityUpdateFunc().deleteQuantityUpdate(
+                uuid: hiveUuid,
+              );
+              mainLocalLog('Quantity Updates Successfully');
+            }
+          }
+          for (var sent in tempQuantityUpdates) {
+            final hiveUuid = sent['hiveUuid']?.toString();
+            if (hiveUuid != null && !returnedUuids.contains(hiveUuid)) {
+              await QuantityUpdateFunc().deleteQuantityUpdate(
+                uuid: hiveUuid,
+              );
+            }
+          }
+        } else {
+          for (var sent in tempQuantityUpdates) {
+            final hiveUuid = sent['hiveUuid']?.toString();
+            if (hiveUuid != null) {
+              await QuantityUpdateFunc().deleteQuantityUpdate(
+                uuid: hiveUuid,
+              );
+            }
+          }
         }
 
         // Reconcile local products with server so this device immediately

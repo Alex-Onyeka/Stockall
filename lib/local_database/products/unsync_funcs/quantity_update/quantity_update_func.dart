@@ -179,6 +179,26 @@ class QuantityUpdateFunc {
     }
   }
 
+  Future<int> deleteQuantityUpdatesByProductUuid({
+    required String productUuid,
+  }) async {
+    try {
+      final keysToDelete = <dynamic>[];
+      for (final entry
+          in quantityUpdateBox.toMap().entries) {
+        if (entry.value.productUuid == productUuid) {
+          keysToDelete.add(entry.key);
+        }
+      }
+      for (final key in keysToDelete) {
+        await quantityUpdateBox.delete(key);
+      }
+      return 1;
+    } catch (e) {
+      return 0;
+    }
+  }
+
   Future<int> clearQuantitiesUpdate() async {
     try {
       await quantityUpdateBox.clear();

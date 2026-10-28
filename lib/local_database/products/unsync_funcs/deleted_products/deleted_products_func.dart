@@ -98,6 +98,26 @@ class DeletedProductsFunc {
     }
   }
 
+  Future<int> deleteProductUuid(String productUuid) async {
+    try {
+      final keysToDelete = <dynamic>[];
+      for (final entry in deletedProductsBox.toMap().entries) {
+        if (entry.value.productUuid == productUuid) {
+          keysToDelete.add(entry.key);
+        }
+      }
+      for (final key in keysToDelete) {
+        await deletedProductsBox.delete(key);
+      }
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Error while deleting deleted product UUID: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
+
   Future<int> clearDeletedProducts() async {
     try {
       await deletedProductsBox.clear();

@@ -143,6 +143,16 @@ class ProductsFunc {
       for (var product in products) {
         await productBox.put(product.uuid, product);
       }
+      for (var created in CreatedProductFunc().getProducts()) {
+        if (created.product.uuid != null) {
+          await productBox.put(created.product.uuid, created.product);
+        }
+      }
+      for (var updated in UpdatedProductsFunc().getProducts()) {
+        if (updated.product.uuid != null) {
+          await productBox.put(updated.product.uuid, updated.product);
+        }
+      }
       await mainLocalLog(
         "Offline Products inserted: ${products.length}",
       );
