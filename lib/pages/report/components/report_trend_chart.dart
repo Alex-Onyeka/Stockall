@@ -130,9 +130,13 @@ class ReportTrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double maxY = 0;
+    // Below 0 only when a series goes negative (net profit), so
+    // charts without negatives keep minY 0.
+    double minY = 0;
     for (final s in series) {
       for (final v in s.values) {
         maxY = math.max(maxY, v);
+        minY = math.min(minY, v);
       }
     }
     if (maxY == 0) maxY = 1;
@@ -159,7 +163,7 @@ class ReportTrendChart extends StatelessWidget {
           height: height,
           child: LineChart(
             LineChartData(
-              minY: 0,
+              minY: minY * 1.1,
               maxY: maxY * 1.1,
               gridData: const FlGridData(drawVerticalLine: false),
               borderData: FlBorderData(show: false),

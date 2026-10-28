@@ -10,6 +10,7 @@ import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_table/customer_report_table_page.dart';
 import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
+import 'package:stockall/pages/report/general_report/general_report_page.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
 import 'package:stockall/pages/report/order_report/order_report_page.dart';
@@ -57,6 +58,31 @@ class ReportMobile extends StatelessWidget {
                     SizedBox(height: 10),
                     Column(
                       children: [
+                        Visibility(
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized:
+                                    Authorizations().viewGeneralReport,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const GeneralReportPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'See revenue, costs and profit for any period',
+                            title: 'General Report',
+                          ),
+                        ),
                         Visibility(
                           visible: authorization(
                             authorized: Authorizations().viewItemsReport,
