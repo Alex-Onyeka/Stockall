@@ -20,6 +20,7 @@ import 'package:stockall/pages/report/items_report_/items_report/items_report_pa
 import 'package:stockall/pages/report/order_report/order_report_page.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
+import 'package:stockall/pages/report/staff_report/staff_report_table/staff_report_table_page.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report/storage_report_page.dart';
 import 'package:stockall/pages/report/supplier_report/supplier_report_table/supplier_report_table_page.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -475,14 +476,29 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               'Error Log',
                                         ),
                                       ),
-                                      ReportListTile(
-                                        isActive: false,
-                                        theme: theme,
-                                        action: () {},
-                                        subText:
-                                            'View a break down of Staff activities',
-                                        title:
-                                            'Staff Report (Coming Soon)',
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return const StaffReportTablePage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'See what each staff member sold, bought and spent',
+                                          title:
+                                              'Staff Report',
+                                        ),
                                       ),
                                       ReportListTile(
                                         isActive: false,
