@@ -417,50 +417,50 @@ class _PurchasePageMobileState
                             color: Colors.white,
                             itemBuilder: (context) {
                               return [
-                                // PopupMenuItem(
-                                //   enabled: true,
-                                //   height: 35,
-                                //   onTap: () {
-                                //     showDialog(
-                                //       context: context,
-                                //       builder: (
-                                //         confirmDialog,
-                                //       ) {
-                                //         return ConfirmationAlert(
-                                //           theme: theme,
-                                //           message:
-                                //               'You are about to edit this purchase. Are you sure you want to proceed?',
-                                //           title:
-                                //               'Edit Purchase',
-                                //           action: () {
-                                //             Navigator.of(
-                                //               confirmDialog,
-                                //             ).pop();
-                                //             returnPurchaseActionProvider()
-                                //                 .editPurchase(
-                                //                   purchase:
-                                //                       purchase,
-                                //                   context:
-                                //                       context,
-                                //                 );
-                                //           },
-                                //         );
-                                //       },
-                                //     );
-                                //   },
-                                //   child: Text(
-                                //     style: TextStyle(
-                                //       fontSize:
-                                //           theme
-                                //               .mobileTexts
-                                //               .b3
-                                //               .fontSize,
-                                //       fontWeight:
-                                //           FontWeight.bold,
-                                //     ),
-                                //     'Edit',
-                                //   ),
-                                // ),
+                                PopupMenuItem(
+                                  enabled: true,
+                                  height: 35,
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (
+                                        confirmDialog,
+                                      ) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              'You are about to edit this purchase. Are you sure you want to proceed?',
+                                          title:
+                                              'Edit Purchase',
+                                          action: () {
+                                            Navigator.of(
+                                              confirmDialog,
+                                            ).pop();
+                                            returnPurchaseActionProvider()
+                                                .editPurchase(
+                                                  purchase:
+                                                      purchase,
+                                                  context:
+                                                      context,
+                                                );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Edit',
+                                  ),
+                                ),
                                 // PopupMenuItem(
                                 //   enabled: !kIsWeb,
                                 //   height: 35,

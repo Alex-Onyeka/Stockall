@@ -59,7 +59,10 @@ class UpdatedPurchasesFunc {
     UpdatedPurchases updatedPurchase,
   ) async {
     try {
-      updatedPurchasesBox.add(
+      // Keyed by uuid: a newer update of the same purchase
+      // replaces the queued one.
+      await updatedPurchasesBox.put(
+        updatedPurchase.purchase.uuid,
         UpdatedPurchases(
           purchase: updatedPurchase.purchase,
         ),
@@ -89,6 +92,16 @@ class UpdatedPurchasesFunc {
         'Purchase Delete Failed: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  /// Removes [entry] once synced, unless a newer update of the
+  /// same purchase replaced it in the meantime.
+  Future<void> deleteIfUnchanged(UpdatedPurchases entry) async {
+    final key = entry.key;
+    if (key != null &&
+        identical(updatedPurchasesBox.get(key), entry)) {
+      await updatedPurchasesBox.delete(key);
     }
   }
 

@@ -482,34 +482,34 @@ class _PurchasePageDesktopState
                             },
                             text: 'Download',
                           ),
-                          // ActionButtonSmall(
-                          //   action: () {
-                          //     showDialog(
-                          //       context: context,
-                          //       builder: (confirmDialog) {
-                          //         return ConfirmationAlert(
-                          //           theme: theme,
-                          //           message:
-                          //               'You are about to edit this purchase. Are you sure you want to proceed?',
-                          //           title: 'Edit Purchase',
-                          //           action: () {
-                          //             Navigator.of(
-                          //               confirmDialog,
-                          //             ).pop();
-                          //             returnPurchaseActionProvider()
-                          //                 .editPurchase(
-                          //                   purchase:
-                          //                       purchase,
-                          //                   context:
-                          //                       context,
-                          //                 );
-                          //           },
-                          //         );
-                          //       },
-                          //     );
-                          //   },
-                          //   text: 'Edit',
-                          // ),
+                          ActionButtonSmall(
+                            action: () {
+                              showDialog(
+                                context: context,
+                                builder: (confirmDialog) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to edit this purchase. Are you sure you want to proceed?',
+                                    title: 'Edit Purchase',
+                                    action: () {
+                                      Navigator.of(
+                                        confirmDialog,
+                                      ).pop();
+                                      returnPurchaseActionProvider()
+                                          .editPurchase(
+                                            purchase:
+                                                purchase,
+                                            context:
+                                                context,
+                                          );
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            text: 'Edit',
+                          ),
                           ActionButtonSmall(
                             isLoading: isDeleteLoading,
                             action: () {

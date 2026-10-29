@@ -33,6 +33,10 @@ class PurchaseFunc {
     return purchases;
   }
 
+  TempPurchase? getSinglePurchase({required String uuid}) {
+    return purchasesBox.get(uuid);
+  }
+
   Future<int> insertAllPurchases(
     List<TempPurchase> purchases,
   ) async {

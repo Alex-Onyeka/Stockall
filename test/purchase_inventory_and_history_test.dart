@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_product_class/prices_class/product_prices_
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_purchase/purchase_list_item/purchase_list_item.dart';
+import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
@@ -568,7 +569,7 @@ void main() {
         expect(double.parse(juiceHistory.oldValue!), 10);
         expect(double.parse(juiceHistory.newValue!), 46);
         expect(juiceHistory.quantityChange, 3);
-        expect(juiceHistory.unit, 'Carton');
+        expect(juiceHistory.unit, 'Carton (36 Bottle)');
         expect(juiceHistory.primaryUnit, 'Bottle');
 
         final milkHistory = histories.firstWhere(
@@ -577,7 +578,7 @@ void main() {
         expect(double.parse(milkHistory.oldValue!), 6);
         expect(double.parse(milkHistory.newValue!), 54);
         expect(milkHistory.quantityChange, 2);
-        expect(milkHistory.unit, 'Pack');
+        expect(milkHistory.unit, 'Pack (48 Tin)');
         expect(milkHistory.primaryUnit, 'Tin');
       },
     );
@@ -652,7 +653,7 @@ void main() {
         expect(history.oldValue, '12.5');
         expect(history.newValue, '87.5');
         expect(history.quantityChange, 1.5);
-        expect(history.unit, 'Bag');
+        expect(history.unit, 'Bag (75 Kg)');
         expect(history.primaryUnit, 'Kg');
       },
     );
@@ -883,7 +884,7 @@ void main() {
         expect(double.parse(sh.storageItemOldValue!), 100);
         expect(double.parse(sh.storageItemNewValue!), 148);
         expect(sh.quantityChange, 2);
-        expect(sh.storageUnit, 'Crate');
+        expect(sh.storageUnit, 'Crate (48 Bottle)');
         expect(sh.storagePrimaryUnit, 'Bottle');
         expect(
           CreatedStorageItemHistoriesFunc()
@@ -1082,7 +1083,7 @@ void main() {
           expect(double.parse(returnHistory.oldValue!), 36);
           expect(double.parse(returnHistory.newValue!), 12);
           expect(returnHistory.quantityChange, 4);
-          expect(returnHistory.unit, 'SixPack');
+          expect(returnHistory.unit, 'SixPack (24 Can)');
           expect(returnHistory.primaryUnit, 'Can');
           expect(
             returnHistory.source,
@@ -1228,7 +1229,7 @@ void main() {
             100,
           );
           expect(deleteHistory.quantityChange, 2);
-          expect(deleteHistory.storageUnit, 'Pallet');
+          expect(deleteHistory.storageUnit, 'Pallet (80 Bag)');
           expect(deleteHistory.storagePrimaryUnit, 'Bag');
           expect(
             deleteHistory.source,
@@ -1445,6 +1446,426 @@ void main() {
           ItemHistoriesFunc().getItemHistories().length,
           2,
         );
+      },
+    );
+  });
+
+  group('Purchase Edit In Place', () {
+    PurchaseListItem waterLine(
+      TempProductClass product,
+      double quantity,
+    ) {
+      final units = product.getUnitListFinal();
+      final primary = units.firstWhere((u) => u.isPrimary);
+      return PurchaseListItem(
+        itemName: product.name,
+        itemUuid: product.uuid,
+        storageItemUuid: null,
+        unit: primary.name,
+        unitUuid: primary.uuid,
+        unitsList: units,
+        quantity: quantity,
+        originalPrice: product.costPrice,
+        customPrice: null,
+        totalPrice: quantity * product.costPrice,
+        isGroup: false,
+        qttyPerGroup: product.qttyPerGroup,
+      );
+    }
+
+    test(
+      'Edit keeps uuid and date, moves stock only by the difference, and logs one "(Purchase Updated)" history per changed item',
+      () async {
+        final bottle = ProductUnitsClass(
+          uuid: 'u-bottle',
+          staffUuid: 'staff-1',
+          createdAt: DateTime.utc(2026, 1, 1),
+          staffName: 'Tester',
+          conversion: 1,
+          name: 'Bottle',
+          isPrimary: true,
+          productUuid: 'prod-juice',
+        );
+        final carton = ProductUnitsClass(
+          uuid: 'u-carton',
+          staffUuid: 'staff-1',
+          createdAt: DateTime.utc(2026, 1, 1),
+          staffName: 'Tester',
+          conversion: 12,
+          name: 'Carton',
+          isPrimary: false,
+          productUuid: 'prod-juice',
+        );
+        final water = makeProduct(
+          uuid: 'prod-water',
+          name: 'Bottled Water',
+          quantity: 20,
+        );
+        final juice = makeProduct(
+          uuid: 'prod-juice',
+          name: 'Fruit Juice',
+          quantity: 10,
+          unitsList: [bottle, carton],
+        );
+        final soap = makeProduct(
+          uuid: 'prod-soap',
+          name: 'Soap',
+          unit: 'Bar',
+          quantity: 5,
+        );
+        await seedEnvironment(
+          manageInventoryStorage: false,
+          products: [water, juice, soap],
+        );
+
+        // Create: 15 water, 2 cartons of juice (24 bottles).
+        PurchaseActionProvider().addItemToList(
+          item: waterLine(water, 15),
+        );
+        PurchaseActionProvider().addItemToList(
+          item: PurchaseListItem(
+            itemName: juice.name,
+            itemUuid: juice.uuid,
+            storageItemUuid: null,
+            unit: carton.name,
+            unitUuid: carton.uuid,
+            unitsList: juice.getUnitListFinal(),
+            quantity: 2,
+            originalPrice: 100,
+            customPrice: null,
+            totalPrice: 2400,
+            isGroup: true,
+            qttyPerGroup: 12,
+          ),
+        );
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(),
+          1,
+        );
+        double qty(String uuid) =>
+            ProductsFunc().getSingleProduct(uuid: uuid)!.quantity!;
+        expect(qty('prod-water'), 35);
+        expect(qty('prod-juice'), 34);
+
+        final saved = PurchaseFunc().getPurchases().single;
+        final historiesBefore =
+            ItemHistoriesFunc().getItemHistories().length;
+
+        // Edit: water 15 -> 10, juice removed, soap 4 added.
+        PurchaseActionProvider().purchaseListItems = [
+          waterLine(water, 10),
+          waterLine(soap, 4),
+        ];
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(
+            purchase: saved,
+            updateInventory: true,
+          ),
+          1,
+        );
+
+        // Stock moved by the difference only.
+        expect(qty('prod-water'), 30);
+        expect(qty('prod-juice'), 10);
+        expect(qty('prod-soap'), 9);
+
+        // Same purchase, updated in place.
+        final edited = PurchaseFunc().getPurchases().single;
+        expect(edited.uuid, saved.uuid);
+        expect(edited.createdAt, saved.createdAt);
+        expect(edited.staffId, saved.staffId);
+        expect(edited.items!.length, 2);
+        expect(
+          edited.items!.every((i) => i.purchaseId == saved.uuid),
+          isTrue,
+        );
+        expect(DeletedPurchasesFunc().getPurchaseIds(), isEmpty);
+        // Not synced yet: the queued create carries the edit.
+        final created = CreatedPurchasesFunc().getPurchases();
+        expect(created.length, 1);
+        expect(created.single.purchase.items!.length, 2);
+        expect(UpdatedPurchasesFunc().getPurchaseIds(), isEmpty);
+
+        // One history per changed item. Edit histories are dated
+        // at the purchase date (as receipt edits are), so they are
+        // picked by title rather than position.
+        expect(
+          ItemHistoriesFunc().getItemHistories().length,
+          historiesBefore + 3,
+        );
+        final newHistories =
+            ItemHistoriesFunc()
+                .getItemHistories()
+                .where(
+                  (h) => h.title.contains('(Purchase Updated)'),
+                )
+                .toList();
+        expect(newHistories.length, 3);
+        final waterHistory = newHistories.firstWhere(
+          (h) => h.itemUuid == 'prod-water',
+        );
+        expect(
+          waterHistory.event,
+          ItemHistoryEventClass.returnEvent,
+        );
+        expect(waterHistory.isIncreased, isFalse);
+        expect(waterHistory.quantityChange, -5);
+        expect(double.parse(waterHistory.oldValue!), 35);
+        expect(double.parse(waterHistory.newValue!), 30);
+        expect(waterHistory.createdAt, saved.createdAt);
+        final juiceHistory = newHistories.firstWhere(
+          (h) => h.itemUuid == 'prod-juice',
+        );
+        expect(juiceHistory.quantityChange, -24);
+        final soapHistory = newHistories.firstWhere(
+          (h) => h.itemUuid == 'prod-soap',
+        );
+        expect(soapHistory.event, ItemHistoryEventClass.purchase);
+        expect(soapHistory.isIncreased, isTrue);
+        expect(soapHistory.quantityChange, 4);
+
+        // Editing again without quantity changes moves no stock
+        // and logs nothing.
+        final historiesAfter =
+            ItemHistoriesFunc().getItemHistories().length;
+        PurchaseActionProvider().purchaseListItems = [
+          waterLine(water, 10),
+          waterLine(soap, 4),
+        ];
+        PurchaseActionProvider().setCustomTotalAmount(999);
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(
+            purchase: PurchaseFunc().getPurchases().single,
+            updateInventory: true,
+          ),
+          1,
+        );
+        expect(qty('prod-water'), 30);
+        expect(qty('prod-soap'), 9);
+        expect(
+          ItemHistoriesFunc().getItemHistories().length,
+          historiesAfter,
+        );
+        expect(PurchaseFunc().getPurchases().single.total, 999);
+      },
+    );
+
+    test(
+      'Offline edits of a synced purchase queue one UpdatedPurchases entry keyed by uuid, without the +1 day',
+      () async {
+        final water = makeProduct(
+          uuid: 'prod-water',
+          name: 'Bottled Water',
+          quantity: 20,
+        );
+        await seedEnvironment(
+          manageInventoryStorage: false,
+          products: [water],
+        );
+        PurchaseActionProvider().addItemToList(
+          item: waterLine(water, 15),
+        );
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(),
+          1,
+        );
+        // As if the create had synced.
+        await CreatedPurchasesFunc().clearPurchases();
+        final saved = PurchaseFunc().getPurchases().single;
+
+        PurchaseActionProvider().purchaseListItems = [
+          waterLine(water, 12),
+        ];
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(
+            purchase: saved,
+            updateInventory: true,
+          ),
+          1,
+        );
+        var queued = UpdatedPurchasesFunc().getPurchaseIds();
+        expect(queued.length, 1);
+        final firstEntry = queued.single;
+        expect(firstEntry.key, saved.uuid);
+        expect(firstEntry.purchase.items!.single.quantity, 12);
+
+        PurchaseActionProvider().purchaseListItems = [
+          waterLine(water, 13),
+        ];
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(
+            purchase: PurchaseFunc().getPurchases().single,
+            updateInventory: true,
+          ),
+          1,
+        );
+        queued = UpdatedPurchasesFunc().getPurchaseIds();
+        expect(queued.length, 1);
+        expect(queued.single.purchase.items!.single.quantity, 13);
+        expect(
+          queued.single.purchase.updatedAt!.isBefore(
+            DateTime.now().add(const Duration(minutes: 5)),
+          ),
+          isTrue,
+        );
+        expect(
+          ProductsFunc()
+              .getSingleProduct(uuid: 'prod-water')!
+              .quantity,
+          33,
+        );
+
+        // A replaced entry is not removed by a stale sync pass;
+        // the current one is.
+        await UpdatedPurchasesFunc().deleteIfUnchanged(firstEntry);
+        expect(UpdatedPurchasesFunc().getPurchaseIds().length, 1);
+        await UpdatedPurchasesFunc().deleteIfUnchanged(
+          UpdatedPurchasesFunc().getPurchaseIds().single,
+        );
+        expect(UpdatedPurchasesFunc().getPurchaseIds(), isEmpty);
+      },
+    );
+
+    test(
+      'Storage edit applies the difference and logs a "Purchase Updated" storage history',
+      () async {
+        final storagePrimary = ProductUnitsClass(
+          uuid: 'su-bottle',
+          staffUuid: 'staff-1',
+          createdAt: DateTime.utc(2026, 1, 1),
+          staffName: 'Tester',
+          conversion: 1,
+          name: 'Bottle',
+          isPrimary: true,
+          productUuid: 'storage-1',
+        );
+        final storageCrate = ProductUnitsClass(
+          uuid: 'su-crate',
+          staffUuid: 'staff-1',
+          createdAt: DateTime.utc(2026, 1, 1),
+          staffName: 'Tester',
+          conversion: 24,
+          name: 'Crate',
+          isPrimary: false,
+          productUuid: 'storage-1',
+        );
+        final storageProduct = makeStorageProduct(
+          uuid: 'storage-1',
+          name: 'Warehouse Soda',
+          quantity: 100,
+          unitsList: [storagePrimary, storageCrate],
+        );
+        await seedEnvironment(
+          manageInventoryStorage: true,
+          storageProducts: [storageProduct],
+        );
+        PurchaseListItem crates(double quantity) => PurchaseListItem(
+          itemName: storageProduct.name,
+          itemUuid: null,
+          storageItemUuid: storageProduct.uuid,
+          unit: storageCrate.name,
+          unitUuid: storageCrate.uuid,
+          unitsList: storageProduct.getUnitListFinal(),
+          quantity: quantity,
+          originalPrice: 80,
+          customPrice: null,
+          totalPrice: quantity * 1920,
+          isGroup: true,
+          qttyPerGroup: 24,
+        );
+        double storageQty() =>
+            StorageProductsFunc()
+                .getStorageProducts()
+                .firstWhere((s) => s.uuid == 'storage-1')
+                .quantity!;
+
+        PurchaseActionProvider().addItemToList(item: crates(2));
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(),
+          1,
+        );
+        expect(storageQty(), 148);
+
+        PurchaseActionProvider().purchaseListItems = [crates(1)];
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(
+            purchase: PurchaseFunc().getPurchases().single,
+            updateInventory: true,
+          ),
+          1,
+        );
+        expect(storageQty(), 124);
+
+        final histories =
+            StorageItemHistoriesFunc().getStorageItemHistories();
+        expect(histories.length, 2);
+        final editHistory = histories.firstWhere(
+          (h) => h.title == 'Purchase Updated',
+        );
+        expect(
+          editHistory.event,
+          StorageItemHistoryEventClass.purchaseDeleted,
+        );
+        expect(editHistory.isIncreased, isFalse);
+        expect(editHistory.quantityChange, -24);
+        expect(double.parse(editHistory.storageItemOldValue!), 148);
+        expect(double.parse(editHistory.storageItemNewValue!), 124);
+        expect(ItemHistoriesFunc().getItemHistories(), isEmpty);
+      },
+    );
+
+    test(
+      'Legacy purchase without stored lines cannot be saved as an edit',
+      () async {
+        final water = makeProduct(
+          uuid: 'prod-water',
+          name: 'Bottled Water',
+          quantity: 20,
+        );
+        await seedEnvironment(
+          manageInventoryStorage: false,
+          products: [water],
+        );
+        final legacy = TempPurchase(
+          uuid: 'legacy-1',
+          createdAt: DateTime.utc(2026, 9, 1),
+          shopId: 101,
+          staffId: 'staff-1',
+          staffName: 'Alex Staff',
+          supplierId: null,
+          supplierName: null,
+          total: 1500,
+          isCustomPriceSet: false,
+          purchasePayments: [],
+          updatedAt: DateTime.utc(2026, 9, 1),
+          items: null,
+        );
+        await PurchaseFunc().createPurchase(legacy);
+
+        PurchaseActionProvider().purchaseListItems = [
+          waterLine(water, 15),
+        ];
+        expect(
+          await PurchaseActionProvider().createPurchaseAction(
+            purchase: legacy,
+            updateInventory: true,
+          ),
+          0,
+        );
+        expect(
+          ProductsFunc()
+              .getSingleProduct(uuid: 'prod-water')!
+              .quantity,
+          20,
+        );
+        expect(
+          PurchaseFunc()
+              .getSinglePurchase(uuid: 'legacy-1')!
+              .items,
+          isNull,
+        );
+        expect(UpdatedPurchasesFunc().getPurchaseIds(), isEmpty);
+        expect(ItemHistoriesFunc().getItemHistories(), isEmpty);
       },
     );
   });
