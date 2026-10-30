@@ -167,7 +167,9 @@ class TempStorageProducts {
         productUuid: uuid,
         dimensionType:
             quantityType == 2
-                ? ProductUnitsClass.sheetUnit
+                ? (ProductUnitsClass.isAreaUnitName(unit)
+                    ? ProductUnitsClass.areaUnit
+                    : ProductUnitsClass.sheetUnit)
                 : null,
       ),
       'quantity_type': quantityType ?? 1,
@@ -261,10 +263,15 @@ class TempStorageProducts {
     }
   }
 
+  bool get hasDimensions =>
+      (widthDimension != null && widthDimension! > 0) &&
+      (heightDimension != null && heightDimension! > 0);
+
   // Area of one stock unit (sheet) for 2D items, 1 otherwise.
   // Converts area back to the stored sheet count.
   double dimensionArea() {
     if (quantityType == 2) {
+      if (!hasDimensions) return 1.0;
       final area =
           (widthDimension ?? 1) * (heightDimension ?? 1);
       final conv = (dimensionUnitConversion != null &&
@@ -289,10 +296,18 @@ class TempStorageProducts {
   // 2D items (area units as they are, sheet units × sheet area).
   double actualFromUnit(
     ProductUnitsClass unit,
-    double quantity,
-  ) {
-    if (quantityType == 2 &&
-        unit.dimensionType != ProductUnitsClass.areaUnit) {
+    double quantity, {
+    double? customWidth,
+    double? customHeight,
+  }) {
+    if (quantityType == 2 && !unit.isAreaUnit) {
+      if (customWidth != null && customHeight != null) {
+        final conv = (dimensionUnitConversion != null &&
+                dimensionUnitConversion! > 0)
+            ? dimensionUnitConversion!
+            : 1.0;
+        return quantity * unit.conversion * ((customWidth * customHeight) / conv);
+      }
       return quantity * unit.conversion * dimensionArea();
     }
     return quantity * unit.conversion;
@@ -405,7 +420,9 @@ class TempStorageProducts {
         productUuid: uuid ?? '',
         dimensionType:
             quantityType == 2
-                ? ProductUnitsClass.sheetUnit
+                ? (ProductUnitsClass.isAreaUnitName(unit)
+                    ? ProductUnitsClass.areaUnit
+                    : ProductUnitsClass.sheetUnit)
                 : null,
       );
     } else {
@@ -414,8 +431,26 @@ class TempStorageProducts {
   }
 
   List<ProductUnitsClass> getUnitsList() {
+    String? safeStaffUuid() {
+      try {
+        return currentUser().userId;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    String? safeStaffName() {
+      try {
+        return currentUser().name;
+      } catch (_) {
+        return null;
+      }
+    }
+
     List<ProductUnitsClass> buildList() {
       if (unitsList == null || unitsList?.isEmpty == true) {
+        final isArea =
+            quantityType == 2 && ProductUnitsClass.isAreaUnitName(unit);
         List<ProductUnitsClass> tempList = [
           ProductUnitsClass(
             uuid: '${uuid ?? ''}_primary_unit',
@@ -431,7 +466,9 @@ class TempStorageProducts {
             productUuid: uuid ?? '',
             dimensionType:
                 quantityType == 2
-                    ? ProductUnitsClass.sheetUnit
+                    ? (isArea
+                        ? ProductUnitsClass.areaUnit
+                        : ProductUnitsClass.sheetUnit)
                     : null,
           ),
         ];
@@ -451,6 +488,39 @@ class TempStorageProducts {
             productUuid: uuid ?? '',
           );
           tempList.add(newItem);
+        }
+        if (quantityType == 2) {
+          final hasArea = tempList.any((u) => u.isAreaUnit);
+          final hasWhole = tempList.any((u) => !u.isAreaUnit);
+          if (hasArea && !hasWhole) {
+            tempList.add(
+              ProductUnitsClass(
+                uuid: '${uuid ?? ''}_sheet_unit',
+                staffUuid: safeStaffUuid(),
+                createdAt: DateTime.now(),
+                staffName: safeStaffName(),
+                conversion: 1,
+                name: 'Sheet',
+                isPrimary: false,
+                productUuid: uuid ?? '',
+                dimensionType: ProductUnitsClass.sheetUnit,
+              ),
+            );
+          } else if (hasWhole && !hasArea) {
+            tempList.add(
+              ProductUnitsClass(
+                uuid: '${uuid ?? ''}_area_unit',
+                staffUuid: safeStaffUuid(),
+                createdAt: DateTime.now(),
+                staffName: safeStaffName(),
+                conversion: 1,
+                name: 'Square Meter',
+                isPrimary: false,
+                productUuid: uuid ?? '',
+                dimensionType: ProductUnitsClass.areaUnit,
+              ),
+            );
+          }
         }
         return tempList;
       } else {
@@ -475,6 +545,39 @@ class TempStorageProducts {
               productUuid: uuid ?? '',
             ),
           );
+        }
+        if (quantityType == 2) {
+          final hasArea = tempList.any((u) => u.isAreaUnit);
+          final hasWhole = tempList.any((u) => !u.isAreaUnit);
+          if (hasArea && !hasWhole) {
+            tempList.add(
+              ProductUnitsClass(
+                uuid: '${uuid ?? ''}_sheet_unit',
+                staffUuid: safeStaffUuid(),
+                createdAt: DateTime.now(),
+                staffName: safeStaffName(),
+                conversion: 1,
+                name: 'Sheet',
+                isPrimary: false,
+                productUuid: uuid ?? '',
+                dimensionType: ProductUnitsClass.sheetUnit,
+              ),
+            );
+          } else if (hasWhole && !hasArea) {
+            tempList.add(
+              ProductUnitsClass(
+                uuid: '${uuid ?? ''}_area_unit',
+                staffUuid: safeStaffUuid(),
+                createdAt: DateTime.now(),
+                staffName: safeStaffName(),
+                conversion: 1,
+                name: 'Square Meter',
+                isPrimary: false,
+                productUuid: uuid ?? '',
+                dimensionType: ProductUnitsClass.areaUnit,
+              ),
+            );
+          }
         }
         return tempList;
       }

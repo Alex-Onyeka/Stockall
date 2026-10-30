@@ -64,6 +64,12 @@ class TempItemPurchaseRecord {
   @HiveField(18)
   String? unitUuid;
 
+  @HiveField(19)
+  double? widthDimension;
+
+  @HiveField(20)
+  double? heightDimension;
+
   TempItemPurchaseRecord({
     required this.createdAt,
     required this.shopId,
@@ -84,6 +90,8 @@ class TempItemPurchaseRecord {
     required this.unit,
     required this.unitsList,
     required this.unitUuid,
+    this.widthDimension,
+    this.heightDimension,
   });
 
   factory TempItemPurchaseRecord.fromJson(
@@ -115,12 +123,19 @@ class TempItemPurchaseRecord {
       unitsList:
           (json['units_list'] as List<dynamic>? ?? [])
               .map(
-                (item) => ProductUnitsClass.fromJson(
-                  item as Map<String, dynamic>,
-                ),
+                (item) =>
+                    item is ProductUnitsClass
+                        ? item
+                        : ProductUnitsClass.fromJson(
+                          item as Map<String, dynamic>,
+                        ),
               )
               .toList(),
       unitUuid: json['unit_uuid'] as String?,
+      widthDimension:
+          (json['width_dimension'] as num?)?.toDouble(),
+      heightDimension:
+          (json['height_dimension'] as num?)?.toDouble(),
     );
   }
 
@@ -148,6 +163,8 @@ class TempItemPurchaseRecord {
         productUuid: itemId ?? storageItemId,
       ),
       'unit_uuid': unitUuid,
+      'width_dimension': widthDimension,
+      'height_dimension': heightDimension,
     };
   }
 
@@ -208,6 +225,8 @@ class TempItemPurchaseRecord {
     String? unit,
     List<ProductUnitsClass>? unitsList,
     String? unitUuid,
+    double? widthDimension,
+    double? heightDimension,
   }) {
     return TempItemPurchaseRecord(
       uuid: uuid ?? this.uuid,
@@ -229,6 +248,8 @@ class TempItemPurchaseRecord {
       unit: unit ?? this.unit,
       unitsList: unitsList ?? this.unitsList,
       unitUuid: unitUuid ?? this.unitUuid,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension: heightDimension ?? this.heightDimension,
     );
   }
 

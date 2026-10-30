@@ -37,13 +37,15 @@ class TempItemPurchaseRecordAdapter
       unit: fields[16] as String?,
       unitsList: (fields[17] as List?)?.cast<ProductUnitsClass>(),
       unitUuid: fields[18] as String?,
+      widthDimension: fields[19] as double?,
+      heightDimension: fields[20] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempItemPurchaseRecord obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -81,7 +83,11 @@ class TempItemPurchaseRecordAdapter
       ..writeByte(17)
       ..write(obj.unitsList)
       ..writeByte(18)
-      ..write(obj.unitUuid);
+      ..write(obj.unitUuid)
+      ..writeByte(19)
+      ..write(obj.widthDimension)
+      ..writeByte(20)
+      ..write(obj.heightDimension);
   }
 
   @override

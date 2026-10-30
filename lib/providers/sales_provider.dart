@@ -4210,8 +4210,8 @@ class SalesProvider extends ChangeNotifier {
           b.item.unitsList
               ?.where((unit) => unit.uuid == unitKey)
               .firstOrNull
-              ?.dimensionType ==
-          ProductUnitsClass.areaUnit;
+              ?.isAreaUnit ??
+          false;
       return (isAreaUnit ||
               (_sameDimension(
                     a.widthDimension,

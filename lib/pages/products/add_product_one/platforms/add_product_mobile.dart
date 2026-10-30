@@ -99,6 +99,10 @@ class _AddProductMobileState
   bool isOpen = false;
 
   void checkFields() async {
+    final hasWidth =
+        widget.widthController.text.trim().isNotEmpty;
+    final hasHeight =
+        widget.heightController.text.trim().isNotEmpty;
     if (widget.nameController.text.isEmpty) {
       showDialog(
         context: context,
@@ -113,8 +117,7 @@ class _AddProductMobileState
         },
       );
     } else if (quantityType == 2 &&
-        (widget.heightController.text.isEmpty ||
-            widget.widthController.text.isEmpty)) {
+        (hasWidth != hasHeight)) {
       showDialog(
         context: context,
         builder: (context) {
@@ -122,8 +125,37 @@ class _AddProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'Max-Width and Max-Height Cannot be Empty For 2 Dimensional Items.',
-            title: 'Max-Width and Max-Height Not Set',
+                'Both Width and Height must be provided if setting dimensions, or both left empty.',
+            title: 'Incomplete Dimensions',
+          );
+        },
+      );
+    } else if (quantityType == 2 &&
+        hasWidth &&
+        hasHeight &&
+        ((double.tryParse(
+                      widget.widthController.text
+                          .replaceAll(',', '')
+                          .trim(),
+                    ) ??
+                    0) <=
+                0 ||
+            (double.tryParse(
+                      widget.heightController.text
+                          .replaceAll(',', '')
+                          .trim(),
+                    ) ??
+                    0) <=
+                0)) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Width and Height must be numbers greater than 0.',
+            title: 'Invalid Dimensions',
           );
         },
       );
@@ -331,9 +363,11 @@ class _AddProductMobileState
     )) {
       return;
     }
-    if (quantityType == 2 &&
-        (widget.heightController.text.isEmpty ||
-            widget.widthController.text.isEmpty)) {
+    final hasWidth =
+        widget.widthController.text.trim().isNotEmpty;
+    final hasHeight =
+        widget.heightController.text.trim().isNotEmpty;
+    if (quantityType == 2 && (hasWidth != hasHeight)) {
       showDialog(
         context: context,
         builder: (context) {
@@ -341,8 +375,37 @@ class _AddProductMobileState
           return InfoAlert(
             theme: theme,
             message:
-                'Max-Width and Max-Height Cannot be Empty For 2 Dimensional Items.',
-            title: 'Max-Width and Max-Height Not Set',
+                'Both Width and Height must be provided if setting dimensions, or both left empty.',
+            title: 'Incomplete Dimensions',
+          );
+        },
+      );
+    } else if (quantityType == 2 &&
+        hasWidth &&
+        hasHeight &&
+        ((double.tryParse(
+                      widget.widthController.text
+                          .replaceAll(',', '')
+                          .trim(),
+                    ) ??
+                    0) <=
+                0 ||
+            (double.tryParse(
+                      widget.heightController.text
+                          .replaceAll(',', '')
+                          .trim(),
+                    ) ??
+                    0) <=
+                0)) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Width and Height must be numbers greater than 0.',
+            title: 'Invalid Dimensions',
           );
         },
       );
@@ -541,6 +604,13 @@ class _AddProductMobileState
       setState(() {
         createdProductUuid = uuidGen();
       });
+      final currentDept =
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid;
+      if (currentDept != null) {
+        returnData().departmentUuid = currentDept;
+      }
     } else {
       createdProductUuid = widget.product?.uuid;
     }
@@ -639,6 +709,15 @@ class _AddProductMobileState
           widget.product?.heightDimension?.toString() ?? '';
       widget.widthController.text =
           widget.product?.widthDimension?.toString() ?? '';
+    } else if (context.mounted) {
+      final currentDept =
+          returnDepartmentProvider(
+            context: context,
+          ).currentDepartment()?.uuid;
+      if (currentDept != null) {
+        returnData(context: context).departmentUuid =
+            currentDept;
+      }
     }
   }
 
@@ -1095,9 +1174,22 @@ class _AddProductMobileState
                                                       storageUuid:
                                                           widget.product?.storageUuid,
                                                       departmentName:
-                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                          returnData().departmentUuid !=
+                                                                  null
+                                                              ? returnDepartmentProvider().departments
+                                                                  .where(
+                                                                    (
+                                                                      d,
+                                                                    ) =>
+                                                                        d.uuid ==
+                                                                        returnData().departmentUuid,
+                                                                  )
+                                                                  .firstOrNull
+                                                                  ?.name
+                                                              : returnDepartmentProvider().currentDepartment()?.name,
                                                       departmentUuid:
-                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                          returnData().departmentUuid ??
+                                                          returnDepartmentProvider().currentDepartment()?.uuid,
                                                       groupUnit:
                                                           widget.product?.groupUnit,
                                                       qttyPerGroup:
@@ -1529,14 +1621,16 @@ class _AddProductMobileState
                                                                       null
                                                                   ? 'Select Department'
                                                                   : returnDepartmentProvider().departments
-                                                                      .firstWhere(
-                                                                        (
-                                                                          dept,
-                                                                        ) =>
-                                                                            dept.uuid ==
-                                                                            returnData().departmentUuid,
-                                                                      )
-                                                                      .name,
+                                                                          .where(
+                                                                            (
+                                                                              dept,
+                                                                            ) =>
+                                                                                dept.uuid ==
+                                                                                returnData().departmentUuid,
+                                                                          )
+                                                                          .firstOrNull
+                                                                          ?.name ??
+                                                                      'Select Department',
                                                             ),
                                                           ],
                                                         ),

@@ -762,9 +762,7 @@ class OrderItems extends HiveObject {
         'Unit conversion must be greater than zero to convert quantities.',
       );
     }
-    if (quantityType == 2 &&
-        selectedUnit.dimensionType ==
-            ProductUnitsClass.areaUnit) {
+    if (quantityType == 2 && selectedUnit.isAreaUnit) {
       return quantity * conversion;
     }
     return quantity * conversion * dimensionArea();
@@ -815,6 +813,10 @@ class OrderItems extends HiveObject {
   double getStockQuantity() {
     return getActualQuantity() + wastageArea();
   }
+
+  bool get hasDimensions =>
+      (widthDimension != null && widthDimension! > 0) &&
+      (heightDimension != null && heightDimension! > 0);
 
   bool get hasCustomDimensions =>
       (widthDimension != null && widthDimension! > 0) ||

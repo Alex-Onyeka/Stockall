@@ -178,6 +178,8 @@ class PurchaseActionProvider extends ChangeNotifier {
                   uuid: uuidGen(),
                   isGroup: item.isGroup,
                   qttyPerGroup: item.qttyPerGroup,
+                  widthDimension: item.widthDimension,
+                  heightDimension: item.heightDimension,
                 ),
               )
               .toList();
@@ -277,6 +279,8 @@ class PurchaseActionProvider extends ChangeNotifier {
                 uuid: uuidGen(),
                 isGroup: item.isGroup,
                 qttyPerGroup: item.qttyPerGroup,
+                widthDimension: item.widthDimension,
+                heightDimension: item.heightDimension,
               ),
             )
             .toList();
@@ -369,6 +373,8 @@ class PurchaseActionProvider extends ChangeNotifier {
                   storageItemUuid: item.storageItemId,
                   isGroup: item.isGroup ?? false,
                   qttyPerGroup: item.qttyPerGroup,
+                  widthDimension: item.widthDimension,
+                  heightDimension: item.heightDimension,
                 ),
               )
               .toList();

@@ -15,6 +15,8 @@ class PurchaseListItem {
   double? qttyPerGroup;
   List<ProductUnitsClass>? unitsList;
   String? unitUuid;
+  double? widthDimension;
+  double? heightDimension;
 
   PurchaseListItem({
     required this.itemName,
@@ -29,6 +31,8 @@ class PurchaseListItem {
     required this.qttyPerGroup,
     required this.unitsList,
     required this.unitUuid,
+    this.widthDimension,
+    this.heightDimension,
   });
 
   PurchaseListItem copyWith({
@@ -44,6 +48,8 @@ class PurchaseListItem {
     String? unit,
     List<ProductUnitsClass>? unitsList,
     String? unitUuid,
+    double? widthDimension,
+    double? heightDimension,
   }) {
     return PurchaseListItem(
       itemName: itemName ?? this.itemName,
@@ -59,6 +65,8 @@ class PurchaseListItem {
       unit: unit ?? this.unit,
       unitsList: unitsList ?? this.unitsList,
       unitUuid: unitUuid ?? this.unitUuid,
+      widthDimension: widthDimension ?? this.widthDimension,
+      heightDimension: heightDimension ?? this.heightDimension,
     );
   }
 

@@ -70,16 +70,24 @@ class _UnitsBottomSheetContent extends StatefulWidget {
 class _UnitsBottomSheetContentState
     extends State<_UnitsBottomSheetContent> {
   late final TextEditingController searchController;
+  late final FocusNode searchFocusNode;
 
   @override
   void initState() {
     super.initState();
     searchController = TextEditingController();
+    searchFocusNode = FocusNode();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        searchFocusNode.requestFocus();
+      }
+    });
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -192,6 +200,8 @@ class _UnitsBottomSheetContentState
                 height: 38,
                 child: TextField(
                   controller: searchController,
+                  focusNode: searchFocusNode,
+                  autofocus: true,
                   onChanged: (value) {
                     setState(() {});
                   },
@@ -427,6 +437,7 @@ class _DimensionUnitsBottomSheetContent
 class _DimensionUnitsBottomSheetContentState
     extends State<_DimensionUnitsBottomSheetContent> {
   late final TextEditingController searchController;
+  late final FocusNode searchFocusNode;
 
   static const List<String> commonDimensionUnits = [
     'Centimeter(s)',
@@ -441,11 +452,18 @@ class _DimensionUnitsBottomSheetContentState
   void initState() {
     super.initState();
     searchController = TextEditingController();
+    searchFocusNode = FocusNode();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        searchFocusNode.requestFocus();
+      }
+    });
   }
 
   @override
   void dispose() {
     searchController.dispose();
+    searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -568,6 +586,8 @@ class _DimensionUnitsBottomSheetContentState
                 height: 38,
                 child: TextField(
                   controller: searchController,
+                  focusNode: searchFocusNode,
+                  autofocus: true,
                   onChanged: (value) {
                     setState(() {});
                   },
@@ -1842,6 +1862,7 @@ void selectProductSales({
   final heightController = TextEditingController();
   final wastageController = TextEditingController();
   final bool is2DItem = cartItem.item.quantityType == 2;
+  final bool itemHasDimensions = cartItem.item.hasDimensions;
   final double? originalWidth =
       cartItem.item.widthDimension;
   final double? originalHeight =
@@ -1855,11 +1876,11 @@ void selectProductSales({
   }
 
   // Width/height used for this line: the entered value in
-  // dimensions mode (original when left empty), the original
-  // in whole mode, and null for non-2D items.
+  // dimensions mode (or when item has no default dimensions),
+  // the original in whole mode, and null for non-2D items.
   double? resolvedWidth() {
     if (!is2DItem || isAreaUnit) return null;
-    if (quantityTypeTemp == 2 &&
+    if ((quantityTypeTemp == 2 || !itemHasDimensions) &&
         widthController.text.trim().isNotEmpty) {
       return parseDimension(widthController);
     }
@@ -1868,7 +1889,7 @@ void selectProductSales({
 
   double? resolvedHeight() {
     if (!is2DItem || isAreaUnit) return null;
-    if (quantityTypeTemp == 2 &&
+    if ((quantityTypeTemp == 2 || !itemHasDimensions) &&
         heightController.text.trim().isNotEmpty) {
       return parseDimension(heightController);
     }
@@ -1898,19 +1919,22 @@ void selectProductSales({
   }
 
   String? dimensionsError() {
-    if (!is2DItem || isAreaUnit || quantityTypeTemp != 2) {
+    if (!is2DItem || isAreaUnit) {
       return null;
     }
-    return checkDimension(
-          widthController,
-          'Width',
-          originalWidth,
-        ) ??
-        checkDimension(
-          heightController,
-          'Height',
-          originalHeight,
-        );
+    if (quantityTypeTemp == 2 || !itemHasDimensions) {
+      return checkDimension(
+            widthController,
+            'Width',
+            originalWidth,
+          ) ??
+          checkDimension(
+            heightController,
+            'Height',
+            originalHeight,
+          );
+    }
+    return null;
   }
 
   // Wastage is entered for 2D items that manage it.
@@ -1931,10 +1955,7 @@ void selectProductSales({
   // Name of the item's base area unit, for stock messages.
   String areaUnitLabel() {
     final areaUnits = cartItem.getUnitsList().where(
-      (item) =>
-          item.dimensionType ==
-              ProductUnitsClass.areaUnit &&
-          item.conversion == 1,
+      (item) => item.isAreaUnit && item.conversion == 1,
     );
     if (areaUnits.isNotEmpty) {
       return areaUnits.first.name;
@@ -2003,8 +2024,7 @@ void selectProductSales({
   unitUuid = cartItem.unitUuid ?? getPrimaryUnit().uuid;
   isAreaUnit =
       is2DItem &&
-      getPrimaryUnit().dimensionType ==
-          ProductUnitsClass.areaUnit;
+      getPrimaryUnit().isAreaUnit;
 
   // Editing a line sold at a custom size reopens it in
   // dimensions mode with the values filled in.
@@ -2012,7 +2032,8 @@ void selectProductSales({
       !isAreaUnit &&
       cartItem.widthDimension != null &&
       cartItem.heightDimension != null &&
-      (cartItem.widthDimension != originalWidth ||
+      (!itemHasDimensions ||
+          cartItem.widthDimension != originalWidth ||
           cartItem.heightDimension != originalHeight)) {
     quantityTypeTemp = 2;
     widthController.text = formatDimension(
@@ -2163,8 +2184,7 @@ void selectProductSales({
           tempUnitList
               .where(
                 (unit) =>
-                    unit.dimensionType ==
-                        ProductUnitsClass.areaUnit &&
+                    unit.isAreaUnit &&
                     unit.conversion == 1,
               )
               .firstOrNull;
@@ -2624,8 +2644,10 @@ void selectProductSales({
                                   ),
                               child: Builder(
                                 builder: (context) {
-                                  if (quantityTypeTemp ==
-                                      1) {
+                                  if (!is2DItem ||
+                                      isAreaUnit ||
+                                      (quantityTypeTemp == 1 &&
+                                          itemHasDimensions)) {
                                     return Container();
                                   } else {
                                     return Row(
@@ -2647,15 +2669,15 @@ void selectProductSales({
                                               value,
                                             ) {
                                               setState(() {
-                                                if ((double.tryParse(
+                                                if (originalWidth != null &&
+                                                    (double.tryParse(
                                                           widthController.text.replaceAll(
                                                             ',',
                                                             '',
                                                           ),
                                                         ) ??
                                                         0) >
-                                                    (originalWidth ??
-                                                        0)) {
+                                                    originalWidth) {
                                                   widthController
                                                           .text =
                                                       '0';
@@ -2690,15 +2712,15 @@ void selectProductSales({
                                               value,
                                             ) {
                                               setState(() {
-                                                if ((double.tryParse(
+                                                if (originalHeight != null &&
+                                                    (double.tryParse(
                                                           heightController.text.replaceAll(
                                                             ',',
                                                             '',
                                                           ),
                                                         ) ??
                                                         0) >
-                                                    (originalHeight ??
-                                                        0)) {
+                                                    originalHeight) {
                                                   heightController
                                                           .text =
                                                       '0';
@@ -2730,7 +2752,8 @@ void selectProductSales({
                                           .item
                                           .quantityType ==
                                       2 &&
-                                  !isAreaUnit,
+                                  !isAreaUnit &&
+                                  itemHasDimensions,
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment
@@ -2893,10 +2916,7 @@ void selectProductSales({
                                   selectUnit(d ?? '');
                                   isAreaUnit =
                                       is2DItem &&
-                                      getPrimaryUnit()
-                                              .dimensionType ==
-                                          ProductUnitsClass
-                                              .areaUnit;
+                                      getPrimaryUnit().isAreaUnit;
                                   if (isAreaUnit) {
                                     quantityTypeTemp = 1;
                                     widthController.clear();

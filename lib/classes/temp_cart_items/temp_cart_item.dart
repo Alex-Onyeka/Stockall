@@ -560,7 +560,7 @@ class TempCartItem extends HiveObject {
             .where((unit) => unit.uuid == targetUuid)
             .firstOrNull ??
         prim;
-    if (unit.dimensionType == ProductUnitsClass.areaUnit) {
+    if (unit.isAreaUnit) {
       return unit.conversion > 0 ? unit.conversion : 1.0;
     }
     return (unit.conversion > 0 ? unit.conversion : 1.0) *
@@ -606,8 +606,7 @@ class TempCartItem extends HiveObject {
   double historyQuantityChange() {
     final unit = getSelectedUnit();
     if (item.quantityType == 2) {
-      if (unit.dimensionType ==
-          ProductUnitsClass.areaUnit) {
+      if (unit.isAreaUnit) {
         return getStockQuantity() /
             (unit.conversion > 0 ? unit.conversion : 1.0);
       }
@@ -641,8 +640,7 @@ class TempCartItem extends HiveObject {
   double baseQuantityInSaleUnit() {
     final unit = getSelectedUnit();
     if (item.quantityType == 2) {
-      if (unit.dimensionType ==
-          ProductUnitsClass.areaUnit) {
+      if (unit.isAreaUnit) {
         return getRealQuantity() /
             (unit.conversion > 0 ? unit.conversion : 1.0);
       }
@@ -665,7 +663,7 @@ class TempCartItem extends HiveObject {
     final prod = product ?? item;
     final productArea = prod.dimensionArea();
     final areaPerUnit =
-        primUnit.dimensionType == ProductUnitsClass.areaUnit
+        primUnit.isAreaUnit
             ? (primUnit.conversion > 0
                 ? primUnit.conversion
                 : 1.0)

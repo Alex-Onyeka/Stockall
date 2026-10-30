@@ -78,61 +78,82 @@ void addProductUnitAction({
     quantityController.text = unit.conversion.toString();
     nameController.text = unit.name;
   }
-  var dimensionType = unit?.dimensionType ?? ProductUnitsClass.sheetUnit;
+  // Default to Area (index 1) for 2D items when creating a new unit
+  var dimensionType = unit?.dimensionType ?? ProductUnitsClass.areaUnit;
 
-  void addAction() {
-    final conversion = double.tryParse(
-      quantityController.text.replaceAll(',', '').trim(),
-    );
-    if (nameController.text.trim().isEmpty ||
-        conversion == null ||
-        !conversion.isFinite ||
-        conversion <= 0) {
+  void addAction(BuildContext dialogContext) {
+    final rawConversionText =
+        quantityController.text.replaceAll(',', '').trim();
+    final bool conversionNotSet = rawConversionText.isEmpty;
+    final conversion = double.tryParse(rawConversionText);
+
+    if (nameController.text.trim().isEmpty) {
       showDialog(
         context: context,
         builder: (context) {
           return InfoAlert(
             theme: theme,
-            message: 'Enter a unit name and a positive conversion.',
+            message: 'Enter a unit name.',
             title: 'Invalid Unit Details',
           );
         },
       );
-    } else {
+      return;
+    }
+
+    if (!conversionNotSet &&
+        (conversion == null || !conversion.isFinite || conversion <= 0)) {
       showDialog(
         context: context,
-        builder: (mainDialog) {
-          return ConfirmationAlert(
+        builder: (context) {
+          return InfoAlert(
             theme: theme,
-            message: 'Are you sure you want to proceed?',
-            title: 'Proceed with action?',
-            action: () async {
-              Navigator.of(mainDialog).pop();
-              unit?.name = nameController.text.trim();
-              unit?.conversion = conversion;
-              if (unit != null) {
-                unit.dimensionType = isDimensional ? dimensionType : null;
-              }
-              var unitListSingle = ProductUnitsClass(
-                uuid: uuidGen(),
-                staffUuid: currentUser().userId!,
-                createdAt: DateTime.now(),
-                staffName: currentUser().name,
-                conversion: conversion,
-                name: nameController.text.trim(),
-                isPrimary: returnData().tempUnitsList.isEmpty ? true : false,
-                productUuid: productUuid,
-                dimensionType: isDimensional ? dimensionType : null,
-              );
-              returnData().createOrUpdateUnitList(
-                unitListSingle: unit ?? unitListSingle,
-              );
-              Navigator.of(mainDialog).pop();
-            },
+            message: 'Enter a positive number for conversion.',
+            title: 'Invalid Unit Details',
           );
         },
       );
+      return;
     }
+
+    final double finalConversion = conversion ?? 1.0;
+    final String confirmMessage = conversionNotSet
+        ? 'You did not set a conversion. If you proceed, the conversion will be set to default 1.\n\nAre you sure you want to proceed?'
+        : 'Are you sure you want to proceed?';
+
+    showDialog(
+      context: context,
+      builder: (mainDialog) {
+        return ConfirmationAlert(
+          theme: theme,
+          message: confirmMessage,
+          title: conversionNotSet ? 'No Conversion Set' : 'Proceed with action?',
+          action: () async {
+            Navigator.of(mainDialog).pop();
+            unit?.name = nameController.text.trim();
+            unit?.conversion = finalConversion;
+            if (unit != null) {
+              unit.dimensionType = isDimensional ? dimensionType : null;
+            }
+            var unitListSingle = ProductUnitsClass(
+              uuid: uuidGen(),
+              staffUuid: currentUser().userId!,
+              createdAt: DateTime.now(),
+              staffName: currentUser().name,
+              conversion: finalConversion,
+              name: nameController.text.trim(),
+              isPrimary: returnData().tempUnitsList.isEmpty ? true : false,
+              productUuid: productUuid,
+              dimensionType: isDimensional ? dimensionType : null,
+            );
+            returnData().createOrUpdateUnitList(
+              unitListSingle: unit ?? unitListSingle,
+            );
+            Navigator.of(dialogContext).pop();
+          },
+        );
+      },
+    );
   }
 
   String? tempUnit;
@@ -155,14 +176,12 @@ void addProductUnitAction({
                 message: 'Enter Product Unit Name',
                 title: '${unit == null ? 'Create' : 'Update'} Product Unit',
                 action: () async {
-                  addAction();
+                  addAction(confirmDialog);
                 },
                 widget: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: 500),
                   child: Container(
                     color: const Color.fromARGB(47, 255, 255, 255),
-                    // height: 150,
-                    // width: 500,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -176,11 +195,9 @@ void addProductUnitAction({
                                 theme: theme,
                                 currentSelection: dimensionType,
                                 setUnitType: (index) {
-                                  {
-                                    setState(() {
-                                      dimensionType = (index ?? 1);
-                                    });
-                                  }
+                                  setState(() {
+                                    dimensionType = (index ?? ProductUnitsClass.areaUnit);
+                                  });
                                 },
                               ),
                             ],
@@ -237,20 +254,19 @@ void addProductUnitAction({
                               ],
                             ),
                             EditCartTextField(
-                              title:
-                                  isDimensional &&
-                                          dimensionType ==
-                                              ProductUnitsClass.areaUnit
-                                      ? 'Area conversion *'
-                                      : isDimensional
-                                      ? 'Slabs / sheets per Unit *'
-                                      : 'Conversion',
+                              title: isDimensional &&
+                                      dimensionType ==
+                                          ProductUnitsClass.areaUnit
+                                  ? 'Area conversion'
+                                  : isDimensional
+                                  ? 'Slabs / sheets per Unit'
+                                  : 'Conversion',
                               autoFocus: false,
-                              hint: 'Enter Conversion',
+                              hint: 'Enter Conversion (defaults to 1)',
                               controller: quantityController,
                               theme: theme,
                               onSubmitted: (p0) {
-                                addAction();
+                                addAction(confirmDialog);
                               },
                             ),
                           ],

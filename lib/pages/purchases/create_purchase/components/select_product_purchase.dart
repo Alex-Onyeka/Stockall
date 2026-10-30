@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_purchase/purchase_list_item/purchase_list_item.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -20,6 +23,60 @@ void selectProductPurchase({
 }) {
   var theme = returnTheme(context, listen: false);
   bool setCustomPrice = false;
+
+  final TempProductClass? product =
+      purchaseItem.itemUuid != null
+          ? returnData(context: context, listen: false)
+              .productListMain
+              .where((p) => p.uuid == purchaseItem.itemUuid)
+              .firstOrNull
+          : null;
+  final TempStorageProducts? storageProduct =
+      purchaseItem.storageItemUuid != null
+          ? returnStorageProductProvider(context: context)
+              .storageProductListMain
+              .where(
+                (s) =>
+                    s.uuid == purchaseItem.storageItemUuid,
+              )
+              .firstOrNull
+          : null;
+  final bool is2D =
+      (product?.quantityType == 2) ||
+      (storageProduct?.quantityType == 2);
+  final bool itemHasDimensions =
+      (product?.hasDimensions ?? false) ||
+      (storageProduct?.hasDimensions ?? false);
+  final double? originalWidth =
+      product?.widthDimension ??
+      storageProduct?.widthDimension;
+  final double? originalHeight =
+      product?.heightDimension ??
+      storageProduct?.heightDimension;
+  final String? dimensionUnit =
+      product?.dimensionUnit ??
+      storageProduct?.dimensionUnit;
+
+  final widthController = TextEditingController();
+  final heightController = TextEditingController();
+  if (purchaseItem.widthDimension != null) {
+    widthController.text = formatDimension(
+      purchaseItem.widthDimension!,
+    ).replaceAll(',', '');
+  } else if (itemHasDimensions && originalWidth != null) {
+    widthController.text = formatDimension(
+      originalWidth,
+    ).replaceAll(',', '');
+  }
+  if (purchaseItem.heightDimension != null) {
+    heightController.text = formatDimension(
+      purchaseItem.heightDimension!,
+    ).replaceAll(',', '');
+  } else if (itemHasDimensions && originalHeight != null) {
+    heightController.text = formatDimension(
+      originalHeight,
+    ).replaceAll(',', '');
+  }
 
   String? unitUuid;
 
@@ -73,6 +130,8 @@ void selectProductPurchase({
     }
   }
 
+  bool isAreaUnit() => is2D && getPrimaryUnit().isAreaUnit;
+
   if (purchaseItem.customPrice != null) {
     priceController.text =
         '${purchaseItem.customPrice ?? ''}';
@@ -90,17 +149,37 @@ void selectProductPurchase({
           ) ??
           0);
     } else {
+      final double qty =
+          double.tryParse(
+            quantityController.text.replaceAll(',', ''),
+          ) ??
+          0;
+      final double? w = double.tryParse(
+        widthController.text.replaceAll(',', '').trim(),
+      );
+      final double? h = double.tryParse(
+        heightController.text.replaceAll(',', '').trim(),
+      );
+      final isDimensionalSheet = is2D && !isAreaUnit();
       return (purchaseItem.originalPrice ?? 0) *
           getPrimaryUnit().getQuantityEquivMultiplied(
             index: 1,
-            quantityTwo:
-                double.tryParse(
-                  quantityController.text.replaceAll(
-                    ',',
-                    '',
-                  ),
-                ) ??
-                0,
+            product: product,
+            newQuantity: qty,
+            customWidth:
+                isDimensionalSheet
+                    ? (w ??
+                        (itemHasDimensions
+                            ? originalWidth
+                            : null))
+                    : null,
+            customHeight:
+                isDimensionalSheet
+                    ? (h ??
+                        (itemHasDimensions
+                            ? originalHeight
+                            : null))
+                    : null,
           );
     }
   }
@@ -172,6 +251,48 @@ void selectProductPurchase({
                         // quantityController.text = '0';
                       },
                     ),
+                    if (is2D && !isAreaUnit())
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 10.0,
+                        ),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: EditCartTextField(
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                                title:
+                                    '${dimensionUnit ?? getPrimaryUnit().name} Width',
+                                hint:
+                                    originalWidth != null
+                                        ? 'Max ${formatDimension(originalWidth)}${dimensionUnit != null ? ' $dimensionUnit' : ''}'
+                                        : 'Enter Width',
+                                controller: widthController,
+                                theme: theme,
+                              ),
+                            ),
+                            Expanded(
+                              child: EditCartTextField(
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                                title:
+                                    '${dimensionUnit ?? getPrimaryUnit().name} Height',
+                                hint:
+                                    originalHeight != null
+                                        ? 'Max ${formatDimension(originalHeight)}${dimensionUnit != null ? ' $dimensionUnit' : ''}'
+                                        : 'Enter Height',
+                                controller:
+                                    heightController,
+                                theme: theme,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     SizedBox(height: 20),
                     Builder(
                       builder: (context) {
@@ -333,6 +454,71 @@ void selectProductPurchase({
                                       priceController
                                           .text
                                           .isNotEmpty)) {
+                                if (is2D &&
+                                    !isAreaUnit() &&
+                                    !itemHasDimensions) {
+                                  final w = double.tryParse(
+                                    widthController.text
+                                        .replaceAll(',', '')
+                                        .trim(),
+                                  );
+                                  final h = double.tryParse(
+                                    heightController.text
+                                        .replaceAll(',', '')
+                                        .trim(),
+                                  );
+                                  if (w == null ||
+                                      h == null ||
+                                      w <= 0 ||
+                                      h <= 0) {
+                                    showDialog(
+                                      context: context,
+                                      builder:
+                                          (
+                                            context,
+                                          ) => InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'Enter positive Width and Height for this item.',
+                                            title:
+                                                'Invalid Dimensions',
+                                          ),
+                                    );
+                                    return;
+                                  }
+                                }
+
+                                final double? customW =
+                                    is2D && !isAreaUnit()
+                                        ? (double.tryParse(
+                                              widthController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  )
+                                                  .trim(),
+                                            ) ??
+                                            (itemHasDimensions
+                                                ? originalWidth
+                                                : null))
+                                        : null;
+                                final double? customH =
+                                    is2D && !isAreaUnit()
+                                        ? (double.tryParse(
+                                              heightController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  )
+                                                  .trim(),
+                                            ) ??
+                                            (itemHasDimensions
+                                                ? originalHeight
+                                                : null))
+                                        : null;
+
                                 if (isEdit) {
                                   returnPurchaseActionProvider().updateItem(
                                     item: PurchaseListItem(
@@ -381,6 +567,10 @@ void selectProductPurchase({
                                           getPrimaryUnit()
                                               .conversion !=
                                           1,
+                                      widthDimension:
+                                          customW,
+                                      heightDimension:
+                                          customH,
                                     ),
                                   );
                                 } else {
@@ -431,6 +621,10 @@ void selectProductPurchase({
                                           getPrimaryUnit()
                                               .conversion !=
                                           1,
+                                      widthDimension:
+                                          customW,
+                                      heightDimension:
+                                          customH,
                                     ),
                                   );
                                   Navigator.of(

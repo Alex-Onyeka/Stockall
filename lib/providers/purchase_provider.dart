@@ -201,18 +201,21 @@ class PurchaseProvider extends ChangeNotifier {
   }) async {
     final now = DateTime.now();
     var local = _purchases;
-    if (local.isEmpty) local = PurchaseFunc().getPurchases();
+    if (local.isEmpty)
+      local = PurchaseFunc().getPurchases();
     final renamed =
         purchasesToRename(
-          local,
-          supplierUuid: supplierUuid,
-          newName: name,
-          pendingDeletedUuids:
-              DeletedPurchasesFunc()
-                  .getPurchaseIds()
-                  .map((d) => d.purchaseUuid)
-                  .toSet(),
-        ).map((p) => renamedPurchase(p, name, now)).toList();
+              local,
+              supplierUuid: supplierUuid,
+              newName: name,
+              pendingDeletedUuids:
+                  DeletedPurchasesFunc()
+                      .getPurchaseIds()
+                      .map((d) => d.purchaseUuid)
+                      .toSet(),
+            )
+            .map((p) => renamedPurchase(p, name, now))
+            .toList();
 
     bool isOnline = await connectivity.isOnline();
     if (!isOnline && renamed.isEmpty) return 0;
@@ -254,9 +257,10 @@ class PurchaseProvider extends ChangeNotifier {
             CreatedPurchases(purchase: purchase),
           );
         } else {
-          await UpdatedPurchasesFunc().createUpdatedPurchase(
-            UpdatedPurchases(purchase: purchase),
-          );
+          await UpdatedPurchasesFunc()
+              .createUpdatedPurchase(
+                UpdatedPurchases(purchase: purchase),
+              );
         }
       }
       syncData();
@@ -648,11 +652,24 @@ class PurchaseProvider extends ChangeNotifier {
                     newPro,
                   );
               final primaryUnit = newPro.getPrimaryUnit();
+              final isDimensionalSheet =
+                  newPro.quantityType == 2 &&
+                  !selectedUnit.isAreaUnit;
               // Stored quantity (sheets for 2D storage items).
               final deltaQty =
                   newPro.actualFromUnit(
                     selectedUnit,
                     rec.quantity ?? 0,
+                    customWidth:
+                        isDimensionalSheet
+                            ? (rec.widthDimension ??
+                                newPro.widthDimension)
+                            : null,
+                    customHeight:
+                        isDimensionalSheet
+                            ? (rec.heightDimension ??
+                                newPro.heightDimension)
+                            : null,
                   ) /
                   newPro.dimensionArea();
               final oldQty = newPro.quantity ?? 0;
@@ -757,8 +774,7 @@ class PurchaseProvider extends ChangeNotifier {
                   oldPro.getActualQuantity() ?? 0;
               final isDimensionalSheet =
                   oldPro.quantityType == 2 &&
-                  selectedUnit.dimensionType !=
-                      ProductUnitsClass.areaUnit;
+                  !selectedUnit.isAreaUnit;
               final deltaArea = selectedUnit
                   .getQuantityEquivMultiplied(
                     index: 1,
@@ -766,11 +782,13 @@ class PurchaseProvider extends ChangeNotifier {
                     newQuantity: rec.quantity ?? 0,
                     customWidth:
                         isDimensionalSheet
-                            ? oldPro.widthDimension
+                            ? (rec.widthDimension ??
+                                oldPro.widthDimension)
                             : null,
                     customHeight:
                         isDimensionalSheet
-                            ? oldPro.heightDimension
+                            ? (rec.heightDimension ??
+                                oldPro.heightDimension)
                             : null,
                   );
               final newArea = oldArea - deltaArea;
@@ -1158,11 +1176,24 @@ class PurchaseProvider extends ChangeNotifier {
               );
           final primaryUnit =
               storageProduct.getPrimaryUnit();
+          final isDimensionalSheet =
+              storageProduct.quantityType == 2 &&
+              !selectedUnit.isAreaUnit;
           // Stored quantity (sheets for 2D storage items).
           final deltaQty =
               storageProduct.actualFromUnit(
                 selectedUnit,
                 item.quantity ?? 0,
+                customWidth:
+                    isDimensionalSheet
+                        ? (item.widthDimension ??
+                            storageProduct.widthDimension)
+                        : null,
+                customHeight:
+                    isDimensionalSheet
+                        ? (item.heightDimension ??
+                            storageProduct.heightDimension)
+                        : null,
               ) /
               storageProduct.dimensionArea();
           final oldQty = storageProduct.quantity ?? 0;
@@ -1245,8 +1276,7 @@ class PurchaseProvider extends ChangeNotifier {
           final oldArea = product.getActualQuantity() ?? 0;
           final isDimensionalSheet =
               product.quantityType == 2 &&
-              selectedUnit.dimensionType !=
-                  ProductUnitsClass.areaUnit;
+              !selectedUnit.isAreaUnit;
           final deltaArea = selectedUnit
               .getQuantityEquivMultiplied(
                 index: 1,
@@ -1254,11 +1284,13 @@ class PurchaseProvider extends ChangeNotifier {
                 newQuantity: item.quantity ?? 0,
                 customWidth:
                     isDimensionalSheet
-                        ? product.widthDimension
+                        ? (item.widthDimension ??
+                            product.widthDimension)
                         : null,
                 customHeight:
                     isDimensionalSheet
-                        ? product.heightDimension
+                        ? (item.heightDimension ??
+                            product.heightDimension)
                         : null,
               );
           final newArea = oldArea + deltaArea;
@@ -1359,11 +1391,24 @@ class PurchaseProvider extends ChangeNotifier {
         item,
         storageProduct!,
       );
+      final isDimensionalSheet =
+          storageProduct.quantityType == 2 &&
+          !selectedUnit.isAreaUnit;
       return MapEntry(
         storageProduct.uuid!,
         storageProduct.actualFromUnit(
               selectedUnit,
               item.quantity ?? 0,
+              customWidth:
+                  isDimensionalSheet
+                      ? (item.widthDimension ??
+                          storageProduct.widthDimension)
+                      : null,
+              customHeight:
+                  isDimensionalSheet
+                      ? (item.heightDimension ??
+                          storageProduct.heightDimension)
+                      : null,
             ) /
             storageProduct.dimensionArea(),
       );
@@ -1378,16 +1423,21 @@ class PurchaseProvider extends ChangeNotifier {
     );
     final isDimensionalSheet =
         product.quantityType == 2 &&
-        selectedUnit.dimensionType !=
-            ProductUnitsClass.areaUnit;
+        !selectedUnit.isAreaUnit;
     final area = selectedUnit.getQuantityEquivMultiplied(
       index: 1,
       product: product,
       newQuantity: item.quantity ?? 0,
       customWidth:
-          isDimensionalSheet ? product.widthDimension : null,
+          isDimensionalSheet
+              ? (item.widthDimension ??
+                  product.widthDimension)
+              : null,
       customHeight:
-          isDimensionalSheet ? product.heightDimension : null,
+          isDimensionalSheet
+              ? (item.heightDimension ??
+                  product.heightDimension)
+              : null,
     );
     return MapEntry(
       product.uuid!,
@@ -1416,8 +1466,10 @@ class PurchaseProvider extends ChangeNotifier {
       ) =>
           items
               .map(
-                (item) =>
-                    _purchaseLineStock(item, isManageStorage),
+                (item) => _purchaseLineStock(
+                  item,
+                  isManageStorage,
+                ),
               )
               .whereType<MapEntry<String, double>>()
               .toList();
@@ -1551,7 +1603,8 @@ class PurchaseProvider extends ChangeNotifier {
                     : ItemHistoryEventClass.productSource,
             destination:
                 isIncrease
-                    ? ItemHistoryEventClass.productDestination
+                    ? ItemHistoryEventClass
+                        .productDestination
                     : ItemHistoryEventClass
                         .purchaseDestination,
             desc:

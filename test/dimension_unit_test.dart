@@ -1276,7 +1276,7 @@ void main() {
         );
         expect(
           orderItem.historyWastageText(),
-          ' (incl. 0.1 wastage)',
+          ' (incl. 0.1 M² wastage)',
         );
       },
     );

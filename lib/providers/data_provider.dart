@@ -3321,29 +3321,29 @@ class DataProvider extends ChangeNotifier {
     'Can(s)',
     'Carton(s)',
     'Centimeter(s)',
-    'CmÂ²(s)',
+    'Cm²(s)',
     'Crate(s)',
     'Cup(s)',
     'Dozen(s)',
     'Foot(s)',
-    'FootÂ²(s)',
+    'Foot²(s)',
     'Gallon(s)',
     'Inch(es)',
-    'InchÂ²(s)',
+    'Inch²(s)',
     'Item(s)',
     'Jar(s)',
     'Kg(s)',
     'Kilometer(s)',
-    'KmÂ²(s)',
+    'Km²(s)',
     'Lb(s)',
     'Liter(s)',
     'Meter(s)',
-    'MÂ²(s)',
+    'M²(s)',
     'Mg(s)',
     'Millimeter(s)',
-    'MmÂ²(s)',
+    'Mm²(s)',
     'Mile(s)',
-    'MileÂ²(s)',
+    'Mile²(s)',
     'Ml(s)',
     'Pack(s)',
     'Pair(s)',
@@ -3371,7 +3371,7 @@ class DataProvider extends ChangeNotifier {
     'Plank(s)',
     'Shutter(s)',
     'Yard(s)',
-    'YardÂ²(s)',
+    'Yard²(s)',
     'Other(s)',
   ];
 
@@ -3725,20 +3725,22 @@ class DataProvider extends ChangeNotifier {
   ProductUnitsClass newPrimaryUnit({
     required String productUuid,
     required bool isDimensional,
+    String? name,
   }) {
+    final bool isArea = isDimensional &&
+        (name != null ? ProductUnitsClass.isAreaUnitName(name) : false);
     return ProductUnitsClass(
       uuid: uuidGen(),
       staffUuid: currentUser().userId,
       createdAt: DateTime.now(),
       staffName: currentUser().name,
       conversion: 1,
-      name: 'Unit(s)',
+      name: name ?? (isDimensional ? 'Square Meter' : 'Unit(s)'),
       isPrimary: true,
       productUuid: productUuid,
-      dimensionType:
-          isDimensional
-              ? ProductUnitsClass.sheetUnit
-              : null,
+      dimensionType: isDimensional
+          ? (isArea ? ProductUnitsClass.areaUnit : ProductUnitsClass.sheetUnit)
+          : null,
     );
   }
 
@@ -3766,13 +3768,20 @@ class DataProvider extends ChangeNotifier {
     required String productUuid,
     required bool isDimensional,
   }) {
+    final int? dimType = isDimensional
+        ? (ProductUnitsClass.isAreaUnitName(name)
+            ? ProductUnitsClass.areaUnit
+            : ProductUnitsClass.sheetUnit)
+        : null;
     var newList = ProductUnitsClass.withPrimaryName(
       units: tempUnitsList,
       name: name,
+      dimensionType: dimType,
       newUnit:
           () => newPrimaryUnit(
             productUuid: productUuid,
             isDimensional: isDimensional,
+            name: name,
           ),
     );
     tempUnitsList

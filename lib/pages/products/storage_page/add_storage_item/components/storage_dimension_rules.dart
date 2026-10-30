@@ -11,28 +11,47 @@ double? parseDimension(TextEditingController controller) {
   );
 }
 
-// Same rule as sales items: 2D items need a max width and height.
+// Dimensions are optional for 2D items. If provided, both must be valid.
 bool validStorageDimensions({
   required BuildContext context,
   required int quantityType,
   required TextEditingController widthController,
   required TextEditingController heightController,
 }) {
-  if (quantityType == 2 &&
-      (widthController.text.isEmpty ||
-          heightController.text.isEmpty)) {
+  final hasWidth = widthController.text.trim().isNotEmpty;
+  final hasHeight = heightController.text.trim().isNotEmpty;
+  if (quantityType == 2 && (hasWidth != hasHeight)) {
     showDialog(
       context: context,
       builder: (context) {
         return InfoAlert(
           theme: returnTheme(context),
           message:
-              'Max-Width and Max-Height Cannot be Empty For 2 Dimensional Items.',
-          title: 'Max-Width and Max-Height Not Set',
+              'Both Width and Height must be provided if setting dimensions, or both left empty.',
+          title: 'Incomplete Dimensions',
         );
       },
     );
     return false;
+  }
+  if (quantityType == 2 && hasWidth && hasHeight) {
+    final w =
+        double.tryParse(widthController.text.replaceAll(',', '').trim()) ?? 0;
+    final h =
+        double.tryParse(heightController.text.replaceAll(',', '').trim()) ?? 0;
+    if (w <= 0 || h <= 0) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context),
+            message: 'Width and Height must be numbers greater than 0.',
+            title: 'Invalid Dimensions',
+          );
+        },
+      );
+      return false;
+    }
   }
   return true;
 }

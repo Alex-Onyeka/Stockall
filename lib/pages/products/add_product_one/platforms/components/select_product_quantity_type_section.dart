@@ -60,7 +60,7 @@ class SelectProductQuantityTypeSection
                       child: EditCartTextField(
                         theme: theme,
                         hint: 'Enter Max-Width',
-                        title: 'Max-Width *',
+                        title: 'Max-Width (Optional)',
                         controller: widthController,
                       ),
                     ),
@@ -68,7 +68,7 @@ class SelectProductQuantityTypeSection
                       child: EditCartTextField(
                         theme: theme,
                         hint: 'Enter Max-Height',
-                        title: 'Max-Height *',
+                        title: 'Max-Height (Optional)',
                         controller: heightController,
                       ),
                     ),
