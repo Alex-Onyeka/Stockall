@@ -16,6 +16,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
@@ -70,7 +71,9 @@ class _TransferProductionItemQuantityWidgetState
                         ?.unfocus(),
             child: SingleChildScrollView(
               child: Container(
-                decoration: const BoxDecoration(color: Colors.white),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                ),
                 child: Padding(
                   padding: EdgeInsets.only(
                     left: 20.0,
@@ -79,198 +82,175 @@ class _TransferProductionItemQuantityWidgetState
                     bottom: isMobile ? 20 : 0,
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(isMobile ? 20 : 30),
-                        margin: EdgeInsets.only(bottom: isMobile ? 20 : 100),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        15,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(
-                            39,
-                            4,
-                            1,
-                            41,
-                          ),
-                          blurRadius: 10,
+                        padding: EdgeInsets.all(
+                          isMobile ? 20 : 30,
                         ),
-                      ],
-                    ),
-                    width: 500,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
+                        margin: EdgeInsets.only(
+                          bottom: isMobile ? 20 : 100,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(
+                                39,
+                                4,
+                                1,
+                                41,
+                              ),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                        width: 500,
+                        child: Column(
                           children: [
-                            Opacity(
-                              opacity: 0,
-                              child: IconButton(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
-                                onPressed: () {},
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Transfer ${widget.productionItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
-                            ),
-                            Builder(
-                              builder: (context) {
-                                if (isEditQuantityLoading ==
-                                    true) {
-                                  return SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                      strokeWidth: 3,
-                                    ),
-                                  );
-                                } else {
-                                  return IconButton(
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Opacity(
+                                  opacity: 0,
+                                  child: IconButton(
                                     mouseCursor:
                                         SystemMouseCursors
                                             .click,
-                                    onPressed: () {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                    },
-                                    icon: Icon(
-                                      size: 20,
-                                      Icons.clear,
-                                    ),
-                                  );
-                                }
-                              },
+                                    onPressed: () {},
+                                    icon: Icon(Icons.clear),
+                                  ),
+                                ),
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Transfer ${widget.productionItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
+                                ),
+                                Builder(
+                                  builder: (context) {
+                                    if (isEditQuantityLoading ==
+                                        true) {
+                                      return SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .secColor200,
+                                          strokeWidth: 3,
+                                        ),
+                                      );
+                                    } else {
+                                      return IconButton(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
+                                        onPressed: () {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                        },
+                                        icon: Icon(
+                                          size: 20,
+                                          Icons.clear,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Column(
-                          spacing: 20,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                              ),
-                              widget
-                                          .productionItem
-                                          .quantity ==
-                                      null
-                                  ? 'Quantity Not Set'
-                                  : 'Current Quantity in ${widget.productionItem.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.productionItem.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 2, context: context))}',
-                            ),
-                            EditCartTextField(
-                              onChanged: (value) {
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    quantityController
-                                        .text = '0';
-                                  });
-                                } else {
-                                  var eValue = double.parse(
-                                    quantityController.text,
-                                  );
-                                  if (widget.productionItem
-                                          .getProductUnit(
-                                            unitUuid:
-                                                unitUuid,
-                                          )
-                                          .getQuantityEquivMultiplied(
-                                            index: 2,
-                                            newQuantity:
-                                                eValue,
-                                          ) >
-                                      (widget
+                            SizedBox(height: 10),
+                            Column(
+                              spacing: 20,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+                                  widget
                                               .productionItem
-                                              .quantity ??
-                                          0)) {
-                                    setState(() {
-                                      quantityController
-                                          .text = '0';
-                                    });
-                                  }
-                                }
-                              },
-                              title:
-                                  '${widget.productionItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
-                              hint: 'Enter Quantity Amount',
-                              controller:
-                                  quantityController,
-                              theme: theme,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        UnitSelectionWidget(
-                          storageProduct: null,
-                          material: null,
-                          productionItem:
-                              widget.productionItem,
-                          product: null,
-                          setUnitUuid: (uuid) {
-                            setState(() {
-                              unitUuid = uuid;
-                            });
-                            if (widget.productionItem
-                                    .getProductUnit(
-                                      unitUuid: unitUuid,
-                                    )
-                                    .getQuantityEquivMultiplied(
-                                      index: 2,
-                                      newQuantity:
-                                          double.tryParse(
+                                              .quantity ==
+                                          null
+                                      ? 'Quantity Not Set'
+                                      : 'Current Quantity in ${widget.productionItem.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.productionItem.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 2, context: context))}',
+                                ),
+                                EditCartTextField(
+                                  onChanged: (value) {
+                                    if (value.isEmpty) {
+                                      setState(() {
+                                        quantityController
+                                            .text = '0';
+                                      });
+                                    } else {
+                                      var eValue =
+                                          double.parse(
                                             quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0,
-                                    ) >
-                                (widget
-                                        .productionItem
-                                        .quantity ??
-                                    0)) {
-                              quantityController.text = '0';
-                            }
-                          },
-                          theme: theme,
-                          unitUuid: unitUuid,
-                        ),
-
-                        SizedBox(height: 15),
-                        MainButtonP(
-                          themeProvider: theme,
-                          action: () {
-                            var firstContext = context;
-                            if (widget.productionItem
+                                                .text,
+                                          );
+                                      if (widget
+                                              .productionItem
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .getQuantityEquivMultiplied(
+                                                index: 2,
+                                                newQuantity:
+                                                    eValue,
+                                              ) >
+                                          (widget
+                                                  .productionItem
+                                                  .quantity ??
+                                              0)) {
+                                        setState(() {
+                                          quantityController
+                                              .text = '0';
+                                        });
+                                      }
+                                    }
+                                  },
+                                  title:
+                                      '${widget.productionItem.getProductUnit(unitUuid: unitUuid).name} Quantity',
+                                  hint:
+                                      'Enter Quantity Amount',
+                                  controller:
+                                      quantityController,
+                                  theme: theme,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 20),
+                            UnitSelectionWidget(
+                              storageProduct: null,
+                              material: null,
+                              productionItem:
+                                  widget.productionItem,
+                              product: null,
+                              setUnitUuid: (uuid) {
+                                setState(() {
+                                  unitUuid = uuid;
+                                });
+                                if (widget.productionItem
                                         .getProductUnit(
                                           unitUuid:
                                               unitUuid,
@@ -287,91 +267,135 @@ class _TransferProductionItemQuantityWidgetState
                                                     ),
                                               ) ??
                                               0,
-                                        ) <=
+                                        ) >
                                     (widget
                                             .productionItem
                                             .quantity ??
-                                        0) &&
-                                quantityController
-                                    .text
-                                    .isNotEmpty &&
-                                quantityController.text !=
-                                    '0') {
-                              if (returnShopProvider()
-                                          .userShop()
-                                          ?.manageDepartments ==
-                                      false &&
-                                  returnShopProvider()
-                                          .userShops
-                                          .length ==
-                                      1) {
-                                selectItemInADepartmentsProduction(
-                                  unitUuid: unitUuid,
-                                  thirdContext: null,
-                                  secondContext: null,
-                                  firstContext:
-                                      firstContext,
-                                  mainProductionItem:
-                                      widget.productionItem,
-                                  enteredValue:
-                                      (double.tryParse(
-                                            quantityController
-                                                .text,
-                                          ) ??
-                                          0),
-                                  loadingAction: (value) {
-                                    setState(() {
-                                      isEditQuantityLoading =
-                                          value;
-                                    });
-                                  },
-                                );
-                              } else {
-                                transferProductionItemAction(
-                                  unitUuid: unitUuid,
-                                  mainProductionItem:
-                                      widget.productionItem,
-                                  enteredValue:
-                                      (double.tryParse(
-                                            quantityController
-                                                .text,
-                                          ) ??
-                                          0),
-                                  firstContext:
-                                      firstContext,
-                                  loadingAction: (value) {
-                                    setState(() {
-                                      isEditQuantityLoading =
-                                          value;
-                                    });
-                                  },
-                                );
-                              }
-                            }
-                          },
-                          text: 'Proceed',
+                                        0)) {
+                                  quantityController.text =
+                                      '0';
+                                }
+                              },
+                              theme: theme,
+                              unitUuid: unitUuid,
+                            ),
+
+                            SizedBox(height: 15),
+                            MainButtonP(
+                              themeProvider: theme,
+                              action: () {
+                                var firstContext = context;
+                                if (widget.productionItem
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .getQuantityEquivMultiplied(
+                                              index: 2,
+                                              newQuantity:
+                                                  double.tryParse(
+                                                    quantityController
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ) ??
+                                                  0,
+                                            ) <=
+                                        (widget
+                                                .productionItem
+                                                .quantity ??
+                                            0) &&
+                                    quantityController
+                                        .text
+                                        .isNotEmpty &&
+                                    quantityController
+                                            .text !=
+                                        '0') {
+                                  if (returnShopProvider()
+                                              .userShop()
+                                              ?.manageDepartments ==
+                                          false &&
+                                      returnShopProvider()
+                                              .userShops
+                                              .length ==
+                                          1) {
+                                    selectItemInADepartmentsProduction(
+                                      unitUuid: unitUuid,
+                                      thirdContext: null,
+                                      secondContext: null,
+                                      firstContext:
+                                          firstContext,
+                                      mainProductionItem:
+                                          widget
+                                              .productionItem,
+                                      enteredValue:
+                                          (double.tryParse(
+                                                quantityController
+                                                    .text,
+                                              ) ??
+                                              0),
+                                      loadingAction: (
+                                        value,
+                                      ) {
+                                        setState(() {
+                                          isEditQuantityLoading =
+                                              value;
+                                        });
+                                      },
+                                    );
+                                  } else {
+                                    transferProductionItemAction(
+                                      unitUuid: unitUuid,
+                                      mainProductionItem:
+                                          widget
+                                              .productionItem,
+                                      enteredValue:
+                                          (double.tryParse(
+                                                quantityController
+                                                    .text,
+                                              ) ??
+                                              0),
+                                      firstContext:
+                                          firstContext,
+                                      loadingAction: (
+                                        value,
+                                      ) {
+                                        setState(() {
+                                          isEditQuantityLoading =
+                                              value;
+                                        });
+                                      },
+                                    );
+                                  }
+                                }
+                              },
+                              text: 'Proceed',
+                            ),
+                            SizedBox(height: 15),
+                            Material(
+                              color: Colors.transparent,
+                              child: EditButton(
+                                text: 'Cancel',
+                                action: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                },
+                                theme: theme,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 15),
-                        Material(
-                          color: Colors.transparent,
-                          child: EditButton(
-                            text: 'Cancel',
-                            action: () {
-                              Navigator.of(context).pop();
-                            },
-                            theme: theme,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
         ),
-        ),
-      ),
       ),
     );
   }
@@ -529,7 +553,13 @@ void selectDepartmentProductionItems({
                 },
                 widget: SizedBox(
                   height:
-                      screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
+                      screenWidth(statefulContext) <
+                              mobileScreen
+                          ? (screenHeight(statefulContext) *
+                                  0.45)
+                              .clamp(180.0, 420.0)
+                          : (screenHeight(statefulContext) -
+                              270),
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -955,7 +985,13 @@ void selectItemInADepartmentsProduction({
                 },
                 widget: SizedBox(
                   height:
-                      screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
+                      screenWidth(statefulContext) <
+                              mobileScreen
+                          ? (screenHeight(statefulContext) *
+                                  0.45)
+                              .clamp(180.0, 420.0)
+                          : (screenHeight(statefulContext) -
+                              270),
                   child: Column(
                     children: [
                       Row(
@@ -1212,7 +1248,14 @@ void selectShopsProductionItems({
               }
             },
             widget: SizedBox(
-              height: screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
+              height:
+                  screenWidth(statefulContext) <
+                          mobileScreen
+                      ? (screenHeight(statefulContext) *
+                              0.45)
+                          .clamp(180.0, 420.0)
+                      : (screenHeight(statefulContext) -
+                          270),
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -1621,7 +1664,14 @@ void selectItemInAShopProduction({
               }
             },
             widget: SizedBox(
-              height: screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
+              height:
+                  screenWidth(statefulContext) <
+                          mobileScreen
+                      ? (screenHeight(statefulContext) *
+                              0.45)
+                          .clamp(180.0, 420.0)
+                      : (screenHeight(statefulContext) -
+                          270),
               child: Column(
                 children: [
                   Row(

@@ -1498,11 +1498,9 @@ class _AddProductDesktopState
                                           ),
                                         ],
                                       ),
-                                      SizedBox(height: 20),
                                       AllowToManageItemQuantityAddItemPage(
                                         theme: theme,
                                       ),
-                                      SizedBox(height: 20),
                                       AllowToSetCustomPriceAddItemPage(
                                         theme: theme,
                                       ),
