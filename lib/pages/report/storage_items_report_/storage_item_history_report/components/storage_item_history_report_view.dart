@@ -1455,6 +1455,30 @@ class _StorageItemHistoryReportViewState
             ),
       ),
       _Col(
+        label: 'Supplier',
+        width: 170,
+        sort: StorageItemHistorySortField.supplier,
+        align: TextAlign.start,
+        cell:
+            (r, i) => _txt(
+              theme,
+              _orDash(r.supplier),
+              align: TextAlign.start,
+            ),
+      ),
+      _Col(
+        label: 'Tracking Number',
+        width: 160,
+        sort: StorageItemHistorySortField.trackingNumber,
+        align: TextAlign.center,
+        cell:
+            (r, i) => _txt(
+              theme,
+              _orDash(r.trackingNumber),
+              align: TextAlign.center,
+            ),
+      ),
+      _Col(
         label: 'Description',
         width: 220,
         sort: StorageItemHistorySortField.desc,
@@ -2027,6 +2051,15 @@ class _StorageItemHistoryRecordDetailsModal
                           : dash,
                 ),
                 _entry(
+                  title: 'Supplier Name',
+                  value: _orDash(history.supplierName ?? history.supplier),
+                ),
+                _entry(
+                  title: 'Tracking Number',
+                  value: _orDash(history.trackingNumber),
+                  isSelectable: true,
+                ),
+                _entry(
                   title: 'Quantity Change',
                   value: qtyStr,
                 ),
@@ -2143,6 +2176,13 @@ class _StorageItemHistoryRecordDetailsModal
                       history.salesDepartmentUuid ?? dash,
                   isSelectable: true,
                 ),
+                if (history.supplierUuid != null &&
+                    history.supplierUuid!.isNotEmpty)
+                  _entry(
+                    title: 'Supplier UUID',
+                    value: history.supplierUuid!,
+                    isSelectable: true,
+                  ),
               ],
             ),
           ),

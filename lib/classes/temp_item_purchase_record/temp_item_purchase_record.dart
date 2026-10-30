@@ -70,6 +70,9 @@ class TempItemPurchaseRecord {
   @HiveField(20)
   double? heightDimension;
 
+  @HiveField(21)
+  String? trackingNumber;
+
   TempItemPurchaseRecord({
     required this.createdAt,
     required this.shopId,
@@ -92,6 +95,7 @@ class TempItemPurchaseRecord {
     required this.unitUuid,
     this.widthDimension,
     this.heightDimension,
+    this.trackingNumber,
   });
 
   factory TempItemPurchaseRecord.fromJson(
@@ -136,6 +140,10 @@ class TempItemPurchaseRecord {
           (json['width_dimension'] as num?)?.toDouble(),
       heightDimension:
           (json['height_dimension'] as num?)?.toDouble(),
+      trackingNumber:
+          (json['tracking_number'] ??
+                  json['tracking_number'])
+              as String?,
     );
   }
 
@@ -165,6 +173,7 @@ class TempItemPurchaseRecord {
       'unit_uuid': unitUuid,
       'width_dimension': widthDimension,
       'height_dimension': heightDimension,
+      'tracking_number': trackingNumber,
     };
   }
 
@@ -227,6 +236,7 @@ class TempItemPurchaseRecord {
     String? unitUuid,
     double? widthDimension,
     double? heightDimension,
+    String? trackingNumber,
   }) {
     return TempItemPurchaseRecord(
       uuid: uuid ?? this.uuid,
@@ -249,7 +259,9 @@ class TempItemPurchaseRecord {
       unitsList: unitsList ?? this.unitsList,
       unitUuid: unitUuid ?? this.unitUuid,
       widthDimension: widthDimension ?? this.widthDimension,
-      heightDimension: heightDimension ?? this.heightDimension,
+      heightDimension:
+          heightDimension ?? this.heightDimension,
+      trackingNumber: trackingNumber ?? this.trackingNumber,
     );
   }
 

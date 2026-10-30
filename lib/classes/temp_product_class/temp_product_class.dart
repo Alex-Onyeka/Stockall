@@ -783,7 +783,7 @@ class TempProductClass {
       if (isExpired()) {
         return 'Expired';
       } else {
-        var products = returnData(context: context)
+        var products = returnData(context: context, listen: false)
             .productListMain
             .where((item) => item.uuid == uuid);
         double tempQuantity = 0;
@@ -796,6 +796,7 @@ class TempProductClass {
                       )
                   : returnSalesProviderContext(
                     context,
+                    listen: false,
                   ).remainingItemQttyInAllCarts(
                     product: products.first,
                   );
@@ -840,7 +841,7 @@ class TempProductClass {
     BuildContext context,
   ) {
     var selectedUnits =
-        returnData(context: context).tempUnitsList;
+        returnData(context: context, listen: false).tempUnitsList;
     if (selectedUnits.isEmpty) {
       return 'Unit Not Set';
     } else {

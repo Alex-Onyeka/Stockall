@@ -20,12 +20,15 @@ class StorageItemHistoryTile extends StatefulWidget {
   final bool fromDetails;
 
   @override
-  State<StorageItemHistoryTile> createState() => StorageItemHistoryTileState();
+  State<StorageItemHistoryTile> createState() =>
+      StorageItemHistoryTileState();
 }
 
-class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
+class StorageItemHistoryTileState
+    extends State<StorageItemHistoryTile> {
   String cutLongText(String text) {
-    if (text.length > (screenWidth(context) > mobileScreen ? 25 : 15)) {
+    if (text.length >
+        (screenWidth(context) > mobileScreen ? 25 : 15)) {
       return '${text.substring(0, (screenWidth(context) > mobileScreen ? 25 : 15))}...';
     } else {
       return text;
@@ -74,7 +77,9 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
               spacing: 10,
               children: [
                 Visibility(
-                  visible: screenWidth(context) > mobileScreenSmall,
+                  visible:
+                      screenWidth(context) >
+                      mobileScreenSmall,
                   child: Container(
                     padding: EdgeInsets.all(5),
                     decoration: BoxDecoration(
@@ -84,7 +89,8 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                     child: Icon(
                       color: mainColor(),
                       size: 20,
-                      (widget.itemHistory?.isIncreased) == true
+                      (widget.itemHistory?.isIncreased) ==
+                              true
                           ? Icons.add
                           : Icons.clear,
                     ),
@@ -95,34 +101,51 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                     children: [
                       Row(
                         spacing: 10,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                               spacing: 5,
                               children: [
                                 Row(
                                   spacing: 5,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
                                   children: [
                                     Expanded(
                                       child: Text(
                                         style: TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
                                           fontSize:
-                                              theme.mobileTexts.b2.fontSize,
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
                                         ),
-                                        (widget.itemHistory?.title ??
+                                        (widget
+                                                .itemHistory
+                                                ?.title ??
                                             'Not Set'),
                                       ),
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight:
+                                            FontWeight.bold,
                                         fontSize:
-                                            theme.mobileTexts.b2.fontSize - 1,
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize -
+                                            1,
                                         color: mainColor(),
                                       ),
                                       returnHistoryQuantity(
@@ -131,9 +154,13 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                                                 .itemHistory
                                                 ?.quantityChange),
                                         isIncreased:
-                                            (widget.itemHistory?.isIncreased),
+                                            (widget
+                                                .itemHistory
+                                                ?.isIncreased),
                                         unit:
-                                            widget.itemHistory?.storageUnit ??
+                                            widget
+                                                .itemHistory
+                                                ?.storageUnit ??
                                             'Unit(s)',
                                         primaryUnit:
                                             widget
@@ -153,14 +180,32 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize: theme.mobileTexts.b3.fontSize,
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.grey.shade700,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.normal,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade700,
                                   ),
-                                  widget.itemHistory?.desc?.isEmpty == true ||
-                                          widget.itemHistory?.desc == null
+                                  widget
+                                                  .itemHistory
+                                                  ?.desc
+                                                  ?.isEmpty ==
+                                              true ||
+                                          widget
+                                                  .itemHistory
+                                                  ?.desc ==
+                                              null
                                       ? 'Description Not Set'
-                                      : widget.itemHistory?.desc ?? 'Not Set',
+                                      : widget
+                                              .itemHistory
+                                              ?.desc ??
+                                          'Not Set',
                                 ),
                               ],
                             ),
@@ -169,14 +214,26 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                             children: [
                               Visibility(
                                 visible:
-                                    screenWidth(context) > mobileScreenSmall,
+                                    screenWidth(context) >
+                                    mobileScreenSmall,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(right: 4.0),
+                                  padding:
+                                      const EdgeInsets.only(
+                                        right: 4.0,
+                                      ),
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize: theme.mobileTexts.b4.fontSize,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.grey.shade700,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade700,
                                     ),
                                     'View More',
                                   ),
@@ -185,14 +242,18 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                               Icon(
                                 size: 15,
                                 color: Colors.grey.shade400,
-                                Icons.arrow_forward_ios_rounded,
+                                Icons
+                                    .arrow_forward_ios_rounded,
                               ),
                             ],
                           ),
                         ],
                       ),
                       SizedBox(height: 5),
-                      Divider(color: Colors.grey.shade400, thickness: 0.5),
+                      Divider(
+                        color: Colors.grey.shade400,
+                        thickness: 0.5,
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(
                           // top: 5.0,
@@ -200,30 +261,51 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                           right: 15,
                         ),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
                           children: [
                             Row(
                               spacing: 5,
                               children: [
                                 Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
                                   spacing: 5,
                                   children: [
                                     Text(
                                       style: TextStyle(
-                                        fontSize: theme.mobileTexts.b4.fontSize,
-                                        color: Colors.grey.shade600,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade600,
                                       ),
                                       'Storage Item:',
                                     ),
                                     Text(
                                       style: TextStyle(
-                                        fontSize: theme.mobileTexts.b4.fontSize,
-                                        color: theme.lightModeColor.prColor300,
-                                        fontWeight: FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .prColor300,
+                                        fontWeight:
+                                            FontWeight.bold,
                                       ),
                                       cutLongText(
-                                        widget.itemHistory?.storageItemName ??
+                                        widget
+                                                .itemHistory
+                                                ?.storageItemName ??
                                             'Not Set',
                                       ),
                                     ),
@@ -231,41 +313,63 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                                 ),
                                 Visibility(
                                   visible:
-                                      screenWidth(context) > mobileScreen &&
-                                      widget.itemHistory?.salesItemName != null,
+                                      screenWidth(context) >
+                                          mobileScreen &&
+                                      widget
+                                              .itemHistory
+                                              ?.salesItemName !=
+                                          null,
                                   child: Row(
                                     spacing: 5,
                                     children: [
                                       Text(
                                         style: TextStyle(
                                           fontSize:
-                                              theme.mobileTexts.b4.fontSize,
-                                          color: Colors.grey.shade600,
+                                              theme
+                                                  .mobileTexts
+                                                  .b4
+                                                  .fontSize,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade600,
                                         ),
                                         '|',
                                       ),
                                       Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                            CrossAxisAlignment
+                                                .start,
                                         spacing: 5,
                                         children: [
                                           Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme.mobileTexts.b4.fontSize,
-                                              color: Colors.grey.shade600,
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade600,
                                             ),
                                             'Sales Item:',
                                           ),
                                           Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme.mobileTexts.b4.fontSize,
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .prColor300,
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
                                             ),
                                             cutLongText(
                                               widget
@@ -286,23 +390,41 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
                               children: [
                                 Visibility(
                                   visible:
-                                      screenWidth(context) > mobileScreenSmall,
+                                      screenWidth(context) >
+                                      mobileScreenSmall,
                                   child: Text(
                                     style: TextStyle(
-                                      fontSize: theme.mobileTexts.b4.fontSize,
-                                      color: Colors.grey.shade600,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade600,
                                     ),
                                     'Date:',
                                   ),
                                 ),
                                 Text(
                                   style: TextStyle(
-                                    fontSize: theme.mobileTexts.b4.fontSize,
-                                    color: theme.lightModeColor.prColor300,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .prColor300,
+                                    fontWeight:
+                                        FontWeight.bold,
                                   ),
                                   formatDateTimeTime(
-                                    widget.itemHistory?.createdAt ??
+                                    widget
+                                            .itemHistory
+                                            ?.createdAt ??
                                         DateTime.now(),
                                   ),
                                 ),
@@ -347,7 +469,8 @@ class StorageItemHistoryTileState extends State<StorageItemHistoryTile> {
   }
 }
 
-class StorageItemHistoryDetailsWidget extends StatefulWidget {
+class StorageItemHistoryDetailsWidget
+    extends StatefulWidget {
   final StorageItemHistory? itemHistory;
   final bool fromDetails;
 
@@ -377,30 +500,46 @@ class _StorageItemHistoryDetailsWidgetState
               children: [
                 StorageItemHistorySectionWidget(
                   title: 'Title',
-                  message: widget.itemHistory?.title ?? 'Title Not Set',
+                  message:
+                      widget.itemHistory?.title ??
+                      'Title Not Set',
                 ),
                 StorageItemHistorySectionWidget(
                   title: 'Description',
-                  message: widget.itemHistory?.desc ?? 'Description Not Set',
+                  message:
+                      widget.itemHistory?.desc ??
+                      'Description Not Set',
                 ),
                 StorageItemHistorySectionWidget(
                   title: 'Quantity Change',
                   message: returnHistoryQuantity(
-                    unit: widget.itemHistory?.storageUnit ?? 'Unit(s)',
-                    isIncreased: (widget.itemHistory?.isIncreased),
-                    quantityChange: widget.itemHistory?.quantityChange,
+                    unit:
+                        widget.itemHistory?.storageUnit ??
+                        'Unit(s)',
+                    isIncreased:
+                        (widget.itemHistory?.isIncreased),
+                    quantityChange:
+                        widget.itemHistory?.quantityChange,
                     primaryUnit:
-                        widget.itemHistory?.storagePrimaryUnit,
+                        widget
+                            .itemHistory
+                            ?.storagePrimaryUnit,
                     oldValue:
-                        widget.itemHistory?.storageItemOldValue,
+                        widget
+                            .itemHistory
+                            ?.storageItemOldValue,
                     newValue:
-                        widget.itemHistory?.storageItemNewValue,
+                        widget
+                            .itemHistory
+                            ?.storageItemNewValue,
                   ),
                 ),
 
                 StorageItemHistorySectionWidget(
                   title: 'Storage Item Name',
-                  message: widget.itemHistory?.storageItemName ?? 'Not Set',
+                  message:
+                      widget.itemHistory?.storageItemName ??
+                      'Not Set',
                 ),
                 StorageItemHistorySectionWidget(
                   title: 'Storage New Value',
@@ -414,14 +553,25 @@ class _StorageItemHistoryDetailsWidgetState
                 ),
                 StorageItemHistorySectionWidget(
                   title: 'Creator',
-                  message: widget.itemHistory?.storageStaffName ?? 'Not Set',
+                  message:
+                      widget
+                          .itemHistory
+                          ?.storageStaffName ??
+                      'Not Set',
                 ),
                 Visibility(
-                  visible: (widget.itemHistory?.storageDepartmentName) != null,
+                  visible:
+                      (widget
+                          .itemHistory
+                          ?.storageDepartmentName) !=
+                      null,
                   child: StorageItemHistorySectionWidget(
                     title: 'Storage Department Name',
                     message:
-                        widget.itemHistory?.storageDepartmentName ?? 'Not Set',
+                        widget
+                            .itemHistory
+                            ?.storageDepartmentName ??
+                        'Not Set',
                   ),
                 ),
 
@@ -430,14 +580,22 @@ class _StorageItemHistoryDetailsWidgetState
                 //
                 //
                 Visibility(
-                  visible: widget.itemHistory?.salesItemName != null,
+                  visible:
+                      widget.itemHistory?.salesItemName !=
+                      null,
                   child: StorageItemHistorySectionWidget(
                     title: 'Sales Item Name',
-                    message: widget.itemHistory?.salesItemName ?? 'Not Set',
+                    message:
+                        widget.itemHistory?.salesItemName ??
+                        'Not Set',
                   ),
                 ),
                 Visibility(
-                  visible: widget.itemHistory?.salesItemNewValue != null,
+                  visible:
+                      widget
+                          .itemHistory
+                          ?.salesItemNewValue !=
+                      null,
                   child: StorageItemHistorySectionWidget(
                     title: 'Sales Item New Value',
                     message:
@@ -445,7 +603,11 @@ class _StorageItemHistoryDetailsWidgetState
                   ),
                 ),
                 Visibility(
-                  visible: widget.itemHistory?.salesItemOldValue != null,
+                  visible:
+                      widget
+                          .itemHistory
+                          ?.salesItemOldValue !=
+                      null,
                   child: StorageItemHistorySectionWidget(
                     title: 'Sales Item Old Value',
                     message:
@@ -453,18 +615,31 @@ class _StorageItemHistoryDetailsWidgetState
                   ),
                 ),
                 Visibility(
-                  visible: widget.itemHistory?.salesStaffName != null,
+                  visible:
+                      widget.itemHistory?.salesStaffName !=
+                      null,
                   child: StorageItemHistorySectionWidget(
                     title: 'Receiver',
-                    message: widget.itemHistory?.salesStaffName ?? 'Not Set',
+                    message:
+                        widget
+                            .itemHistory
+                            ?.salesStaffName ??
+                        'Not Set',
                   ),
                 ),
                 Visibility(
-                  visible: (widget.itemHistory?.salesDepartmentName) != null,
+                  visible:
+                      (widget
+                          .itemHistory
+                          ?.salesDepartmentName) !=
+                      null,
                   child: StorageItemHistorySectionWidget(
                     title: 'Sales Department Name',
                     message:
-                        widget.itemHistory?.salesDepartmentName ?? 'Not Set',
+                        widget
+                            .itemHistory
+                            ?.salesDepartmentName ??
+                        'Not Set',
                   ),
                 ),
 
@@ -474,16 +649,56 @@ class _StorageItemHistoryDetailsWidgetState
                 StorageItemHistorySectionWidget(
                   title: 'Created Date',
                   message: formatDateWithTime(
-                    widget.itemHistory?.createdAt ?? DateTime.now(),
+                    widget.itemHistory?.createdAt ??
+                        DateTime.now(),
+                  ),
+                ),
+                Visibility(
+                  visible:
+                      (widget.itemHistory?.supplierName ??
+                              widget
+                                  .itemHistory
+                                  ?.supplier) !=
+                          null &&
+                      (widget.itemHistory?.supplierName ??
+                              widget.itemHistory?.supplier)!
+                          .isNotEmpty,
+                  child: StorageItemHistorySectionWidget(
+                    title: 'Supplier Name',
+                    message:
+                        widget.itemHistory?.supplierName ??
+                        widget.itemHistory?.supplier ??
+                        'Not Set',
+                  ),
+                ),
+                Visibility(
+                  visible:
+                      widget.itemHistory?.trackingNumber !=
+                          null &&
+                      widget
+                          .itemHistory!
+                          .trackingNumber!
+                          .isNotEmpty,
+                  child: StorageItemHistorySectionWidget(
+                    title: 'Tracking Number',
+                    message:
+                        widget
+                            .itemHistory
+                            ?.trackingNumber ??
+                        'Not Set',
                   ),
                 ),
                 StorageItemHistorySectionWidget(
                   title: 'Source',
-                  message: widget.itemHistory?.source ?? 'Not Set',
+                  message:
+                      widget.itemHistory?.source ??
+                      'Not Set',
                 ),
                 StorageItemHistorySectionWidget(
                   title: 'Destination',
-                  message: widget.itemHistory?.destination ?? 'Not Set',
+                  message:
+                      widget.itemHistory?.destination ??
+                      'Not Set',
                 ),
               ],
             ),
@@ -500,7 +715,11 @@ class _StorageItemHistoryDetailsWidgetState
                   MaterialPageRoute(
                     builder: (context) {
                       return ProductDetailsPage(
-                        productUuid: widget.itemHistory?.salesItemUuid ?? '',
+                        productUuid:
+                            widget
+                                .itemHistory
+                                ?.salesItemUuid ??
+                            '',
                       );
                     },
                   ),
@@ -521,7 +740,8 @@ class _StorageItemHistoryDetailsWidgetState
   }
 }
 
-class StorageItemHistorySectionWidget extends StatelessWidget {
+class StorageItemHistorySectionWidget
+    extends StatelessWidget {
   final String title;
   final String message;
   const StorageItemHistorySectionWidget({
@@ -539,7 +759,12 @@ class StorageItemHistorySectionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(10, 7, 10, 5),
+            padding: EdgeInsetsGeometry.fromLTRB(
+              10,
+              7,
+              10,
+              5,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(5),
@@ -552,7 +777,8 @@ class StorageItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade900,
                     ),
@@ -563,7 +789,12 @@ class StorageItemHistorySectionWidget extends StatelessWidget {
             ),
           ),
           Container(
-            padding: EdgeInsetsGeometry.fromLTRB(10, 5, 10, 10),
+            padding: EdgeInsetsGeometry.fromLTRB(
+              10,
+              5,
+              10,
+              10,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(2),
               color: Colors.grey.shade100,
@@ -573,7 +804,8 @@ class StorageItemHistorySectionWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.normal,
                       color: Colors.grey.shade700,
                     ),

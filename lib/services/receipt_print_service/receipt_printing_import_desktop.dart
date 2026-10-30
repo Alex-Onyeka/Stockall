@@ -126,6 +126,7 @@ Future<bool> printerSelectionDialog({
                         name:
                             returnShopProvider(
                                   context: context,
+                                  listen: false,
                                 )
                                 .getReceiptPrinter()
                                 ?.printerName ??
@@ -133,6 +134,7 @@ Future<bool> printerSelectionDialog({
                         driverName:
                             returnShopProvider(
                                   context: context,
+                                  listen: false,
                                 )
                                 .getReceiptPrinter()
                                 ?.printerName ??
@@ -145,13 +147,14 @@ Future<bool> printerSelectionDialog({
               ),
               Column(
                 children:
-                    returnShopProvider(context: context)
+                    returnShopProvider(context: context, listen: false)
                         .printers
                         .where(
                           (print) =>
                               print.name !=
                               returnShopProvider(
                                     context: context,
+                                  listen: false,
                                   )
                                   .getReceiptPrinter()
                                   ?.printerName,

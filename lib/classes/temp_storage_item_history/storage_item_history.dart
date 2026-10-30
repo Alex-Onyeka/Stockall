@@ -94,6 +94,17 @@ class StorageItemHistory {
   @HiveField(29)
   String? destination;
 
+  @HiveField(30)
+  String? supplierUuid;
+
+  @HiveField(31)
+  String? supplierName;
+
+  @HiveField(32)
+  String? trackingNumber;
+
+  String? get supplier => supplierName;
+
   StorageItemHistory({
     this.uuid,
     this.createdAt,
@@ -125,6 +136,9 @@ class StorageItemHistory {
     required this.event,
     required this.source,
     this.destination,
+    this.supplierUuid,
+    this.supplierName,
+    this.trackingNumber,
   });
 
   factory StorageItemHistory.fromJson(
@@ -176,6 +190,12 @@ class StorageItemHistory {
       event: json['event'] as String?,
       source: json['source'] as String?,
       destination: json['destination'] as String?,
+      supplierUuid: json['supplier_uuid'] as String?,
+      supplierName: (json['supplier_name'] ?? json['supplier']) as String?,
+      trackingNumber:
+          (json['tracking_number'] ??
+                  json['tracking_number'])
+              as String?,
     );
   }
 
@@ -220,6 +240,9 @@ class StorageItemHistory {
       'event': event,
       'source': source,
       'destination': destination,
+      'supplier_uuid': supplierUuid,
+      'supplier_name': supplierName,
+      'tracking_number': trackingNumber,
     };
   }
 
@@ -254,6 +277,9 @@ class StorageItemHistory {
     String? event,
     String? source,
     String? destination,
+    String? supplierUuid,
+    String? supplierName,
+    String? trackingNumber,
   }) {
     return StorageItemHistory(
       uuid: uuid ?? this.uuid,
@@ -310,6 +336,9 @@ class StorageItemHistory {
       event: event ?? this.event,
       source: source ?? this.source,
       destination: destination ?? this.destination,
+      supplierUuid: supplierUuid ?? this.supplierUuid,
+      supplierName: supplierName ?? this.supplierName,
+      trackingNumber: trackingNumber ?? this.trackingNumber,
     );
   }
 }

@@ -96,7 +96,9 @@ class MaterialClass {
     required this.unitsList,
   });
 
-  factory MaterialClass.fromJson(Map<String, dynamic> json) {
+  factory MaterialClass.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return MaterialClass(
       name: json['name'] as String,
       shopId: json['shop_id'] as int,
@@ -108,7 +110,9 @@ class MaterialClass {
       costPrice: (json['cost_price'] as num).toDouble(),
       expiryDate:
           json['expiry_date'] != null
-              ? DateTime.parse(json['expiry_date'] as String)
+              ? DateTime.parse(
+                json['expiry_date'] as String,
+              )
               : null,
       createdAt:
           json['created_at'] != null
@@ -123,7 +127,8 @@ class MaterialClass {
       isManaged: json['is_managed'] as bool,
       uuid: json['uuid'] as String?,
       groupUnit: json['group_unit'] as String?,
-      qttyPerGroup: (json['qtty_per_group'] as num?)?.toDouble(),
+      qttyPerGroup:
+          (json['qtty_per_group'] as num?)?.toDouble(),
       categoryUuid: json['category_uuid'] as String?,
       categories:
           (json['categories'] as List<dynamic>?)
@@ -134,14 +139,17 @@ class MaterialClass {
       unitsList:
           (json['units_list'] as List<dynamic>? ?? [])
               .map(
-                (item) =>
-                    ProductUnitsClass.fromJson(item as Map<String, dynamic>),
+                (item) => ProductUnitsClass.fromJson(
+                  item as Map<String, dynamic>,
+                ),
               )
               .toList(),
     );
   }
 
-  Map<String, dynamic> toJson({required bool isIncludeQuantity}) {
+  Map<String, dynamic> toJson({
+    required bool isIncludeQuantity,
+  }) {
     if (isIncludeQuantity) {
       return {
         'name': name,
@@ -150,7 +158,8 @@ class MaterialClass {
         'unit': unit,
         'size_type': sizeType,
         'cost_price': costPrice,
-        'expiry_date': expiryDate?.toIso8601String().split('T').first,
+        'expiry_date':
+            expiryDate?.toIso8601String().split('T').first,
         'quantity': quantity,
         'department_uuid': departmentUuid,
         'department_name': departmentName,
@@ -176,7 +185,8 @@ class MaterialClass {
         'unit': unit,
         'size_type': sizeType,
         'cost_price': costPrice,
-        'expiry_date': expiryDate?.toIso8601String().split('T').first,
+        'expiry_date':
+            expiryDate?.toIso8601String().split('T').first,
         'department_uuid': departmentUuid,
         'department_name': departmentName,
         'low_qtty': lowQtty,
@@ -268,16 +278,25 @@ class MaterialClass {
   }
 
   bool canUpdateQuantity() {
-    if (authorization(authorized: Authorizations().updateProduct) &&
-        authorization(authorized: Authorizations().updateItemQuantity)) {
+    if (authorization(
+          authorized: Authorizations().updateProduct,
+        ) &&
+        authorization(
+          authorized: Authorizations().updateItemQuantity,
+        )) {
       return true;
     } else {
       return false;
     }
   }
 
-  String getQuantityText({BuildContext? context, required int index}) {
-    if (!authorization(authorized: Authorizations().viewItemQuantity)) {
+  String getQuantityText({
+    BuildContext? context,
+    required int index,
+  }) {
+    if (!authorization(
+      authorized: Authorizations().viewItemQuantity,
+    )) {
       return '****';
     } else {
       if (quantity == null || quantity == 0) {
@@ -288,22 +307,36 @@ class MaterialClass {
     }
   }
 
-  double getPrimaryUnitQuantity({BuildContext? context, required int index}) {
+  double getPrimaryUnitQuantity({
+    BuildContext? context,
+    required int index,
+  }) {
     if (unitsList == null || unitsList?.isEmpty == true) {
       return (quantity ?? 0);
     } else {
-      var items = unitsList!.where((item) => item.isPrimary);
+      var items = unitsList!.where(
+        (item) => item.isPrimary,
+      );
       if (items.isEmpty) {
         return (quantity ?? 0);
       } else {
         var item = items.first;
-        return item.getQuantityEquivDivided(index: index, context: context);
+        return item.getQuantityEquivDivided(
+          index: index,
+          context: context,
+        );
       }
     }
   }
 
-  String getSelectedUnitForProductEdit(BuildContext context) {
-    var selectedUnits = returnData(context: context).tempUnitsList;
+  String getSelectedUnitForProductEdit(
+    BuildContext context,
+  ) {
+    var selectedUnits =
+        returnData(
+          context: context,
+          listen: false,
+        ).tempUnitsList;
     if (selectedUnits.isEmpty) {
       return 'Unit Not Set';
     } else {
@@ -312,17 +345,23 @@ class MaterialClass {
   }
 
   ProductUnitsClass getProductUnit({String? unitUuid}) {
-    var items = unitsList?.where((item) => item.uuid == unitUuid) ?? [];
+    var items =
+        unitsList?.where((item) => item.uuid == unitUuid) ??
+        [];
     if (unitUuid == null || items.isEmpty) {
       return getPrimaryUnit();
     } else {
-      return getUnitsList().firstWhere((item) => item.uuid == unitUuid);
+      return getUnitsList().firstWhere(
+        (item) => item.uuid == unitUuid,
+      );
     }
   }
 
   ProductUnitsClass getPrimaryUnit() {
     if (getUnitsList().isEmpty == true ||
-        getUnitsList().where((item) => item.isPrimary == true).isEmpty) {
+        getUnitsList()
+            .where((item) => item.isPrimary == true)
+            .isEmpty) {
       return ProductUnitsClass(
         uuid: uuidGen(),
         staffUuid: currentUser().userId,
@@ -334,7 +373,9 @@ class MaterialClass {
         productUuid: uuid!,
       );
     } else {
-      return getUnitsList().where((item) => item.isPrimary == true).first;
+      return getUnitsList()
+          .where((item) => item.isPrimary == true)
+          .first;
     }
   }
 
@@ -416,7 +457,14 @@ class MaterialClass {
     return costPrice * getRealQuantity();
   }
 
-  double getRealCostForSales({required double qtty, required bool useGroup}) {
-    return costPrice * getRealQuantityForSales(qtty: qtty, useGroup: useGroup);
+  double getRealCostForSales({
+    required double qtty,
+    required bool useGroup,
+  }) {
+    return costPrice *
+        getRealQuantityForSales(
+          qtty: qtty,
+          useGroup: useGroup,
+        );
   }
 }

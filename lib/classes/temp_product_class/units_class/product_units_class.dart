@@ -240,28 +240,34 @@ class ProductUnitsClass extends HiveObject {
   }) {
     List items() {
       if (index == 1) {
-        return returnData(context: context).productListMain
+        return returnData(context: context, listen: false)
+            .productListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else if (index == 2) {
         return returnProductionItemsProvider(
               context: context,
+              listen: false,
             ).productionItemListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else if (index == 3) {
-        return returnMaterialsProvider(context: context)
-            .materialListMain
+        return returnMaterialsProvider(
+              context: context,
+              listen: false,
+            ).materialListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else if (index == 4) {
         return returnStorageProductProvider(
               context: context,
+              listen: false,
             ).storageProductListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else {
-        return returnData(context: context).productListMain
+        return returnData(context: context, listen: false)
+            .productListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       }
@@ -294,7 +300,9 @@ class ProductUnitsClass extends HiveObject {
       return (newQuantity ?? material.quantity ?? 0) /
           conversion;
     } else if (orderItem != null) {
-      if (orderItem.quantityType == 2 && !isAreaUnit && !orderItem.hasDimensions) {
+      if (orderItem.quantityType == 2 &&
+          !isAreaUnit &&
+          !orderItem.hasDimensions) {
         return 0;
       }
       final areaPerUnit =
@@ -386,28 +394,34 @@ class ProductUnitsClass extends HiveObject {
 
     List items() {
       if (index == 1) {
-        return returnData(context: context).productListMain
+        return returnData(context: context, listen: false)
+            .productListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else if (index == 2) {
         return returnProductionItemsProvider(
               context: context,
+              listen: false,
             ).productionItemListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else if (index == 3) {
-        return returnMaterialsProvider(context: context)
-            .materialListMain
+        return returnMaterialsProvider(
+              context: context,
+              listen: false,
+            ).materialListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else if (index == 4) {
         return returnStorageProductProvider(
               context: context,
+              listen: false,
             ).storageProductListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       } else {
-        return returnData(context: context).productListMain
+        return returnData(context: context, listen: false)
+            .productListMain
             .where((item) => item.uuid == productUuid)
             .toList();
       }

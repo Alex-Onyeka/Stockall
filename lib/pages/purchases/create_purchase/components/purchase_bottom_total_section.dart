@@ -61,7 +61,7 @@ class _PurchaseBottomTotalSectionState
           return StatefulBuilder(
             builder:
                 (newContext, setStatee) => DialogTemplate(
-                  theme: returnTheme(context),
+                  theme: returnTheme(context, listen: false),
                   message:
                       widget.purchase != null
                           ? "Click on the button below to confirm to create purchase."

@@ -49,6 +49,8 @@ enum StorageItemHistorySortField {
   createdAt,
   storekeeperName,
   otherStaffName,
+  supplier,
+  trackingNumber,
 }
 
 String? _clean(String? s) {
@@ -473,6 +475,12 @@ class StorageItemHistoryReportQuery {
           break;
         case StorageItemHistorySortField.otherStaffName:
           c = _cmpText(a.salesStaffName, b.salesStaffName, ascending);
+          break;
+        case StorageItemHistorySortField.supplier:
+          c = _cmpText(a.supplier, b.supplier, ascending);
+          break;
+        case StorageItemHistorySortField.trackingNumber:
+          c = _cmpText(a.trackingNumber, b.trackingNumber, ascending);
           break;
       }
       if (c != 0) return c;

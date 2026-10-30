@@ -8,6 +8,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
+import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -33,7 +34,10 @@ void selectProductPurchase({
           : null;
   final TempStorageProducts? storageProduct =
       purchaseItem.storageItemUuid != null
-          ? returnStorageProductProvider(context: context)
+          ? returnStorageProductProvider(
+              context: context,
+              listen: false,
+            )
               .storageProductListMain
               .where(
                 (s) =>
@@ -57,6 +61,7 @@ void selectProductPurchase({
       product?.dimensionUnit ??
       storageProduct?.dimensionUnit;
 
+  final trackingNumberController = TextEditingController(text: purchaseItem.trackingNumber ?? '');
   final widthController = TextEditingController();
   final heightController = TextEditingController();
   if (purchaseItem.widthDimension != null) {
@@ -382,7 +387,14 @@ void selectProductPurchase({
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
+                    GeneralTextfieldOnly(
+                      hint: 'Tracking Number',
+                      controller: trackingNumberController,
+                      lines: 1,
+                      theme: theme,
+                    ),
+                    SizedBox(height: 15),
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(
@@ -571,6 +583,7 @@ void selectProductPurchase({
                                           customW,
                                       heightDimension:
                                           customH,
+                                        trackingNumber: trackingNumberController.text.trim().isEmpty ? null : trackingNumberController.text.trim(),
                                     ),
                                   );
                                 } else {
@@ -625,6 +638,7 @@ void selectProductPurchase({
                                           customW,
                                       heightDimension:
                                           customH,
+                                        trackingNumber: trackingNumberController.text.trim().isEmpty ? null : trackingNumberController.text.trim(),
                                     ),
                                   );
                                   Navigator.of(
@@ -650,5 +664,6 @@ void selectProductPurchase({
   ).then((value) {
     quantityController.clear();
     priceController.clear();
+    trackingNumberController.dispose();
   });
 }

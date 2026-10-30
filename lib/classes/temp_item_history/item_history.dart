@@ -67,6 +67,17 @@ class ItemHistory {
   @HiveField(20)
   String? destination;
 
+  @HiveField(21)
+  String? supplierUuid;
+
+  @HiveField(22)
+  String? supplierName;
+
+  @HiveField(23)
+  String? trackingNumber;
+
+  String? get supplier => supplierName;
+
   ItemHistory({
     this.uuid,
     this.createdAt,
@@ -89,6 +100,9 @@ class ItemHistory {
     required this.isManaged,
     required this.source,
     this.destination,
+    this.supplierUuid,
+    this.supplierName,
+    this.trackingNumber,
   });
 
   factory ItemHistory.fromJson(Map<String, dynamic> json) {
@@ -118,6 +132,12 @@ class ItemHistory {
       isManaged: json['is_managed'] as bool?,
       source: json['source'] as String?,
       destination: json['destination'] as String?,
+      supplierUuid: json['supplier_uuid'] as String?,
+      supplierName: (json['supplier_name'] ?? json['supplier']) as String?,
+      trackingNumber:
+          (json['tracking_number'] ??
+                  json['tracking_number'])
+              as String?,
     );
   }
 
@@ -144,6 +164,9 @@ class ItemHistory {
       'is_managed': isManaged,
       'source': source,
       'destination': destination,
+      'supplier_uuid': supplierUuid,
+      'supplier_name': supplierName,
+      'tracking_number': trackingNumber,
     };
   }
 }

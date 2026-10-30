@@ -31,6 +31,8 @@ enum ItemHistorySortField {
   unit,
   primaryUnit,
   isManaged,
+  supplier,
+  trackingNumber,
 }
 
 class ItemHistoryReportFilters {
@@ -44,6 +46,8 @@ class ItemHistoryReportFilters {
   String? departmentUuid;
   bool? isManaged;
   QuantityDirectionFilter quantityDirection = QuantityDirectionFilter.all;
+  String? supplier;
+  String? trackingNumber;
 
   bool get hasAnything =>
       search.trim().isNotEmpty ||
@@ -55,6 +59,8 @@ class ItemHistoryReportFilters {
       destination != null ||
       departmentUuid != null ||
       isManaged != null ||
+      supplier != null ||
+      (trackingNumber != null && trackingNumber!.trim().isNotEmpty) ||
       quantityDirection != QuantityDirectionFilter.all;
 
   int get activeCount {
@@ -67,6 +73,8 @@ class ItemHistoryReportFilters {
     if (destination != null) c++;
     if (departmentUuid != null) c++;
     if (isManaged != null) c++;
+    if (supplier != null) c++;
+    if (trackingNumber != null && trackingNumber!.trim().isNotEmpty) c++;
     if (quantityDirection != QuantityDirectionFilter.all) c++;
     return c;
   }
@@ -81,6 +89,8 @@ class ItemHistoryReportFilters {
     destination = null;
     departmentUuid = null;
     isManaged = null;
+    supplier = null;
+    trackingNumber = null;
     quantityDirection = QuantityDirectionFilter.all;
   }
 
@@ -100,7 +110,9 @@ class ItemHistoryReportFilters {
         check(h.oldValue) ||
         check(h.newValue) ||
         check(h.unit) ||
-        check(h.primaryUnit);
+        check(h.primaryUnit) ||
+        check(h.supplier) ||
+        check(h.trackingNumber);
   }
 
   bool matches(ItemHistory h, {required bool departmentsEnabled}) {
@@ -137,6 +149,15 @@ class ItemHistoryReportFilters {
     }
 
     if (isManaged != null && h.isManaged != isManaged) return false;
+
+    if (supplier != null && h.supplier != supplier) return false;
+
+    if (trackingNumber != null && trackingNumber!.trim().isNotEmpty) {
+      final tn = h.trackingNumber;
+      if (tn == null || !tn.toLowerCase().contains(trackingNumber!.trim().toLowerCase())) {
+        return false;
+      }
+    }
 
     if (quantityDirection != QuantityDirectionFilter.all) {
       final qty = h.quantityChange;
@@ -370,6 +391,20 @@ class ItemHistoryReportQuery {
           final aVal = a.isManaged == null ? null : (a.isManaged! ? 1 : 0);
           final bVal = b.isManaged == null ? null : (b.isManaged! ? 1 : 0);
           c = _cmp(aVal, bVal, ascending);
+          break;
+        case ItemHistorySortField.supplier:
+          c = _cmp(
+            a.supplier?.toLowerCase(),
+            b.supplier?.toLowerCase(),
+            ascending,
+          );
+          break;
+        case ItemHistorySortField.trackingNumber:
+          c = _cmp(
+            a.trackingNumber?.toLowerCase(),
+            b.trackingNumber?.toLowerCase(),
+            ascending,
+          );
           break;
       }
       if (c != 0) return c;

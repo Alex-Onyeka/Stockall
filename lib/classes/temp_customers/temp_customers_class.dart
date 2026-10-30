@@ -184,8 +184,10 @@ class TempCustomersClass extends HiveObject {
   }
 
   List<TempInvoice> getInvoices({BuildContext? context}) {
-    return returnInvoicesProvider(context: context)
-        .invoicesMain
+    return returnInvoicesProvider(
+          context: context,
+          listen: false,
+        ).invoicesMain
         .where((item) => item.customerUuid == uuid)
         .toList();
   }

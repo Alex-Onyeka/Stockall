@@ -165,8 +165,10 @@ class TempPurchase extends HiveObject {
     BuildContext? context,
   }) {
     if (items == null || items!.isEmpty) {
-      return returnPurchaseProvider(context: context)
-          .getItemPurchaseReceipts
+      return returnPurchaseProvider(
+            context: context,
+            listen: false,
+          ).getItemPurchaseReceipts
           .where((item) => item.purchaseId == uuid)
           .toList();
     } else {

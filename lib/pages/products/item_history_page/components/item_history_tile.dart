@@ -649,6 +649,41 @@ class _ItemHistoryDetailsWidgetState
                         'Not Set',
                   ),
                 ),
+                Visibility(
+                  visible:
+                      (widget.itemHistory?.supplierName ??
+                              widget
+                                  .itemHistory
+                                  ?.supplier) !=
+                          null &&
+                      (widget.itemHistory?.supplierName ??
+                              widget.itemHistory?.supplier)!
+                          .isNotEmpty,
+                  child: ItemHistorySectionWidget(
+                    title: 'Supplier Name',
+                    message:
+                        widget.itemHistory?.supplierName ??
+                        widget.itemHistory?.supplier ??
+                        'Not Set',
+                  ),
+                ),
+                Visibility(
+                  visible:
+                      widget.itemHistory?.trackingNumber !=
+                          null &&
+                      widget
+                          .itemHistory!
+                          .trackingNumber!
+                          .isNotEmpty,
+                  child: ItemHistorySectionWidget(
+                    title: 'Tracking Number',
+                    message:
+                        widget
+                            .itemHistory
+                            ?.trackingNumber ??
+                        'Not Set',
+                  ),
+                ),
                 ItemHistorySectionWidget(
                   title: 'Source',
                   message:
@@ -659,6 +694,7 @@ class _ItemHistoryDetailsWidgetState
                       widget.materialsItemHistory?.source ??
                       'Not Set',
                 ),
+
                 ItemHistorySectionWidget(
                   title: 'Destination',
                   message:

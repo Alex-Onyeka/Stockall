@@ -86,6 +86,8 @@ class _ItemHistoryReportViewState
   final List<String> _destinationsList = [];
   final Map<String, String> _departmentsMap =
       {}; // deptUuid -> deptName
+  final List<String> _suppliersList = [];
+  final List<String> _trackingNumbersList = [];
 
   @override
   void initState() {
@@ -196,6 +198,8 @@ class _ItemHistoryReportViewState
     _sourcesList.clear();
     _destinationsList.clear();
     _departmentsMap.clear();
+    _suppliersList.clear();
+    _trackingNumbersList.clear();
 
     // Items from current products
     for (final p in returnData().productList()) {
@@ -327,6 +331,24 @@ class _ItemHistoryReportViewState
         ).toLowerCase(),
       ),
     );
+
+    final suppliersSet = <String>{};
+    final trackingNumbersSet = <String>{};
+    for (final s in returnSuppliersProvider().suppliers) {
+      if (s.name.trim().isNotEmpty) {
+        suppliersSet.add(s.name.trim());
+      }
+    }
+    for (final h in _baseRecords) {
+      if (h.supplier != null && h.supplier!.trim().isNotEmpty) {
+        suppliersSet.add(h.supplier!.trim());
+      }
+      if (h.trackingNumber != null && h.trackingNumber!.trim().isNotEmpty) {
+        trackingNumbersSet.add(h.trackingNumber!.trim());
+      }
+    }
+    _suppliersList.addAll(suppliersSet.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase())));
+    _trackingNumbersList.addAll(trackingNumbersSet.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase())));
 
     _destinationsList.addAll(destinationsSet);
     _destinationsList.sort(
@@ -1168,6 +1190,54 @@ class _ItemHistoryReportViewState
             170,
           ),
           _labeled(
+            'Supplier',
+            _SearchableDropdown<String?>(
+              title: 'Supplier',
+              value: _filters.supplier,
+              options: [
+                const _SearchableOption(
+                  value: null,
+                  label: 'All suppliers',
+                ),
+                ..._suppliersList.map(
+                  (s) => _SearchableOption(
+                    value: s,
+                    label: s,
+                  ),
+                ),
+              ],
+              onChanged:
+                  (v) => _apply(() => _filters.supplier = v),
+              theme: theme,
+              searchHint: 'Search suppliers...',
+            ),
+            180,
+          ),
+          _labeled(
+            'Tracking Number',
+            _SearchableDropdown<String?>(
+              title: 'Tracking Number',
+              value: _filters.trackingNumber,
+              options: [
+                const _SearchableOption(
+                  value: null,
+                  label: 'All tracking numbers',
+                ),
+                ..._trackingNumbersList.map(
+                  (tn) => _SearchableOption(
+                    value: tn,
+                    label: tn,
+                  ),
+                ),
+              ],
+              onChanged:
+                  (v) => _apply(() => _filters.trackingNumber = v),
+              theme: theme,
+              searchHint: 'Search tracking numbers...',
+            ),
+            180,
+          ),
+          _labeled(
             'Destination',
             _SearchableDropdown<String?>(
               title: 'Destination',
@@ -1342,6 +1412,23 @@ class _ItemHistoryReportViewState
         chip(
           'Source: $name',
           () => _apply(() => _filters.source = null),
+        ),
+      );
+    }
+    if (_filters.supplier != null) {
+      chips.add(
+        chip(
+          'Supplier: ${_filters.supplier}',
+          () => _apply(() => _filters.supplier = null),
+        ),
+      );
+    }
+    if (_filters.trackingNumber != null &&
+        _filters.trackingNumber!.trim().isNotEmpty) {
+      chips.add(
+        chip(
+          'Tracking: ${_filters.trackingNumber}',
+          () => _apply(() => _filters.trackingNumber = null),
         ),
       );
     }
@@ -1641,6 +1728,37 @@ class _ItemHistoryReportViewState
                   ? ItemHistoryReportQuery.formatSourceOrDestination(
                     r.destination!,
                   )
+                  : dash,
+              align: TextAlign.center,
+            ),
+      ),
+      // Supplier (Left)
+      _Col(
+        label: 'Supplier',
+        width: 170,
+        sort: ItemHistorySortField.supplier,
+        align: TextAlign.start,
+        cell:
+            (r, i) => _txt(
+              theme,
+              (r.supplier != null && r.supplier!.isNotEmpty)
+                  ? r.supplier!
+                  : dash,
+              align: TextAlign.start,
+            ),
+      ),
+      // Tracking Number (Center)
+      _Col(
+        label: 'Tracking Number',
+        width: 160,
+        sort: ItemHistorySortField.trackingNumber,
+        align: TextAlign.center,
+        cell:
+            (r, i) => _txt(
+              theme,
+              (r.trackingNumber != null &&
+                      r.trackingNumber!.isNotEmpty)
+                  ? r.trackingNumber!
                   : dash,
               align: TextAlign.center,
             ),
@@ -2307,6 +2425,26 @@ class _ItemHistoryRecordDetailsModal
                           : dash,
                 ),
                 _entry(
+                  title: 'Supplier Name',
+                  value:
+                      (history.supplierName != null &&
+                              history.supplierName!.isNotEmpty)
+                          ? history.supplierName!
+                          : (history.supplier != null &&
+                                  history.supplier!.isNotEmpty)
+                              ? history.supplier!
+                              : dash,
+                ),
+                _entry(
+                  title: 'Tracking Number',
+                  value:
+                      (history.trackingNumber != null &&
+                              history.trackingNumber!.isNotEmpty)
+                          ? history.trackingNumber!
+                          : dash,
+                  isSelectable: true,
+                ),
+                _entry(
                   title: 'Quantity Change',
                   value: qtyStr,
                 ),
@@ -2422,6 +2560,13 @@ class _ItemHistoryRecordDetailsModal
                   value: history.departmentUuid ?? dash,
                   isSelectable: true,
                 ),
+                if (history.supplierUuid != null &&
+                    history.supplierUuid!.isNotEmpty)
+                  _entry(
+                    title: 'Supplier UUID',
+                    value: history.supplierUuid!,
+                    isSelectable: true,
+                  ),
               ],
             ),
           ),

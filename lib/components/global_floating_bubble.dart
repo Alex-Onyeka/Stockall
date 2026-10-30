@@ -213,7 +213,8 @@ class _GlobalFloatingBubbleState
                                   ) {
                                     return ConfirmationAlert(
                                       theme: returnTheme(
-                                        context,
+                                        confirmContext,
+                                        listen: false,
                                       ),
                                       message:
                                           'You are about to ${returnUtilityWidgetProvider().getVisibility() ? "Hide" : 'Show'} this Utility Button. Are you sure you want to continue?',

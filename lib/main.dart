@@ -362,79 +362,87 @@ ReceiptsProvider returnReceiptProvider(
 
 InvoicesProvider returnInvoicesProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return InvoicesProvider();
   } else {
-    return Provider.of<InvoicesProvider>(context);
+    return Provider.of<InvoicesProvider>(context, listen: listen);
   }
 }
 
 StorageProductProvider returnStorageProductProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return StorageProductProvider();
   } else {
-    return Provider.of<StorageProductProvider>(context);
+    return Provider.of<StorageProductProvider>(context, listen: listen);
   }
 }
 
 ShopDashboardProvider returnShopDashboardProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ShopDashboardProvider();
   } else {
-    return Provider.of<ShopDashboardProvider>(context);
+    return Provider.of<ShopDashboardProvider>(context, listen: listen);
   }
 }
 
 DepartmentsDashboardProvider
 returnDepartmentsDashboardProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return DepartmentsDashboardProvider();
   } else {
     return Provider.of<DepartmentsDashboardProvider>(
       context,
+      listen: listen,
     );
   }
 }
 
 CategoriesProvider returnCategoriesProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return CategoriesProvider();
   } else {
-    return Provider.of<CategoriesProvider>(context);
+    return Provider.of<CategoriesProvider>(context, listen: listen);
   }
 }
 
 SubStaffProvider returnSubStaffProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return SubStaffProvider();
   } else {
-    return Provider.of<SubStaffProvider>(context);
+    return Provider.of<SubStaffProvider>(context, listen: listen);
   }
 }
 
 InventoryUpdatesProvider returnInventoryUpdatesProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return InventoryUpdatesProvider();
   } else {
-    return Provider.of<InventoryUpdatesProvider>(context);
+    return Provider.of<InventoryUpdatesProvider>(context, listen: listen);
   }
 }
 
-TempShopClass? shop(BuildContext context) {
-  return returnShopProvider(context: context).userShop();
+TempShopClass? shop(BuildContext context, {bool listen = true}) {
+  return returnShopProvider(context: context, listen: listen).userShop();
 }
 
 TempShopClass? shopSingle() {
@@ -452,11 +460,14 @@ UserProvider returnUserProvider(
   return Provider.of<UserProvider>(context, listen: listen);
 }
 
-ShopProvider returnShopProvider({BuildContext? context}) {
+ShopProvider returnShopProvider({
+  BuildContext? context,
+  bool listen = true,
+}) {
   if (context == null) {
     return ShopProvider();
   } else {
-    return Provider.of<ShopProvider>(context);
+    return Provider.of<ShopProvider>(context, listen: listen);
   }
 }
 
@@ -496,11 +507,12 @@ DataProvider returnData({
 
 PermissionProvider returnPermissionProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return PermissionProvider();
   } else {
-    return Provider.of<PermissionProvider>(context);
+    return Provider.of<PermissionProvider>(context, listen: listen);
   }
 }
 
@@ -551,9 +563,10 @@ SalesProvider returnSalesProvider() {
 }
 
 SalesProvider returnSalesProviderContext(
-  BuildContext context,
-) {
-  return Provider.of<SalesProvider>(context);
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<SalesProvider>(context, listen: listen);
 }
 
 TranslationProvider returnTranslationProvider(
@@ -568,21 +581,23 @@ TranslationProvider returnTranslationProvider(
 
 ConnectivityProvider returnConnectivityProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ConnectivityProvider();
   } else {
-    return Provider.of<ConnectivityProvider>(context);
+    return Provider.of<ConnectivityProvider>(context, listen: listen);
   }
 }
 
 SubPaymentProvider returnSubPaymentProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return SubPaymentProvider();
   } else {
-    return Provider.of<SubPaymentProvider>(context);
+    return Provider.of<SubPaymentProvider>(context, listen: listen);
   }
 }
 
@@ -601,68 +616,75 @@ MultiDisplayProvider returnMultiDisplayProvider() {
 }
 
 MultiDisplayProvider returnMultiDisplayProviderContext(
-  BuildContext context,
-) {
-  return Provider.of<MultiDisplayProvider>(context);
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<MultiDisplayProvider>(context, listen: listen);
 }
 
 EventsLogProvider returnEventsLogProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return EventsLogProvider();
   } else {
-    return Provider.of<EventsLogProvider>(context);
+    return Provider.of<EventsLogProvider>(context, listen: listen);
   }
 }
 
 ErrorLogProvider returnErrorLogProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ErrorLogProvider();
   } else {
-    return Provider.of<ErrorLogProvider>(context);
+    return Provider.of<ErrorLogProvider>(context, listen: listen);
   }
 }
 
 DepartmentProvider returnDepartmentProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return DepartmentProvider();
   } else {
-    return Provider.of<DepartmentProvider>(context);
+    return Provider.of<DepartmentProvider>(context, listen: listen);
   }
 }
 
 PurchaseProvider returnPurchaseProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return PurchaseProvider();
   } else {
-    return Provider.of<PurchaseProvider>(context);
+    return Provider.of<PurchaseProvider>(context, listen: listen);
   }
 }
 
 SuppliersProvider returnSuppliersProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return SuppliersProvider();
   } else {
-    return Provider.of<SuppliersProvider>(context);
+    return Provider.of<SuppliersProvider>(context, listen: listen);
   }
 }
 
 PurchaseActionProvider returnPurchaseActionProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return PurchaseActionProvider();
   } else {
-    return Provider.of<PurchaseActionProvider>(context);
+    return Provider.of<PurchaseActionProvider>(context, listen: listen);
   }
 }
 
@@ -678,63 +700,70 @@ PurchaseActionProvider returnPurchaseActionProvider({
 
 UtilityWidgetProvider returnUtilityWidgetProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return UtilityWidgetProvider();
   } else {
-    return Provider.of<UtilityWidgetProvider>(context);
+    return Provider.of<UtilityWidgetProvider>(context, listen: listen);
   }
 }
 
 UtilityConstantProvider returnUtilityConstantProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return UtilityConstantProvider();
   } else {
-    return Provider.of<UtilityConstantProvider>(context);
+    return Provider.of<UtilityConstantProvider>(context, listen: listen);
   }
 }
 
 CountryProvider returnCountryProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return CountryProvider();
   } else {
-    return Provider.of<CountryProvider>(context);
+    return Provider.of<CountryProvider>(context, listen: listen);
   }
 }
 
 QuantityUpdateProvider returnQuantityUpdateProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return QuantityUpdateProvider();
   } else {
-    return Provider.of<QuantityUpdateProvider>(context);
+    return Provider.of<QuantityUpdateProvider>(context, listen: listen);
   }
 }
 
 ItemHistoryProvider returnItemHistoryProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ItemHistoryProvider();
   } else {
-    return Provider.of<ItemHistoryProvider>(context);
+    return Provider.of<ItemHistoryProvider>(context, listen: listen);
   }
 }
 
 ProductionItemHistoryProvider
 returnProductionItemHistoryProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ProductionItemHistoryProvider();
   } else {
     return Provider.of<ProductionItemHistoryProvider>(
       context,
+      listen: listen,
     );
   }
 }
@@ -742,101 +771,113 @@ returnProductionItemHistoryProvider({
 MaterialsItemHistoryProvider
 returnMaterialsItemHistoryProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return MaterialsItemHistoryProvider();
   } else {
     return Provider.of<MaterialsItemHistoryProvider>(
       context,
+      listen: listen,
     );
   }
 }
 
 MaterialsProvider returnMaterialsProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return MaterialsProvider();
   } else {
-    return Provider.of<MaterialsProvider>(context);
+    return Provider.of<MaterialsProvider>(context, listen: listen);
   }
 }
 
 MaterialQuantityUpdateProvider
 returnMaterialsQuantityUpdateProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return MaterialQuantityUpdateProvider();
   } else {
     return Provider.of<MaterialQuantityUpdateProvider>(
       context,
+      listen: listen,
     );
   }
 }
 
 ProductionItemsProvider returnProductionItemsProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ProductionItemsProvider();
   } else {
-    return Provider.of<ProductionItemsProvider>(context);
+    return Provider.of<ProductionItemsProvider>(context, listen: listen);
   }
 }
 
 ProductionItemsQuantityUpdateProvider
 returnProductionItemsQuantityUpdateProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ProductionItemsQuantityUpdateProvider();
   } else {
     return Provider.of<
       ProductionItemsQuantityUpdateProvider
-    >(context);
+    >(context, listen: listen);
   }
 }
 
 ProductionRecordsProvider returnProductionRecordsProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ProductionRecordsProvider();
   } else {
-    return Provider.of<ProductionRecordsProvider>(context);
+    return Provider.of<ProductionRecordsProvider>(context, listen: listen);
   }
 }
 
 ProductionsActionProvider returnProductionsActionProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return ProductionsActionProvider();
   } else {
-    return Provider.of<ProductionsActionProvider>(context);
+    return Provider.of<ProductionsActionProvider>(context, listen: listen);
   }
 }
 
 MaterialsUsageProvider returnMaterialsUsageProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return MaterialsUsageProvider();
   } else {
-    return Provider.of<MaterialsUsageProvider>(context);
+    return Provider.of<MaterialsUsageProvider>(context, listen: listen);
   }
 }
 
 MaterialsUsageActionProvider
 returnMaterialsUsageActionProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return MaterialsUsageActionProvider();
   } else {
     return Provider.of<MaterialsUsageActionProvider>(
       context,
+      listen: listen,
     );
   }
 }
@@ -844,52 +885,60 @@ returnMaterialsUsageActionProvider({
 CustomerAccountReceiptsProvider
 returnCustomerAccountReceiptsProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return CustomerAccountReceiptsProvider();
   } else {
     return Provider.of<CustomerAccountReceiptsProvider>(
       context,
+      listen: listen,
     );
   }
 }
 
 OrdersProvider returnOrdersProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return OrdersProvider();
   } else {
-    return Provider.of<OrdersProvider>(context);
+    return Provider.of<OrdersProvider>(context, listen: listen);
   }
 }
 
 DraftsProvider returnDraftsProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return DraftsProvider();
   } else {
-    return Provider.of<DraftsProvider>(context);
+    return Provider.of<DraftsProvider>(context, listen: listen);
   }
 }
 
 OrdersActionProvider returnOrdersActionProvider({
   BuildContext? context,
+  bool listen = true,
 }) {
   if (context == null) {
     return OrdersActionProvider();
   } else {
-    return Provider.of<OrdersActionProvider>(context);
+    return Provider.of<OrdersActionProvider>(context, listen: listen);
   }
 }
 
 StorageItemHistoryProvider
-returnStorageItemHistoryProvider({BuildContext? context}) {
+returnStorageItemHistoryProvider({
+  BuildContext? context,
+  bool listen = true,
+}) {
   if (context == null) {
     return StorageItemHistoryProvider();
   } else {
-    return Provider.of<StorageItemHistoryProvider>(context);
+    return Provider.of<StorageItemHistoryProvider>(context, listen: listen);
   }
 }
 

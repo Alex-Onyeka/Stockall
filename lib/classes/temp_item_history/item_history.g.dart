@@ -38,13 +38,16 @@ class ItemHistoryAdapter extends TypeAdapter<ItemHistory> {
       isManaged: fields[18] as bool?,
       source: fields[19] as String?,
       destination: fields[20] as String?,
+      supplierUuid: fields[21] as String?,
+      supplierName: fields[22] as String?,
+      trackingNumber: fields[23] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ItemHistory obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -86,7 +89,13 @@ class ItemHistoryAdapter extends TypeAdapter<ItemHistory> {
       ..writeByte(19)
       ..write(obj.source)
       ..writeByte(20)
-      ..write(obj.destination);
+      ..write(obj.destination)
+      ..writeByte(21)
+      ..write(obj.supplierUuid)
+      ..writeByte(22)
+      ..write(obj.supplierName)
+      ..writeByte(23)
+      ..write(obj.trackingNumber);
   }
 
   @override

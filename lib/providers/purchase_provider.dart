@@ -632,6 +632,16 @@ class PurchaseProvider extends ChangeNotifier {
               ?.manageInventoryStorage ==
           true;
 
+      final purchaseSupplierUuid = purchase.supplierId;
+      final purchaseSupplierName = purchase.supplierName ??
+          (purchase.supplierId != null
+              ? returnSuppliersProvider()
+                  .suppliers
+                  .where((s) => s.uuid == purchase.supplierId)
+                  .firstOrNull
+                  ?.name
+              : null);
+
       for (var rec in recordsToDelete) {
         // if (rec.uuid != null) {
         //   await deleteItemPurchaseRecord(rec.uuid!);
@@ -738,6 +748,9 @@ class PurchaseProvider extends ChangeNotifier {
                       primaryUnit: primaryUnit.name,
                       primaryQuantity: deltaQty.abs(),
                     ),
+                    supplierUuid: purchaseSupplierUuid,
+                    supplierName: purchaseSupplierName,
+                    trackingNumber: rec.trackingNumber,
                   );
                 }
 
@@ -859,6 +872,9 @@ class PurchaseProvider extends ChangeNotifier {
                     primaryUnit: primaryUnit.name,
                     primaryQuantity: deltaArea.abs(),
                   ),
+                  supplierUuid: purchaseSupplierUuid,
+                  supplierName: purchaseSupplierName,
+                  trackingNumber: rec.trackingNumber,
                 );
               }
 
@@ -1156,6 +1172,18 @@ class PurchaseProvider extends ChangeNotifier {
               ?.manageInventoryStorage ==
           true;
       for (var item in records) {
+        final itemSupplierUuid = item.supplierId;
+        final itemSupplierName = (item.supplierId != null
+            ? returnSuppliersProvider()
+                .suppliers
+                .where((s) => s.uuid == item.supplierId)
+                .firstOrNull
+                ?.name
+            : null) ??
+            (item.purchaseId != null
+                ? purchases.where((p) => p.uuid == item.purchaseId).firstOrNull?.supplierName
+                : null);
+
         if (isManageStorage) {
           final targetStorageId =
               item.storageItemId ?? item.itemId;
@@ -1249,6 +1277,9 @@ class PurchaseProvider extends ChangeNotifier {
               primaryUnit: primaryUnit.name,
               primaryQuantity: deltaQty.abs(),
             ),
+            supplierUuid: itemSupplierUuid,
+            supplierName: itemSupplierName,
+            trackingNumber: item.trackingNumber,
           );
 
           await returnStorageProductProvider()
@@ -1356,6 +1387,9 @@ class PurchaseProvider extends ChangeNotifier {
               primaryUnit: primaryUnit.name,
               primaryQuantity: deltaArea.abs(),
             ),
+            supplierUuid: itemSupplierUuid,
+            supplierName: itemSupplierName,
+            trackingNumber: item.trackingNumber,
           );
 
           await returnData().updateProduct(
@@ -1482,6 +1516,18 @@ class PurchaseProvider extends ChangeNotifier {
       for (final entry in deltas.entries) {
         final delta = entry.value;
         final isIncrease = delta > 0;
+        final matchedItem = newItems.where((i) => (isManageStorage ? (i.storageItemId ?? i.itemId) : (i.itemId ?? i.storageItemId)) == entry.key).firstOrNull ??
+            oldItems.where((i) => (isManageStorage ? (i.storageItemId ?? i.itemId) : (i.itemId ?? i.storageItemId)) == entry.key).firstOrNull;
+        final editTrackingNumber = matchedItem?.trackingNumber;
+        final editSupplierUuid = matchedItem?.supplierId;
+        final editSupplierName = (matchedItem?.supplierId != null
+            ? returnSuppliersProvider()
+                .suppliers
+                .where((s) => s.uuid == matchedItem!.supplierId)
+                .firstOrNull
+                ?.name
+            : null) ??
+            purchases.where((p) => p.uuid == purchaseUuid).firstOrNull?.supplierName;
 
         if (isManageStorage) {
           final storageProduct = _findStorageProduct(
@@ -1561,6 +1607,9 @@ class PurchaseProvider extends ChangeNotifier {
               primaryUnit: primaryUnit.name,
               primaryQuantity: delta.abs(),
             ),
+            supplierUuid: editSupplierUuid,
+            supplierName: editSupplierName,
+            trackingNumber: editTrackingNumber,
           );
 
           await returnStorageProductProvider()
@@ -1652,6 +1701,9 @@ class PurchaseProvider extends ChangeNotifier {
               primaryUnit: primaryUnit.name,
               primaryQuantity: deltaArea.abs(),
             ),
+            supplierUuid: editSupplierUuid,
+            supplierName: editSupplierName,
+            trackingNumber: editTrackingNumber,
           );
 
           await returnData().updateProduct(

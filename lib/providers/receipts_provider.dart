@@ -831,7 +831,7 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord> salesInvoice({
     BuildContext? context,
   }) {
-    return returnInvoicesProvider(context: context)
+    return returnInvoicesProvider(context: context, listen: false)
         .invoicesMain
         .expand((item) => item.getItems())
         .toList();
@@ -2382,7 +2382,7 @@ class ReceiptsProvider extends ChangeNotifier {
             DataCell(Text(formatTime(item.createdAt))),
             DataCell(
               Text(
-                "${item.generalDiscount != null ? "" : '${shop(context)?.currency}'}${formatLargeNumberDouble(item.fixedDiscount ?? item.generalDiscount ?? 0)}${item.generalDiscount != null ? "%" : ''}",
+                "${item.generalDiscount != null ? "" : '${shop(context, listen: false)?.currency}'}${formatLargeNumberDouble(item.fixedDiscount ?? item.generalDiscount ?? 0)}${item.generalDiscount != null ? "%" : ''}",
               ),
             ),
             DataCell(

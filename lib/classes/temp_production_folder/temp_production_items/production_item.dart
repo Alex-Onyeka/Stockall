@@ -285,7 +285,7 @@ class ProductionItem {
   }
 
   String getSelectedUnitForProductEdit(BuildContext context) {
-    var selectedUnits = returnData(context: context).tempUnitsList;
+    var selectedUnits = returnData(context: context, listen: false).tempUnitsList;
     if (selectedUnits.isEmpty) {
       return 'Unit Not Set';
     } else {

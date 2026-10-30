@@ -289,7 +289,7 @@ class AuthService extends ChangeNotifier {
           context: context,
           builder: (errorContext) {
             return InfoAlert(
-              theme: returnTheme(context),
+              theme: returnTheme(context, listen: false),
               message:
                   'You currently have some records that have not been backed up to the cloud. Please Proceed to Synchronize, before Logging out.',
               title: 'Unsyned Records Detected',
@@ -310,7 +310,7 @@ class AuthService extends ChangeNotifier {
           context: context,
           builder: (errorContext) {
             return ConfirmationAlert(
-              theme: returnTheme(context),
+              theme: returnTheme(context, listen: false),
               message:
                   'You currently have some Items in "${sales.mainCartLabel(blocking.mainCart)}" (Cart $cartNumber) that you have not checked out. Please complete the sale or clear the cart, before Logging out.',
               title: 'Cart Not Empty',
@@ -341,7 +341,7 @@ class AuthService extends ChangeNotifier {
           context: context,
           builder: (errorContext) {
             return InfoAlert(
-              theme: returnTheme(context),
+              theme: returnTheme(context, listen: false),
               message:
                   'You currently have some Items in your Productions cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
               title: 'Production Cart Not Empty',
@@ -356,7 +356,7 @@ class AuthService extends ChangeNotifier {
           context: context,
           builder: (errorContext) {
             return InfoAlert(
-              theme: returnTheme(context),
+              theme: returnTheme(context, listen: false),
               message:
                   'You currently have some Items in your Materials Usage cart. Please Proceed to complete the The Process clear all the carts, before Logging out.',
               title: 'Materials Usage Cart Not Empty',

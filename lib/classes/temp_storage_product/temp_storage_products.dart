@@ -143,7 +143,8 @@ class TempStorageProducts {
           (json['height_dimension'] as num?)?.toDouble(),
       dimensionUnit: json['dimension_unit'] as String?,
       dimensionUnitConversion:
-          (json['dimension_unit_conversion'] as num?)?.toDouble(),
+          (json['dimension_unit_conversion'] as num?)
+              ?.toDouble(),
     );
   }
 
@@ -222,7 +223,8 @@ class TempStorageProducts {
           heightDimension ?? this.heightDimension,
       dimensionUnit: dimensionUnit ?? this.dimensionUnit,
       dimensionUnitConversion:
-          dimensionUnitConversion ?? this.dimensionUnitConversion,
+          dimensionUnitConversion ??
+          this.dimensionUnitConversion,
     );
   }
 
@@ -245,7 +247,8 @@ class TempStorageProducts {
     widthDimension = newItem.widthDimension;
     heightDimension = newItem.heightDimension;
     dimensionUnit = newItem.dimensionUnit;
-    dimensionUnitConversion = newItem.dimensionUnitConversion;
+    dimensionUnitConversion =
+        newItem.dimensionUnitConversion;
   }
 
   //
@@ -274,10 +277,11 @@ class TempStorageProducts {
       if (!hasDimensions) return 1.0;
       final area =
           (widthDimension ?? 1) * (heightDimension ?? 1);
-      final conv = (dimensionUnitConversion != null &&
-              dimensionUnitConversion! > 0)
-          ? dimensionUnitConversion!
-          : 1.0;
+      final conv =
+          (dimensionUnitConversion != null &&
+                  dimensionUnitConversion! > 0)
+              ? dimensionUnitConversion!
+              : 1.0;
       final converted = area / conv;
       return converted > 0 ? converted : 1;
     } else {
@@ -302,11 +306,14 @@ class TempStorageProducts {
   }) {
     if (quantityType == 2 && !unit.isAreaUnit) {
       if (customWidth != null && customHeight != null) {
-        final conv = (dimensionUnitConversion != null &&
-                dimensionUnitConversion! > 0)
-            ? dimensionUnitConversion!
-            : 1.0;
-        return quantity * unit.conversion * ((customWidth * customHeight) / conv);
+        final conv =
+            (dimensionUnitConversion != null &&
+                    dimensionUnitConversion! > 0)
+                ? dimensionUnitConversion!
+                : 1.0;
+        return quantity *
+            unit.conversion *
+            ((customWidth * customHeight) / conv);
       }
       return quantity * unit.conversion * dimensionArea();
     }
@@ -379,7 +386,10 @@ class TempStorageProducts {
     BuildContext context,
   ) {
     var selectedUnits =
-        returnData(context: context).tempUnitsList;
+        returnData(
+          context: context,
+          listen: false,
+        ).tempUnitsList;
     if (selectedUnits.isEmpty) {
       return 'Unit Not Set';
     } else {
@@ -450,7 +460,8 @@ class TempStorageProducts {
     List<ProductUnitsClass> buildList() {
       if (unitsList == null || unitsList?.isEmpty == true) {
         final isArea =
-            quantityType == 2 && ProductUnitsClass.isAreaUnitName(unit);
+            quantityType == 2 &&
+            ProductUnitsClass.isAreaUnitName(unit);
         List<ProductUnitsClass> tempList = [
           ProductUnitsClass(
             uuid: '${uuid ?? ''}_primary_unit',
@@ -491,7 +502,9 @@ class TempStorageProducts {
         }
         if (quantityType == 2) {
           final hasArea = tempList.any((u) => u.isAreaUnit);
-          final hasWhole = tempList.any((u) => !u.isAreaUnit);
+          final hasWhole = tempList.any(
+            (u) => !u.isAreaUnit,
+          );
           if (hasArea && !hasWhole) {
             tempList.add(
               ProductUnitsClass(
@@ -548,7 +561,9 @@ class TempStorageProducts {
         }
         if (quantityType == 2) {
           final hasArea = tempList.any((u) => u.isAreaUnit);
-          final hasWhole = tempList.any((u) => !u.isAreaUnit);
+          final hasWhole = tempList.any(
+            (u) => !u.isAreaUnit,
+          );
           if (hasArea && !hasWhole) {
             tempList.add(
               ProductUnitsClass(

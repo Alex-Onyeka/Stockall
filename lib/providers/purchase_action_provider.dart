@@ -180,6 +180,7 @@ class PurchaseActionProvider extends ChangeNotifier {
                   qttyPerGroup: item.qttyPerGroup,
                   widthDimension: item.widthDimension,
                   heightDimension: item.heightDimension,
+                  trackingNumber: item.trackingNumber,
                 ),
               )
               .toList();
@@ -281,6 +282,7 @@ class PurchaseActionProvider extends ChangeNotifier {
                 qttyPerGroup: item.qttyPerGroup,
                 widthDimension: item.widthDimension,
                 heightDimension: item.heightDimension,
+                  trackingNumber: item.trackingNumber,
               ),
             )
             .toList();
@@ -375,6 +377,7 @@ class PurchaseActionProvider extends ChangeNotifier {
                   qttyPerGroup: item.qttyPerGroup,
                   widthDimension: item.widthDimension,
                   heightDimension: item.heightDimension,
+                  trackingNumber: item.trackingNumber,
                 ),
               )
               .toList();

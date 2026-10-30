@@ -47,13 +47,16 @@ class StorageItemHistoryAdapter extends TypeAdapter<StorageItemHistory> {
       event: fields[27] as String?,
       source: fields[28] as String?,
       destination: fields[29] as String?,
+      supplierUuid: fields[30] as String?,
+      supplierName: fields[31] as String?,
+      trackingNumber: fields[32] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, StorageItemHistory obj) {
     writer
-      ..writeByte(30)
+      ..writeByte(33)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -113,7 +116,13 @@ class StorageItemHistoryAdapter extends TypeAdapter<StorageItemHistory> {
       ..writeByte(28)
       ..write(obj.source)
       ..writeByte(29)
-      ..write(obj.destination);
+      ..write(obj.destination)
+      ..writeByte(30)
+      ..write(obj.supplierUuid)
+      ..writeByte(31)
+      ..write(obj.supplierName)
+      ..writeByte(32)
+      ..write(obj.trackingNumber);
   }
 
   @override
