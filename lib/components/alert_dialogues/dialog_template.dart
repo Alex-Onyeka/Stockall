@@ -36,191 +36,154 @@ class DialogTemplate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 15,
-      ),
-      contentPadding: EdgeInsets.all(15), //
-      backgroundColor: Colors.white,
-      content: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 0.0,
+    final mediaQuery = MediaQuery.of(context);
+    final isMobile = screenWidth(context) < mobileScreen;
+    final safeHeight =
+        mediaQuery.size.height -
+        mediaQuery.padding.top -
+        mediaQuery.padding.bottom -
+        mediaQuery.viewInsets.bottom;
+    final maxContentHeight =
+        isMobile
+            ? (safeHeight - 210).clamp(120.0, 520.0)
+            : (safeHeight - 160).clamp(180.0, 750.0);
+
+    return SafeArea(
+      child: AlertDialog(
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 12 : 20,
+          vertical: isMobile ? 12 : 15,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 10,
-          children: [
-            SizedBox(height: 10),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 500),
-              child: SizedBox(
-                width: 500,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal:
-                        screenWidth(context) < mobileScreen
-                            ? 10
-                            : 20.0,
-                  ),
-                  child: Visibility(
-                    visible: showTopSection == null,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Builder(
-                              builder: (context) {
-                                if (topLeftWidget != null) {
-                                  return topLeftWidget ??
-                                      Container();
-                                } else {
-                                  return IgnorePointer(
-                                    ignoring: true,
-                                    child: Opacity(
-                                      opacity: 0,
-                                      child: topRightWidget,
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                            Text(
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight:
-                                    theme
-                                        .mobileTexts
-                                        .h3
-                                        .fontWeightBold,
+        contentPadding: const EdgeInsets.all(15),
+        backgroundColor: Colors.white,
+        content: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 0.0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 10,
+            children: [
+              const SizedBox(height: 10),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 500,
+                ),
+                child: SizedBox(
+                  width: 500,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 10 : 20.0,
+                    ),
+                    child: Visibility(
+                      visible: showTopSection == null,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Builder(
+                                builder: (context) {
+                                  if (topLeftWidget !=
+                                      null) {
+                                    return topLeftWidget ??
+                                        Container();
+                                  } else {
+                                    return IgnorePointer(
+                                      ignoring: true,
+                                      child: Opacity(
+                                        opacity: 0,
+                                        child:
+                                            topRightWidget,
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
-                              title,
-                            ),
-                            Opacity(
-                              opacity:
-                                  topRightWidget != null
-                                      ? 1
-                                      : 0,
-                              child: topRightWidget,
-                            ),
-                          ],
-                        ),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
+                              Text(
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .h4
+                                          .fontSize,
+                                  fontWeight:
+                                      theme
+                                          .mobileTexts
+                                          .h3
+                                          .fontWeightBold,
+                                ),
+                                title,
+                              ),
+                              Opacity(
+                                opacity:
+                                    topRightWidget != null
+                                        ? 1
+                                        : 0,
+                                child: topRightWidget,
+                              ),
+                            ],
                           ),
-                          message,
-                        ),
-                      ],
+                          Text(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            message,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            // SizedBox(height: 5),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 500),
-              child: widget,
-            ),
-            SizedBox(height: 5),
-            Visibility(
-              visible:
-                  showBottomActionButtons == null ||
-                  (showBottomActionButtons != null &&
-                      showBottomActionButtons == true),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Ink(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(5),
-                            color: Colors.grey.shade200,
-                          ),
-                          child: InkWell(
-                            mouseCursor:
-                                SystemMouseCursors.click,
-                            onTap: () {
-                              cancelAction != null
-                                  ? cancelAction!()
-                                  : Navigator.of(
-                                    context,
-                                  ).pop();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-
-                              child: Center(
-                                child: Text(
-                                  textAlign:
-                                      TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade800,
-                                  ),
-                                  cancelText ?? 'Cancel',
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible:
-                            showMainBottomActionButton !=
-                            false,
-                        child: SizedBox(width: 15),
-                      ),
-                      Visibility(
-                        visible:
-                            showMainBottomActionButton !=
-                            false,
-                        child: Expanded(
+              // SizedBox(height: 5),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: 500,
+                  maxHeight: maxContentHeight,
+                ),
+                child: widget,
+              ),
+              const SizedBox(height: 5),
+              Visibility(
+                visible:
+                    showBottomActionButtons == null ||
+                    (showBottomActionButtons != null &&
+                        showBottomActionButtons == true),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Expanded(
                           child: Ink(
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.circular(5),
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .errorColor200,
+                              color: Colors.grey.shade200,
                             ),
                             child: InkWell(
                               mouseCursor:
                                   SystemMouseCursors.click,
-                              onTap: action,
+                              onTap: () {
+                                cancelAction != null
+                                    ? cancelAction!()
+                                    : Navigator.of(
+                                      context,
+                                    ).pop();
+                              },
                               child: Container(
                                 padding:
-                                    EdgeInsets.symmetric(
+                                    const EdgeInsets.symmetric(
                                       horizontal: 20,
                                       vertical: 10,
                                     ),
@@ -237,24 +200,83 @@ class DialogTemplate extends StatelessWidget {
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
-                                      color: Colors.white,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade800,
                                     ),
-                                    actionButtonText ??
-                                        'Proceed',
+                                    cancelText ?? 'Cancel',
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                ],
+                        Visibility(
+                          visible:
+                              showMainBottomActionButton !=
+                              false,
+                          child: const SizedBox(width: 15),
+                        ),
+                        Visibility(
+                          visible:
+                              showMainBottomActionButton !=
+                              false,
+                          child: Expanded(
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .errorColor200,
+                              ),
+                              child: InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
+                                onTap: action,
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 10,
+                                      ),
+
+                                  child: Center(
+                                    child: Text(
+                                      textAlign:
+                                          TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                      actionButtonText ??
+                                          'Proceed',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

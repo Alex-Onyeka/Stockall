@@ -82,7 +82,9 @@ class _MakeSalesMobileTwoState
 
   // Only Real Sales pay at checkout; invoices and orders are unchanged.
   String? _paymentError() {
-    if (returnSalesProvider().currentCart().cartItemTypeIndex !=
+    if (returnSalesProvider()
+            .currentCart()
+            .cartItemTypeIndex !=
         1) {
       return null;
     }
@@ -101,654 +103,630 @@ class _MakeSalesMobileTwoState
             context: context,
             title: 'Select Payment Method',
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-            ),
-            child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        SizedBox(height: 10),
-                        Row(
-                          spacing: 5,
-                          children: [
-                            Expanded(
-                              child: CartQueueMobile(
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+              ),
+              child: Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 10),
+                          Row(
+                            spacing: 5,
+                            children: [
+                              Expanded(
+                                child: CartQueueMobile(
+                                  isFirst: false,
+                                ),
+                              ),
+                              SubStaffToggleButtonMobile(
                                 isFirst: false,
                               ),
+                            ],
+                          ),
+                          Visibility(
+                            visible:
+                                returnSalesProviderContext(
+                                  context,
+                                ).isSubStaffSelectionMobileOpen,
+                            child: Column(
+                              children: [
+                                SizedBox(height: 2),
+                                SubStaffSelectionWidget(),
+                              ],
                             ),
-                            SubStaffToggleButtonMobile(
-                              isFirst: false,
+                          ),
+                          SizedBox(height: 13),
+                          CustomerSelectionWidget(
+                            refreshAction: () {
+                              setState(() {});
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          SetCustomReceiptCreatedDateWidget(),
+
+                          Visibility(
+                            visible:
+                                !returnSalesProviderContext(
+                                      context,
+                                    )
+                                    .currentCart()
+                                    .isReceiptEdit,
+                            child: Column(
+                              children: [
+                                // Divider(
+                                //   color: Colors.grey.shade300,
+                                // ),
+
+                                // SizedBox(height: 10),
+                                // Row(
+                                //   children: [
+                                //     Text(
+                                //       style: TextStyle(
+                                //         fontSize:
+                                //             theme
+                                //                 .mobileTexts
+                                //                 .b2
+                                //                 .fontSize,
+                                //         fontWeight:
+                                //             FontWeight.bold,
+                                //       ),
+                                //       'Create Invoice (Credit Sale)',
+                                //     ),
+                                //   ],
+                                // ),
+                                // // SizedBox(height: 5),
+                                // Row(
+                                //   mainAxisAlignment:
+                                //       MainAxisAlignment
+                                //           .spaceBetween,
+                                //   children: [
+                                //     Text(
+                                //       style: TextStyle(
+                                //         fontSize:
+                                //             theme
+                                //                 .mobileTexts
+                                //                 .b3
+                                //                 .fontSize,
+                                //         fontWeight:
+                                //             FontWeight.normal,
+                                //       ),
+                                //       'Is this Sale On Credit (Invoice?',
+                                //     ),
+                                //     InkWell(
+                                //       mouseCursor:
+                                //           SystemMouseCursors
+                                //               .click,
+                                //       onTap: () async {
+                                //         if (returnSalesProvider()
+                                //                 .currentCart()
+                                //                 .cartItemTypeIndex ==
+                                //             2) {
+                                //           returnSalesProvider()
+                                //               .switchInvoiceSale(
+                                //                 context:
+                                //                     context,
+                                //                 value: 1,
+                                //               );
+                                //         } else {
+                                //           returnSalesProvider()
+                                //               .switchInvoiceSale(
+                                //                 context:
+                                //                     context,
+                                //                 value: 2,
+                                //               );
+                                //         }
+                                //         returnSalesProvider()
+                                //             .changePaymentMethod(
+                                //               context:
+                                //                   context,
+                                //               index: 0,
+                                //             );
+                                //         widget
+                                //             .partPaymentController
+                                //             .clear();
+                                //       },
+                                //       child: Container(
+                                //         width: 50,
+                                //         padding:
+                                //             EdgeInsets.symmetric(
+                                //               horizontal: 10,
+                                //               vertical: 5,
+                                //             ),
+                                //         decoration: BoxDecoration(
+                                //           borderRadius:
+                                //               BorderRadius.circular(
+                                //                 20,
+                                //               ),
+                                //           border: Border.all(
+                                //             color:
+                                //                 returnSalesProviderContext(
+                                //                           context,
+                                //                         ).currentCart().cartItemTypeIndex ==
+                                //                         2
+                                //                     ? theme
+                                //                         .lightModeColor
+                                //                         .prColor250
+                                //                     : Colors
+                                //                         .grey,
+                                //           ),
+                                //           color:
+                                //               returnSalesProviderContext(
+                                //                         context,
+                                //                       ).currentCart().cartItemTypeIndex ==
+                                //                       2
+                                //                   ? theme
+                                //                       .lightModeColor
+                                //                       .prColor250
+                                //                   : Colors
+                                //                       .grey
+                                //                       .shade200,
+                                //         ),
+                                //         child: Row(
+                                //           mainAxisAlignment:
+                                //               returnSalesProviderContext(
+                                //                         context,
+                                //                       ).currentCart().cartItemTypeIndex ==
+                                //                       2
+                                //                   ? MainAxisAlignment
+                                //                       .end
+                                //                   : MainAxisAlignment
+                                //                       .start,
+                                //           children: [
+                                //             Container(
+                                //               padding:
+                                //                   EdgeInsets.all(
+                                //                     5,
+                                //                   ),
+                                //               decoration: BoxDecoration(
+                                //                 shape:
+                                //                     BoxShape
+                                //                         .circle,
+                                //                 color:
+                                //                     returnSalesProviderContext(
+                                //                               context,
+                                //                             ).currentCart().cartItemTypeIndex ==
+                                //                             2
+                                //                         ? Colors
+                                //                             .white
+                                //                         : Colors
+                                //                             .grey
+                                //                             .shade600,
+                                //               ),
+                                //             ),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ],
+                                // ),
+                                Visibility(
+                                  visible:
+                                      returnSalesProviderContext(
+                                            context,
+                                          )
+                                          .currentCart()
+                                          .cartItemTypeIndex ==
+                                      2,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 10),
+                                      Divider(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade300,
+                                      ),
+                                      SizedBox(height: 5),
+                                      MoneyTextfield(
+                                        title:
+                                            'Make Part Payment (Optional)',
+                                        hint:
+                                            'Enter Amount (Optional)',
+                                        controller:
+                                            widget
+                                                .partPaymentController,
+                                        theme: theme,
+                                        onChanged: (value) {
+                                          if (value
+                                                  .isNotEmpty &&
+                                              (double.tryParse(
+                                                        value.replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                      ) ??
+                                                      0) >=
+                                                  returnSalesProvider()
+                                                      .calcFinalTotal()) {
+                                            widget
+                                                .partPaymentController
+                                                .text = '0';
+                                          }
+                                        },
+                                      ),
+                                      // SizedBox(height: 10),
+                                      // Divider(
+                                      //   color:
+                                      //       Colors
+                                      //           .grey
+                                      //           .shade300,
+                                      // ),
+                                      SizedBox(height: 5),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 10),
+                          Visibility(
+                            visible:
+                                currentCart(
+                                  context: context,
+                                ).cartItemTypeIndex !=
+                                3,
+                            child: Column(
+                              children: [
+                                Divider(
+                                  color:
+                                      Colors.grey.shade300,
+                                ),
+                                SizedBox(height: 5),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Select Payment Method',
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 5),
+                                    PaymentTypeDropdown(
+                                      bankController:
+                                          widget
+                                              .bankController,
+                                      cashController:
+                                          widget
+                                              .cashController,
+                                      accountController:
+                                          widget
+                                              .accountController,
+                                    ),
+                                  ],
+                                ),
+                                // SizedBox(height: 5),
+                                // Visibility(
+                                //   visible:
+                                //       returnSalesProviderContext(
+                                //             context,
+                                //           )
+                                //           .currentCart()
+                                //           .paymentMethod ==
+                                //       2,
+                                //   child: Column(
+                                //     children: [
+                                //       Row(
+                                //         spacing: 10,
+                                //         mainAxisAlignment:
+                                //             MainAxisAlignment
+                                //                 .center,
+                                //         children: [
+                                //           Expanded(
+                                //             child: EditCartTextField(
+                                //               title: 'Cash',
+                                //               hint:
+                                //                   'Cash Amount',
+                                //               controller:
+                                //                   widget
+                                //                       .cashController,
+                                //               theme: theme,
+                                //               onChanged: (
+                                //                 value,
+                                //               ) {
+                                //                 if (isUpdating)
+                                //                   // ignore: curly_braces_in_flow_control_structures
+                                //                   return;
+                                //                 isUpdating =
+                                //                     true;
+
+                                //                 double cash =
+                                //                     double.tryParse(
+                                //                       value.replaceAll(
+                                //                         ',',
+                                //                         '',
+                                //                       ),
+                                //                     ) ??
+                                //                     0;
+                                //                 if (cash >
+                                //                     widget
+                                //                         .totalAmount) {
+                                //                   showDialog(
+                                //                     context:
+                                //                         context,
+                                //                     builder: (
+                                //                       context,
+                                //                     ) {
+                                //                       var theme = Provider.of<
+                                //                         ThemeProvider
+                                //                       >(
+                                //                         context,
+                                //                       );
+                                //                       return InfoAlert(
+                                //                         theme:
+                                //                             theme,
+                                //                         message:
+                                //                             'Cash cannot exceed total amount.',
+                                //                         title:
+                                //                             'Overpayment',
+                                //                       );
+                                //                     },
+                                //                   );
+                                //                   // Reset to max allowed
+                                //                   widget
+                                //                       .cashController
+                                //                       .text = widget
+                                //                       .totalAmount
+                                //                       .toStringAsFixed(
+                                //                         2,
+                                //                       );
+                                //                   widget
+                                //                       .bankController
+                                //                       .text = '0.00';
+                                //                 } else {
+                                //                   double
+                                //                   bank =
+                                //                       widget
+                                //                           .totalAmount -
+                                //                       cash;
+                                //                   widget
+                                //                       .bankController
+                                //                       .text = bank
+                                //                       .toStringAsFixed(
+                                //                         2,
+                                //                       );
+                                //                 }
+
+                                //                 isUpdating =
+                                //                     false;
+                                //               },
+                                //             ),
+                                //           ),
+                                //           Expanded(
+                                //             child: EditCartTextField(
+                                //               title: 'Bank',
+                                //               hint:
+                                //                   'Bank Amount',
+                                //               controller:
+                                //                   widget
+                                //                       .bankController,
+                                //               theme: theme,
+                                //               onChanged: (
+                                //                 value,
+                                //               ) {
+                                //                 if (isUpdating)
+                                //                   // ignore: curly_braces_in_flow_control_structures
+                                //                   return;
+                                //                 isUpdating =
+                                //                     true;
+
+                                //                 double bank =
+                                //                     double.tryParse(
+                                //                       value.replaceAll(
+                                //                         ',',
+                                //                         '',
+                                //                       ),
+                                //                     ) ??
+                                //                     0;
+                                //                 if (bank >
+                                //                     widget
+                                //                         .totalAmount) {
+                                //                   showDialog(
+                                //                     context:
+                                //                         context,
+                                //                     builder: (
+                                //                       context,
+                                //                     ) {
+                                //                       var theme = Provider.of<
+                                //                         ThemeProvider
+                                //                       >(
+                                //                         context,
+                                //                       );
+                                //                       return InfoAlert(
+                                //                         theme:
+                                //                             theme,
+                                //                         message:
+                                //                             'Bank cannot exceed total amount.',
+                                //                         title:
+                                //                             'Overpayment',
+                                //                       );
+                                //                     },
+                                //                   );
+                                //                   widget
+                                //                       .bankController
+                                //                       .text = widget
+                                //                       .totalAmount
+                                //                       .toStringAsFixed(
+                                //                         2,
+                                //                       );
+                                //                   widget
+                                //                       .cashController
+                                //                       .text = '0.00';
+                                //                 } else {
+                                //                   double
+                                //                   cash =
+                                //                       widget
+                                //                           .totalAmount -
+                                //                       bank;
+                                //                   widget
+                                //                       .cashController
+                                //                       .text = cash
+                                //                       .toStringAsFixed(
+                                //                         2,
+                                //                       );
+                                //                 }
+
+                                //                 isUpdating =
+                                //                     false;
+                                //               },
+                                //             ),
+                                //           ),
+                                //         ],
+                                //       ),
+                                //       SizedBox(height: 5),
+                                //     ],
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                          ),
+                          ItemCommentWidget(
+                            commentController:
+                                commentController,
+                            onTapOutside: (
+                              pointerDownEvent,
+                            ) {
+                              returnSalesProvider()
+                                  .setComment(
+                                    comment:
+                                        commentController
+                                            .text,
+                                  );
+                            },
+                          ),
+                          SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Material(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
                         Visibility(
                           visible:
                               returnSalesProviderContext(
-                                context,
-                              ).isSubStaffSelectionMobileOpen,
-                          child: Column(
-                            children: [
-                              SizedBox(height: 2),
-                              SubStaffSelectionWidget(),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 13),
-                        CustomerSelectionWidget(
-                          refreshAction: () {
-                            setState(() {});
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        SetCustomReceiptCreatedDateWidget(),
-
-                        Visibility(
-                          visible:
-                              !returnSalesProviderContext(
-                                context,
-                              ).currentCart().isReceiptEdit,
-                          child: Column(
-                            children: [
-                              // Divider(
-                              //   color: Colors.grey.shade300,
-                              // ),
-
-                              // SizedBox(height: 10),
-                              // Row(
-                              //   children: [
-                              //     Text(
-                              //       style: TextStyle(
-                              //         fontSize:
-                              //             theme
-                              //                 .mobileTexts
-                              //                 .b2
-                              //                 .fontSize,
-                              //         fontWeight:
-                              //             FontWeight.bold,
-                              //       ),
-                              //       'Create Invoice (Credit Sale)',
-                              //     ),
-                              //   ],
-                              // ),
-                              // // SizedBox(height: 5),
-                              // Row(
-                              //   mainAxisAlignment:
-                              //       MainAxisAlignment
-                              //           .spaceBetween,
-                              //   children: [
-                              //     Text(
-                              //       style: TextStyle(
-                              //         fontSize:
-                              //             theme
-                              //                 .mobileTexts
-                              //                 .b3
-                              //                 .fontSize,
-                              //         fontWeight:
-                              //             FontWeight.normal,
-                              //       ),
-                              //       'Is this Sale On Credit (Invoice?',
-                              //     ),
-                              //     InkWell(
-                              //       mouseCursor:
-                              //           SystemMouseCursors
-                              //               .click,
-                              //       onTap: () async {
-                              //         if (returnSalesProvider()
-                              //                 .currentCart()
-                              //                 .cartItemTypeIndex ==
-                              //             2) {
-                              //           returnSalesProvider()
-                              //               .switchInvoiceSale(
-                              //                 context:
-                              //                     context,
-                              //                 value: 1,
-                              //               );
-                              //         } else {
-                              //           returnSalesProvider()
-                              //               .switchInvoiceSale(
-                              //                 context:
-                              //                     context,
-                              //                 value: 2,
-                              //               );
-                              //         }
-                              //         returnSalesProvider()
-                              //             .changePaymentMethod(
-                              //               context:
-                              //                   context,
-                              //               index: 0,
-                              //             );
-                              //         widget
-                              //             .partPaymentController
-                              //             .clear();
-                              //       },
-                              //       child: Container(
-                              //         width: 50,
-                              //         padding:
-                              //             EdgeInsets.symmetric(
-                              //               horizontal: 10,
-                              //               vertical: 5,
-                              //             ),
-                              //         decoration: BoxDecoration(
-                              //           borderRadius:
-                              //               BorderRadius.circular(
-                              //                 20,
-                              //               ),
-                              //           border: Border.all(
-                              //             color:
-                              //                 returnSalesProviderContext(
-                              //                           context,
-                              //                         ).currentCart().cartItemTypeIndex ==
-                              //                         2
-                              //                     ? theme
-                              //                         .lightModeColor
-                              //                         .prColor250
-                              //                     : Colors
-                              //                         .grey,
-                              //           ),
-                              //           color:
-                              //               returnSalesProviderContext(
-                              //                         context,
-                              //                       ).currentCart().cartItemTypeIndex ==
-                              //                       2
-                              //                   ? theme
-                              //                       .lightModeColor
-                              //                       .prColor250
-                              //                   : Colors
-                              //                       .grey
-                              //                       .shade200,
-                              //         ),
-                              //         child: Row(
-                              //           mainAxisAlignment:
-                              //               returnSalesProviderContext(
-                              //                         context,
-                              //                       ).currentCart().cartItemTypeIndex ==
-                              //                       2
-                              //                   ? MainAxisAlignment
-                              //                       .end
-                              //                   : MainAxisAlignment
-                              //                       .start,
-                              //           children: [
-                              //             Container(
-                              //               padding:
-                              //                   EdgeInsets.all(
-                              //                     5,
-                              //                   ),
-                              //               decoration: BoxDecoration(
-                              //                 shape:
-                              //                     BoxShape
-                              //                         .circle,
-                              //                 color:
-                              //                     returnSalesProviderContext(
-                              //                               context,
-                              //                             ).currentCart().cartItemTypeIndex ==
-                              //                             2
-                              //                         ? Colors
-                              //                             .white
-                              //                         : Colors
-                              //                             .grey
-                              //                             .shade600,
-                              //               ),
-                              //             ),
-                              //           ],
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ],
-                              // ),
-                              Visibility(
-                                visible:
-                                    returnSalesProviderContext(
-                                          context,
-                                        )
-                                        .currentCart()
-                                        .cartItemTypeIndex ==
-                                    2,
-                                child: Column(
+                                    context,
+                                  )
+                                  .currentCart()
+                                  .cartItems
+                                  .isNotEmpty,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                ),
+                            child: Column(
+                              mainAxisSize:
+                                  MainAxisSize.min,
+                              children: [
+                                SizedBox(height: 15),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
                                   children: [
-                                    SizedBox(height: 10),
-                                    Divider(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade300,
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        // fontWeight: FontWeight.bold,
+                                      ),
+                                      'Subtotal',
                                     ),
-                                    SizedBox(height: 5),
-                                    MoneyTextfield(
-                                      title:
-                                          'Make Part Payment (Optional)',
-                                      hint:
-                                          'Enter Amount (Optional)',
-                                      controller:
-                                          widget
-                                              .partPaymentController,
-                                      theme: theme,
-                                      onChanged: (value) {
-                                        if (value
-                                                .isNotEmpty &&
-                                            (double.tryParse(
-                                                      value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0) >=
-                                                returnSalesProvider()
-                                                    .calcFinalTotal()) {
-                                          widget
-                                              .partPaymentController
-                                              .text = '0';
-                                        }
-                                      },
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        // fontWeight: FontWeight.bold,
+                                      ),
+                                      formatMoneyBig(
+                                        amount:
+                                            returnSalesProviderContext(
+                                              context,
+                                            ).calcSubTotal(),
+                                        context: context,
+                                      ),
                                     ),
-                                    // SizedBox(height: 10),
-                                    // Divider(
-                                    //   color:
-                                    //       Colors
-                                    //           .grey
-                                    //           .shade300,
-                                    // ),
-                                    SizedBox(height: 5),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Visibility(
-                          visible:
-                              currentCart(
-                                context: context,
-                              ).cartItemTypeIndex !=
-                              3,
-                          child: Column(
-                            children: [
-                              Divider(
-                                color: Colors.grey.shade300,
-                              ),
-                              SizedBox(height: 5),
-                              Column(
-                                children: [
-                                  Row(
+                                Visibility(
+                                  visible:
+                                      returnSalesProviderContext(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .discount !=
+                                          null ||
+                                      returnSalesProviderContext(
+                                                context,
+                                              )
+                                              .currentCart()
+                                              .fixedDiscount !=
+                                          null,
+                                  child: Column(
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Select Payment Method',
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 5),
-                                  PaymentTypeDropdown(
-                                    bankController:
-                                        widget
-                                            .bankController,
-                                    cashController:
-                                        widget
-                                            .cashController,
-                                    accountController:
-                                        widget
-                                            .accountController,
-                                  ),
-                                ],
-                              ),
-                              // SizedBox(height: 5),
-                              // Visibility(
-                              //   visible:
-                              //       returnSalesProviderContext(
-                              //             context,
-                              //           )
-                              //           .currentCart()
-                              //           .paymentMethod ==
-                              //       2,
-                              //   child: Column(
-                              //     children: [
-                              //       Row(
-                              //         spacing: 10,
-                              //         mainAxisAlignment:
-                              //             MainAxisAlignment
-                              //                 .center,
-                              //         children: [
-                              //           Expanded(
-                              //             child: EditCartTextField(
-                              //               title: 'Cash',
-                              //               hint:
-                              //                   'Cash Amount',
-                              //               controller:
-                              //                   widget
-                              //                       .cashController,
-                              //               theme: theme,
-                              //               onChanged: (
-                              //                 value,
-                              //               ) {
-                              //                 if (isUpdating)
-                              //                   // ignore: curly_braces_in_flow_control_structures
-                              //                   return;
-                              //                 isUpdating =
-                              //                     true;
-
-                              //                 double cash =
-                              //                     double.tryParse(
-                              //                       value.replaceAll(
-                              //                         ',',
-                              //                         '',
-                              //                       ),
-                              //                     ) ??
-                              //                     0;
-                              //                 if (cash >
-                              //                     widget
-                              //                         .totalAmount) {
-                              //                   showDialog(
-                              //                     context:
-                              //                         context,
-                              //                     builder: (
-                              //                       context,
-                              //                     ) {
-                              //                       var theme = Provider.of<
-                              //                         ThemeProvider
-                              //                       >(
-                              //                         context,
-                              //                       );
-                              //                       return InfoAlert(
-                              //                         theme:
-                              //                             theme,
-                              //                         message:
-                              //                             'Cash cannot exceed total amount.',
-                              //                         title:
-                              //                             'Overpayment',
-                              //                       );
-                              //                     },
-                              //                   );
-                              //                   // Reset to max allowed
-                              //                   widget
-                              //                       .cashController
-                              //                       .text = widget
-                              //                       .totalAmount
-                              //                       .toStringAsFixed(
-                              //                         2,
-                              //                       );
-                              //                   widget
-                              //                       .bankController
-                              //                       .text = '0.00';
-                              //                 } else {
-                              //                   double
-                              //                   bank =
-                              //                       widget
-                              //                           .totalAmount -
-                              //                       cash;
-                              //                   widget
-                              //                       .bankController
-                              //                       .text = bank
-                              //                       .toStringAsFixed(
-                              //                         2,
-                              //                       );
-                              //                 }
-
-                              //                 isUpdating =
-                              //                     false;
-                              //               },
-                              //             ),
-                              //           ),
-                              //           Expanded(
-                              //             child: EditCartTextField(
-                              //               title: 'Bank',
-                              //               hint:
-                              //                   'Bank Amount',
-                              //               controller:
-                              //                   widget
-                              //                       .bankController,
-                              //               theme: theme,
-                              //               onChanged: (
-                              //                 value,
-                              //               ) {
-                              //                 if (isUpdating)
-                              //                   // ignore: curly_braces_in_flow_control_structures
-                              //                   return;
-                              //                 isUpdating =
-                              //                     true;
-
-                              //                 double bank =
-                              //                     double.tryParse(
-                              //                       value.replaceAll(
-                              //                         ',',
-                              //                         '',
-                              //                       ),
-                              //                     ) ??
-                              //                     0;
-                              //                 if (bank >
-                              //                     widget
-                              //                         .totalAmount) {
-                              //                   showDialog(
-                              //                     context:
-                              //                         context,
-                              //                     builder: (
-                              //                       context,
-                              //                     ) {
-                              //                       var theme = Provider.of<
-                              //                         ThemeProvider
-                              //                       >(
-                              //                         context,
-                              //                       );
-                              //                       return InfoAlert(
-                              //                         theme:
-                              //                             theme,
-                              //                         message:
-                              //                             'Bank cannot exceed total amount.',
-                              //                         title:
-                              //                             'Overpayment',
-                              //                       );
-                              //                     },
-                              //                   );
-                              //                   widget
-                              //                       .bankController
-                              //                       .text = widget
-                              //                       .totalAmount
-                              //                       .toStringAsFixed(
-                              //                         2,
-                              //                       );
-                              //                   widget
-                              //                       .cashController
-                              //                       .text = '0.00';
-                              //                 } else {
-                              //                   double
-                              //                   cash =
-                              //                       widget
-                              //                           .totalAmount -
-                              //                       bank;
-                              //                   widget
-                              //                       .cashController
-                              //                       .text = cash
-                              //                       .toStringAsFixed(
-                              //                         2,
-                              //                       );
-                              //                 }
-
-                              //                 isUpdating =
-                              //                     false;
-                              //               },
-                              //             ),
-                              //           ),
-                              //         ],
-                              //       ),
-                              //       SizedBox(height: 5),
-                              //     ],
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                        ),
-                        ItemCommentWidget(
-                          commentController:
-                              commentController,
-                          onTapOutside: (pointerDownEvent) {
-                            returnSalesProvider()
-                                .setComment(
-                                  comment:
-                                      commentController
-                                          .text,
-                                );
-                          },
-                        ),
-                        SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-                Material(
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      Visibility(
-                        visible:
-                            returnSalesProviderContext(
-                                  context,
-                                )
-                                .currentCart()
-                                .cartItems
-                                .isNotEmpty,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 10.0,
-                              ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(height: 15),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                    'Subtotal',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                    formatMoneyBig(
-                                      amount:
-                                          returnSalesProviderContext(
-                                            context,
-                                          ).calcSubTotal(),
-                                      context: context,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Visibility(
-                                visible:
-                                    returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .discount !=
-                                        null ||
-                                    returnSalesProviderContext(
-                                              context,
-                                            )
-                                            .currentCart()
-                                            .fixedDiscount !=
-                                        null,
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 5),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b4
-                                                        .fontSize,
-                                                // fontWeight: FontWeight.bold,
-                                              ),
-                                              'Discount',
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  returnSalesProviderContext(
-                                                    context,
-                                                  ).currentCart().discount !=
-                                                  null,
-                                              child: Text(
+                                      SizedBox(height: 5),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
                                                 style: TextStyle(
                                                   fontSize:
                                                       theme
                                                           .mobileTexts
                                                           .b4
                                                           .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
                                                   // fontWeight: FontWeight.bold,
                                                 ),
-                                                ' (${returnSalesProviderContext(context).currentCart().discount?.toString()}%)',
+                                                'Discount',
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
-                                            // fontWeight: FontWeight.bold,
+                                              Visibility(
+                                                visible:
+                                                    returnSalesProviderContext(
+                                                      context,
+                                                    ).currentCart().discount !=
+                                                    null,
+                                                child: Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b4.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                    // fontWeight: FontWeight.bold,
+                                                  ),
+                                                  ' (${returnSalesProviderContext(context).currentCart().discount?.toString()}%)',
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          '- ${formatMoney(returnSalesProviderContext(context).calcDiscountMain(), context)}',
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              Column(
-                                children: [
-                                  SizedBox(height: 5),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
                                           Text(
                                             style: TextStyle(
                                               fontSize:
@@ -758,62 +736,15 @@ class _MakeSalesMobileTwoState
                                                       .fontSize,
                                               // fontWeight: FontWeight.bold,
                                             ),
-                                            'VAT',
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b4
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              // fontWeight: FontWeight.bold,
-                                            ),
-                                            ' (${returnShopProvider().getVat()}%)',
+                                            '- ${formatMoney(returnSalesProviderContext(context).calcDiscountMain(), context)}',
                                           ),
                                         ],
                                       ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                        ),
-                                        formatMoney(
-                                          returnSalesProviderContext(
-                                            context,
-                                          ).calcVatAmount(),
-                                          context,
-                                        ),
-                                      ),
                                     ],
                                   ),
-                                ],
-                              ),
-                              Visibility(
-                                visible:
-                                    GeneralSettingsAuthAction()
-                                        .manageCustomersAccountAndPoints(
-                                          context: null,
-                                        ) &&
-                                    shop(
-                                          context,
-                                        )?.manageCustomerReward ==
-                                        true &&
-                                    currentCart(
-                                          context: context,
-                                        ).selectedCustomer !=
-                                        null &&
-                                    currentCart(
-                                          context: context,
-                                        ).cartItemTypeIndex !=
-                                        3,
-                                child: Column(
+                                ),
+
+                                Column(
                                   children: [
                                     SizedBox(height: 5),
                                     Row(
@@ -832,7 +763,7 @@ class _MakeSalesMobileTwoState
                                                         .fontSize,
                                                 // fontWeight: FontWeight.bold,
                                               ),
-                                              'Cashback:',
+                                              'VAT',
                                             ),
                                             Text(
                                               style: TextStyle(
@@ -846,7 +777,7 @@ class _MakeSalesMobileTwoState
                                                         .bold,
                                                 // fontWeight: FontWeight.bold,
                                               ),
-                                              ' (${returnShopProvider().userShop()?.customerPercentageReward ?? 0}%)',
+                                              ' (${returnShopProvider().getVat()}%)',
                                             ),
                                           ],
                                         ),
@@ -861,320 +792,403 @@ class _MakeSalesMobileTwoState
                                           formatMoney(
                                             returnSalesProviderContext(
                                               context,
-                                            ).calcCashBackReward(),
+                                            ).calcVatAmount(),
                                             context,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 5),
                                   ],
                                 ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    'Total',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    formatMoneyMid(
-                                      amount:
-                                          returnSalesProviderContext(
+                                Visibility(
+                                  visible:
+                                      GeneralSettingsAuthAction()
+                                          .manageCustomersAccountAndPoints(
+                                            context: null,
+                                          ) &&
+                                      shop(
                                             context,
-                                          ).calcFinalTotal(),
-                                      context: context,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Visibility(
-                        visible:
-                            returnSalesProviderContext(
-                                  context,
-                                )
-                                .currentCart()
-                                .cartItems
-                                .isNotEmpty,
-                        child: MainButtonP(
-                          themeProvider: theme,
-                          action: () {
-                            if (returnSalesProvider()
-                                    .currentCart()
-                                    .cartItemTypeIndex ==
-                                4) {
-                              saveDraftAction(context);
-                              return;
-                            }
-                            BuildContext safeContext =
-                                context;
-                            if ((returnSalesProvider()
-                                            .currentCart()
-                                            .cartItemTypeIndex ==
-                                        2 ||
-                                    returnSalesProvider()
-                                            .currentCart()
-                                            .cartItemTypeIndex ==
-                                        3) &&
-                                returnSalesProvider()
-                                        .currentCart()
-                                        .selectedCustomerName ==
-                                    null) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return InfoAlert(
-                                    theme: theme,
-                                    message:
-                                        'You need to select a Customer before you can create an invoice.',
-                                    title:
-                                        'Customer not Set',
-                                  );
-                                },
-                              );
-                            } else if (_paymentError() != null) {
-                              showDialog(
-                                context: context,
-                                builder: (erroContext) {
-                                  return InfoAlert(
-                                    theme: theme,
-                                    message:
-                                        _paymentError()!,
-                                    title:
-                                        'Check Payment',
-                                  );
-                                },
-                              );
-                            } else if (returnSalesProvider()
-                                    .checkoutStockConflict() !=
-                                null) {
-                              showDialog(
-                                context: context,
-                                builder: (errorContext) {
-                                  return InfoAlert(
-                                    theme: theme,
-                                    message:
-                                        returnSalesProvider()
-                                            .checkoutStockConflict()!,
-                                    title: 'Not Enough Stock',
-                                  );
-                                },
-                              );
-                            } else {
-                              showDialog(
-                                context: safeContext,
-                                builder: (_) {
-                                  return ConfirmationAlert(
-                                    theme: theme,
-                                    message:
-                                        returnSalesProvider()
-                                                .currentCart()
-                                                .invoiceUuidEdit !=
-                                            null
-                                            ? "You are about to update this Invoice, are you sure you want to Proceed?"
-                                            : returnSalesProvider()
-                                                    .currentCart()
-                                                    .orderUuidEdit !=
-                                                null
-                                            ? "You are about to update this Order, are you sure you want to Proceed?"
-                                            : returnSalesProvider()
-                                                .currentCart()
-                                                .isReceiptEdit
-                                            ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
-                                            : returnSalesProvider()
-                                                    .currentCart()
-                                                    .cartItemTypeIndex ==
-                                                2
-                                            ? 'You are about to record a Sale on Credit, are you sure you want to proceed?'
-                                            : 'You are about to record a Sale, are you sure you want to proceed?',
-                                    title:
-                                        returnSalesProvider()
-                                                .currentCart()
-                                                .invoiceUuidEdit !=
-                                            null
-                                            ? 'Update Invoice?'
-                                            : returnSalesProvider()
-                                                    .currentCart()
-                                                    .orderUuidEdit !=
-                                                null
-                                            ? 'Update Order?'
-                                            : returnSalesProvider()
-                                                .currentCart()
-                                                .isReceiptEdit
-                                            ? 'Update Receipt?'
-                                            : returnSalesProvider()
-                                                    .currentCart()
-                                                    .cartItemTypeIndex ==
-                                                2
-                                            ? 'Sell on Credit?'
-                                            : 'Are you sure?',
-                                    action: () async {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      if (safeContext
-                                          .mounted) {
-                                        Navigator.of(
-                                          safeContext,
-                                        ).pop();
-                                      }
-                                      returnSalesProvider()
-                                          .setComment(
-                                            comment:
-                                                commentController
-                                                    .text,
-                                          );
-                                      // Captured before checkout clears the cart.
-                                      final draftUuid =
-                                          returnSalesProvider()
-                                              .currentCart()
-                                              .draftUuid;
-                                      var res = await returnSalesProvider().checkoutMain(
-                                        payments: _resolvePayments(),
-                                        context: context,
-                                        salesCartItem:
-                                            returnSalesProvider()
-                                                .currentCart(),
-                                        shopId:
-                                            returnShopProvider()
-                                                .userShop()!
-                                                .shopId!,
-
-                                        partPayment:
-                                            double.tryParse(
-                                              widget
-                                                  .partPaymentController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ),
-                                      );
-                                      if (res != null) {
-                                        await returnDraftsProvider()
-                                            .completeDraft(
-                                              draftUuid,
-                                            );
-                                      }
-
-                                      setState(() {
-                                        isLoading = false;
-                                        showSuccess = true;
-                                      });
-
-                                      await Future.delayed(
-                                        Duration(
-                                          seconds: 3,
-                                        ),
-                                        () {},
-                                      );
-                                      if (context.mounted) {
-                                        if (res == null) {
-                                          showDialog(
+                                          )?.manageCustomerReward ==
+                                          true &&
+                                      currentCart(
                                             context:
                                                 context,
-                                            builder: (
+                                          ).selectedCustomer !=
+                                          null &&
+                                      currentCart(
+                                            context:
+                                                context,
+                                          ).cartItemTypeIndex !=
+                                          3,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 5),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  // fontWeight: FontWeight.bold,
+                                                ),
+                                                'Cashback:',
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  // fontWeight: FontWeight.bold,
+                                                ),
+                                                ' (${returnShopProvider().userShop()?.customerPercentageReward ?? 0}%)',
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                            ),
+                                            formatMoney(
+                                              returnSalesProviderContext(
+                                                context,
+                                              ).calcCashBackReward(),
                                               context,
-                                            ) {
-                                              return InfoAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'An Error occoured while processing this sale. Please try again later.',
-                                                title:
-                                                    'Failed Sale!',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 5),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Total',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      formatMoneyMid(
+                                        amount:
+                                            returnSalesProviderContext(
+                                              context,
+                                            ).calcFinalTotal(),
+                                        context: context,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Visibility(
+                          visible:
+                              returnSalesProviderContext(
+                                    context,
+                                  )
+                                  .currentCart()
+                                  .cartItems
+                                  .isNotEmpty,
+                          child: MainButtonP(
+                            themeProvider: theme,
+                            action: () {
+                              if (returnSalesProvider()
+                                      .currentCart()
+                                      .cartItemTypeIndex ==
+                                  4) {
+                                saveDraftAction(context);
+                                return;
+                              }
+                              BuildContext safeContext =
+                                  context;
+                              if ((returnSalesProvider()
+                                              .currentCart()
+                                              .cartItemTypeIndex ==
+                                          2 ||
+                                      returnSalesProvider()
+                                              .currentCart()
+                                              .cartItemTypeIndex ==
+                                          3) &&
+                                  returnSalesProvider()
+                                          .currentCart()
+                                          .selectedCustomerName ==
+                                      null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          'You need to select a Customer before you can create an invoice.',
+                                      title:
+                                          'Customer not Set',
+                                    );
+                                  },
+                                );
+                              } else if (_paymentError() !=
+                                  null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (erroContext) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          _paymentError()!,
+                                      title:
+                                          'Check Payment',
+                                    );
+                                  },
+                                );
+                              } else if (returnSalesProvider()
+                                      .checkoutStockConflict() !=
+                                  null) {
+                                showDialog(
+                                  context: context,
+                                  builder: (errorContext) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          returnSalesProvider()
+                                              .checkoutStockConflict()!,
+                                      title:
+                                          'Not Enough Stock',
+                                    );
+                                  },
+                                );
+                              } else {
+                                showDialog(
+                                  context: safeContext,
+                                  builder: (_) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          returnSalesProvider()
+                                                      .currentCart()
+                                                      .invoiceUuidEdit !=
+                                                  null
+                                              ? "You are about to update this Invoice, are you sure you want to Proceed?"
+                                              : returnSalesProvider()
+                                                      .currentCart()
+                                                      .orderUuidEdit !=
+                                                  null
+                                              ? "You are about to update this Order, are you sure you want to Proceed?"
+                                              : returnSalesProvider()
+                                                  .currentCart()
+                                                  .isReceiptEdit
+                                              ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
+                                              : returnSalesProvider()
+                                                      .currentCart()
+                                                      .cartItemTypeIndex ==
+                                                  2
+                                              ? 'You are about to record a Sale on Credit, are you sure you want to proceed?'
+                                              : 'You are about to record a Sale, are you sure you want to proceed?',
+                                      title:
+                                          returnSalesProvider()
+                                                      .currentCart()
+                                                      .invoiceUuidEdit !=
+                                                  null
+                                              ? 'Update Invoice?'
+                                              : returnSalesProvider()
+                                                      .currentCart()
+                                                      .orderUuidEdit !=
+                                                  null
+                                              ? 'Update Order?'
+                                              : returnSalesProvider()
+                                                  .currentCart()
+                                                  .isReceiptEdit
+                                              ? 'Update Receipt?'
+                                              : returnSalesProvider()
+                                                      .currentCart()
+                                                      .cartItemTypeIndex ==
+                                                  2
+                                              ? 'Sell on Credit?'
+                                              : 'Are you sure?',
+                                      action: () async {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        if (safeContext
+                                            .mounted) {
+                                          Navigator.of(
+                                            safeContext,
+                                          ).pop();
+                                        }
+                                        returnSalesProvider()
+                                            .setComment(
+                                              comment:
+                                                  commentController
+                                                      .text,
+                                            );
+                                        // Captured before checkout clears the cart.
+                                        final draftUuid =
+                                            returnSalesProvider()
+                                                .currentCart()
+                                                .draftUuid;
+                                        var res = await returnSalesProvider().checkoutMain(
+                                          payments:
+                                              _resolvePayments(),
+                                          context: context,
+                                          salesCartItem:
+                                              returnSalesProvider()
+                                                  .currentCart(),
+                                          shopId:
+                                              returnShopProvider()
+                                                  .userShop()!
+                                                  .shopId!,
+
+                                          partPayment:
+                                              double.tryParse(
+                                                widget
+                                                    .partPaymentController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ),
+                                        );
+                                        if (res != null) {
+                                          await returnDraftsProvider()
+                                              .completeDraft(
+                                                draftUuid,
                                               );
-                                            },
-                                          );
-                                        } else {
-                                          Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
+                                        }
+
+                                        setState(() {
+                                          isLoading = false;
+                                          showSuccess =
+                                              true;
+                                        });
+
+                                        await Future.delayed(
+                                          Duration(
+                                            seconds: 3,
+                                          ),
+                                          () {},
+                                        );
+                                        if (context
+                                            .mounted) {
+                                          if (res == null) {
+                                            showDialog(
+                                              context:
+                                                  context,
                                               builder: (
                                                 context,
                                               ) {
-                                                return ReceiptPage(
-                                                  response:
-                                                      res,
-                                                  isMain:
-                                                      true,
+                                                return InfoAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'An Error occoured while processing this sale. Please try again later.',
+                                                  title:
+                                                      'Failed Sale!',
                                                 );
                                               },
-                                            ),
-                                            (route) =>
-                                                false,
-                                          );
+                                            );
+                                          } else {
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ReceiptPage(
+                                                    response:
+                                                        res,
+                                                    isMain:
+                                                        true,
+                                                  );
+                                                },
+                                              ),
+                                              (route) =>
+                                                  false,
+                                            );
+                                          }
                                         }
-                                      }
-                                      setState(() {
-                                        showSuccess = false;
-                                      });
-                                    },
-                                  );
-                                },
-                              );
-                            }
-                          },
-                          text:
-                              currentCart(
-                                        context: context,
-                                      ).cartItemTypeIndex ==
-                                      4
-                                  ? 'Save Draft'
-                                  : returnSalesProviderContext(
-                                        context,
-                                      )
-                                      .currentCart()
-                                      .invoiceUuidEdit !=
-                                  null
-                                  ? 'Update Invoice'
-                                  : returnSalesProviderContext(
-                                        context,
-                                      )
-                                      .currentCart()
-                                      .orderUuidEdit !=
-                                  null
-                                  ? 'Update Order'
-                                  : returnSalesProviderContext(
-                                        context,
-                                      )
-                                      .currentCart()
-                                      .isReceiptEdit
-                                  ? 'Update Receipt'
-                                  : 'Check Out',
+                                        setState(() {
+                                          showSuccess =
+                                              false;
+                                        });
+                                      },
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                            text:
+                                currentCart(
+                                          context: context,
+                                        ).cartItemTypeIndex ==
+                                        4
+                                    ? 'Save Draft'
+                                    : returnSalesProviderContext(
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .invoiceUuidEdit !=
+                                        null
+                                    ? 'Update Invoice'
+                                    : returnSalesProviderContext(
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .orderUuidEdit !=
+                                        null
+                                    ? 'Update Order'
+                                    : returnSalesProviderContext(
+                                          context,
+                                        )
+                                        .currentCart()
+                                        .isReceiptEdit
+                                    ? 'Update Receipt'
+                                    : 'Check Out',
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                    ],
+                        SizedBox(height: 25),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

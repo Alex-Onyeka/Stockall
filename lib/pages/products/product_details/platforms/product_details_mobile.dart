@@ -85,8 +85,9 @@ class _ProductDetailsMobileState extends State<ProductDetailsMobile> {
               title: 'Details',
               widget: ProductDetailsMoreWidget(productUuid: product.uuid ?? ''),
             ),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: [
                   Expanded(
@@ -470,6 +471,7 @@ class _ProductDetailsMobileState extends State<ProductDetailsMobile> {
                 ],
               ),
             ),
+          ),
           ),
           Visibility(
             visible: isLoading,

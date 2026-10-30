@@ -23,11 +23,13 @@ class InfoAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 0,
-      ), // 🔧 Control outer padding
+    final isMobile = screenWidth(context) < mobileScreen;
+    return SafeArea(
+      child: AlertDialog(
+        insetPadding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 12 : 20,
+          vertical: isMobile ? 12 : 20,
+        ),
       contentPadding: EdgeInsets.all(15),
       backgroundColor: Colors.white,
       content: Padding(
@@ -170,6 +172,7 @@ class InfoAlert extends StatelessWidget {
             SizedBox(height: 10),
           ],
         ),
+      ),
       ),
     );
   }

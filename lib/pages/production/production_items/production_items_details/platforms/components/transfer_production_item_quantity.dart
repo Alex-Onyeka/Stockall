@@ -59,27 +59,31 @@ class _TransferProductionItemQuantityWidgetState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    final isMobile = screenWidth(context) < mobileScreen;
     return Scaffold(
-      body: Center(
-        child: GestureDetector(
-          onTap:
-              () =>
-                  FocusManager.instance.primaryFocus
-                      ?.unfocus(),
-          child: Container(
-            decoration: BoxDecoration(color: Colors.white),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20.0,
-                top: 40,
-                right: 20,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(30),
-                    margin: EdgeInsets.only(bottom: 100),
+      body: SafeArea(
+        child: Center(
+          child: GestureDetector(
+            onTap:
+                () =>
+                    FocusManager.instance.primaryFocus
+                        ?.unfocus(),
+            child: SingleChildScrollView(
+              child: Container(
+                decoration: const BoxDecoration(color: Colors.white),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 20.0,
+                    top: isMobile ? 10 : 40,
+                    right: 20,
+                    bottom: isMobile ? 20 : 0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(isMobile ? 20 : 30),
+                        margin: EdgeInsets.only(bottom: isMobile ? 20 : 100),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(
@@ -366,6 +370,8 @@ class _TransferProductionItemQuantityWidgetState
             ),
           ),
         ),
+        ),
+      ),
       ),
     );
   }
@@ -523,7 +529,7 @@ void selectDepartmentProductionItems({
                 },
                 widget: SizedBox(
                   height:
-                      screenHeight(statefulContext) - 270,
+                      screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -949,7 +955,7 @@ void selectItemInADepartmentsProduction({
                 },
                 widget: SizedBox(
                   height:
-                      screenHeight(statefulContext) - 270,
+                      screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
                   child: Column(
                     children: [
                       Row(
@@ -1206,7 +1212,7 @@ void selectShopsProductionItems({
               }
             },
             widget: SizedBox(
-              height: screenHeight(statefulContext) - 270,
+              height: screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -1615,7 +1621,7 @@ void selectItemInAShopProduction({
               }
             },
             widget: SizedBox(
-              height: screenHeight(statefulContext) - 270,
+              height: screenWidth(statefulContext) < mobileScreen ? (screenHeight(statefulContext) * 0.45).clamp(180.0, 420.0) : (screenHeight(statefulContext) - 270),
               child: Column(
                 children: [
                   Row(

@@ -163,8 +163,9 @@ class _ProductionItemsDetailsMobileState
                 ),
               ),
             ),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: [
                   Expanded(
@@ -506,6 +507,7 @@ class _ProductionItemsDetailsMobileState
                 ],
               ),
             ),
+          ),
           ),
           Visibility(
             visible: isLoading,

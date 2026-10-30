@@ -3,6 +3,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 
@@ -36,7 +37,7 @@ class ClearTotalCacheWidget extends StatelessWidget {
                         return ConfirmationAlert(
                           theme: theme,
                           message:
-                              'You are about to Clear Your entire Locally Stored Data. You will 1212 all the data Business Records that has not been backed up in the cloud. This Action can not be reversed. Are you sure you want to proceed?',
+                              'You are about to Clear Your entire Locally Stored Data. You will lose all the business records that have not been backed up in the cloud. This action cannot be reversed. Are you sure you want to proceed?',
                           title: 'Clear Local Records?',
                           action: () async {
                             Navigator.of(
@@ -54,12 +55,17 @@ class ClearTotalCacheWidget extends StatelessWidget {
                     );
                   }
                 },
-                widget: SizedBox(
-                  height: screenHeight(context) - 280,
+                widget: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: screenWidth(context) < mobileScreen
+                        ? (screenHeight(context) * 0.45)
+                        : (screenHeight(context) - 280),
+                  ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Divider(color: Colors.grey.shade300),
-                      Expanded(
+                      Flexible(
                         child: SingleChildScrollView(
                           child: Column(
                             spacing: 5,
@@ -69,7 +75,7 @@ class ClearTotalCacheWidget extends StatelessWidget {
                                 ) {
                                   return Padding(
                                     padding:
-                                        EdgeInsetsGeometry.symmetric(
+                                        const EdgeInsets.symmetric(
                                           vertical: 10,
                                           horizontal: 10,
                                         ),
@@ -84,10 +90,10 @@ class ClearTotalCacheWidget extends StatelessWidget {
                                           children: [
                                             Container(
                                               padding:
-                                                  EdgeInsets.all(
+                                                  const EdgeInsets.all(
                                                     3,
                                                   ),
-                                              decoration: BoxDecoration(
+                                              decoration: const BoxDecoration(
                                                 shape:
                                                     BoxShape
                                                         .circle,

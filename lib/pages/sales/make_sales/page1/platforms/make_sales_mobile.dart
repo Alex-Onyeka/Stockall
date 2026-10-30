@@ -1081,8 +1081,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               ),
             ),
           ),
-          body: Stack(
-            children: [
+          body: SafeArea(
+            child: Stack(
+              children: [
               Builder(
                 builder: (context) {
                   if (products.isEmpty &&
@@ -2714,7 +2715,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 'Proceed to Check Out',
                                           ),
                                           SizedBox(
-                                            height: 10,
+                                            height: 20,
                                           ),
                                         ],
                                       ),
@@ -2823,6 +2824,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

@@ -772,8 +772,9 @@ class _AddProductMobileState
               ],
             ),
           ),
-          body: Stack(
-            children: [
+          body: SafeArea(
+            child: Stack(
+              children: [
               Column(
                 children: [
                   Expanded(
@@ -2122,6 +2123,7 @@ class _AddProductMobileState
               ),
             ],
           ),
+        ),
         ),
 
         Visibility(
