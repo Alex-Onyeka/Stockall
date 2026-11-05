@@ -461,88 +461,65 @@ class _PurchasePageMobileState
                                     'Edit',
                                   ),
                                 ),
-                                // PopupMenuItem(
-                                //   enabled: !kIsWeb,
-                                //   height: 35,
-                                //   onTap: () {
-                                //     showDialog(
-                                //       context: context,
-                                //       builder: (
-                                //         confirmDialog,
-                                //       ) {
-                                //         return ConfirmationAlert(
-                                //           theme: theme,
-                                //           message:
-                                //               'You are about to Print This Purchase Receipt. Are you sure you want to Proceed?',
-                                //           title:
-                                //               'Print Purchase Receipt',
-                                //           action: () async {
-                                //             setState(() {
-                                //               isPrintLoading =
-                                //                   true;
-                                //             });
-                                //             Navigator.of(
-                                //               confirmDialog,
-                                //             ).pop();
-                                //             if (kIsWeb) {
-                                //               downloadPdfWebRollPurchase(
-                                //                 purchase:
-                                //                     purchase,
-                                //                 filename:
-                                //                     'Stockall_Purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                //                 context:
-                                //                     context,
-                                //                 records:
-                                //                     saleRecords,
-                                //                 shop:
-                                //                     returnShopProvider()
-                                //                         .userShop()!,
-                                //                 printType:
-                                //                     returnShopProvider()
-                                //                         .userShop()!
-                                //                         .printType!,
-                                //               );
-                                //             } else {
-                                //               await generateAndPreviewPdfRollPurchase(
-                                //                 purchase:
-                                //                     purchase,
-                                //                 printerType:
-                                //                     returnShopProvider()
-                                //                         .userShop()!
-                                //                         .printType ??
-                                //                     1,
-                                //                 context:
-                                //                     context,
-                                //                 records:
-                                //                     saleRecords,
-
-                                //                 shop:
-                                //                     returnShopProvider()
-                                //                         .userShop()!,
-                                //               );
-                                //             }
-                                //             setState(() {
-                                //               isPrintLoading =
-                                //                   false;
-                                //             });
-                                //           },
-                                //         );
-                                //       },
-                                //     );
-                                //   },
-                                //   child: Text(
-                                //     style: TextStyle(
-                                //       fontSize:
-                                //           theme
-                                //               .mobileTexts
-                                //               .b3
-                                //               .fontSize,
-                                //       fontWeight:
-                                //           FontWeight.bold,
-                                //     ),
-                                //     'Print',
-                                //   ),
-                                // ),
+                                PopupMenuItem(
+                                  enabled: !kIsWeb,
+                                  height: 35,
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (
+                                        confirmDialog,
+                                      ) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              'You are about to Print This Purchase Receipt. Are you sure you want to Proceed?',
+                                          title:
+                                              'Print Purchase Receipt',
+                                          action: () async {
+                                            setState(() {
+                                              isPrintLoading =
+                                                  true;
+                                            });
+                                            Navigator.of(
+                                              confirmDialog,
+                                            ).pop();
+                                            // The POS printer, as on desktop.
+                                            await generateAndPreviewPdfRollPurchase(
+                                              purchase: purchase,
+                                              printerType:
+                                                  returnShopProvider()
+                                                      .userShop()!
+                                                      .printType ??
+                                                  1,
+                                              context: context,
+                                              records: saleRecords,
+                                              shop:
+                                                  returnShopProvider()
+                                                      .userShop()!,
+                                            );
+                                            setState(() {
+                                              isPrintLoading =
+                                                  false;
+                                            });
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Print',
+                                  ),
+                                ),
                                 PopupMenuItem(
                                   height: 35,
                                   onTap: () {

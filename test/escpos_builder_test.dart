@@ -125,6 +125,11 @@ void main() {
       expect(escPosSafe('€5 ₵5 ₹5 ₺5'), 'EUR5 GHS5 Rs5 TL5');
     });
 
+    test('writes area and volume units without superscripts', () {
+      expect(escPosSafe('6.6 M²'), '6.6 M2');
+      expect(escPosSafe('2 m³'), '2 m3');
+    });
+
     test('folds accents and replaces unknown characters', () {
       expect(escPosSafe('Café Crème'), 'Cafe Creme');
       expect(escPosSafe('Rice 漢😀'), 'Rice ??');
@@ -137,6 +142,18 @@ void main() {
       b.columns([EscCol('Jollof é', flex: 6), EscCol('₦500')]);
 
       expect(_allBytes(b).every((byte) => byte < 0x80), isTrue);
+    });
+  });
+
+  group('cut', () {
+    test('feeds to the cutter and cuts with GS V 66 0', () {
+      final b = EscPosBuilder(paperDots: _dots80);
+      b.text('Total');
+      b.cut();
+
+      final bytes = _allBytes(b);
+      expect(bytes.sublist(bytes.length - 4), [0x1D, 0x56, 0x42, 0x00]);
+      expect(b.preview, 'Total\n[cut]\n');
     });
   });
 

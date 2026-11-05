@@ -280,38 +280,9 @@ class _InvoicePageDesktopState
                                     Navigator.of(
                                       confirmDialog,
                                     ).pop();
-                                    if (kIsWeb) {
-                                      downloadPdfWebRollInvoice(
-                                        invoice: invoice,
-                                        staffName:
-                                            invoice
-                                                .staffName,
-                                        filename:
-                                            'downloaded_invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                        context: context,
-                                        receipts:
-                                            returnReceiptProviderSingle()
-                                                .receipts
-                                                .where(
-                                                  (rec) =>
-                                                      rec.invoiceUuid ==
-                                                      widget
-                                                          .checkoutResponse
-                                                          .invoice
-                                                          ?.uuid,
-                                                )
-                                                .toList(),
-                                        records:
-                                            saleRecords,
-                                        shop:
-                                            returnShopProvider()
-                                                .userShop()!,
-                                        printType:
-                                            returnShopProvider()
-                                                .userShop()!
-                                                .printType!,
-                                      );
-                                    } else if (usesBluetoothPrint()) {
+                                    // One path: the POS printer on desktop,
+                                    // the system print dialog (once) on web.
+                                    if (usesBluetoothPrint()) {
                                       scanBluetoothPrintersinvoice(
                                         invoice: invoice,
                                         receipts:

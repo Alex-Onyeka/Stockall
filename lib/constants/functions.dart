@@ -12,6 +12,12 @@ import 'package:stockall/constants/subscription/branding_watermark.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
+import 'package:stockall/services/documents/document_downloads.dart';
+import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart';
+import 'package:stockall/services/documents/pdf_document_kit.dart'
+    show docPageTheme;
+import 'package:stockall/services/documents/document_model.dart'
+    show DocType;
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf/pdf.dart';
@@ -397,34 +403,48 @@ Future<void> generateAndPreviewPdf({
         context,
         listen: false,
       ).toggleIsLoading(true);
-      final Uint8List bytes = await _buildPdf(
-        receipt,
-        staffName,
-        records,
-        shop,
-        context,
-      );
-      var receiptId = receipt.uuid!.toString().substring(
-        0,
-        5,
-      );
-      var name =
-          "downloaded_receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
-
-      if (Platform.isAndroid || Platform.isIOS) {
-        await savePdfMobile(bytes, name);
-      } else {
-        await mainLocalLog('Printing For Desktop');
-        await savePdfDesktop(bytes, name);
-      }
-
-      // 2. Open native print/share/save dialog (cross-platform)
-      // await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
-      if (context.mounted) {
-        returnReceiptProvider(
+      try {
+        final Uint8List bytes = await _buildPdf(
+          receipt,
+          staffName,
+          records,
+          shop,
           context,
-          listen: false,
-        ).toggleIsLoading(false);
+        );
+        final now = DateTime.now();
+
+        // dart:io Platform is not available on web.
+        if (kIsWeb) {
+          downloadPdfBytesWeb(
+            bytes,
+            documentWebDownloadName(DocType.receipt, now),
+          );
+          return;
+        }
+
+        var name = documentDownloadName(
+          DocType.receipt,
+          receipt.uuid,
+          now,
+        );
+
+        if (Platform.isAndroid || Platform.isIOS) {
+          await savePdfMobile(bytes, name);
+        } else {
+          await mainLocalLog('Printing For Desktop');
+          await savePdfDesktop(bytes, name);
+        }
+      } catch (e, stackTrace) {
+        await mainLocalLog(
+          '❌ Error downloading receipt PDF: $e\n$stackTrace',
+        );
+      } finally {
+        if (context.mounted) {
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
       }
     },
   );
@@ -467,23 +487,39 @@ Future<void> generateAndPreviewPdfRoll({
         context,
         listen: false,
       ).toggleIsLoading(true);
-      final Uint8List pdfBytes = await _buildPdfRoll(
-        receipt,
-        records,
-        staffName,
-        shop,
-        context,
-        printerType,
-      );
-
-      await Printing.layoutPdf(
-        onLayout: (_) async => pdfBytes,
-      );
-      if (context.mounted) {
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).toggleIsLoading(false);
+      // Straight to the POS printer on mobile and desktop; the system
+      // print dialog on web (lib/services/pos_printing).
+      try {
+        await printRollDocument(
+          context: context,
+          document: receiptDownloadDocument(
+            receipt: receipt,
+            records: records,
+            staffName: staffName,
+            shop: shop,
+            assets: DocShopAssets.current(),
+          ),
+          format: docFormatFor(shop),
+          shopPrintType: printerType,
+          rollPdf:
+              (type) => _buildPdfRoll(
+                receipt,
+                records,
+                staffName,
+                shop,
+                context,
+                type,
+              ),
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog('❌ Error printing receipt: $e\n$stackTrace');
+      } finally {
+        if (context.mounted) {
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
       }
     },
   );
@@ -509,1266 +545,24 @@ Future<Uint8List> buildReceiptRollPdf({
   );
 }
 
+// A4 receipt from the shared document builder (lib/services/documents).
 Future<Uint8List> _buildPdf(
   TempMainReceipt receipt,
   String staffName,
   List<TempProductSaleRecord> records,
   TempShopClass shop,
   BuildContext context,
-) async {
-  final pdf = pw.Document();
-
-  // Load Plus Jakarta Sans from assets
-  final fontRegular = pw.Font.ttf(
-    await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Regular.ttf',
+) {
+  return salesDocumentA4Pdf(
+    receiptDownloadDocument(
+      receipt: receipt,
+      records: records,
+      staffName: staffName,
+      shop: shop,
+      assets: DocShopAssets.current(),
     ),
+    shop,
   );
-  final fontBold = pw.Font.ttf(
-    await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Bold.ttf',
-    ),
-  );
-
-  pdf.addPage(
-    pw.MultiPage(
-      pageFormat: PdfPageFormat.a5,
-      margin: const pw.EdgeInsets.only(
-        left: 30,
-        top: 30,
-        right: 30,
-        bottom: 10,
-      ),
-      // 🔹 HEADER
-      header:
-          (pw.Context pdfcontext) => pw.Column(
-            crossAxisAlignment:
-                pw.CrossAxisAlignment.center,
-            children: [
-              pw.Row(
-                mainAxisAlignment:
-                    pw.MainAxisAlignment.center,
-                children: [
-                  pw.Column(
-                    children: [
-                      pw.Column(
-                        children: [
-                          pw.Builder(
-                            builder: (
-                              pw.Context pdfContext,
-                            ) {
-                              if (returnShopProvider()
-                                      .selectedLogo !=
-                                  null) {
-                                return pw.Container(
-                                  height:
-                                      (returnShopProvider()
-                                                      .imageWidth ??
-                                                  0) >
-                                              (2 *
-                                                  (returnShopProvider()
-                                                          .imageHeight ??
-                                                      0))
-                                          ? 35
-                                          : 80,
-                                  width: 200,
-                                  child: pw.Image(
-                                    pw.MemoryImage(
-                                      returnShopProvider()
-                                              .selectedLogo ??
-                                          Uint8List(12),
-                                    ),
-                                    fit: pw.BoxFit.contain,
-                                  ),
-                                );
-                              } else {
-                                return pw.Container();
-                              }
-                            },
-                          ),
-                          pw.SizedBox(height: 1),
-                          pw.Row(
-                            mainAxisAlignment:
-                                pw.MainAxisAlignment.center,
-                            children: [
-                              pw.Text(
-                                textAlign:
-                                    pw.TextAlign.center,
-                                "#Shop Id: ${shopRef()}",
-                                style: pw.TextStyle(
-                                  font: fontBold,
-                                  fontSize: 9,
-                                ),
-                                // maxLines: 2,
-                              ),
-                            ],
-                          ),
-                          pw.Builder(
-                            builder: (
-                              pw.Context pdfContext,
-                            ) {
-                              if (shop.showShopName!) {
-                                return pw.Column(
-                                  children: [
-                                    pw.SizedBox(height: 4),
-                                    pw.Container(
-                                      width:
-                                          PdfPageFormat
-                                              .a5
-                                              .availableWidth -
-                                          60, // match margins
-                                      alignment:
-                                          pw
-                                              .Alignment
-                                              .center,
-                                      child: pw.Text(
-                                        shop.name,
-                                        textAlign:
-                                            pw
-                                                .TextAlign
-                                                .center,
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return pw.Container();
-                              }
-                            },
-                          ),
-
-                          pw.Builder(
-                            builder: (
-                              pw.Context pdfContext,
-                            ) {
-                              if (shop.showEmail! &&
-                                  shop.email != null) {
-                                return pw.Column(
-                                  children: [
-                                    pw.SizedBox(height: 4),
-                                    pw.Container(
-                                      width:
-                                          PdfPageFormat
-                                              .a5
-                                              .availableWidth -
-                                          60,
-                                      alignment:
-                                          pw
-                                              .Alignment
-                                              .center,
-                                      child: pw.Text(
-                                        shop.email ?? '',
-                                        textAlign:
-                                            pw
-                                                .TextAlign
-                                                .center,
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return pw.Container();
-                              }
-                            },
-                          ),
-
-                          pw.Builder(
-                            builder: (
-                              pw.Context pdfContext,
-                            ) {
-                              if (shop.showPhone!) {
-                                return pw.Column(
-                                  children: [
-                                    pw.SizedBox(height: 1),
-
-                                    pw.Text(
-                                      textAlign:
-                                          pw
-                                              .TextAlign
-                                              .center,
-                                      shop.phoneNumber ??
-                                          '',
-                                      style: pw.TextStyle(
-                                        font: fontRegular,
-                                        fontSize:
-                                            shop.phoneNumber ==
-                                                    null
-                                                ? 1
-                                                : 9,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return pw.Container();
-                              }
-                            },
-                          ),
-
-                          pw.Builder(
-                            builder: (
-                              pw.Context pdfContext,
-                            ) {
-                              if (shop.showAddress!) {
-                                return pw.Column(
-                                  children: [
-                                    pw.SizedBox(height: 1),
-                                    pw.Container(
-                                      width:
-                                          PdfPageFormat
-                                              .a5
-                                              .availableWidth -
-                                          60,
-                                      alignment:
-                                          pw
-                                              .Alignment
-                                              .center,
-                                      child: pw.Text(
-                                        shop.shopAddress ??
-                                            'Address Not Set',
-                                        textAlign:
-                                            pw
-                                                .TextAlign
-                                                .center,
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return pw.Container();
-                              }
-                            },
-                          ),
-
-                          pw.Builder(
-                            builder: (
-                              pw.Context pdfContext,
-                            ) {
-                              if (shop.showFacebookTop!) {
-                                return pw.Column(
-                                  children: [
-                                    pw.SizedBox(height: 1),
-                                    pw.Container(
-                                      width:
-                                          PdfPageFormat
-                                              .a5
-                                              .availableWidth -
-                                          60,
-                                      alignment:
-                                          pw
-                                              .Alignment
-                                              .center,
-                                      child: pw.Row(
-                                        mainAxisAlignment:
-                                            pw
-                                                .MainAxisAlignment
-                                                .center,
-                                        children: [
-                                          pw.Text(
-                                            'Facebook: ',
-                                            textAlign:
-                                                pw
-                                                    .TextAlign
-                                                    .center,
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontBold,
-                                              fontSize: 7,
-                                            ),
-                                          ),
-                                          pw.Text(
-                                            shop.faceBookHandle ??
-                                                'Facebook Not Set',
-                                            textAlign:
-                                                pw
-                                                    .TextAlign
-                                                    .center,
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize: 9,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return pw.Container();
-                              }
-                            },
-                          ),
-
-                          pw.Builder(
-                            builder: (
-                              pw.Context pdfContext,
-                            ) {
-                              if (shop.showInstaTop!) {
-                                return pw.Column(
-                                  children: [
-                                    pw.SizedBox(height: 1),
-                                    pw.Container(
-                                      width:
-                                          PdfPageFormat
-                                              .a5
-                                              .availableWidth -
-                                          60,
-                                      alignment:
-                                          pw
-                                              .Alignment
-                                              .center,
-                                      child: pw.Row(
-                                        mainAxisAlignment:
-                                            pw
-                                                .MainAxisAlignment
-                                                .center,
-                                        children: [
-                                          pw.Text(
-                                            'Instagrm: ',
-                                            textAlign:
-                                                pw
-                                                    .TextAlign
-                                                    .center,
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontBold,
-                                              fontSize: 7,
-                                            ),
-                                          ),
-                                          pw.Text(
-                                            shop.instaHandle ??
-                                                'Instagram Not Set',
-                                            textAlign:
-                                                pw
-                                                    .TextAlign
-                                                    .center,
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize: 9,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                return pw.Container();
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              pw.SizedBox(height: 5),
-              pw.Divider(
-                color: PdfColor.fromHex('#D3D3D3'),
-                thickness: 0.5,
-              ),
-            ],
-          ),
-      // 🔹 FOOTER
-      footer:
-          (context) => pw.Column(
-            children: [
-              pw.Divider(),
-              pw.Column(
-                children: [
-                  pw.Padding(
-                    padding: pw.EdgeInsets.only(right: 10),
-                    child: pw.SvgImage(
-                      svg: pw.Barcode.ean13().toSvg(
-                        receipt.barcode ??
-                            returnOnlyDigits(
-                              receipt.uuid ?? '',
-                            ),
-                        width: 110,
-                        height: 30,
-                        fontHeight: 8,
-                        drawText: true,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              pw.SizedBox(height: 5),
-              pw.Align(
-                alignment: pw.Alignment.centerRight,
-                child: pw.Row(
-                  mainAxisAlignment:
-                      pw.MainAxisAlignment.center,
-                  children: [
-                    pw.Text(
-                      '( Page ${context.pageNumber} of ${context.pagesCount} )',
-                      style: pw.TextStyle(
-                        font: fontRegular,
-                        fontSize: 9,
-                      ),
-                    ),
-                    if (shouldShowBrandingWatermark()) ...[
-                      pw.SizedBox(width: 15),
-                      pw.Text(
-                        'Created by $appName Solutions - ( www.stockallapp.com )',
-                        style: pw.TextStyle(
-                          font: fontRegular,
-                          fontSize: 9,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-      build:
-          (pw.Context pdfContext) => [
-            pw.DefaultTextStyle(
-              style: pw.TextStyle(
-                font: fontRegular,
-                fontSize: 12,
-              ),
-              child: pw.Column(
-                crossAxisAlignment:
-                    pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Row(
-                    mainAxisAlignment:
-                        pw.MainAxisAlignment.center,
-                    children: [
-                      pw.Text(
-                        textAlign: pw.TextAlign.center,
-                        'Receipt of Payment',
-                        style: pw.TextStyle(
-                          font: fontRegular,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                  pw.Divider(
-                    color: PdfColor.fromHex('#D3D3D3'),
-                    thickness: 0.5,
-                  ),
-                  pw.SizedBox(height: 5),
-                  pw.Builder(
-                    builder: (context) {
-                      if (shop.showFirst!) {
-                        return pw.Column(
-                          children: [
-                            pw.Row(
-                              mainAxisAlignment:
-                                  pw
-                                      .MainAxisAlignment
-                                      .spaceEvenly,
-                              children: [
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Staff Name:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        staffName,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                pw.Builder(
-                                  builder: (context) {
-                                    if (receipt
-                                            .customerUuid !=
-                                        null) {
-                                      return pw.Expanded(
-                                        child: pw.Column(
-                                          crossAxisAlignment:
-                                              pw
-                                                  .CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontRegular,
-                                                fontSize: 9,
-                                              ),
-                                              'Customer Name:',
-                                            ),
-                                            pw.SizedBox(
-                                              height: 5,
-                                            ),
-                                            pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontBold,
-                                                fontSize:
-                                                    10,
-                                              ),
-                                              receipt.customerName ??
-                                                  'Not Set',
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    } else {
-                                      return pw.Container();
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                            pw.Builder(
-                              builder: (beansContext) {
-                                if (receipt.subStaffName !=
-                                    null) {
-                                  return pw.Column(
-                                    children: [
-                                      pw.SizedBox(
-                                        height: 10,
-                                      ),
-                                      pw.Row(
-                                        mainAxisAlignment:
-                                            pw
-                                                .MainAxisAlignment
-                                                .spaceEvenly,
-                                        children: [
-                                          pw.Expanded(
-                                            child: pw.Column(
-                                              crossAxisAlignment:
-                                                  pw
-                                                      .CrossAxisAlignment
-                                                      .start,
-                                              children: [
-                                                pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontRegular,
-                                                    fontSize:
-                                                        9,
-                                                  ),
-                                                  'Waiter:',
-                                                ),
-                                                pw.SizedBox(
-                                                  height: 5,
-                                                ),
-                                                pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontBold,
-                                                    fontSize:
-                                                        10,
-                                                  ),
-                                                  receipt.subStaffName ??
-                                                      'Not Set',
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          pw.Expanded(
-                                            child: pw.Column(
-                                              crossAxisAlignment:
-                                                  pw
-                                                      .CrossAxisAlignment
-                                                      .start,
-                                              children: [
-                                                pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontRegular,
-                                                    fontSize:
-                                                        9,
-                                                  ),
-                                                  'Receipt Id:',
-                                                ),
-                                                pw.SizedBox(
-                                                  height: 5,
-                                                ),
-                                                pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontBold,
-                                                    fontSize:
-                                                        10,
-                                                  ),
-                                                  receipt.cartName ??
-                                                      'Not Set',
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  return pw.SizedBox();
-                                }
-                              },
-                            ),
-                          ],
-                        );
-                      } else {
-                        return pw.Container();
-                      }
-                    },
-                  ),
-                  pw.Builder(
-                    builder: (pw.Context pdfContext) {
-                      if (shop.showSecond!) {
-                        return pw.Column(
-                          children: [
-                            pw.SizedBox(height: 10),
-                            pw.Row(
-                              mainAxisAlignment:
-                                  pw
-                                      .MainAxisAlignment
-                                      .spaceEvenly,
-                              children: [
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Payment Method:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Builder(
-                                        builder: (
-                                          beansContext,
-                                        ) {
-                                          return pw.Column(
-                                            crossAxisAlignment:
-                                                pw
-                                                    .CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              ...receipt.displayPayments().map(
-                                                (
-                                                  payment,
-                                                ) => pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontRegular,
-                                                    fontSize:
-                                                        8,
-                                                  ),
-                                                  '${payment.method}: ${formatMoneyMid(amount: payment.amount, context: context)}',
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        '#Ticket Id:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        receipt.barcode ??
-                                            returnOnlyDigits(
-                                              receipt.uuid ??
-                                                  '',
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      } else {
-                        return pw.Container();
-                      }
-                    },
-                  ),
-                  pw.Builder(
-                    builder: (pw.Context pdfContext) {
-                      if (shop.showThird!) {
-                        return pw.Column(
-                          children: [
-                            pw.SizedBox(height: 10),
-                            pw.Row(
-                              mainAxisAlignment:
-                                  pw
-                                      .MainAxisAlignment
-                                      .spaceEvenly,
-                              children: [
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Date:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        formatDateTime(
-                                          receipt.createdAt,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Time:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        formatTime(
-                                          receipt.createdAt,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      } else {
-                        return pw.Container();
-                      }
-                    },
-                  ),
-                  pw.Builder(
-                    builder: (pw.Context pdfContext) {
-                      if (receipt.comment != null &&
-                          receipt.comment?.isNotEmpty ==
-                              true) {
-                        return pw.Column(
-                          children: [
-                            pw.SizedBox(height: 10),
-                            pw.Row(
-                              mainAxisAlignment:
-                                  pw
-                                      .MainAxisAlignment
-                                      .spaceEvenly,
-                              children: [
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Comment:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        receipt.comment ??
-                                            'Comment Not Set',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      } else {
-                        return pw.Container();
-                      }
-                    },
-                  ),
-                  pw.SizedBox(height: 5),
-                  pw.Divider(),
-
-                  pw.Row(
-                    mainAxisAlignment:
-                        pw.MainAxisAlignment.spaceBetween,
-                    children: [
-                      pw.Expanded(
-                        flex: 5,
-                        child: pw.Text(
-                          'Items:',
-                          style: pw.TextStyle(
-                            font: fontBold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      pw.Expanded(
-                        flex: 1,
-                        child: pw.Text(
-                          'Qty:',
-                          style: pw.TextStyle(
-                            font: fontRegular,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                      pw.Expanded(
-                        flex: 3,
-                        child: pw.Text(
-                          'Price:',
-                          style: pw.TextStyle(
-                            font: fontRegular,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  pw.SizedBox(height: 5),
-
-                  ...records.map(
-                    (record) => pw.Container(
-                      margin: pw.EdgeInsets.symmetric(
-                        vertical: 3,
-                      ),
-                      padding:
-                          const pw.EdgeInsets.symmetric(
-                            vertical: 6,
-                            horizontal: 5,
-                          ),
-                      /**alpha: 1, red: 0.961, green: 0.961, blue: 0.961 */
-                      decoration: pw.BoxDecoration(
-                        color: PdfColor.fromHex('#EFEFEF'),
-                      ),
-                      child: pw.Row(
-                        mainAxisAlignment:
-                            pw
-                                .MainAxisAlignment
-                                .spaceBetween,
-                        children: [
-                          pw.Expanded(
-                            flex: 5,
-                            child: pw.Text(
-                              style: pw.TextStyle(
-                                fontSize: 10,
-                              ),
-                              '${record.productName}${record.dimensionsLabel()} ${record.wastageNote().isEmpty ? '' : '\n${record.wastageNote()}'}',
-                            ),
-                          ),
-                          pw.Expanded(
-                            flex: 1,
-                            child: pw.Text(
-                              style: pw.TextStyle(
-                                fontSize: 8,
-                              ),
-                              '[ ${formatLargeNumberDouble(record.quantityType == 2 ? record.displayQuantity() : record.getActualQuantity())} ] ',
-                            ),
-                          ),
-                          pw.Expanded(
-                            flex: 3,
-                            child: pw.Column(
-                              crossAxisAlignment:
-                                  pw
-                                      .CrossAxisAlignment
-                                      .start,
-                              children: [
-                                pw.Text(
-                                  style: pw.TextStyle(
-                                    font: fontRegular,
-                                    fontSize: 9,
-                                  ),
-                                  formatMoneyMid(
-                                    amount:
-                                        (receipt.fixedDiscount ==
-                                                        null &&
-                                                    receipt.generalDiscount ==
-                                                        null) &&
-                                                record.discount !=
-                                                    null
-                                            ? ((record.originalCost ??
-                                                    0) -
-                                                (record.discountedAmount ??
-                                                    0))
-                                            : (record
-                                                    .originalCost ??
-                                                0),
-                                    context: context,
-                                  ),
-                                ),
-                                pw.Text(
-                                  style: pw.TextStyle(
-                                    font: fontRegular,
-                                    fontSize: 7,
-                                  ),
-                                  "${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.priceBaseQuantity()), context: context)} per 1",
-                                ),
-                                // pw.Builder(
-                                //   builder: (pdfContext) {
-                                //     if (record.discount !=
-                                //             null &&
-                                //         !record
-                                //             .customPriceSet &&
-                                //         (receipt.fixedDiscount ==
-                                //                 null &&
-                                //             receipt.generalDiscount ==
-                                //                 null)) {
-                                //       return pw.Text(
-                                //         style: pw.TextStyle(
-                                //           font: fontRegular,
-                                //           decoration:
-                                //               pw
-                                //                   .TextDecoration
-                                //                   .lineThrough,
-                                //           fontSize: 8,
-                                //         ),
-                                //         formatMoneyMid(
-                                //           amount:
-                                //               (record.originalCost ??
-                                //                   0),
-                                //           context: context,
-                                //         ),
-                                //       );
-                                //     } else {
-                                //       return pw.Container();
-                                //     }
-                                //   },
-                                // ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  pw.SizedBox(height: 12),
-                  pw.Divider(),
-
-                  pw.Row(
-                    mainAxisAlignment:
-                        pw.MainAxisAlignment.spaceEvenly,
-                    children: [
-                      pw.Expanded(
-                        flex: 2,
-                        child: pw.Text(
-                          style: pw.TextStyle(
-                            font: fontRegular,
-                            fontSize: 8,
-                          ),
-                          'Subtotal:',
-                        ),
-                      ),
-                      pw.Expanded(
-                        flex: 1,
-                        child: pw.Text(
-                          style: pw.TextStyle(
-                            font: fontRegular,
-                            fontSize: 9,
-                          ),
-                          formatMoneyMid(
-                            amount: returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).getOriginalCostReceipt(
-                              receipt,
-                            ),
-                            context: context,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  pw.Builder(
-                    builder: (pdfContext) {
-                      if (receipt.fixedDiscount != null ||
-                          receipt.generalDiscount != null) {
-                        return pw.Column(
-                          children: [
-                            pw.SizedBox(height: 5),
-                            pw.Row(
-                              mainAxisAlignment:
-                                  pw
-                                      .MainAxisAlignment
-                                      .spaceEvenly,
-                              children: [
-                                pw.Expanded(
-                                  flex: 2,
-                                  child: pw.Row(
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 8,
-                                        ),
-                                        'Discount:',
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 8,
-                                        ),
-                                        receipt.generalDiscount !=
-                                                null
-                                            ? " (${receipt.generalDiscount}%)"
-                                            : '',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                pw.Expanded(
-                                  flex: 1,
-                                  child: pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontRegular,
-                                      fontSize: 10,
-                                    ),
-                                    formatMoneyMid(
-                                      amount: returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).getDiscountAmountForReceipt(
-                                        receipt,
-                                      ),
-                                      context: context,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      } else {
-                        return pw.Container();
-                      }
-                    },
-                  ),
-                  pw.SizedBox(height: 5),
-                  pw.Row(
-                    mainAxisAlignment:
-                        pw.MainAxisAlignment.spaceEvenly,
-                    children: [
-                      pw.Expanded(
-                        flex: 2,
-                        child: pw.Row(
-                          children: [
-                            pw.Text(
-                              style: pw.TextStyle(
-                                font: fontRegular,
-                                fontSize: 8,
-                              ),
-                              'VAT:',
-                            ),
-                            pw.Text(
-                              style: pw.TextStyle(
-                                font: fontRegular,
-                                fontSize: 8,
-                              ),
-                              '(${receipt.vat ?? 0}%)',
-                            ),
-                          ],
-                        ),
-                      ),
-                      pw.Expanded(
-                        flex: 1,
-                        child: pw.Text(
-                          style: pw.TextStyle(
-                            font: fontRegular,
-                            fontSize: 10,
-                          ),
-                          formatMoneyMid(
-                            amount: returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).getVATForReceipt(receipt),
-                            context: context,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  pw.SizedBox(height: 5),
-                  pw.Builder(
-                    builder: (pdfContext) {
-                      if (receipt.balance != null) {
-                        return pw.Column(
-                          children: [
-                            pw.Row(
-                              mainAxisAlignment:
-                                  pw
-                                      .MainAxisAlignment
-                                      .spaceEvenly,
-                              children: [
-                                pw.Expanded(
-                                  flex: 2,
-                                  child: pw.Row(
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 8,
-                                        ),
-                                        'Balance:',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                pw.Expanded(
-                                  flex: 1,
-                                  child: pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontRegular,
-                                      fontSize: 10,
-                                    ),
-                                    formatMoneyMid(
-                                      amount:
-                                          (receipt.balance ??
-                                              0),
-                                      context: context,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            pw.SizedBox(height: 5),
-                          ],
-                        );
-                      } else {
-                        return pw.Container();
-                      }
-                    },
-                  ),
-
-                  pw.Row(
-                    mainAxisAlignment:
-                        pw.MainAxisAlignment.spaceEvenly,
-                    children: [
-                      pw.Expanded(
-                        flex: 2,
-                        child: pw.Text(
-                          style: pw.TextStyle(
-                            font: fontRegular,
-                            fontSize: 10,
-                          ),
-                          'Total:',
-                        ),
-                      ),
-                      pw.Expanded(
-                        flex: 1,
-                        child: pw.Text(
-                          style: pw.TextStyle(
-                            font: fontBold,
-                            fontSize: 12,
-                          ),
-                          formatMoneyMid(
-                            amount: returnReceiptProvider(
-                              context,
-                              listen: false,
-                            ).getTotalMainRevenueReceipt(
-                              receipt,
-                            ),
-                            context: context,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            pw.Expanded(child: pw.Spacer()),
-          ],
-    ),
-  );
-
-  return pdf.save();
 }
 
 Future<Uint8List> _buildPdfRoll(
@@ -1799,15 +593,18 @@ Future<Uint8List> _buildPdfRoll(
 
   pdf.addPage(
     pw.Page(
-      pageFormat:
-          printerType == 1
-              ? PdfPageFormat.roll57
-              : PdfPageFormat.roll80,
-      margin: pw.EdgeInsets.only(
-        left: kIsWeb ? 2 : 0,
-        top: 5,
-        right: kIsWeb ? 15 : 0,
-        bottom: 10,
+      // White page, so dark-mode PDF viewers don't show it black.
+      pageTheme: docPageTheme(
+        pageFormat:
+            printerType == 1
+                ? PdfPageFormat.roll57
+                : PdfPageFormat.roll80,
+        margin: pw.EdgeInsets.only(
+          left: kIsWeb ? 2 : 0,
+          top: 5,
+          right: kIsWeb ? 15 : 0,
+          bottom: 10,
+        ),
       ),
 
       // 🔹 HEADER
@@ -3049,28 +1846,7 @@ void downloadPdfWeb({
           returnShopProvider().userShop()!,
           context,
         );
-        final blob = html.Blob([
-          pdfBytes,
-        ], 'application/pdf');
-        final url = html.Url.createObjectUrlFromBlob(blob);
-
-        final anchor =
-            html.AnchorElement(href: url)
-              ..download = filename
-              ..style.display = 'none';
-
-        html.document.body?.append(anchor);
-        anchor.click();
-        anchor.remove();
-
-        html.Url.revokeObjectUrl(url);
-
-        if (context.mounted) {
-          returnReceiptProvider(
-            context,
-            listen: false,
-          ).toggleIsLoading(false);
-        }
+        downloadPdfBytesWeb(pdfBytes, filename);
       } catch (e, stackTrace) {
         await mainLocalLog(
           '❌ Error downloading PDF: $e\n$stackTrace',
@@ -3078,6 +1854,13 @@ void downloadPdfWeb({
         returnErrorLogProvider().createLog(
           error: 'Error downloading PDF: $e\n$stackTrace',
         );
+      } finally {
+        if (context.mounted) {
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
       }
     },
   );

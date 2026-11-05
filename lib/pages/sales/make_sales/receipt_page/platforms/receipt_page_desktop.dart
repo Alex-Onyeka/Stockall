@@ -2477,31 +2477,9 @@ class _ReceiptDetailsContainerState
                                     Navigator.of(
                                       context,
                                     ).pop();
-                                    if (kIsWeb) {
-                                      downloadPdfWebRoll(
-                                        staffName:
-                                            staff?.name ??
-                                            widget
-                                                .mainReceipt
-                                                .staffName ??
-                                            "Not Set",
-                                        filename:
-                                            'downloaded_receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                        context:
-                                            safeContext,
-                                        receipt:
-                                            widget
-                                                .mainReceipt,
-                                        records: records,
-                                        shop:
-                                            returnShopProvider()
-                                                .userShop()!,
-                                        printType:
-                                            returnShopProvider()
-                                                .userShop()!
-                                                .printType!,
-                                      );
-                                    }
+                                    // One path for every platform: the POS
+                                    // printer on mobile and desktop, the
+                                    // system print dialog on web.
                                     if (usesBluetoothPrint()) {
                                       scanBluetoothPrinters(
                                         receipt:

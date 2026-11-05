@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>Stockall uses Bluetooth to print receipts on your POS printer.</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>Stockall uses Bluetooth to print receipts on your POS printer.</string>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>Stockall connects to your network POS printer to print receipts.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>We need your permission to use the camera for barcode scanning</string>
 		<!-- Permissions for saving, printing, sharing PDFs -->

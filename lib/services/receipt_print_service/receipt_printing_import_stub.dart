@@ -2,8 +2,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 Future<bool> sendReceiptToPrinter(
-  Uint8List receiptBytes,
-) async {
+  Uint8List receiptBytes, {
+  String? printerName,
+}) async {
   return true;
 }
 

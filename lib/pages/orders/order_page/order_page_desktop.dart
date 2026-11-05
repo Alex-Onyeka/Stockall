@@ -239,36 +239,7 @@ class _OrderPageDesktopState
                                     Navigator.of(
                                       confirmDialog,
                                     ).pop();
-                                    if (kIsWeb) {
-                                      // downloadPdfWebRollOrder(
-                                      //   order: order,
-                                      //   staffName:
-                                      //       order.staffName,
-                                      //   filename:
-                                      //       'downloaded_order_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                      //   context: context,
-                                      //   receipts:
-                                      //       returnReceiptProviderSingle()
-                                      //           .returnOwnReceiptsByDayOrWeek()
-                                      //           .where(
-                                      //             (rec) =>
-                                      //                 rec.orderUuid ==
-                                      //                 widget
-                                      //                     .checkoutResponse
-                                      //                     .order
-                                      //                     ?.uuid,
-                                      //           )
-                                      //           .toList(),
-                                      //   records: orderItems,
-                                      //   shop:
-                                      //       returnShopProvider()
-                                      //           .userShop()!,
-                                      //   printType:
-                                      //       returnShopProvider()
-                                      //           .userShop()!
-                                      //           .printType!,
-                                      // );
-                                    } else if (usesBluetoothPrint()) {
+                                    if (usesBluetoothPrint()) {
                                       scanBluetoothPrintersOrder(
                                         order: order,
                                         records: orderItems,
@@ -277,7 +248,9 @@ class _OrderPageDesktopState
                                                 .userShop()!,
                                         context: context,
                                       );
-                                    } else if (usesSystemPrintDialog()) {
+                                    } else {
+                                      // POS printer on desktop, the system
+                                      // print dialog on web.
                                       await generateAndPreviewPdfRollOrder(
                                         order: order,
                                         printerType:
@@ -331,67 +304,37 @@ class _OrderPageDesktopState
                                         Navigator.of(
                                           confirmDialog,
                                         ).pop();
-                                        if (kIsWeb) {
-                                          // downloadPdfWebOrder(
-                                          //   order: order,
-                                          //   staffName:
-                                          //       order
-                                          //           .staffName,
-                                          //   filename:
-                                          //       'downloaded_order_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                          //   context:
-                                          //       context,
-                                          //   receipts:
-                                          //       returnReceiptProviderSingle()
-                                          //           .returnOwnReceiptsByDayOrWeek()
-                                          //           .where(
-                                          //             (
-                                          //               rec,
-                                          //             ) =>
-                                          //                 rec.orderUuid ==
-                                          //                 widget.checkoutResponse.order?.uuid,
-                                          //           )
-                                          //           .toList(),
-                                          //   records:
-                                          //       orderItems,
-                                          // );
-                                        }
-                                        if (!kIsWeb) {
-                                          // await generateAndPreviewPdfOrder(
-                                          //   order: order,
-                                          //   staffName:
-                                          //       order
-                                          //           .staffName,
-                                          //   context:
-                                          //       context,
-                                          //   receipts:
-                                          //       returnReceiptProviderSingle()
-                                          //           .returnOwnReceiptsByDayOrWeek()
-                                          //           .where(
-                                          //             (
-                                          //               rec,
-                                          //             ) =>
-                                          //                 rec.orderUuid ==
-                                          //                 widget.checkoutResponse.order?.uuid,
-                                          //           )
-                                          //           .toList(),
-                                          //   records:
-                                          //       orderItems,
-                                          // );
-                                        }
-                                        await Future.delayed(
-                                          Duration(
-                                            seconds: 1,
-                                          ),
-                                        );
+                                        final receipts =
+                                            returnReceiptProviderSingle()
+                                                .receipts
+                                                .where(
+                                                  (rec) =>
+                                                      rec.orderUuid ==
+                                                      order.uuid,
+                                                )
+                                                .toList();
+                                        final downloaded =
+                                            kIsWeb
+                                                ? await downloadPdfWebOrder(
+                                                  order: order,
+                                                  items: orderItems,
+                                                  receipts: receipts,
+                                                )
+                                                : await generateAndPreviewPdfOrder(
+                                                  order: order,
+                                                  items: orderItems,
+                                                  receipts: receipts,
+                                                );
                                         if (context
                                             .mounted) {
                                           actionResultDialog(
                                             context:
                                                 context,
                                             message:
-                                                'Order Downloaded',
-                                            isSuccess: true,
+                                                downloaded
+                                                    ? 'Order Downloaded'
+                                                    : 'Could not download this order',
+                                            isSuccess: downloaded,
                                           );
                                         }
                                         setState(() {

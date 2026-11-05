@@ -1,16 +1,26 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart'
+    show savePdfDesktop, savePdfMobile;
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/services/documents/document_downloads.dart';
+import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart';
+import 'package:stockall/services/documents/pdf_document_kit.dart'
+    show docPageTheme;
+import 'package:stockall/services/documents/document_model.dart'
+    show DocType;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 // Order roll layout, modelled on _buildPdfRollInvoice so all three
@@ -178,15 +188,18 @@ Future<Uint8List> _buildPdfRollOrder({
 
   pdf.addPage(
     pw.Page(
-      pageFormat:
-          printerType == 1
-              ? PdfPageFormat.roll57
-              : PdfPageFormat.roll80,
-      margin: pw.EdgeInsets.only(
-        left: kIsWeb ? 2 : 0,
-        top: 5,
-        right: kIsWeb ? 15 : 0,
-        bottom: 10,
+      // White page, so dark-mode PDF viewers don't show it black.
+      pageTheme: docPageTheme(
+        pageFormat:
+            printerType == 1
+                ? PdfPageFormat.roll57
+                : PdfPageFormat.roll80,
+        margin: pw.EdgeInsets.only(
+          left: kIsWeb ? 2 : 0,
+          top: 5,
+          right: kIsWeb ? 15 : 0,
+          bottom: 10,
+        ),
       ),
 
       // 🔹 HEADER
@@ -535,18 +548,36 @@ Future<void> generateAndPreviewPdfRollOrder({
   SalesAuthAction().printReceiptAction(
     context: context,
     action: () async {
-      final Uint8List pdfBytes = await _buildPdfRollOrder(
-        order: order,
-        records: records,
-        staffName: staffName,
-        shop: shop,
-        context: context,
-        printerType: printerType,
-      );
-
-      await Printing.layoutPdf(
-        onLayout: (_) async => pdfBytes,
-      );
+      // Straight to the POS printer on mobile and desktop; the system
+      // print dialog on web (lib/services/pos_printing).
+      try {
+        await printRollDocument(
+          context: context,
+          document: orderDownloadDocument(
+            order: order,
+            items: records,
+            receipts:
+                returnReceiptProviderSingle().receipts
+                    .where((rec) => rec.orderUuid == order.uuid)
+                    .toList(),
+            shop: shop,
+            assets: DocShopAssets.current(),
+          ),
+          format: docFormatFor(shop),
+          shopPrintType: printerType,
+          rollPdf:
+              (type) => _buildPdfRollOrder(
+                order: order,
+                records: records,
+                staffName: staffName,
+                shop: shop,
+                context: context,
+                printerType: type,
+              ),
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog('❌ Error printing order: $e\n$stackTrace');
+      }
     },
   );
 }
@@ -568,5 +599,70 @@ Future<Uint8List> buildOrderRollPdf({
     shop: shop,
     context: context,
     printerType: printerType,
+  );
+}
+
+// A4 order download, from the shared document builder. Shares on
+// mobile and saves on desktop, as the receipt and invoice downloads.
+// receipts: the order's payment and delivery receipts. True when the
+// file was handed to the share sheet or saved.
+Future<bool> generateAndPreviewPdfOrder({
+  required Orders order,
+  required List<OrderItems> items,
+  required List<TempMainReceipt> receipts,
+}) async {
+  try {
+    final bytes = await _buildPdfOrder(order, items, receipts);
+    final name = documentDownloadName(
+      DocType.order,
+      order.uuid,
+      DateTime.now(),
+    );
+    if (Platform.isAndroid || Platform.isIOS) {
+      await savePdfMobile(bytes, name);
+    } else {
+      await savePdfDesktop(bytes, name);
+    }
+    return true;
+  } catch (e, stackTrace) {
+    await mainLocalLog('❌ Error downloading order PDF: $e\n$stackTrace');
+    return false;
+  }
+}
+
+// The same A4 order, downloaded in the browser.
+Future<bool> downloadPdfWebOrder({
+  required Orders order,
+  required List<OrderItems> items,
+  required List<TempMainReceipt> receipts,
+}) async {
+  try {
+    final bytes = await _buildPdfOrder(order, items, receipts);
+    downloadPdfBytesWeb(
+      bytes,
+      documentWebDownloadName(DocType.order, DateTime.now()),
+    );
+    return true;
+  } catch (e, stackTrace) {
+    await mainLocalLog('❌ Error downloading order PDF: $e\n$stackTrace');
+    return false;
+  }
+}
+
+Future<Uint8List> _buildPdfOrder(
+  Orders order,
+  List<OrderItems> items,
+  List<TempMainReceipt> receipts,
+) {
+  final shop = returnShopProvider().userShop()!;
+  return salesDocumentA4Pdf(
+    orderDownloadDocument(
+      order: order,
+      items: items,
+      receipts: receipts,
+      shop: shop,
+      assets: DocShopAssets.current(),
+    ),
+    shop,
   );
 }

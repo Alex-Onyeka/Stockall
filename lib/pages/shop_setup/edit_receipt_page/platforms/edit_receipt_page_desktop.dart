@@ -12,6 +12,8 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
+    show openPosPrinterSettings;
 
 class EditReceiptPageDesktop extends StatefulWidget {
   const EditReceiptPageDesktop({super.key});
@@ -188,6 +190,18 @@ class _EditReceiptPageDesktopState
                                   ],
                                 ),
                               ),
+                              // The saved POS printer, its paper size and cut
+                              // (lib/services/pos_printing).
+                              if (!kIsWeb)
+                                PopupMenuItem(
+                                  onTap: openPosPrinterSettings,
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize: theme.mobileTexts.b2.fontSize,
+                                    ),
+                                    'Choose POS Printer',
+                                  ),
+                                ),
                             ];
                           },
                           child: Row(

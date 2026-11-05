@@ -333,11 +333,6 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                   SalesAuthAction().printReceiptAction(
                                     context: context,
                                     action: () async {
-                                      // macOS/Linux keep their existing no-op.
-                                      if (!usesSystemPrintDialog() &&
-                                          !usesBluetoothPrint()) {
-                                        return;
-                                      }
                                       var safeContext =
                                           context;
                                       showDialog(
@@ -427,75 +422,73 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                     action: () async {
                                       var safeContext =
                                           context;
+                                      final receipts =
+                                          returnReceiptProviderSingle()
+                                              .receipts
+                                              .where(
+                                                (rec) =>
+                                                    rec.orderUuid ==
+                                                    order.uuid,
+                                              )
+                                              .toList();
+                                      Future<void> showFailure() async {
+                                        if (safeContext.mounted) {
+                                          await actionResultDialog(
+                                            context: safeContext,
+                                            message:
+                                                'Could not download this order',
+                                            isSuccess: false,
+                                          );
+                                        }
+                                      }
+
                                       if (!kIsWeb) {
-                                        // await generateAndPreviewPdfOrder(
-                                        //   order: order,
-                                        //   staffName:
-                                        //       order
-                                        //           .staffName,
-                                        //   context:
-                                        //       safeContext,
-                                        //   receipts:
-                                        //       returnReceiptProviderSingle()
-                                        //           .returnOwnReceiptsByDayOrWeek()
-                                        //           .where(
-                                        //             (rec) =>
-                                        //                 rec.orderUuid ==
-                                        //                 widget.checkoutResponse.order?.uuid,
-                                        //           )
-                                        //           .toList(),
-                                        //   records:
-                                        //       saleRecords,
-                                        // );
+                                        final shared =
+                                            await generateAndPreviewPdfOrder(
+                                              order: order,
+                                              items: saleRecords,
+                                              receipts: receipts,
+                                            );
+                                        if (!shared) await showFailure();
                                       } else {
-                                        // showDialog(
-                                        //   context: context,
-                                        //   builder: (
-                                        //     confirmDialog,
-                                        //   ) {
-                                        //     return ConfirmationAlert(
-                                        //       theme: theme,
-                                        //       message:
-                                        //           'You are about to download This Order. Are you sure you want to Proceed?',
-                                        //       title:
-                                        //           'Download Order',
-                                        //       action: () async {
-                                        //         setState(() {
-                                        //           isDownloadLoading =
-                                        //               true;
-                                        //         });
-                                        //         Navigator.of(
-                                        //           confirmDialog,
-                                        //         ).pop();
-                                        //         if (kIsWeb) {
-                                        //           downloadPdfWebOrder(
-                                        //             order:
-                                        //                 order,
-                                        //             staffName:
-                                        //                 order.staffName,
-                                        //             filename:
-                                        //                 'downloaded_order_${order.uuid}.pdf',
-                                        //             context:
-                                        //                 safeContext,
-                                        //             receipts:
-                                        //                 returnReceiptProviderSingle()
-                                        //                     .returnOwnReceiptsByDayOrWeek()
-                                        //                     .where(
-                                        //                       (
-                                        //                         rec,
-                                        //                       ) =>
-                                        //                           rec.orderUuid ==
-                                        //                           widget.checkoutResponse.order?.uuid,
-                                        //                     )
-                                        //                     .toList(),
-                                        //             records:
-                                        //                 saleRecords,
-                                        //           );
-                                        //         }
-                                        //       },
-                                        //     );
-                                        //   },
-                                        // );
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            confirmDialog,
+                                          ) {
+                                            return ConfirmationAlert(
+                                              theme: theme,
+                                              message:
+                                                  'You are about to download This Order. Are you sure you want to Proceed?',
+                                              title:
+                                                  'Download Order',
+                                              action: () async {
+                                                setState(() {
+                                                  isDownloadLoading =
+                                                      true;
+                                                });
+                                                Navigator.of(
+                                                  confirmDialog,
+                                                ).pop();
+                                                final downloaded =
+                                                    await downloadPdfWebOrder(
+                                                      order: order,
+                                                      items: saleRecords,
+                                                      receipts: receipts,
+                                                    );
+                                                if (safeContext.mounted) {
+                                                  setState(() {
+                                                    isDownloadLoading =
+                                                        false;
+                                                  });
+                                                }
+                                                if (!downloaded) {
+                                                  await showFailure();
+                                                }
+                                              },
+                                            );
+                                          },
+                                        );
                                       }
                                       if (safeContext
                                           .mounted) {

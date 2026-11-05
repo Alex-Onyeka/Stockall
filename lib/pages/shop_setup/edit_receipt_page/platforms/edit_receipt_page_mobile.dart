@@ -11,6 +11,8 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/platforms/edit_receipt_page_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
+    show openPosPrinterSettings;
 
 class EditReceiptPageMobile extends StatefulWidget {
   const EditReceiptPageMobile({super.key});
@@ -124,6 +126,18 @@ class _EditReceiptPageMobileState
                                 // : 'Select Bluetooth Printer',
                               ),
                             ),
+                            // The saved POS printer, its paper size and cut
+                            // (lib/services/pos_printing).
+                            if (!kIsWeb)
+                              PopupMenuItem(
+                                onTap: openPosPrinterSettings,
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize: theme.mobileTexts.b2.fontSize,
+                                  ),
+                                  'Choose POS Printer',
+                                ),
+                              ),
                           ];
                         },
                         child: Row(
