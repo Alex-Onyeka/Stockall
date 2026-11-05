@@ -11,6 +11,9 @@ import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
+import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_export_spec.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -107,6 +110,11 @@ class _ReceiptsReportMainViewState
 
   List<ReceiptsReportRow> _baseRows = [];
   ReceiptsReportPage? _result;
+
+  /// Every filtered, sorted receipt and every sorted group (all
+  /// pages), for the export.
+  List<ReceiptsReportRow> _sortedRows = const [];
+  List<ReceiptsGroupRow> _sortedGroups = const [];
   int _profitExcluded = 0;
   String _signature = '';
 
@@ -270,12 +278,14 @@ class _ReceiptsReportMainViewState
       subStaffEnabled: _subStaffEnabled,
       profitVisible: profitVisible,
     );
+    _sortedRows = sorted;
     if (_grouped) {
       final groups = ReceiptsGrouping.sort(
         ReceiptsGrouping.build(sorted, _groupBy),
         field: _groupSortField,
         ascending: _groupAscending,
       );
+      _sortedGroups = groups;
       final page = ReceiptsGrouping.paginate(groups, _page);
       _page = page.page;
       _groupResult = page;
@@ -296,6 +306,28 @@ class _ReceiptsReportMainViewState
           subStaffEnabled: _subStaffEnabled,
           profitVisible: profitVisible,
         );
+  }
+
+  /// What the Export button exports: the receipts (or the groups when
+  /// grouped) with the period, filters, sort and notes on screen.
+  ReportExportSpec _exportSpec() {
+    return receiptsReportExportSpec(
+      rows: _sortedRows,
+      groups: _sortedGroups,
+      groupBy: _groupBy,
+      filters: _filters,
+      choices: _choices,
+      period: _period,
+      sortField: _sortField,
+      ascending: _ascending,
+      groupSortField: _groupSortField,
+      groupAscending: _groupAscending,
+      profitExcluded: _profitExcluded,
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      subStaffEnabled: _subStaffEnabled,
+    );
   }
 
   void _apply(
@@ -761,6 +793,10 @@ class _ReceiptsReportMainViewState
             value: _groupBy,
             onChanged: (g) => _apply(() => _groupBy = g),
           ),
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -844,14 +880,11 @@ class _ReceiptsReportMainViewState
   }
 
   Widget _notes(ThemeProvider theme) {
-    final notes = <String>[
-      if (_period.isAllTime)
-        'All time covers the receipts loaded on this device.',
-      if (_profitExcluded > 0)
-        '$_profitExcluded receipt${_profitExcluded == 1 ? ' is' : 's are'} '
-            'left out of the profit range: no item data or a '
-            'missing cost price.',
-    ];
+    // Shared with the export, so both always match.
+    final notes = receiptsReportNotes(
+      period: _period,
+      profitExcluded: _profitExcluded,
+    );
     if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),

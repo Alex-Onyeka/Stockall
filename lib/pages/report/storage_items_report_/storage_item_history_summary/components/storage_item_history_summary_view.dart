@@ -9,11 +9,14 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_searchable_dropdown.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/class/storage_item_history_report_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/storage_item_history_report_page.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_item_history_summary/class/storage_item_history_summary_export_spec.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_summary/class/storage_item_history_summary_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -176,6 +179,28 @@ class _StorageItemHistorySummaryViewState
     _page = _pageResult!.page;
   }
 
+  ReportExportSpec _exportSpec() {
+    return storageHistorySummaryExportSpec(
+      stats: _stats,
+      breakdowns: _breakdowns,
+      allRows: _allRows,
+      rows: _filteredSortedRows,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
+      period: _period,
+      customRange: _customRange,
+      resolvedRange: StorageHistorySummaryBuilder.resolveDateRange(
+        period: _period,
+        businessNow: resolveBusinessDate(DateTime.now()),
+        customRange: _customRange,
+      ),
+      departmentsEnabled: _departmentsEnabled,
+      currency: currencySymbol(context: context),
+      sizeLabels: storageSizeLabels(_storageProducts),
+    );
+  }
+
   void _onSort(StorageHistorySummarySortField field) {
     setState(() {
       if (_sortField == field) {
@@ -257,19 +282,8 @@ class _StorageItemHistorySummaryViewState
 
   String _byUnit(Map<String, double> m) => formatQuantitiesByUnit(m);
 
-  String _signedByUnit(Map<String, double> m) {
-    final entries = m.entries.where((e) => e.value != 0).toList()
-      ..sort(
-        (a, b) => a.key.toLowerCase().compareTo(b.key.toLowerCase()),
-      );
-    if (entries.isEmpty) return '0';
-    return entries
-        .map(
-          (e) =>
-              '${e.value > 0 ? '+' : ''}${formatLargeNumberDouble(e.value)} ${e.key}',
-        )
-        .join(', ');
-  }
+  String _signedByUnit(Map<String, double> m) =>
+      storageSignedQuantitiesByUnit(m);
 
   @override
   Widget build(BuildContext context) {
@@ -393,7 +407,15 @@ class _StorageItemHistorySummaryViewState
             color: Colors.black87,
           ),
         ),
-        _buildPeriodSelector(theme),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _buildPeriodSelector(theme),
+            ReportExportButton(buildSpec: _exportSpec),
+          ],
+        ),
       ],
     );
   }
@@ -496,15 +518,7 @@ class _StorageItemHistorySummaryViewState
   }
 
   Widget _buildNotes(ThemeProvider theme) {
-    final notes = <String>[
-      'Quantities are in each storage item\'s primary unit and are never added across units.',
-      if (_stats.notNormalisedCount > 0)
-        '${_stats.notNormalisedCount} record${_stats.notNormalisedCount == 1 ? '' : 's'} '
-            'could not be converted to the item\'s primary unit and '
-            '${_stats.notNormalisedCount == 1 ? 'is' : 'are'} left out of the quantities.',
-      if (_period == StorageHistoryPeriod.allTime)
-        'All time covers the storage history loaded on this device.',
-    ];
+    final notes = storageHistorySummaryNotes(period: _period, stats: _stats);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 2,

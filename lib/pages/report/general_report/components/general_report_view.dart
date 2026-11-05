@@ -5,10 +5,13 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
 import 'package:stockall/pages/report/components/report_trend_chart.dart';
+import 'package:stockall/pages/report/general_report/class/general_report_export_spec.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/components/purchase_report_table_view.dart';
@@ -383,8 +386,6 @@ class _GeneralReportViewState extends State<GeneralReportView> {
 
   String _money(num v) => _env.money(context, v);
 
-  String _percent(double v) =>
-      '${formatLargeNumberDouble(double.parse(v.abs().toStringAsFixed(2)))}%';
 
   static String _count(int n, String noun) =>
       '$n $noun${n == 1 ? '' : 's'}';
@@ -498,6 +499,23 @@ class _GeneralReportViewState extends State<GeneralReportView> {
       enabled: _env.canPickDate(),
       onChanged: _setPeriod,
     );
+    final toolbar = Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 6,
+      children: [
+        periodButton,
+        ReportExportButton(
+          buildSpec:
+              () => generalReportExportSpec(
+                figures: figures,
+                changes: _changes,
+                trend: _trend,
+                period: _period,
+                currency: currencySymbol(context: context),
+              ),
+        ),
+      ],
+    );
     final gap = SizedBox(height: widget.isDesktop ? 16 : 12);
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
@@ -510,11 +528,11 @@ class _GeneralReportViewState extends State<GeneralReportView> {
           widget.isDesktop
               ? Align(
                 alignment: Alignment.centerLeft,
-                child: periodButton,
+                child: toolbar,
               )
               : SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: periodButton,
+                child: toolbar,
               ),
           ..._notes(figures),
           gap,
@@ -526,25 +544,9 @@ class _GeneralReportViewState extends State<GeneralReportView> {
     );
   }
 
-  List<Widget> _notes(GeneralReportFigures f) {
-    final costMissing = f.costMissingCount ?? 0;
-    final noItems = f.noItemDataCount ?? 0;
-    return [
-      if (_period.isAllTime)
-        _note('All time covers the data loaded on this device.'),
-      if (costMissing > 0)
-        _note(
-          'Cost missing on ${_count(costMissing, 'receipt')}: '
-          'counted as 0 in gross profit.',
-        ),
-      if (noItems > 0)
-        _note(
-          '${_count(noItems, 'receipt')} '
-          '${noItems == 1 ? 'has' : 'have'} no item data: left '
-          'out of gross profit.',
-        ),
-    ];
-  }
+  List<Widget> _notes(GeneralReportFigures f) => [
+    for (final n in generalReportNotes(f)) _note(n),
+  ];
 
   Widget _note(String text) {
     return Padding(
@@ -840,20 +842,10 @@ class _GeneralReportViewState extends State<GeneralReportView> {
     } else {
       color = change.isUp == higherIsBetter ? _upColor : _downColor;
     }
-    final arrow =
-        change.isUp
-            ? '▲'
-            : change.isDown
-            ? '▼'
-            : '–';
-    final value =
-        change.isPercent
-            ? _percent(change.value)
-            : _money(change.value.abs());
     return Padding(
       padding: const EdgeInsets.only(top: 4),
       child: Text(
-        '$arrow $value vs previous period',
+        generalReportChangeText(change, _money),
         key: ValueKey(key),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,

@@ -4,12 +4,15 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
 import 'package:stockall/pages/report/components/report_trend_chart.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_export_spec.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/components/purchase_report_table_view.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/purchase_report_table_page.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
+import 'package:stockall/pages/report/supplier_report/supplier_analysis/class/supplier_analysis_export_spec.dart';
 import 'package:stockall/pages/report/supplier_report/supplier_analysis/class/supplier_analysis_logic.dart';
 import 'package:stockall/pages/report/supplier_report/supplier_report_table/class/supplier_report_table_logic.dart';
 import 'package:stockall/pages/report/supplier_report/supplier_report_table/components/supplier_report_table_view.dart';
@@ -303,14 +306,28 @@ class _SupplierAnalysisViewState
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: ReceiptsReportPeriodButton(
-              theme: theme,
-              period: _period,
-              enabled: _purchaseEnv.canPickDate(),
-              onChanged: _setPeriod,
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ReceiptsReportPeriodButton(
+                  theme: theme,
+                  period: _period,
+                  enabled: _purchaseEnv.canPickDate(),
+                  onChanged: _setPeriod,
+                ),
+                ReportExportButton(
+                  buildSpec:
+                      () => supplierAnalysisExportSpec(
+                        result: result,
+                        period: _period,
+                      ),
+                ),
+              ],
             ),
           ),
-          if (_period.isAllTime) _note(),
+          if (purchaseReportNotes(period: _period).isNotEmpty) _note(),
           gap,
           _contact(theme, result.supplier),
           gap,
@@ -357,7 +374,7 @@ class _SupplierAnalysisViewState
           ),
           Flexible(
             child: Text(
-              'All time covers the purchases loaded on this device.',
+              purchaseReportNotes(period: _period).join('\n'),
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey.shade700,
@@ -760,16 +777,7 @@ class _SupplierAnalysisViewState
           else
             for (var i = 0; i < r.topItems.length; i++)
               _itemRow(theme, i + 1, r.topItems[i]),
-          if (r.purchasesWithoutLines > 0)
-            _footnote(
-              '${_count(r.purchasesWithoutLines, 'purchase')} '
-              'without item details',
-            ),
-          if (r.adjustedPurchases > 0)
-            _footnote(
-              'Some purchases have a custom total, so item spend '
-              'can differ from total spend.',
-            ),
+          for (final note in supplierTopItemsFootnotes(r)) _footnote(note),
         ],
       ),
     );

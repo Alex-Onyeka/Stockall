@@ -16,6 +16,8 @@ import 'package:stockall/local_database/shop_owner/shop_owner_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 import 'package:stockall/pages/purchases/purchase_page/purchase_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
@@ -32,6 +34,7 @@ import 'package:stockall/pages/report/sales_report_/receipts_report_main/compone
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/receipts_report_main_page.dart';
 import 'package:stockall/pages/report/staff_report/staff_analysis/staff_analysis_page.dart';
 import 'package:stockall/pages/report/staff_report/staff_expenses/staff_expenses_page.dart';
+import 'package:stockall/pages/report/staff_report/staff_report_table/class/staff_report_export_spec.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/class/staff_report_table_logic.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -461,6 +464,9 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
   StaffReportPage? _result;
   String _signature = '';
 
+  // Every filtered, sorted row, for the export.
+  List<StaffReportRow> _sortedRows = [];
+
   List<StaffReportFilterOption> _roleOptions = [];
 
   @override
@@ -535,9 +541,23 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
       ascending: _ascending,
       access: _access,
     );
+    _sortedRows = sorted;
     final page = StaffReportQuery.paginate(sorted, _page);
     _page = page.page;
     _result = page;
+  }
+
+  ReportExportSpec _exportSpec() {
+    return staffReportExportSpec(
+      rows: _sortedRows,
+      filters: _filters,
+      roleOptions: _roleOptions,
+      sortField: _sortField,
+      ascending: _ascending,
+      access: _access,
+      period: _period,
+      currency: currencySymbol(context: context),
+    );
   }
 
   void _apply(VoidCallback change, {bool resetPage = true}) {
@@ -848,6 +868,10 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
               onTap: () => setState(() => _showFilters = !_showFilters),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -933,7 +957,8 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
   }
 
   Widget _notes() {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = staffReportNotes(period: _period);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -949,7 +974,7 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
             ),
             Flexible(
               child: Text(
-                'All time covers the data loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
               ),
             ),

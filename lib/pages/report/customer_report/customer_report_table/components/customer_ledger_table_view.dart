@@ -6,11 +6,15 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
 import 'package:stockall/pages/report/components/report_searchable_dropdown.dart';
 import 'package:stockall/pages/report/customer_report/customer_account_transactions/class/customer_account_transactions_logic.dart';
+import 'package:stockall/pages/report/customer_report/customer_report_table/class/customer_ledger_export_spec.dart';
+import 'package:stockall/pages/report/customer_report/customer_report_table/class/customer_report_export_spec.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_table/class/customer_report_table_logic.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_table/components/customer_report_table_view.dart';
 import 'package:stockall/pages/report/customer_report/customer_reward_earnings/class/customer_reward_earnings_logic.dart';
@@ -138,6 +142,9 @@ class _CustomerLedgerTableViewState extends State<CustomerLedgerTableView> {
   CustomerReportBase? _base;
   CustomerLedgerPage? _result;
   List<CustomerReportFilterOption> _staffOptions = [];
+
+  // Every filtered, sorted entry, for the export.
+  List<CustomerLedgerRow> _sortedRows = [];
   String _signature = '';
 
   @override
@@ -222,9 +229,24 @@ class _CustomerLedgerTableViewState extends State<CustomerLedgerTableView> {
       sortField: _sortField,
       ascending: _ascending,
     );
+    _sortedRows = sorted;
     final page = CustomerLedgerQuery.paginate(sorted, _page);
     _page = page.page;
     _result = page;
+  }
+
+  ReportExportSpec _exportSpec() {
+    return customerLedgerExportSpec(
+      kind: widget.kind,
+      customerName: _customer.name,
+      rows: _sortedRows,
+      filters: _filters,
+      staffOptions: _staffOptions,
+      sortField: _sortField,
+      ascending: _ascending,
+      period: _period,
+      currency: currencySymbol(context: context),
+    );
   }
 
   void _apply(VoidCallback change, {bool resetPage = true}) {
@@ -550,6 +572,10 @@ class _CustomerLedgerTableViewState extends State<CustomerLedgerTableView> {
               onTap: () => setState(() => _showFilters = !_showFilters),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -680,7 +706,8 @@ class _CustomerLedgerTableViewState extends State<CustomerLedgerTableView> {
   }
 
   Widget _notes() {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = customerReportNotes(period: _period);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -696,7 +723,7 @@ class _CustomerLedgerTableViewState extends State<CustomerLedgerTableView> {
             ),
             Flexible(
               child: Text(
-                'All time covers the data loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
               ),
             ),

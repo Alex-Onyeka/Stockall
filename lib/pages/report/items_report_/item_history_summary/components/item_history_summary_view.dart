@@ -12,7 +12,10 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/items_report_/item_history_report/item_history_report_page.dart';
+import 'package:stockall/pages/report/items_report_/item_history_summary/class/item_history_summary_export_spec.dart';
 import 'package:stockall/pages/report/items_report_/item_history_summary/class/item_history_summary_logic.dart';
 import 'package:stockall/pages/report/items_report_/item_level_stock_movements/item_level_stock_movements_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -57,6 +60,9 @@ class _ItemHistorySummaryViewState
       ItemHistorySummaryStats.empty;
   List<ItemHistorySummaryRow> _allRows = [];
   List<ItemHistorySummaryRow> _filteredSortedRows = [];
+
+  /// The table's mobile "Filter" toggle, kept across rebuilds.
+  bool _tableFiltersOpen = false;
 
   @override
   void initState() {
@@ -180,6 +186,32 @@ class _ItemHistorySummaryViewState
     for (int i = 0; i < _filteredSortedRows.length; i++) {
       _filteredSortedRows[i].index = i + 1;
     }
+  }
+
+  /// What the Export button exports: the headline figures, Top Inflow /
+  /// Outflow and the full filtered and sorted item table (the screen
+  /// shows its top 10).
+  ReportExportSpec _exportSpec() {
+    return itemHistorySummaryExportSpec(
+      stats: _stats,
+      allRows: _allRows,
+      rows: _filteredSortedRows,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
+      period: _period,
+      range: ItemHistorySummaryBuilder.resolveDateRange(
+        period: _period,
+        businessNow: resolveBusinessDate(DateTime.now()),
+        customRange: _customRange,
+      ),
+      currency: currencySymbol(context: context),
+      manageProductions: _manageProductions,
+      departmentsEnabled: _departmentsEnabled,
+      categoryNames: {for (final c in _categories) c.uuid: c.name},
+      departmentNames: {for (final d in _departments) d.uuid: d.name},
+      sizeLabels: stockMovementsSizeLabels(_products),
+    );
   }
 
   void _onSort(ItemHistorySummarySortField field) {
@@ -1817,9 +1849,9 @@ class _ItemHistorySummaryViewState
   }
 
   Widget _buildTableFilters(ThemeProvider theme) {
-    bool isOpen = false;
     return StatefulBuilder(
-      builder: (context, setState) {
+      // The page's setState, so the table redraws with the filters.
+      builder: (context, _) {
         return Wrap(
           spacing: 8,
           runSpacing: 6,
@@ -1887,7 +1919,8 @@ class _ItemHistorySummaryViewState
                               BorderRadius.circular(5),
                           onTap: () {
                             setState(() {
-                              isOpen = !isOpen;
+                              _tableFiltersOpen =
+                                  !_tableFiltersOpen;
                             });
                           },
                           mouseCursor:
@@ -1912,7 +1945,7 @@ class _ItemHistorySummaryViewState
                                   'Filter',
                                 ),
                                 Icon(
-                                  isOpen
+                                  _tableFiltersOpen
                                       ? Icons
                                           .keyboard_arrow_up
                                       : Icons
@@ -1929,7 +1962,7 @@ class _ItemHistorySummaryViewState
             ),
 
             // Movement Filter
-            if (isOpen ||
+            if (_tableFiltersOpen ||
                 screenWidth(context) > mobileScreen) ...[
               Container(
                 height: 32,
@@ -2156,6 +2189,7 @@ class _ItemHistorySummaryViewState
                     ),
                   ),
                 ),
+              ReportExportButton(buildSpec: _exportSpec),
             ],
 
             if (_filters.hasAnything)

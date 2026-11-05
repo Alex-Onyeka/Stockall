@@ -7,10 +7,14 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
+import 'package:stockall/pages/report/sales_report_/item_sales_analysis/class/item_sales_analysis_export_spec.dart';
 import 'package:stockall/pages/report/sales_report_/item_sales_analysis/class/item_sales_analysis_logic.dart';
 import 'package:stockall/pages/report/sales_report_/item_sales_report_main/class/item_sales_report_logic.dart';
 import 'package:stockall/pages/report/sales_report_/item_sales_report_main/components/item_sales_report_filter_widgets.dart';
@@ -659,7 +663,54 @@ class _ItemSalesAnalysisViewState
             onTap: _resetAll,
             color: theme.lightModeColor.prColor300,
           ),
+        Padding(
+          padding: const EdgeInsets.only(left: 5),
+          child: ReportExportButton(buildSpec: _exportSpec),
+        ),
       ],
+    );
+  }
+
+  /// The notes under the toolbar, shared with the export.
+  List<String> get _notesList => itemSalesAnalysisNotes(
+    period: _period,
+    stats: _stats,
+    cartDiscountInView: _cartDiscountInView,
+    voidFilter: _filters.voidFilter,
+    canSeeCost: _canSeeCost,
+  );
+
+  /// What the Export button exports: the statistic cards and the
+  /// tables, with the period, filters and notes on screen.
+  ReportExportSpec _exportSpec() {
+    return itemSalesAnalysisExportSpec(
+      stats: _stats,
+      items: ItemSalesAnalysisBuilder.sortGroups(
+        _items,
+        field: _itemSort,
+        ascending: _itemAscending,
+      ),
+      categories: _categories,
+      customers: ItemSalesAnalysisBuilder.sortGroups(
+        _customers,
+        field: _customerSort,
+        ascending: _customerAscending,
+      ),
+      staff: _staff,
+      subStaff: _subStaff,
+      departments: _departments,
+      channels: _channels,
+      types: _types,
+      filters: _filters,
+      categoryOptions: _categoryOptions,
+      itemOptions: _allItemOptions,
+      choices: _choices,
+      period: _period,
+      notes: _notesList,
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      subStaffEnabled: _subStaffEnabled,
     );
   }
 
@@ -704,22 +755,8 @@ class _ItemSalesAnalysisViewState
   }
 
   Widget _notes() {
-    final s = _stats;
-    final notes = <String>[
-      if (_period.isAllTime)
-        'All time covers the receipts loaded on this device.',
-      'Revenue is item revenue (VAT included) on every receipt '
-          'type: sales, invoice payments and order deliveries.',
-      if (_cartDiscountInView)
-        'Cart discounts on a receipt are not included in its '
-            'item revenue.',
-      if (_filters.voidFilter != ItemSalesVoidFilter.notVoid)
-        'Void lines are included in these totals.',
-      if (_canSeeCost && s.costMissingCount > 0)
-        'Profit includes ${s.costMissingCount} of '
-            '${s.totalLines} item records with a missing cost '
-            'price (counted as 0).',
-    ];
+    // Shared with the export, so both always match.
+    final notes = _notesList;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 2,

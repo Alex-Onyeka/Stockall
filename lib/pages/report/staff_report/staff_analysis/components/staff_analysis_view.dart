@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
 import 'package:stockall/pages/report/order_report/order_report_table/class/order_report_table_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
+import 'package:stockall/pages/report/staff_report/staff_analysis/class/staff_analysis_export_spec.dart';
 import 'package:stockall/pages/report/staff_report/staff_analysis/class/staff_analysis_logic.dart';
+import 'package:stockall/pages/report/staff_report/staff_report_table/class/staff_report_export_spec.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/class/staff_report_table_logic.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/components/staff_report_table_view.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -307,14 +311,27 @@ class _StaffAnalysisViewState extends State<StaffAnalysisView> {
           // than the page.
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: ReceiptsReportPeriodButton(
-              theme: theme,
-              period: _period,
-              enabled: _access.canPickDate,
-              onChanged: _setPeriod,
+            child: Row(
+              spacing: 6,
+              children: [
+                ReceiptsReportPeriodButton(
+                  theme: theme,
+                  period: _period,
+                  enabled: _access.canPickDate,
+                  onChanged: _setPeriod,
+                ),
+                ReportExportButton(
+                  buildSpec:
+                      () => staffAnalysisExportSpec(
+                        analysis: analysis,
+                        period: _period,
+                        currency: currencySymbol(context: context),
+                      ),
+                ),
+              ],
             ),
           ),
-          if (_period.isAllTime) _note(),
+          if (staffReportNotes(period: _period).isNotEmpty) _note(),
           gap,
           _kpis(theme, analysis),
           gap,
@@ -339,7 +356,7 @@ class _StaffAnalysisViewState extends State<StaffAnalysisView> {
           ),
           Flexible(
             child: Text(
-              'All time covers the data loaded on this device.',
+              staffReportNotes(period: _period).join('\n'),
               style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
             ),
           ),

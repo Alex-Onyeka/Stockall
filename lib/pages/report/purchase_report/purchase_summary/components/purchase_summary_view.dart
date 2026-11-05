@@ -7,10 +7,14 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_trend_chart.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_export_spec.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/components/purchase_report_table_view.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/purchase_report_table_page.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_summary/class/purchase_summary_export_spec.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_summary/class/purchase_summary_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
@@ -174,6 +178,19 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
   // ---------------------------------------------------------------
 
   String _money(num v) => _env.money(context, v);
+
+  ReportExportSpec _exportSpec() {
+    final tabs = _tabs;
+    return purchaseSummaryExportSpec(
+      result: _result!,
+      period: _period,
+      tabs: tabs,
+      activeTab: tabs.contains(_tab) ? _tab : tabs.first,
+      sortField: _sortField,
+      ascending: _ascending,
+      currency: currencySymbol(context: context),
+    );
+  }
 
   String _percent(double v) =>
       '${formatLargeNumberDouble(double.parse(v.toStringAsFixed(2)))}%';
@@ -339,14 +356,22 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: ReceiptsReportPeriodButton(
-              theme: theme,
-              period: _period,
-              enabled: _env.canPickDate(),
-              onChanged: _setPeriod,
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ReceiptsReportPeriodButton(
+                  theme: theme,
+                  period: _period,
+                  enabled: _env.canPickDate(),
+                  onChanged: _setPeriod,
+                ),
+                ReportExportButton(buildSpec: _exportSpec),
+              ],
             ),
           ),
-          if (_period.isAllTime) _note(),
+          if (purchaseReportNotes(period: _period).isNotEmpty) _note(),
           gap,
           _kpis(theme, result.stats),
           gap,
@@ -408,7 +433,7 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
           ),
           Flexible(
             child: Text(
-              'All time covers the purchases loaded on this device.',
+              purchaseReportNotes(period: _period).join('\n'),
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey.shade700,

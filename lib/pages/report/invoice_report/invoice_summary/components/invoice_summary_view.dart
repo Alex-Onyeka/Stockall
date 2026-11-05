@@ -10,8 +10,11 @@ import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/invoice_report_table_page.dart';
+import 'package:stockall/pages/report/invoice_report/invoice_summary/class/invoice_summary_export_spec.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_summary/class/invoice_summary_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -280,6 +283,24 @@ class _InvoiceSummaryViewState
     );
   }
 
+  ReportExportSpec _exportSpec() {
+    return invoiceSummaryExportSpec(
+      result: _result,
+      customers: invoiceSummaryCustomers(
+        _result.allCustomerSummaries,
+        _customerSearch,
+      ),
+      customerSearch: _customerSearch,
+      period: _period,
+      customRange: _customRange,
+      resolvedRange: _currentResolvedDateRange(),
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      bulkSaleEnabled: _bulkSaleEnabled,
+    );
+  }
+
   String _fmt(double? v) {
     if (v == null) return '—';
     return formatMoneyBig(amount: v, context: context);
@@ -477,7 +498,15 @@ class _InvoiceSummaryViewState
             ),
           ],
         ),
-        _buildPeriodSelector(theme),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _buildPeriodSelector(theme),
+            ReportExportButton(buildSpec: _exportSpec),
+          ],
+        ),
       ],
     );
   }
@@ -1940,18 +1969,10 @@ class _InvoiceSummaryViewState
 
   // 4.7 Customer Summary Table
   Widget _buildCustomerSummaryTable(ThemeProvider theme) {
-    final all = _result.allCustomerSummaries;
-    final filtered =
-        _customerSearch.isEmpty
-            ? all
-            : all
-                .where(
-                  (c) =>
-                      c.customerName.toLowerCase().contains(
-                        _customerSearch.toLowerCase(),
-                      ),
-                )
-                .toList();
+    final filtered = invoiceSummaryCustomers(
+      _result.allCustomerSummaries,
+      _customerSearch,
+    );
 
     final cols = [
       const _SummaryCol(

@@ -11,6 +11,10 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_format.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
+import 'package:stockall/pages/report/items_report_/items_report_analysis/class/items_report_analysis_export_spec.dart';
 import 'package:stockall/pages/report/items_report_/items_report_analysis/class/items_report_analysis_logic.dart';
 import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_main_logic.dart';
 import 'package:stockall/pages/report/items_report_/items_report_main/items_report_main_page.dart';
@@ -135,6 +139,64 @@ class _ItemsReportAnalysisViewState
 
   String _money(num v) =>
       formatMoneyBig(amount: v, context: context);
+
+  /// What the Export button exports: the same figures and tables as
+  /// [_buildContent], recomputed with the same calls (charts aren't
+  /// exported).
+  ReportExportSpec _exportSpec() {
+    final now = resolveBusinessDate(DateTime.now());
+    final performanceRecords =
+        ItemsReportAnalysisBuilder.computePerformance(
+          rows: _rows,
+          salesRecords: _salesRecords,
+          period: _period,
+          businessNow: now,
+          customRange: _customRange,
+        );
+    final currency = currencySymbol(context: context);
+    return itemsAnalysisExportSpec(
+      summary: ItemsReportAnalysisBuilder.buildSummary(_rows),
+      best3: ItemsReportAnalysisBuilder.getBest3(
+        records: performanceRecords,
+        metric: _metric,
+      ),
+      least3: ItemsReportAnalysisBuilder.getLeast3(
+        records: performanceRecords,
+        metric: _metric,
+      ),
+      metric: _metric,
+      categoryDist:
+          ItemsReportAnalysisBuilder.computeCategoryDistribution(
+            rows: _rows,
+            categories: _categories,
+          ),
+      departmentDist:
+          ItemsReportAnalysisBuilder.computeDepartmentDistribution(
+            rows: _rows,
+            departments: _departments,
+          ),
+      recentItems: ItemsReportAnalysisBuilder.getNewlyCreatedItems(
+        _rows,
+        limit: 10,
+      ),
+      periodLabel: itemsAnalysisPeriodLabel(
+        _period,
+        _customRange,
+        ExportFormatter(currency: currency),
+      ),
+      range:
+          _period == ItemAnalysisPeriod.allTime
+              ? null
+              : ItemsReportAnalysisBuilder.resolveDateRange(
+                period: _period,
+                businessNow: now,
+                customRange: _customRange,
+              ),
+      currency: currency,
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +418,14 @@ class _ItemsReportAnalysisViewState
             color: Colors.black87,
           ),
         ),
-        _buildPeriodSelector(theme),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 6,
+          children: [
+            _buildPeriodSelector(theme),
+            ReportExportButton(buildSpec: _exportSpec),
+          ],
+        ),
       ],
     );
   }
