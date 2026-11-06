@@ -69,6 +69,7 @@ Future<dynamic> mainDatePicker({
                       builder: (context, setState) {
                         return DialogTemplate(
                           theme: theme,
+                          actionButtonText: 'Confirm',
                           message:
                               'Select Beginning and end date of Range.',
                           title: 'Select Range',
@@ -139,11 +140,11 @@ Future<dynamic> mainDatePicker({
                                         });
                                       },
                                       child: Container(
+                                        height: 45,
+                                        alignment: Alignment.center,
                                         padding:
-                                            EdgeInsetsGeometry.symmetric(
-                                              vertical: 10,
-                                              horizontal:
-                                                  10,
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 10,
                                             ),
                                         decoration: BoxDecoration(
                                           borderRadius:
@@ -157,25 +158,24 @@ Future<dynamic> mainDatePicker({
                                                     .shade300,
                                           ),
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b2
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            firstDate !=
-                                                    null
-                                                ? formatDateTime(
-                                                  firstDate!,
-                                                )
-                                                : 'Start',
+                                        child: Text(
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
                                           ),
+                                          firstDate !=
+                                                  null
+                                              ? formatDateTime(
+                                                firstDate!,
+                                              )
+                                              : 'Start',
                                         ),
                                       ),
                                     ),
@@ -205,11 +205,11 @@ Future<dynamic> mainDatePicker({
                                         });
                                       },
                                       child: Container(
+                                        height: 45,
+                                        alignment: Alignment.center,
                                         padding:
-                                            EdgeInsetsGeometry.symmetric(
-                                              vertical: 10,
-                                              horizontal:
-                                                  10,
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 10,
                                             ),
                                         decoration: BoxDecoration(
                                           borderRadius:
@@ -223,24 +223,23 @@ Future<dynamic> mainDatePicker({
                                                     .shade300,
                                           ),
                                         ),
-                                        child: Center(
-                                          child: Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b2
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            lastDate != null
-                                                ? formatDateTime(
-                                                  lastDate!,
-                                                )
-                                                : 'End',
+                                        child: Text(
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
                                           ),
+                                          lastDate != null
+                                              ? formatDateTime(
+                                                lastDate!,
+                                              )
+                                              : 'End',
                                         ),
                                       ),
                                     ),
