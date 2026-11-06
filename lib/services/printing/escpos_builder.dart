@@ -217,6 +217,13 @@ class EscPosBuilder {
     _preview.writeln('[EAN-13 $data]');
   }
 
+  // Feed to the cutter and cut, leaving a little paper attached
+  // (GS V 66 0). Printers without a cutter ignore it.
+  void cut() {
+    _cmd([0x1D, 0x56, 0x42, 0x00]);
+    _preview.writeln('[cut]');
+  }
+
   // Pre-built GS v 0 raster bands, such as the shop logo.
   void raster(List<Uint8List> bands) {
     _cmd([0x1B, 0x61, 0]);
@@ -313,6 +320,8 @@ const Map<String, String> _escPosReplacements = {
   '…': '...',
   '•': '*',
   '×': 'x',
+  '²': '2',
+  '³': '3',
   ' ': ' ',
   '\t': ' ',
 };

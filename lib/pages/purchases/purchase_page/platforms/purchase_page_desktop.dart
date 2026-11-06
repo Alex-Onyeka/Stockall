@@ -358,41 +358,24 @@ class _PurchasePageDesktopState
                                       Navigator.of(
                                         confirmDialog,
                                       ).pop();
-                                      if (kIsWeb) {
-                                        downloadPdfWebRollPurchase(
-                                          purchase:
-                                              purchase,
-                                          filename:
-                                              'downloaded_purchase_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                          context: context,
-                                          records:
-                                              saleRecords,
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                          printType:
-                                              returnShopProvider()
-                                                  .userShop()!
-                                                  .printType!,
-                                        );
-                                      } else {
-                                        await generateAndPreviewPdfRollPurchase(
-                                          purchase:
-                                              purchase,
-                                          printerType:
-                                              returnShopProvider()
-                                                  .userShop()!
-                                                  .printType ??
-                                              1,
-                                          context: context,
-                                          records:
-                                              saleRecords,
+                                      // One path: the POS printer on desktop, the system
+                                      // print dialog (once) on web.
+                                      await generateAndPreviewPdfRollPurchase(
+                                        purchase:
+                                            purchase,
+                                        printerType:
+                                            returnShopProvider()
+                                                .userShop()!
+                                                .printType ??
+                                            1,
+                                        context: context,
+                                        records:
+                                            saleRecords,
 
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                        );
-                                      }
+                                        shop:
+                                            returnShopProvider()
+                                                .userShop()!,
+                                      );
                                       setState(() {
                                         isPrintLoading =
                                             false;

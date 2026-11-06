@@ -325,16 +325,17 @@ class PrinterListTileWidget extends StatelessWidget {
   }
 }
 
+// RAW bytes to a Windows printer: [printerName], or the receipt printer
+// saved for the items report.
 Future<bool> sendReceiptToPrinter(
-  // String printerName,
-  Uint8List receiptBytes,
-) async {
+  Uint8List receiptBytes, {
+  String? printerName,
+}) async {
   try {
     final hPrinter = calloc<HANDLE>();
     final pPrinterName =
-        returnShopProvider()
-            .getReceiptPrinter()!
-            .printerName
+        (printerName ??
+                returnShopProvider().getReceiptPrinter()!.printerName)
             .toNativeUtf16();
 
     if (OpenPrinter(pPrinterName, hPrinter, nullptr) == 0) {

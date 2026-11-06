@@ -13,12 +13,12 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart'
-    show buildReceiptRollPdf;
+    show buildReceiptRollPdf, generateAndPreviewPdfRoll;
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/invoice_print_and_download.dart'
-    show buildInvoiceRollPdf;
+    show buildInvoiceRollPdf, generateAndPreviewPdfRollInvoice;
 import 'package:stockall/constants/order_print_and_download.dart'
-    show buildOrderRollPdf;
+    show buildOrderRollPdf, generateAndPreviewPdfRollOrder;
 import 'package:stockall/constants/subscription/branding_watermark.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
@@ -617,6 +617,8 @@ class _BluetoothDevicesPageState
   }
 }
 
+// Prints on the POS printer saved on this device (reconnecting to it, or
+// asking for one and printing straight after). See pos_printing.
 void scanBluetoothPrinters({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
@@ -624,30 +626,14 @@ void scanBluetoothPrinters({
   required String staffName,
   required BuildContext context,
 }) async {
-  await mainLocalLog('Main Bluetooth Scanning Started');
-  if (BluetoothPrintPlus.isConnected) {
-    connectToPrinter(
-      safeContext: context,
-      receipt: receipt,
-      records: records,
-      shop: shop,
-      staffName: staffName,
-    );
-  } else {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return BluetoothDevicesPage();
-      },
-    ).then((_) {
-      if (context.mounted) {
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).toggleIsLoading(false);
-      }
-    });
-  }
+  await generateAndPreviewPdfRoll(
+    receipt: receipt,
+    records: records,
+    staffName: staffName,
+    shop: shop,
+    context: context,
+    printerType: shop.printType ?? 1,
+  );
 }
 
 void connectToPrinter({
@@ -1087,6 +1073,7 @@ class ReceiptBuilder {
 ////////////////////////////////////////////////////////////////////////////////////
 // INVOICE PRINTING
 
+// Prints on the POS printer saved on this device. See pos_printing.
 void scanBluetoothPrintersinvoice({
   required TempInvoice invoice,
   required List<TempMainReceipt> receipts,
@@ -1094,24 +1081,15 @@ void scanBluetoothPrintersinvoice({
   required TempShopClass shop,
   required BuildContext context,
 }) async {
-  await mainLocalLog('Main Bluetooth Scanning Started');
-  if (BluetoothPrintPlus.isConnected) {
-    connectToPrinterInvoice(
-      safeContext: context,
-      // receipt: receipt,
-      invoice: invoice,
-      receipts: receipts,
-      records: records,
-      shop: shop,
-    );
-  } else {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return BluetoothDevicesPage();
-      },
-    );
-  }
+  await generateAndPreviewPdfRollInvoice(
+    invoice: invoice,
+    receipts: receipts,
+    records: records,
+    staffName: invoice.staffName,
+    shop: shop,
+    context: context,
+    printerType: shop.printType ?? 1,
+  );
 }
 
 void connectToPrinterInvoice({
@@ -1156,29 +1134,21 @@ void connectToPrinterInvoice({
 
 // ORDER PRINTING
 
+// Prints on the POS printer saved on this device. See pos_printing.
 void scanBluetoothPrintersOrder({
   required Orders order,
   required List<OrderItems> records,
   required TempShopClass shop,
   required BuildContext context,
 }) async {
-  await mainLocalLog('Main Bluetooth Scanning Started');
-  if (!context.mounted) return;
-  if (BluetoothPrintPlus.isConnected) {
-    connectToPrinterOrder(
-      safeContext: context,
-      order: order,
-      records: records,
-      shop: shop,
-    );
-  } else {
-    showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return BluetoothDevicesPage();
-      },
-    );
-  }
+  await generateAndPreviewPdfRollOrder(
+    order: order,
+    records: records,
+    staffName: order.staffName ?? 'Not Set',
+    shop: shop,
+    context: context,
+    printerType: shop.printType ?? 1,
+  );
 }
 
 void connectToPrinterOrder({
