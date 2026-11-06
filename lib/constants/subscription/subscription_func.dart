@@ -83,7 +83,7 @@ List<SubplanClass> subPlans = [
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
-      numberOfStores: 10,
+      numberOfStores: 14,
       manageShopDashboard: true,
     ),
     reportAuth: ReportAuth(
@@ -170,7 +170,7 @@ List<SubplanClass> subPlans = [
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
-      numberOfStores: 7,
+      numberOfStores: 10,
       manageShopDashboard: true,
     ),
     reportAuth: ReportAuth(
