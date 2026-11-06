@@ -12,6 +12,8 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
@@ -19,6 +21,7 @@ import 'package:stockall/pages/report/components/report_searchable_dropdown.dart
 import 'package:stockall/pages/report/items_report_/item_history_report/class/item_history_report_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/class/storage_item_history_export_spec.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/class/storage_item_history_report_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -370,12 +373,37 @@ class _StorageItemHistoryReportViewState
           ascending: _ascending,
           departmentsEnabled: _departmentsEnabled,
         );
+    _sortedRows = sorted;
     final page = StorageItemHistoryReportQuery.paginate(
       sorted,
       _page,
     );
     _page = page.page;
     _result = page;
+  }
+
+  // Every filtered, sorted record, for the export.
+  List<StorageItemHistory> _sortedRows = [];
+
+  ReportExportSpec _exportSpec() {
+    return storageHistoryExportSpec(
+      rows: _sortedRows,
+      filters: _filters,
+      names: StorageHistoryExportNames(
+        storageItems: _storageItemsMap,
+        salesItems: _salesItemsMap,
+        departments: _departmentsMap,
+        storekeepers: _storekeepersMap,
+        otherStaff: _otherStaffMap,
+        currentStorageNames: _currentStorageNames,
+        currentSalesNames: _currentSalesNames,
+      ),
+      sortField: _sortField,
+      ascending: _ascending,
+      period: _period,
+      departmentsEnabled: _departmentsEnabled,
+      currency: currencySymbol(context: context),
+    );
   }
 
   void _apply(
@@ -794,6 +822,10 @@ class _StorageItemHistoryReportViewState
                   ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -1159,7 +1191,8 @@ class _StorageItemHistoryReportViewState
   }
 
   Widget _notes(ThemeProvider theme) {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = storageHistoryNotes(allTime: _period.isAllTime);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -1175,7 +1208,7 @@ class _StorageItemHistoryReportViewState
             ),
             Flexible(
               child: Text(
-                'All time covers the storage history loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey.shade600,

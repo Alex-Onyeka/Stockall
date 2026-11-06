@@ -5,12 +5,16 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
+import 'package:stockall/pages/report/staff_report/staff_expenses/class/staff_expenses_export_spec.dart';
 import 'package:stockall/pages/report/staff_report/staff_expenses/class/staff_expenses_logic.dart';
+import 'package:stockall/pages/report/staff_report/staff_report_table/class/staff_report_export_spec.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/class/staff_report_table_logic.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/components/staff_report_table_view.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -88,6 +92,9 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
   StaffExpensesPage? _result;
   String _signature = '';
 
+  // Every filtered, sorted expense, for the export.
+  List<StaffExpenseRow> _sortedRows = [];
+
   @override
   void initState() {
     super.initState();
@@ -157,19 +164,30 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
   void _recompute() {
     final base = _base;
     if (base == null) return;
-    final page = StaffExpensesTable.paginate(
-      StaffExpensesTable.filterAndSort(
-        base: base,
-        staffKey: widget.staffKey,
-        period: _period,
-        filters: _filters,
-        sortField: _sortField,
-        ascending: _ascending,
-      ),
-      _page,
+    _sortedRows = StaffExpensesTable.filterAndSort(
+      base: base,
+      staffKey: widget.staffKey,
+      period: _period,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
     );
+    final page = StaffExpensesTable.paginate(_sortedRows, _page);
     _page = page.page;
     _result = page;
+  }
+
+  ReportExportSpec _exportSpec() {
+    return staffExpensesExportSpec(
+      staffName: _staff?.name ?? 'Not Set',
+      rows: _sortedRows,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
+      departmentsEnabled: _access.departmentsEnabled,
+      period: _period,
+      currency: currencySymbol(context: context),
+    );
   }
 
   void _apply(VoidCallback change, {bool resetPage = true}) {
@@ -526,6 +544,10 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
               onTap: () => setState(() => _showFilters = !_showFilters),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -600,7 +622,8 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
   }
 
   Widget _notes() {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = staffReportNotes(period: _period);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -616,7 +639,7 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
             ),
             Flexible(
               child: Text(
-                'All time covers the data loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
               ),
             ),
@@ -667,13 +690,8 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
   );
 
   /// "20 litres", the quantity alone, or null.
-  static String? _quantityLabel(StaffExpenseRow r) {
-    final q = r.quantity;
-    if (q == null) return null;
-    final n = q == q.roundToDouble() ? q.toStringAsFixed(0) : '$q';
-    final unit = r.unit;
-    return unit == null ? n : '$n $unit';
-  }
+  static String? _quantityLabel(StaffExpenseRow r) =>
+      staffExpenseQuantityLabel(r);
 
   List<_Col> _columns(ThemeProvider theme) {
     const dash = '—';

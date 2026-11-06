@@ -10,9 +10,12 @@ import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_p
 import 'package:stockall/local_database/suppliers_func/suppliers_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/purchases/purchase_page/purchase_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_export_spec.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/components/purchase_report_filter_widgets.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
@@ -285,6 +288,10 @@ class _PurchaseReportTableViewState
   PurchaseGroupPage? _groupResult;
   String _signature = '';
 
+  // Every filtered, sorted row and group, for the export.
+  List<PurchaseReportRow> _sortedRows = [];
+  List<PurchaseGroupRow> _sortedGroups = [];
+
   PurchaseFilterChoices _choices = PurchaseFilterChoices.empty;
 
   PurchaseReportFilters get _filters => _state.filters;
@@ -374,12 +381,14 @@ class _PurchaseReportTableViewState
       ascending: _state.ascending,
       departmentsEnabled: _departmentsEnabled,
     );
+    _sortedRows = sorted;
     if (_grouped) {
       final groups = PurchaseGrouping.sort(
         PurchaseGrouping.build(sorted, _state.groupBy),
         field: _state.groupSortField,
         ascending: _state.groupAscending,
       );
+      _sortedGroups = groups;
       final page = PurchaseGrouping.paginate(
         groups,
         _state.page,
@@ -507,6 +516,18 @@ class _PurchaseReportTableViewState
   // ---------------------------------------------------------------
 
   String _money(num v) => _env.money(context, v);
+
+  ReportExportSpec _exportSpec() {
+    return purchaseReportExportSpec(
+      rows: _sortedRows,
+      groups: _sortedGroups,
+      state: _state,
+      choices: _choices,
+      period: _period,
+      currency: currencySymbol(context: context),
+      departmentsEnabled: _departmentsEnabled,
+    );
+  }
 
   static String _numText(double? v) {
     if (v == null) return '';
@@ -816,6 +837,10 @@ class _PurchaseReportTableViewState
             value: _state.groupBy,
             onChanged: (g) => _apply(() => _state.groupBy = g),
           ),
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -880,7 +905,8 @@ class _PurchaseReportTableViewState
   }
 
   Widget _notes() {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = purchaseReportNotes(period: _period);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -896,7 +922,7 @@ class _PurchaseReportTableViewState
             ),
             Flexible(
               child: Text(
-                'All time covers the purchases loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey.shade700,

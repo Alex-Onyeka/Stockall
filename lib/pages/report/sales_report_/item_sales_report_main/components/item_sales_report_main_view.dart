@@ -9,9 +9,12 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
+import 'package:stockall/pages/report/sales_report_/item_sales_report_main/class/item_sales_export_spec.dart';
 import 'package:stockall/pages/report/sales_report_/item_sales_report_main/class/item_sales_report_logic.dart';
 import 'package:stockall/pages/report/sales_report_/item_sales_report_main/components/item_sales_report_filter_widgets.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
@@ -118,6 +121,11 @@ class _ItemSalesReportMainViewState
 
   List<ItemSalesRow> _baseRows = [];
   ItemSalesPage? _result;
+
+  /// Every filtered, sorted line and every sorted group (all pages),
+  /// for the export.
+  List<ItemSalesRow> _sortedRows = const [];
+  List<ItemSalesGroupRow> _sortedGroups = const [];
   int _profitExcluded = 0;
   int _quantityExcluded = 0;
   bool _cartDiscountInView = false;
@@ -320,12 +328,14 @@ class _ItemSalesReportMainViewState
       subStaffEnabled: _subStaffEnabled,
       profitVisible: profitVisible,
     );
+    _sortedRows = sorted;
     if (_groupByItem) {
       final groups = ItemSalesGrouping.sort(
         ItemSalesGrouping.build(sorted),
         field: _groupSortField,
         ascending: _groupAscending,
       );
+      _sortedGroups = groups;
       final page = ItemSalesGrouping.paginate(groups, _page);
       _page = page.page;
       _groupResult = page;
@@ -367,6 +377,45 @@ class _ItemSalesReportMainViewState
               _baseRows,
               categoryOf: _filters,
             );
+  }
+
+  /// The notes under the toolbar, shared with the export.
+  List<String> get _notesList => itemSalesNotes(
+    period: _period,
+    cartDiscountInView: _cartDiscountInView,
+    profitExcluded: _profitExcluded,
+    quantityExcluded: _quantityExcluded,
+    groupByItem: _groupByItem,
+    groupQuantityExcluded: _groupQuantityExcluded,
+  );
+
+  /// What the Export button exports: the lines (or the item groups
+  /// when grouped) with the period, filters, sort and notes on screen.
+  ReportExportSpec _exportSpec() {
+    final locked = widget.lockedItemUuid;
+    return itemSalesExportSpec(
+      rows: _sortedRows,
+      groups: _sortedGroups,
+      groupByItem: _groupByItem,
+      filters: _filters,
+      categoryOptions: _categoryOptions,
+      itemOptions: _allItemOptions,
+      choices: _choices,
+      period: _period,
+      sortField: _sortField,
+      ascending: _ascending,
+      groupSortField: _groupSortField,
+      groupAscending: _groupAscending,
+      notes: _notesList,
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      subStaffEnabled: _subStaffEnabled,
+      lockedItemName:
+          locked == null
+              ? null
+              : ReceiptsFilterChoices.labelFor(_allItemOptions, locked, 'Item'),
+    );
   }
 
   void _apply(
@@ -880,6 +929,10 @@ class _ItemSalesReportMainViewState
                   ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -1020,25 +1073,8 @@ class _ItemSalesReportMainViewState
   }
 
   Widget _notes(ThemeProvider theme) {
-    final notes = <String>[
-      if (_period.isAllTime)
-        'All time covers the receipts loaded on this device.',
-      if (_cartDiscountInView)
-        'Cart discounts on a receipt are not included in its '
-            'item revenue.',
-      if (_profitExcluded > 0)
-        '$_profitExcluded item record${_profitExcluded == 1 ? ' is' : 's are'} '
-            'left out of the profit range: missing cost price.',
-      if (_quantityExcluded > 0)
-        '$_quantityExcluded item record${_quantityExcluded == 1 ? ' is' : 's are'} '
-            'left out of the quantity range: invoice part '
-            'payment or unknown unit.',
-      if (_groupByItem && _groupQuantityExcluded > 0)
-        '$_groupQuantityExcluded invoice part-payment '
-            'line${_groupQuantityExcluded == 1 ? ' is' : 's are'} '
-            'not in Total Quantity: they repeat the invoice\'s '
-            'full quantity.',
-    ];
+    // Shared with the export, so both always match.
+    final notes = _notesList;
     if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),

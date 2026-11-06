@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -14,6 +13,9 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_main_logic.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
+import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_export_spec.dart';
 import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_pos_print.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -84,175 +86,33 @@ class _ItemsReportMainViewState
   /// uuid -> stock movement (opening, closing, change).
   final Map<String, ItemStockMovement> _movements = {};
 
-  String? _selectedPrintOption = 'all';
+  /// The full filtered and sorted list (every page), kept for the export.
+  List<ItemsReportRow> _sortedRows = const [];
 
-  List<ItemsReportRow> get _filteredRows {
-    final sortByMovement =
-        _sortField == ItemsSortField.openingStock ||
-        _sortField == ItemsSortField.closingStock ||
-        _sortField == ItemsSortField.stockChange;
-    if (sortByMovement) _ensureStockMovements(_baseRows);
-
-    return ItemsReportQuery.filterAndSort(
-      rows: _baseRows,
+  /// What the Export button exports: the screen's rows, columns, period,
+  /// filters and sort, built when its menu opens.
+  ReportExportSpec _exportSpec() {
+    // Opening/closing stock for every exported row, not just this page.
+    if (_historyTracked) _ensureStockMovements(_sortedRows);
+    return itemsReportExportSpec(
+      rows: _sortedRows,
       filters: _filters,
       sortField: _sortField,
       ascending: _ascending,
+      rangeLabel: _rangeLabel,
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      canSeeQuantity: _canSeeQuantity,
       departmentsEnabled: _departmentsEnabled,
-      costFilterAllowed: _canSeeCost,
-      opening:
-          sortByMovement
-              ? (r) => _movements[r.uuid]?.opening
-              : null,
-      closing:
-          sortByMovement
-              ? (r) => _movements[r.uuid]?.closing
-              : null,
-      stockChange:
-          sortByMovement
-              ? (r) => _movements[r.uuid]?.change
-              : null,
-    );
-  }
-
-  List<ItemsReportRow> get _sortedAllRows {
-    final sortByMovement =
-        _sortField == ItemsSortField.openingStock ||
-        _sortField == ItemsSortField.closingStock ||
-        _sortField == ItemsSortField.stockChange;
-    if (sortByMovement) _ensureStockMovements(_baseRows);
-
-    return ItemsReportQuery.filterAndSort(
-      rows: _baseRows,
-      filters: ItemsReportFilters(),
-      sortField: _sortField,
-      ascending: _ascending,
-      departmentsEnabled: _departmentsEnabled,
-      costFilterAllowed: _canSeeCost,
-      opening:
-          sortByMovement
-              ? (r) => _movements[r.uuid]?.opening
-              : null,
-      closing:
-          sortByMovement
-              ? (r) => _movements[r.uuid]?.closing
-              : null,
-      stockChange:
-          sortByMovement
-              ? (r) => _movements[r.uuid]?.change
-              : null,
-    );
-  }
-
-  void _confirmAndPrintFiltered(ThemeProvider theme) {
-    final rows = _filteredRows;
-    if (rows.isEmpty) {
-      showDialog(
-        context: context,
-        builder:
-            (ctx) => AlertDialog(
-              backgroundColor: Colors.white,
-              title: const Text('No Matching Items'),
-              content: const Text(
-                'There are no filtered records to print.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-      );
-      return;
-    }
-
-    final filterLabels = getFilterCombinationLabels(
-      filters: _filters,
-      categories:
-          returnCategoriesProvider().categoriesMain
-              .toList(),
-      departments:
-          returnDepartmentProvider().departments.toList(),
-      departmentsEnabled: _departmentsEnabled,
-    );
-
-    showDialog(
-      context: context,
-      builder: (confirmCtx) {
-        return ConfirmationAlert(
-          theme: theme,
-          title: 'Print Records',
-          message:
-              'You are about to print ${rows.length} filtered records in POS roll format. Are you sure you want to proceed?',
-          action: () {
-            Navigator.of(confirmCtx).pop();
-            executeItemsReportPosPrint(
-              context: context,
-              rows: rows,
-              mode: ItemsReportPrintMode.filtered,
-              departmentsEnabled: _departmentsEnabled,
-              filterLabels: filterLabels,
-            );
-          },
-        );
+      historyTracked: _historyTracked,
+      movement: (uuid) => _movements[uuid],
+      categoryNames: {
+        for (final c in returnCategoriesProvider().categoriesMain)
+          c.uuid: c.name,
       },
-    );
-  }
-
-  void _confirmAndPrintUnfiltered(
-    String option,
-    ThemeProvider theme,
-  ) {
-    String title;
-    String message;
-    ItemsReportPrintMode mode;
-
-    switch (option) {
-      case 'categories':
-        title = 'Print Items in Categories';
-        message =
-            'You are about to print items grouped by categories in POS roll format. Are you sure you want to proceed?';
-        mode = ItemsReportPrintMode.categories;
-        break;
-      case 'departments':
-        title = 'Print Items In Departments';
-        message =
-            'You are about to print items grouped by departments in POS roll format. Are you sure you want to proceed?';
-        mode = ItemsReportPrintMode.departments;
-        break;
-      case 'breakdown':
-        title = 'Print Full Breakdown';
-        message =
-            'You are about to print the full breakdown (all items, departments, and categories) in POS roll format. Are you sure you want to proceed?';
-        mode = ItemsReportPrintMode.fullBreakdown;
-        break;
-      case 'all':
-      default:
-        title = 'Print All Items';
-        message =
-            'You are about to print all ${_baseRows.length} items in POS roll format. Are you sure you want to proceed?';
-        mode = ItemsReportPrintMode.all;
-        break;
-    }
-
-    showDialog(
-      context: context,
-      builder: (confirmCtx) {
-        return ConfirmationAlert(
-          theme: theme,
-          title: title,
-          message: message,
-          action: () {
-            Navigator.of(confirmCtx).pop();
-            executeItemsReportPosPrint(
-              context: context,
-              rows: _sortedAllRows,
-              mode: mode,
-              departmentsEnabled: _departmentsEnabled,
-            );
-          },
-        );
+      departmentNames: {
+        for (final d in returnDepartmentProvider().departments)
+          d.uuid: d.name,
       },
     );
   }
@@ -438,6 +298,7 @@ class _ItemsReportMainViewState
               ? (r) => _movements[r.uuid]?.change
               : null,
     );
+    _sortedRows = sorted;
     final page = ItemsReportQuery.paginate(sorted, _page);
     _page = page.page;
     // Only the visible 100 rows need stock movements.
@@ -1055,71 +916,15 @@ class _ItemsReportMainViewState
                     ),
                   ),
                 ],
+                // Print (58/80mm roll), PDF and Excel of what the
+                // table shows. On web, print uses the browser dialog.
+                Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: ReportExportButton(
+                    buildSpec: _exportSpec,
+                  ),
+                ),
                 if (!kIsWeb) ...[
-                  if (_filters.hasAnything)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 6.0,
-                      ),
-                      child: _pill(
-                        theme: theme,
-                        icon: Icons.print_rounded,
-                        label: 'Print Records',
-                        highlighted: true,
-                        onTap:
-                            () => _confirmAndPrintFiltered(
-                              theme,
-                            ),
-                      ),
-                    ),
-                  if (!_filters.hasAnything)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 6.0,
-                      ),
-                      child: _labeled(
-                        null,
-                        _SearchableDropdown<String?>(
-                          title: 'Print Records',
-                          value: _selectedPrintOption,
-                          options: [
-                            const _SearchableOption(
-                              value: 'all',
-                              label: 'Print All Items',
-                            ),
-                            const _SearchableOption(
-                              value: 'categories',
-                              label:
-                                  'Print Items in Categories',
-                            ),
-                            if (_departmentsEnabled)
-                              const _SearchableOption(
-                                value: 'departments',
-                                label:
-                                    'Print Items In Departments',
-                              ),
-                            const _SearchableOption(
-                              value: 'breakdown',
-                              label: 'Print Full Breakdown',
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v != null) {
-                              setState(() {
-                                _selectedPrintOption = v;
-                              });
-                              _confirmAndPrintUnfiltered(
-                                v,
-                                theme,
-                              );
-                            }
-                          },
-                          theme: theme,
-                          showSearch: false,
-                        ),
-                        190,
-                      ),
-                    ),
                   Padding(
                     padding: const EdgeInsets.only(left: 6.0),
                     child: _pill(

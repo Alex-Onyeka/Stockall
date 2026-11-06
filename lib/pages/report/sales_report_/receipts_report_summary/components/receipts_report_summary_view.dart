@@ -6,13 +6,17 @@ import 'package:intl/intl.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/receipts_report_main_page.dart';
+import 'package:stockall/pages/report/sales_report_/receipts_report_summary/class/receipts_report_summary_export_spec.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_summary/class/receipts_report_summary_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -631,7 +635,36 @@ class _ReceiptsReportSummaryViewState
             onTap: _resetAll,
             color: theme.lightModeColor.prColor300,
           ),
+        Padding(
+          padding: const EdgeInsets.only(left: 5),
+          child: ReportExportButton(buildSpec: _exportSpec),
+        ),
       ],
+    );
+  }
+
+  /// What the Export button exports: the statistic cards and the
+  /// tables, with the period, filters and notes on screen.
+  ReportExportSpec _exportSpec() {
+    return receiptsSummaryExportSpec(
+      stats: _stats,
+      customers: ReceiptsSummaryBuilder.sortGroups(
+        _customers,
+        field: _customerSort,
+        ascending: _customerAscending,
+      ),
+      staff: _staff,
+      subStaff: _subStaff,
+      departments: _departments,
+      channels: _channels,
+      types: _types,
+      filters: _filters,
+      choices: _choices,
+      period: _period,
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      subStaffEnabled: _subStaffEnabled,
     );
   }
 
@@ -666,22 +699,12 @@ class _ReceiptsReportSummaryViewState
   }
 
   Widget _notes() {
-    final s = _stats;
-    final notes = <String>[
-      if (_period.isAllTime)
-        'All time covers the receipts loaded on this device.',
-      'Revenue counts every receipt type (sales, invoice '
-          'payments and order deliveries); the average is per '
-          'Sales receipt.',
-      if (_canSeeCost &&
-          (s.profitUnknownCount > 0 ||
-              s.costMissingCount > 0))
-        'Profit is from ${s.profitKnownCount} of '
-            '${s.totalReceipts} receipts: '
-            '${s.profitUnknownCount} without item data, '
-            '${s.costMissingCount} with a missing cost price '
-            '(counted as 0).',
-    ];
+    // Shared with the export, so both always match.
+    final notes = receiptsSummaryNotes(
+      period: _period,
+      stats: _stats,
+      canSeeCost: _canSeeCost,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 2,

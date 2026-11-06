@@ -7,13 +7,17 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/suppliers_func/suppliers_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_export_spec.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/components/purchase_report_table_view.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
 import 'package:stockall/pages/report/supplier_report/supplier_analysis/supplier_analysis_page.dart';
+import 'package:stockall/pages/report/supplier_report/supplier_report_table/class/supplier_report_export_spec.dart';
 import 'package:stockall/pages/report/supplier_report/supplier_report_table/class/supplier_report_table_logic.dart';
 import 'package:stockall/pages/report/supplier_report/supplier_report_table/components/supplier_report_filter_widgets.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -168,6 +172,9 @@ class _SupplierReportTableViewState
   SupplierReportPage? _result;
   String _signature = '';
 
+  // Every filtered, sorted row, for the export.
+  List<SupplierReportRow> _sortedRows = [];
+
   PurchaseReportEnv get _purchaseEnv => _env.purchaseEnv;
   SupplierReportFilters get _filters => _state.filters;
 
@@ -251,9 +258,20 @@ class _SupplierReportTableViewState
       sortField: _state.sortField,
       ascending: _state.ascending,
     );
+    _sortedRows = sorted;
     final page = SupplierReportQuery.paginate(sorted, _state.page);
     _state.page = page.page;
     _result = page;
+  }
+
+  ReportExportSpec _exportSpec() {
+    return supplierReportExportSpec(
+      rows: _sortedRows,
+      allRows: _rows,
+      state: _state,
+      period: _period,
+      currency: currencySymbol(context: context),
+    );
   }
 
   void _apply(VoidCallback change, {bool resetPage = true}) {
@@ -601,6 +619,10 @@ class _SupplierReportTableViewState
                   ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -640,7 +662,8 @@ class _SupplierReportTableViewState
   }
 
   Widget _notes() {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = purchaseReportNotes(period: _period);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -656,7 +679,7 @@ class _SupplierReportTableViewState
             ),
             Flexible(
               child: Text(
-                'All time covers the purchases loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey.shade700,

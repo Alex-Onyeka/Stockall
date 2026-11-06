@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
 import 'package:stockall/pages/report/customer_report/customer_account_transactions/class/customer_account_transactions_logic.dart';
+import 'package:stockall/pages/report/customer_report/customer_analysis/class/customer_analysis_export_spec.dart';
 import 'package:stockall/pages/report/customer_report/customer_analysis/class/customer_analysis_logic.dart';
+import 'package:stockall/pages/report/customer_report/customer_report_table/class/customer_report_export_spec.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_table/class/customer_report_table_logic.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_table/components/customer_report_table_view.dart';
 import 'package:stockall/pages/report/customer_report/customer_reward_earnings/class/customer_reward_earnings_logic.dart';
@@ -271,14 +275,28 @@ class _CustomerAnalysisViewState extends State<CustomerAnalysisView> {
           // than the page.
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: ReceiptsReportPeriodButton(
-              theme: theme,
-              period: _period,
-              enabled: _access.canPickDate,
-              onChanged: _setPeriod,
+            child: Row(
+              spacing: 6,
+              children: [
+                ReceiptsReportPeriodButton(
+                  theme: theme,
+                  period: _period,
+                  enabled: _access.canPickDate,
+                  onChanged: _setPeriod,
+                ),
+                ReportExportButton(
+                  buildSpec:
+                      () => customerAnalysisExportSpec(
+                        analysis: analysis,
+                        period: _period,
+                        showTotalBalance: _access.showTotalBalance,
+                        currency: currencySymbol(context: context),
+                      ),
+                ),
+              ],
             ),
           ),
-          if (_period.isAllTime) _note(),
+          if (customerReportNotes(period: _period).isNotEmpty) _note(),
           gap,
           _kpis(theme, analysis),
           gap,
@@ -303,7 +321,7 @@ class _CustomerAnalysisViewState extends State<CustomerAnalysisView> {
           ),
           Flexible(
             child: Text(
-              'All time covers the data loaded on this device.',
+              customerReportNotes(period: _period).join('\n'),
               style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
             ),
           ),

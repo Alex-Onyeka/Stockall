@@ -10,11 +10,14 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
 import 'package:stockall/pages/report/components/report_searchable_dropdown.dart';
+import 'package:stockall/pages/report/order_report/order_report_table/class/order_report_export_spec.dart';
 import 'package:stockall/pages/report/order_report/order_report_table/class/order_report_table_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
@@ -277,6 +280,10 @@ class _OrderReportTableViewState
 
   List<OrderReportRow> _baseRows = [];
   OrderReportPage? _result;
+
+  // Every filtered, sorted row and group, for the export.
+  List<OrderReportRow> _sortedRows = [];
+  List<OrderReportGroupRow> _sortedGroups = [];
   String _signature = '';
 
   List<OrderReportFilterOption> _staffOptions = [];
@@ -391,12 +398,14 @@ class _OrderReportTableViewState
       subStaffEnabled: _subStaffEnabled,
       profitVisible: profitVisible,
     );
+    _sortedRows = sorted;
     if (_grouped) {
       final groups = OrderReportGrouping.sort(
         OrderReportGrouping.build(sorted, _groupBy),
         field: _groupSortField,
         ascending: _groupAscending,
       );
+      _sortedGroups = groups;
       final page = OrderReportGrouping.paginate(
         groups,
         sorted,
@@ -409,6 +418,28 @@ class _OrderReportTableViewState
       _page = page.page;
       _result = page;
     }
+  }
+
+  ReportExportSpec _exportSpec() {
+    return orderReportExportSpec(
+      rows: _sortedRows,
+      groups: _sortedGroups,
+      groupBy: _groupBy,
+      filters: _filters,
+      staffOptions: _staffOptions,
+      customerOptions: _customerOptions,
+      subStaffOptions: _subStaffOptions,
+      departmentOptions: _departmentOptions,
+      period: _period,
+      sortField: _sortField,
+      ascending: _ascending,
+      groupSortField: _groupSortField,
+      groupAscending: _groupAscending,
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      subStaffEnabled: _subStaffEnabled,
+    );
   }
 
   void _apply(VoidCallback change, {bool resetPage = true}) {
@@ -859,6 +890,10 @@ class _OrderReportTableViewState
             value: _groupBy,
             onChanged: (g) => _apply(() => _groupBy = g),
           ),
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything)
             ReportPill(
               theme: theme,
@@ -1201,7 +1236,8 @@ class _OrderReportTableViewState
   }
 
   Widget _notes() {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = orderReportNotes(period: _period);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -1217,7 +1253,7 @@ class _OrderReportTableViewState
             ),
             Flexible(
               child: Text(
-                'All time covers the orders loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey.shade700,

@@ -14,7 +14,12 @@ import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
+import 'package:stockall/pages/report/items_report_/item_history_report/class/item_history_export_spec.dart';
 import 'package:stockall/pages/report/items_report_/item_history_report/class/item_history_report_logic.dart';
+import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_export_spec.dart'
+    show itemsExportSizeLabel;
 import 'package:stockall/providers/theme_provider.dart';
 
 class _Col {
@@ -74,6 +79,9 @@ class _ItemHistoryReportViewState
 
   List<ItemHistory> _baseRecords = [];
   ItemHistoryReportPageResult? _result;
+
+  /// The full filtered and sorted list (every page), for the export.
+  List<ItemHistory> _sortedRows = const [];
   String _signature = '';
 
   // Cached filter option collections extracted from shop data and history
@@ -373,12 +381,48 @@ class _ItemHistoryReportViewState
       ascending: _ascending,
       departmentsEnabled: _departmentsEnabled,
     );
+    _sortedRows = sorted;
     final page = ItemHistoryReportQuery.paginate(
       sorted,
       _page,
     );
     _page = page.page;
     _result = page;
+  }
+
+  /// What the Export button exports: the full filtered and sorted list,
+  /// with the date range, filters and sort shown on screen.
+  ReportExportSpec _exportSpec() {
+    final categoryIds = <String, List<String>>{};
+    final sizes = <String, String>{};
+    for (final p in returnData().productList()) {
+      final id = p.uuid;
+      if (id == null || id.isEmpty) continue;
+      categoryIds[id] = p.categories ?? const [];
+      final size = itemsExportSizeLabel(p);
+      if (size != null && size.isNotEmpty) sizes[id] = size;
+    }
+    final locked = widget.lockedItemUuid;
+    return itemHistoryExportSpec(
+      rows: _sortedRows,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
+      dateLabel: _dateLabel,
+      currency: currencySymbol(context: context),
+      departmentsEnabled: _departmentsEnabled,
+      lockedItemName:
+          locked == null ? null : (_itemsMap[locked] ?? 'Item'),
+      itemNames: _itemsMap,
+      staffNames: _staffMap,
+      departmentNames: _departmentsMap,
+      categoryIdsByItem: categoryIds,
+      categoryNames: {
+        for (final c in returnCategoriesProvider().categoriesMain)
+          c.uuid: c.name,
+      },
+      sizeLabels: sizes,
+    );
   }
 
   void _apply(
@@ -918,6 +962,10 @@ class _ItemHistoryReportViewState
                 ),
               ),
             ),
+          Padding(
+            padding: const EdgeInsets.only(left: 6.0),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (widget.embedded)
             Padding(
               padding: const EdgeInsets.only(left: 6.0),

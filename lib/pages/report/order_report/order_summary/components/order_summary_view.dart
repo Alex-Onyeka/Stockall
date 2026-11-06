@@ -5,9 +5,13 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
+import 'package:stockall/pages/report/order_report/order_report_table/class/order_report_export_spec.dart';
 import 'package:stockall/pages/report/order_report/order_report_table/class/order_report_table_logic.dart';
 import 'package:stockall/pages/report/order_report/order_report_table/components/order_report_table_view.dart';
 import 'package:stockall/pages/report/order_report/order_report_table/order_report_table_page.dart';
+import 'package:stockall/pages/report/order_report/order_summary/class/order_summary_export_spec.dart';
 import 'package:stockall/pages/report/order_report/order_summary/class/order_summary_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
@@ -233,6 +237,17 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
 
   String _money(num v) => _env.money(context, v);
 
+  ReportExportSpec _exportSpec() {
+    return orderSummaryExportSpec(
+      result: _result!,
+      period: _period,
+      currency: currencySymbol(context: context),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      subStaffEnabled: _subStaffEnabled,
+    );
+  }
+
   String _percent(double v) =>
       '${formatLargeNumberDouble(double.parse(v.toStringAsFixed(2)))}%';
 
@@ -386,14 +401,22 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: ReceiptsReportPeriodButton(
-              theme: theme,
-              period: _period,
-              enabled: _env.canPickDate(),
-              onChanged: _setPeriod,
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                ReceiptsReportPeriodButton(
+                  theme: theme,
+                  period: _period,
+                  enabled: _env.canPickDate(),
+                  onChanged: _setPeriod,
+                ),
+                ReportExportButton(buildSpec: _exportSpec),
+              ],
             ),
           ),
-          if (_period.isAllTime) _note(),
+          if (orderReportNotes(period: _period).isNotEmpty) _note(),
           gap,
           _kpis(theme, result.stats),
           gap,
@@ -420,7 +443,7 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
           ),
           Flexible(
             child: Text(
-              'All time covers the orders loaded on this device.',
+              orderReportNotes(period: _period).join('\n'),
               style: TextStyle(
                 fontSize: 11,
                 color: Colors.grey.shade700,

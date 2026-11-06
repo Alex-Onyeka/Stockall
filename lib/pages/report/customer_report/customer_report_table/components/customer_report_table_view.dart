@@ -14,6 +14,8 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_transactions_section.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
@@ -21,6 +23,7 @@ import 'package:stockall/pages/report/components/report_searchable_dropdown.dart
 import 'package:stockall/pages/report/customer_report/customer_account_transactions/customer_account_transactions_page.dart';
 import 'package:stockall/pages/report/customer_report/customer_analysis/customer_analysis_page.dart';
 import 'package:stockall/pages/report/customer_report/customer_reward_earnings/customer_reward_earnings_page.dart';
+import 'package:stockall/pages/report/customer_report/customer_report_table/class/customer_report_export_spec.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_table/class/customer_report_table_logic.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/invoice_report_table_page.dart';
@@ -430,6 +433,9 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
   CustomerReportPage? _result;
   String _signature = '';
 
+  // Every filtered, sorted row, for the export.
+  List<CustomerReportRow> _sortedRows = [];
+
   List<CustomerReportFilterOption> _countryOptions = [];
   List<CustomerReportFilterOption> _stateOptions = [];
 
@@ -516,9 +522,24 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
       ascending: _ascending,
       access: _access,
     );
+    _sortedRows = sorted;
     final page = CustomerReportQuery.paginate(sorted, _page);
     _page = page.page;
     _result = page;
+  }
+
+  ReportExportSpec _exportSpec() {
+    return customerReportExportSpec(
+      rows: _sortedRows,
+      filters: _filters,
+      countryOptions: _countryOptions,
+      stateOptions: _stateOptions,
+      sortField: _sortField,
+      ascending: _ascending,
+      access: _access,
+      period: _period,
+      currency: currencySymbol(context: context),
+    );
   }
 
   void _apply(VoidCallback change, {bool resetPage = true}) {
@@ -832,6 +853,10 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
               onTap: () => setState(() => _showFilters = !_showFilters),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
+          ),
           if (_filters.hasAnything(showAccount: _showAccount))
             ReportPill(
               theme: theme,
@@ -1001,7 +1026,8 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
   }
 
   Widget _notes() {
-    if (!_period.isAllTime) return const SizedBox.shrink();
+    final notes = customerReportNotes(period: _period);
+    if (notes.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Align(
@@ -1017,7 +1043,7 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
             ),
             Flexible(
               child: Text(
-                'All time covers the data loaded on this device.',
+                notes.join('\n'),
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
               ),
             ),

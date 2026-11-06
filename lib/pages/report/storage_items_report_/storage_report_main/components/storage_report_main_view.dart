@@ -10,7 +10,10 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_range_fields.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_report_main/class/storage_report_export_spec.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report_main/class/storage_report_main_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -74,6 +77,9 @@ class _StorageReportMainViewState
 
   List<StorageReportRow> _baseRows = [];
   StorageReportPageResult? _result;
+
+  // Every filtered, sorted row, for the export.
+  List<StorageReportRow> _sortedRows = [];
   String _signature = '';
 
   /// storage item uuid -> stock movement (opening, closing, change).
@@ -264,10 +270,28 @@ class _StorageReportMainViewState
               ? (r) => _movements[r.uuid]?.change
               : null,
     );
+    _sortedRows = sorted;
     final page = StorageReportQuery.paginate(sorted, _page);
     _page = page.page;
     _ensureStockMovements(page.rows);
     _result = page;
+  }
+
+  /// Every exported row needs its stock movement, not just the page's.
+  ReportExportSpec _exportSpec() {
+    _ensureStockMovements(_sortedRows);
+    return storageReportExportSpec(
+      rows: _sortedRows,
+      movements: _movements,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
+      range: _range,
+      canSeeCost: _canSeeCost,
+      canSeeQuantity: _canSeeQuantity,
+      historyTracked: _historyTracked,
+      currency: currencySymbol(context: context),
+    );
   }
 
   void _apply(
@@ -746,6 +770,10 @@ class _StorageReportMainViewState
                   () => _showFilters = !_showFilters,
                 ),
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 5, right: 5),
+          child: ReportExportButton(buildSpec: _exportSpec),
         ),
         if (_filters.hasAnything)
           Material(

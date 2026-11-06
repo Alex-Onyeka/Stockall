@@ -12,7 +12,10 @@ import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/report_group_by.dart';
+import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_export_spec.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -115,6 +118,10 @@ class _InvoiceReportTableViewState
 
   List<InvoiceReportRow> _baseRows = [];
   InvoiceReportPageResult? _result;
+
+  // Every filtered, sorted row and group, for the export.
+  List<InvoiceReportRow> _sortedRows = [];
+  List<InvoiceReportGroupRow> _sortedGroups = [];
   String _signature = '';
 
   @override
@@ -280,6 +287,7 @@ class _InvoiceReportTableViewState
       bulkSaleEnabled: _bulkSaleEnabled,
       costFilterAllowed: _canSeeCost,
     );
+    _sortedRows = sorted;
 
     if (_grouped) {
       final groups = InvoiceReportGrouping.sort(
@@ -287,6 +295,7 @@ class _InvoiceReportTableViewState
         field: _groupSortField,
         ascending: _groupAscending,
       );
+      _sortedGroups = groups;
       final page = InvoiceReportGrouping.paginate(
         groups,
         _page,
@@ -301,6 +310,27 @@ class _InvoiceReportTableViewState
       _page = page.page;
       _result = page;
     }
+  }
+
+  ReportExportSpec _exportSpec() {
+    return invoiceReportExportSpec(
+      rows: _sortedRows,
+      groups: _sortedGroups,
+      baseRows: _baseRows,
+      groupBy: _groupBy,
+      filters: _filters,
+      departmentNames: {
+        for (final d in returnDepartmentProvider().departments)
+          d.uuid: d.name,
+      },
+      sortField: _sortField,
+      ascending: _ascending,
+      groupSortField: _groupSortField,
+      groupAscending: _groupAscending,
+      currency: currencySymbol(context: context),
+      departmentsEnabled: _departmentsEnabled,
+      bulkSaleEnabled: _bulkSaleEnabled,
+    );
   }
 
   void _apply(
@@ -825,6 +855,10 @@ class _InvoiceReportTableViewState
             theme: theme,
             value: _groupBy,
             onChanged: (g) => _apply(() => _groupBy = g),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            child: ReportExportButton(buildSpec: _exportSpec),
           ),
           if (_filters.hasAnything)
             Material(

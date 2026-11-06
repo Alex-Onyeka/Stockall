@@ -11,8 +11,11 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_report/class/storage_item_history_report_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_item_history_summary/class/storage_item_history_summary_logic.dart';
+import 'package:stockall/pages/report/storage_items_report_/storage_report_analysis/class/storage_report_analysis_export_spec.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report_analysis/class/storage_report_analysis_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report_main/class/storage_report_main_logic.dart';
 import 'package:stockall/pages/report/storage_items_report_/storage_report_main/storage_report_main_page.dart';
@@ -251,6 +254,56 @@ class _StorageReportAnalysisViewState
     );
   }
 
+  /// The same figures [_buildContent] draws.
+  ReportExportSpec _exportSpec() {
+    final now = resolveBusinessDate(DateTime.now());
+    final records = StorageReportAnalysisBuilder.computePerformance(
+      rows: _rows,
+      storageProducts: _storageProducts,
+      histories: _histories,
+      period: _period,
+      businessNow: now,
+      customRange: _customRange,
+    );
+    return storageAnalysisExportSpec(
+      summary: StorageReportAnalysisBuilder.buildSummary(_rows),
+      records: records,
+      best3: StorageReportAnalysisBuilder.getBest3(
+        records: records,
+        metric: _metric,
+      ),
+      least3: StorageReportAnalysisBuilder.getLeast3(
+        records: records,
+        metric: _metric,
+      ),
+      idle: StorageReportAnalysisBuilder.getIdleItems(records),
+      metric: _metric,
+      departmentDist:
+          StorageReportAnalysisBuilder.computeDepartmentDistribution(
+            rows: _rows,
+            departments: _departments,
+          ),
+      typeDist:
+          StorageReportAnalysisBuilder.computeQuantityTypeDistribution(
+            _rows,
+          ),
+      recentItems: StorageReportAnalysisBuilder.getNewlyCreatedItems(
+        _rows,
+        limit: 10,
+      ),
+      period: _period,
+      customRange: _customRange,
+      resolvedRange: StorageHistorySummaryBuilder.resolveDateRange(
+        period: _period,
+        businessNow: now,
+        customRange: _customRange,
+      ),
+      canSeeCost: _canSeeCost,
+      departmentsEnabled: _departmentsEnabled,
+      currency: currencySymbol(context: context),
+    );
+  }
+
   Widget _buildContent(ThemeProvider theme) {
     final summary = StorageReportAnalysisBuilder.buildSummary(_rows);
     final now = resolveBusinessDate(DateTime.now());
@@ -337,7 +390,15 @@ class _StorageReportAnalysisViewState
             color: Colors.black87,
           ),
         ),
-        _buildPeriodSelector(theme),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _buildPeriodSelector(theme),
+            ReportExportButton(buildSpec: _exportSpec),
+          ],
+        ),
       ],
     );
   }
@@ -890,10 +951,7 @@ class _StorageReportAnalysisViewState
               ),
               Expanded(
                 child: Text(
-                  records.isEmpty
-                      ? 'No storage items yet.'
-                      : '${idle.length} of ${records.length} storage item${records.length == 1 ? '' : 's'} had no stock movement in this period. '
-                          'Quantities are in each item\'s primary unit.',
+                  storageAnalysisIdleNote(records, idle),
                   style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                 ),
               ),
@@ -1476,7 +1534,7 @@ class _StorageReportAnalysisViewState
           if (tab == 0) ...[
             const SizedBox(height: 4),
             Text(
-              'A storage item that supplies several departments counts in each, so shares can add up to more than 100%.',
+              storageAnalysisDepartmentFootnote,
               style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
             ),
           ],

@@ -12,7 +12,12 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/report/components/export/report_export_button.dart';
+import 'package:stockall/pages/report/components/export/report_export_spec.dart';
+import 'package:stockall/pages/report/items_report_/item_history_summary/class/item_history_summary_export_spec.dart'
+    show stockMovementsSizeLabels;
 import 'package:stockall/pages/report/items_report_/item_history_summary/class/item_history_summary_logic.dart';
+import 'package:stockall/pages/report/items_report_/item_level_stock_movements/class/item_level_stock_movements_export_spec.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 const int itemStockMovementsPageSize = 100;
@@ -248,6 +253,29 @@ class _ItemLevelStockMovementsViewState
       pageSize: itemStockMovementsPageSize,
     );
     _page = _result!.page;
+  }
+
+  /// What the Export button exports: the full filtered and sorted list
+  /// (every page), with the period, filters and sort shown on screen.
+  ReportExportSpec _exportSpec() {
+    return itemStockMovementsExportSpec(
+      rows: _filteredSortedRows,
+      filters: _filters,
+      sortField: _sortField,
+      ascending: _ascending,
+      period: _period,
+      range: ItemHistorySummaryBuilder.resolveDateRange(
+        period: _period,
+        businessNow: resolveBusinessDate(DateTime.now()),
+        customRange: _customRange,
+      ),
+      currency: currencySymbol(context: context),
+      manageProductions: _manageProductions,
+      departmentsEnabled: _departmentsEnabled,
+      categoryNames: {for (final c in _categories) c.uuid: c.name},
+      departmentNames: {for (final d in _departments) d.uuid: d.name},
+      sizeLabels: stockMovementsSizeLabels(_products),
+    );
   }
 
   void _onSort(ItemHistorySummarySortField field) {
@@ -599,6 +627,7 @@ class _ItemLevelStockMovementsViewState
                       _categoryDropdown(theme),
                       if (_departmentsEnabled)
                         _departmentDropdown(theme),
+                      ReportExportButton(buildSpec: _exportSpec),
                       if (!widget.isDesktop)
                         IconButton(
                           tooltip:
