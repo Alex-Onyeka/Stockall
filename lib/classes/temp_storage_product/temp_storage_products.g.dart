@@ -6,8 +6,7 @@ part of 'temp_storage_products.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempStorageProductsAdapter
-    extends TypeAdapter<TempStorageProducts> {
+class TempStorageProductsAdapter extends TypeAdapter<TempStorageProducts> {
   @override
   final int typeId = 66;
 
@@ -15,8 +14,7 @@ class TempStorageProductsAdapter
   TempStorageProducts read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempStorageProducts(
       uuid: fields[0] as String?,
@@ -32,8 +30,7 @@ class TempStorageProductsAdapter
       costPrice: fields[10] as double?,
       sellingPrice: fields[11] as double?,
       useGroupUnit: fields[12] as bool?,
-      unitsList:
-          (fields[13] as List?)?.cast<ProductUnitsClass>(),
+      unitsList: (fields[13] as List?)?.cast<ProductUnitsClass>(),
       quantityType: fields[14] as int?,
       widthDimension: fields[15] as double?,
       heightDimension: fields[16] as double?,

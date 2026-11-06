@@ -19,6 +19,7 @@ import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
+import 'package:stockall/services/product_linking_helper.dart';
 
 Future<Object?> transferItemQuantity(
   BuildContext context,
@@ -721,7 +722,16 @@ void selectItemInADepartmentProducts({
     context: thirdContext,
     action: () {
       final searchController = TextEditingController();
-      TempProductClass? selectedItem;
+      final deptProducts = returnData()
+          .productListMain
+          .where((item) =>
+              (department != null ? item.departmentUuid == department.uuid : true) &&
+              item.uuid != mainItem.uuid)
+          .toList();
+      TempProductClass? selectedItem = ProductLinkingHelper.resolveLinkedProduct(
+        sourceProduct: mainItem,
+        destinationProducts: deptProducts,
+      );
       showDialog(
         context: thirdContext,
         builder: (fourthContext) {
@@ -749,7 +759,7 @@ void selectItemInADepartmentProducts({
                             TempProductClass newProduct =
                                 oldProduct.copyWith();
                             newProduct.quantity =
-                                (newProduct
+                                ((newProduct
                                         .getActualQuantity() ??
                                     0) +
                                 mainItem
@@ -760,7 +770,8 @@ void selectItemInADepartmentProducts({
                                       index: 1,
                                       newQuantity:
                                           enteredValue,
-                                    );
+                                    )) /
+                                newProduct.dimensionArea();
                             ItemHistory
                             itemHistory = ItemHistory(
                               event:
@@ -843,7 +854,7 @@ void selectItemInADepartmentProducts({
                             TempProductClass newProduct2 =
                                 mainItem.copyWith();
                             newProduct2.quantity =
-                                ((newProduct2
+                                (((newProduct2
                                             .getActualQuantity() ??
                                         0) -
                                     newProduct2
@@ -855,7 +866,8 @@ void selectItemInADepartmentProducts({
                                           index: 1,
                                           newQuantity:
                                               enteredValue,
-                                        ));
+                                        ))) /
+                                newProduct2.dimensionArea();
                             ItemHistory
                             itemHistory2 = ItemHistory(
                               event:
@@ -932,7 +944,7 @@ void selectItemInADepartmentProducts({
                                 );
                             if (res == null ||
                                 res2 == null) {
-                              loadingAction(false);
+                          loadingAction(false);
                               showDialog(
                                 // ignore: use_build_context_synchronously
                                 context: fifthContext,
@@ -970,7 +982,7 @@ void selectItemInADepartmentProducts({
                                 // ignore: use_build_context_synchronously
                                 firstContext,
                               ).pop();
-                              loadingAction(false);
+                          loadingAction(false);
                             }
                           },
                         );
@@ -1440,7 +1452,7 @@ void selectItemInAShop({
                         TempProductClass newProduct =
                             oldProduct.copyWith();
                         newProduct.quantity =
-                            (newProduct
+                            ((newProduct
                                     .getActualQuantity() ??
                                 0) +
                             mainItem
@@ -1450,7 +1462,8 @@ void selectItemInAShop({
                                 .getQuantityEquivMultiplied(
                                   index: 1,
                                   newQuantity: enteredValue,
-                                );
+                                )) /
+                            newProduct.dimensionArea();
                         ItemHistory
                         itemHistory = ItemHistory(
                           event:
@@ -1522,7 +1535,7 @@ void selectItemInAShop({
                         TempProductClass newProduct2 =
                             mainItem.copyWith();
                         newProduct2.quantity =
-                            ((newProduct2
+                            (((newProduct2
                                         .getActualQuantity() ??
                                     0) -
                                 newProduct2
@@ -1533,7 +1546,8 @@ void selectItemInAShop({
                                       index: 1,
                                       newQuantity:
                                           enteredValue,
-                                    ));
+                                    ))) /
+                            newProduct2.dimensionArea();
                         ItemHistory
                         itemHistory2 = ItemHistory(
                           event:
@@ -1608,6 +1622,13 @@ void selectItemInAShop({
                               itemHistory: itemHistory2,
                             );
                         if (res == null || res2 == null) {
+                          if (mainItem.transferedProductId == null ||
+                              mainItem.transferedProductId!.isEmpty) {
+                            await ProductLinkingHelper.linkProducts(
+                              sourceProduct: mainItem,
+                              targetProduct: oldProduct,
+                            );
+                          }
                           loadingAction(false);
                           showDialog(
                             // ignore: use_build_context_synchronously
@@ -1645,6 +1666,13 @@ void selectItemInAShop({
                             // ignore: use_build_context_synchronously
                             firstContext,
                           ).pop();
+                          if (mainItem.transferedProductId == null ||
+                              mainItem.transferedProductId!.isEmpty) {
+                            await ProductLinkingHelper.linkProducts(
+                              sourceProduct: mainItem,
+                              targetProduct: oldProduct,
+                            );
+                          }
                           loadingAction(false);
                         }
                       },
@@ -1716,8 +1744,16 @@ void selectItemInAShop({
                             ),
                           );
                         } else {
+                          final allShopProducts = snapshot.data ?? [];
+                          final autoLinked = ProductLinkingHelper.resolveLinkedProduct(
+                            sourceProduct: mainItem,
+                            destinationProducts: allShopProducts,
+                          );
+                          if (selectedItem == null && autoLinked != null) {
+                            selectedItem = autoLinked;
+                          }
                           List<TempProductClass> products =
-                              (snapshot.data ?? [])
+                              allShopProducts
                                   .where(
                                     (item) =>
                                         item.name
@@ -1731,7 +1767,55 @@ void selectItemInAShop({
                                             mainItem.uuid,
                                   )
                                   .toList();
-                          return SingleChildScrollView(
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (autoLinked != null)
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade50,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color: Colors.green.shade200),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.link_rounded,
+                                          color: Colors.green.shade700,
+                                          size: 18),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Auto-Selected Linked Destination',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.green.shade900,
+                                              ),
+                                            ),
+                                            Text(
+                                              '${autoLinked.name} (${shop.name})',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.green.shade800,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              Expanded(
+                                child: SingleChildScrollView(
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(
@@ -1854,6 +1938,9 @@ void selectItemInAShop({
                                 },
                               ),
                             ),
+                          ),
+                              ),
+                            ],
                           );
                         }
                       },

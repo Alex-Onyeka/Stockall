@@ -144,6 +144,9 @@ class TempProductClass {
   @HiveField(43)
   bool? deriveQuantityFromPrice;
 
+  @HiveField(44)
+  String? transferedProductId;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -189,6 +192,7 @@ class TempProductClass {
     this.dimensionUnit,
     this.dimensionUnitConversion,
     this.deriveQuantityFromPrice,
+    this.transferedProductId,
   });
 
   factory TempProductClass.fromJson(
@@ -297,6 +301,8 @@ class TempProductClass {
       deriveQuantityFromPrice:
           json['derive_quantity_from_price'] as bool? ??
           false,
+      transferedProductId:
+          json['transfered_product_id'] as String?,
     );
   }
 
@@ -365,6 +371,7 @@ class TempProductClass {
             dimensionUnitConversion,
         'derive_quantity_from_price':
             deriveQuantityFromPrice,
+        'transfered_product_id': transferedProductId,
       };
     } else {
       return {
@@ -428,6 +435,7 @@ class TempProductClass {
             dimensionUnitConversion,
         'derive_quantity_from_price':
             deriveQuantityFromPrice,
+        'transfered_product_id': transferedProductId,
       };
     }
   }
@@ -477,6 +485,7 @@ class TempProductClass {
     String? dimensionUnit,
     double? dimensionUnitConversion,
     bool? deriveQuantityFromPrice,
+    String? transferedProductId,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -532,6 +541,8 @@ class TempProductClass {
       deriveQuantityFromPrice:
           deriveQuantityFromPrice ??
           this.deriveQuantityFromPrice,
+      transferedProductId:
+          transferedProductId ?? this.transferedProductId,
     );
   }
 
@@ -783,9 +794,12 @@ class TempProductClass {
       if (isExpired()) {
         return 'Expired';
       } else {
-        var products = returnData(context: context, listen: false)
-            .productListMain
-            .where((item) => item.uuid == uuid);
+        var products = returnData(
+          context: context,
+          listen: false,
+        ).productListMain.where(
+          (item) => item.uuid == uuid,
+        );
         double tempQuantity = 0;
         if (products.isNotEmpty) {
           tempQuantity =
@@ -841,7 +855,10 @@ class TempProductClass {
     BuildContext context,
   ) {
     var selectedUnits =
-        returnData(context: context, listen: false).tempUnitsList;
+        returnData(
+          context: context,
+          listen: false,
+        ).tempUnitsList;
     if (selectedUnits.isEmpty) {
       return 'Unit Not Set';
     } else {

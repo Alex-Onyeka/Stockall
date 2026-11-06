@@ -22,6 +22,8 @@ import 'package:stockall/pages/products/compnents/product_filter_button_category
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/products/total_products/platforms/components/bulk_transfer_dialog.dart';
+import 'package:stockall/pages/products/total_products/platforms/components/product_duplication_dialog.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class TotalProductsDesktop extends StatefulWidget {
@@ -35,10 +37,12 @@ class TotalProductsDesktop extends StatefulWidget {
   final String? categoryUuid;
 
   @override
-  State<TotalProductsDesktop> createState() => _TotalProductsDesktopState();
+  State<TotalProductsDesktop> createState() =>
+      _TotalProductsDesktopState();
 }
 
-class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
+class _TotalProductsDesktopState
+    extends State<TotalProductsDesktop> {
   int currentSelect = 0;
   void changeSelected(int number) {
     currentSelect = number;
@@ -51,7 +55,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
   }
 
   bool isFocus = false;
-  TextEditingController searchController = TextEditingController();
+  TextEditingController searchController =
+      TextEditingController();
 
   bool isLoading = false;
   bool isDeleteLoading = false;
@@ -61,9 +66,15 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
     super.initState();
     returnData().toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (returnCategoriesProvider().categories().isNotEmpty) {
+      if (returnCategoriesProvider()
+          .categories()
+          .isNotEmpty) {
         setState(() {
-          categoryUuid = returnCategoriesProvider().categories().first.uuid;
+          categoryUuid =
+              returnCategoriesProvider()
+                  .categories()
+                  .first
+                  .uuid;
         });
       }
     });
@@ -75,7 +86,9 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
   }
 
   Future<void> getProductList() async {
-    await RefreshFunctions(context).refreshProducts(context);
+    await RefreshFunctions(
+      context,
+    ).refreshProducts(context);
     setState(() {});
   }
 
@@ -88,7 +101,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
     });
   }
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
   int filterIndex = 0;
   String? categoryUuid;
 
@@ -105,14 +119,19 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                         searchController.text.toLowerCase(),
                       ) ||
                       pr.barcode?.toLowerCase() ==
-                          searchController.text.toLowerCase(),
+                          searchController.text
+                              .toLowerCase(),
                 )
                 .toList()
             : widget.categoryUuid != null
             ? returnData()
                 .productList()
                 .where(
-                  (pr) => pr.categories?.contains(widget.categoryUuid) == true,
+                  (pr) =>
+                      pr.categories?.contains(
+                        widget.categoryUuid,
+                      ) ==
+                      true,
                 )
                 .toList()
             : returnData().productList();
@@ -122,7 +141,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
           return products
               .where(
                 (p) =>
-                    p.getActualQuantity() != 0 && p.getActualQuantity() != null,
+                    p.getActualQuantity() != 0 &&
+                    p.getActualQuantity() != null,
               )
               .toList();
         case 2:
@@ -135,11 +155,17 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
               )
               .toList();
         case 3:
-          return products.where((p) => p.getActualQuantity() == 0).toList();
+          return products
+              .where((p) => p.getActualQuantity() == 0)
+              .toList();
         case 4:
-          return products.where((p) => !p.isManaged).toList();
+          return products
+              .where((p) => !p.isManaged)
+              .toList();
         case 5:
-          return products.where((p) => p.departmentUuid == null).toList();
+          return products
+              .where((p) => p.departmentUuid == null)
+              .toList();
         case 0:
         default:
           return products;
@@ -149,7 +175,11 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
     List<TempProductClass> categoryFilterProducts() {
       if (categoryUuid != null) {
         return products
-            .where((pr) => pr.categories?.contains(categoryUuid) == true)
+            .where(
+              (pr) =>
+                  pr.categories?.contains(categoryUuid) ==
+                  true,
+            )
             .toList();
       }
       return products;
@@ -166,8 +196,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                 width:
                     screenWidth(context) < tabletScreenSmall
                         ? 50
-                        : (screenWidth(context) > tabletScreenSmall &&
-                            screenWidth(context) < tabletScreen + 100)
+                        : (screenWidth(context) >
+                                tabletScreenSmall &&
+                            screenWidth(context) <
+                                tabletScreen + 100)
                         ? 100
                         : 230,
               ),
@@ -175,14 +207,23 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                 child: Stack(
                   children: [
                     Container(
-                      margin: EdgeInsets.symmetric(vertical: 15),
+                      margin: EdgeInsets.symmetric(
+                        vertical: 15,
+                      ),
                       padding: EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(
+                          15,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color.fromARGB(39, 4, 1, 41),
+                            color: const Color.fromARGB(
+                              39,
+                              4,
+                              1,
+                              41,
+                            ),
                             blurRadius: 10,
                           ),
                         ],
@@ -197,30 +238,49 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                               Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  mouseCursor: SystemMouseCursors.click,
-                                  borderRadius: BorderRadius.circular(10),
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
                                   onTap: () async {
                                     await getProductList();
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.all(10),
+                                    padding:
+                                        const EdgeInsets.all(
+                                          10,
+                                        ),
                                     child: Row(
                                       spacing: 5,
                                       children: [
                                         Visibility(
                                           visible:
-                                              screenWidth(context) >
+                                              screenWidth(
+                                                context,
+                                              ) >
                                               tabletScreenSmall,
                                           child: Text(
                                             style: TextStyle(
                                               fontSize:
-                                                  theme.mobileTexts.b3.fontSize,
-                                              fontWeight: FontWeight.bold,
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
                                             ),
                                             'Refresh',
                                           ),
                                         ),
-                                        Icon(size: 18, Icons.refresh_rounded),
+                                        Icon(
+                                          size: 18,
+                                          Icons
+                                              .refresh_rounded,
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -228,7 +288,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                               ),
                               Visibility(
                                 visible:
-                                    widget.categoryUuid == null ? true : false,
+                                    widget.categoryUuid ==
+                                            null
+                                        ? true
+                                        : false,
                                 child: PopupMenuButton(
                                   offset: Offset(-20, 30),
                                   color: Colors.white,
@@ -239,17 +302,21 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                           setState(() {
                                             filterIndex = 0;
                                           });
-                                          returnData().toggleIsSelectProduct(
-                                            false,
-                                          );
+                                          returnData()
+                                              .toggleIsSelectProduct(
+                                                false,
+                                              );
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0,
-                                          ),
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    10.0,
+                                              ),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                             children: [
                                               Text(
                                                 style: TextStyle(
@@ -259,7 +326,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                           .b3
                                                           .fontSize,
                                                   fontWeight:
-                                                      filterIndex == 0
+                                                      filterIndex ==
+                                                              0
                                                           ? FontWeight.bold
                                                           : null,
                                                 ),
@@ -267,13 +335,18 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                               ),
                                               Visibility(
                                                 visible:
-                                                    filterIndex == 0 &&
+                                                    filterIndex ==
+                                                        0 &&
                                                     !returnData()
                                                         .isSelectProducts,
                                                 child: Icon(
                                                   size: 17,
-                                                  color: Colors.grey.shade700,
-                                                  Icons.check,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade700,
+                                                  Icons
+                                                      .check,
                                                 ),
                                               ),
                                             ],
@@ -285,17 +358,21 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                           setState(() {
                                             filterIndex = 1;
                                           });
-                                          returnData().toggleIsSelectProduct(
-                                            false,
-                                          );
+                                          returnData()
+                                              .toggleIsSelectProduct(
+                                                false,
+                                              );
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0,
-                                          ),
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    10.0,
+                                              ),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                             children: [
                                               Text(
                                                 style: TextStyle(
@@ -305,18 +382,25 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                           .b3
                                                           .fontSize,
                                                   fontWeight:
-                                                      filterIndex == 1
+                                                      filterIndex ==
+                                                              1
                                                           ? FontWeight.bold
                                                           : null,
                                                 ),
                                                 'Categories',
                                               ),
                                               Visibility(
-                                                visible: filterIndex == 1,
+                                                visible:
+                                                    filterIndex ==
+                                                    1,
                                                 child: Icon(
                                                   size: 17,
-                                                  color: Colors.grey.shade700,
-                                                  Icons.check,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade700,
+                                                  Icons
+                                                      .check,
                                                 ),
                                               ),
                                             ],
@@ -328,21 +412,27 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) {
+                                              builder: (
+                                                context,
+                                              ) {
                                                 return ItemHistoryPage(
-                                                  fromItemDetails: false,
+                                                  fromItemDetails:
+                                                      false,
                                                 );
                                               },
                                             ),
                                           );
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0,
-                                          ),
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    10.0,
+                                              ),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                             children: [
                                               Text(
                                                 style: TextStyle(
@@ -360,23 +450,28 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                       ),
                                       PopupMenuItem(
                                         onTap: () {
-                                          if (returnData().isSelectProducts) {
-                                            returnData().toggleIsSelectProduct(
-                                              false,
-                                            );
+                                          if (returnData()
+                                              .isSelectProducts) {
+                                            returnData()
+                                                .toggleIsSelectProduct(
+                                                  false,
+                                                );
                                           } else {
-                                            returnData().toggleIsSelectProduct(
-                                              true,
-                                            );
+                                            returnData()
+                                                .toggleIsSelectProduct(
+                                                  true,
+                                                );
                                           }
                                           setState(() {
                                             filterIndex = 0;
                                           });
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0,
-                                          ),
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                horizontal:
+                                                    10.0,
+                                              ),
                                           child: Row(
                                             spacing: 5,
                                             children: [
@@ -388,11 +483,13 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                           .b3
                                                           .fontSize,
                                                   fontWeight:
-                                                      filterIndex == 2
+                                                      filterIndex ==
+                                                              2
                                                           ? FontWeight.bold
                                                           : null,
                                                 ),
-                                                returnData().isSelectProducts
+                                                returnData()
+                                                        .isSelectProducts
                                                     ? 'Cancel'
                                                     : 'Select Items',
                                               ),
@@ -402,8 +499,12 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                         .isSelectProducts,
                                                 child: Icon(
                                                   size: 17,
-                                                  color: Colors.grey.shade700,
-                                                  Icons.clear,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade700,
+                                                  Icons
+                                                      .clear,
                                                 ),
                                               ),
                                             ],
@@ -413,8 +514,13 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                     ];
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.all(5),
-                                    child: Icon(Icons.more_vert_rounded),
+                                    padding: EdgeInsets.all(
+                                      5,
+                                    ),
+                                    child: Icon(
+                                      Icons
+                                          .more_vert_rounded,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -424,56 +530,73 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                         floatingActionButton: Visibility(
                           visible:
                               authorization(
-                                authorized: Authorizations().addProduct,
+                                authorized:
+                                    Authorizations()
+                                        .addProduct,
                               ) &&
                               widget.categoryUuid == null,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.end,
                             spacing: 10,
                             children: [
                               FloatingActionButtonMain(
                                 action: () {
-                                  ItemsAuthAction().numberOfItemsAction(
-                                    context: context,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return BulkUploadProductsPage();
-                                          },
-                                        ),
+                                  ItemsAuthAction()
+                                      .numberOfItemsAction(
+                                        context: context,
+                                        action: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return BulkUploadProductsPage();
+                                              },
+                                            ),
+                                          );
+                                        },
                                       );
-                                    },
-                                  );
                                 },
-                                color: theme.lightModeColor.secColor100,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor100,
                                 text: 'Bulk Upload',
-                                icon: Icons.upload_file_rounded,
+                                icon:
+                                    Icons
+                                        .upload_file_rounded,
                                 theme: theme,
                               ),
                               FloatingActionButtonMain(
                                 action: () {
-                                  ItemsAuthAction().numberOfItemsAction(
-                                    context: context,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return AddProduct();
-                                          },
-                                        ),
-                                      ).then((_) {
-                                        setState(() {
-                                          // getProductList(context);
-                                        });
-                                      });
-                                    },
-                                  );
+                                  ItemsAuthAction()
+                                      .numberOfItemsAction(
+                                        context: context,
+                                        action: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return AddProduct();
+                                              },
+                                            ),
+                                          ).then((_) {
+                                            setState(() {
+                                              // getProductList(context);
+                                            });
+                                          });
+                                        },
+                                      );
                                 },
-                                color: theme.lightModeColor.secColor100,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor100,
                                 text: 'Add Products',
                                 theme: theme,
                               ),
@@ -481,21 +604,24 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                           ),
                         ),
                         floatingActionButtonLocation:
-                            FloatingActionButtonLocation.endFloat,
+                            FloatingActionButtonLocation
+                                .endFloat,
                         body: Stack(
                           children: [
                             Column(
                               children: [
                                 SizedBox(height: 10),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0,
-                                  ),
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 30.0,
+                                      ),
                                   child: TextFieldBarcode(
                                     clearTextField: () {
                                       setState(() {});
                                     },
-                                    searchController: searchController,
+                                    searchController:
+                                        searchController,
                                     onChanged: (value) {
                                       setState(() {});
                                     },
@@ -507,19 +633,25 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                   child: SizedBox(
                                     child: Builder(
                                       builder: (context) {
-                                        if (products.isEmpty) {
+                                        if (products
+                                            .isEmpty) {
                                           return Center(
                                             child: SingleChildScrollView(
                                               child: RefreshIndicator(
-                                                onRefresh: getProductList,
+                                                onRefresh:
+                                                    getProductList,
                                                 color:
                                                     theme
                                                         .lightModeColor
                                                         .prColor300,
-                                                backgroundColor: Colors.white,
-                                                displacement: 10,
+                                                backgroundColor:
+                                                    Colors
+                                                        .white,
+                                                displacement:
+                                                    10,
                                                 child: EmptyWidgetDisplay(
-                                                  buttonText: 'Add Item',
+                                                  buttonText:
+                                                      'Add Item',
                                                   subText:
                                                       widget.categoryUuid ==
                                                               null
@@ -530,16 +662,17 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                               null
                                                           ? 'You have not Item Under this Category'
                                                           : 'You have no Items Yet',
-                                                  svg: productIconSvg,
-                                                  height: 35,
+                                                  svg:
+                                                      productIconSvg,
+                                                  height:
+                                                      35,
                                                   action:
                                                       widget.categoryUuid !=
                                                               null
                                                           ? () {
                                                             if (authorization(
                                                               authorized:
-                                                                  Authorizations()
-                                                                      .addProduct,
+                                                                  Authorizations().addProduct,
                                                             )) {
                                                               Navigator.push(
                                                                 context,
@@ -550,64 +683,74 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     return AddProduct();
                                                                   },
                                                                 ),
-                                                              ).then((_) {
-                                                                if (context
-                                                                    .mounted) {}
-                                                              });
+                                                              ).then(
+                                                                (
+                                                                  _,
+                                                                ) {
+                                                                  if (context.mounted) {}
+                                                                },
+                                                              );
                                                             }
                                                           }
                                                           : () {},
-                                                  theme: widget.theme,
+                                                  theme:
+                                                      widget
+                                                          .theme,
                                                   altAction: () async {
-                                                    await returnData()
-                                                        .getProducts(shopId());
+                                                    await returnData().getProducts(
+                                                      shopId(),
+                                                    );
                                                   },
-                                                  altActionText: 'Refresh',
-                                                  altIcon: Icons.refresh,
+                                                  altActionText:
+                                                      'Refresh',
+                                                  altIcon:
+                                                      Icons
+                                                          .refresh,
                                                 ),
                                               ),
                                             ),
                                           );
                                         } else {
                                           return Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                              10.0,
-                                              15,
-                                              10,
-                                              15,
-                                            ),
+                                            padding:
+                                                const EdgeInsets.fromLTRB(
+                                                  10.0,
+                                                  15,
+                                                  10,
+                                                  15,
+                                                ),
                                             child: Column(
                                               children: [
                                                 Visibility(
                                                   visible:
-                                                      widget.categoryUuid ==
+                                                      widget
+                                                          .categoryUuid ==
                                                       null,
                                                   child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 5.0,
-                                                        ),
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal:
+                                                          5.0,
+                                                    ),
                                                     child: SizedBox(
-                                                      width: double.infinity,
+                                                      width:
+                                                          double.infinity,
                                                       // height: 40,
                                                       child: Builder(
-                                                        builder: (context) {
-                                                          if (returnData()
-                                                              .isSelectProducts) {
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          if (returnData().isSelectProducts) {
                                                             return Row(
                                                               // spacing:
                                                               //     5,
                                                               mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
+                                                                  MainAxisAlignment.center,
                                                               children: [
                                                                 ProductSelectionActionButton(
                                                                   title:
                                                                       'Delete',
                                                                   action: () {
-                                                                    if (returnData()
-                                                                        .selectedProducts
-                                                                        .isNotEmpty) {
+                                                                    if (returnData().selectedProducts.isNotEmpty) {
                                                                       showDialog(
                                                                         context:
                                                                             context,
@@ -676,12 +819,9 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     }
                                                                   },
                                                                   icon:
-                                                                      Icons
-                                                                          .delete_outline_rounded,
+                                                                      Icons.delete_outline_rounded,
                                                                   color:
-                                                                      Colors
-                                                                          .red
-                                                                          .shade600,
+                                                                      Colors.red.shade600,
                                                                 ),
                                                                 ProductSelectionActionButton(
                                                                   title:
@@ -693,19 +833,49 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                       loadingAction: (
                                                                         value,
                                                                       ) {
-                                                                        setState(() {
-                                                                          isDeleteLoading =
-                                                                              value;
-                                                                        });
+                                                                        setState(
+                                                                          () {
+                                                                            isDeleteLoading =
+                                                                                value;
+                                                                          },
+                                                                        );
                                                                       },
                                                                     );
                                                                   },
                                                                   icon:
-                                                                      Icons
-                                                                          .control_point_duplicate_rounded,
+                                                                      Icons.control_point_duplicate_rounded,
                                                                   color:
-                                                                      Colors
-                                                                          .grey,
+                                                                      Colors.grey,
+                                                                ),
+                                                                Visibility(
+                                                                  visible: authorization(
+                                                                    authorized:
+                                                                        Authorizations().transferProduct,
+                                                                  ),
+                                                                  child: ProductSelectionActionButton(
+                                                                    title:
+                                                                        'Transfer',
+                                                                    action: () {
+                                                                      launchBulkTransferWorkflow(
+                                                                        context:
+                                                                            context,
+                                                                        loadingAction: (
+                                                                          value,
+                                                                        ) {
+                                                                          setState(
+                                                                            () {
+                                                                              isDeleteLoading =
+                                                                                  value;
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    icon:
+                                                                        Icons.swap_horiz_rounded,
+                                                                    color:
+                                                                        Colors.blue.shade600,
+                                                                  ),
                                                                 ),
                                                                 Visibility(
                                                                   visible:
@@ -717,9 +887,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     title:
                                                                         'Generate Storage',
                                                                     action: () {
-                                                                      if (returnData()
-                                                                          .selectedProducts
-                                                                          .isNotEmpty) {
+                                                                      if (returnData().selectedProducts.isNotEmpty) {
                                                                         showDialog(
                                                                           context:
                                                                               context,
@@ -785,32 +953,29 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                       }
                                                                     },
                                                                     icon:
-                                                                        Icons
-                                                                            .storage_rounded,
+                                                                        Icons.storage_rounded,
                                                                     color:
-                                                                        Colors
-                                                                            .grey,
+                                                                        Colors.grey,
                                                                   ),
                                                                 ),
                                                                 ProductSelectionActionButton(
                                                                   title:
                                                                       'Cancel',
                                                                   action: () {
-                                                                    returnData()
-                                                                        .toggleIsSelectProduct(
-                                                                          false,
-                                                                        );
-                                                                    setState(() {
-                                                                      filterIndex =
-                                                                          0;
-                                                                    });
+                                                                    returnData().toggleIsSelectProduct(
+                                                                      false,
+                                                                    );
+                                                                    setState(
+                                                                      () {
+                                                                        filterIndex =
+                                                                            0;
+                                                                      },
+                                                                    );
                                                                   },
                                                                   icon:
-                                                                      Icons
-                                                                          .clear,
+                                                                      Icons.clear,
                                                                   color:
-                                                                      Colors
-                                                                          .grey,
+                                                                      Colors.grey,
                                                                 ),
                                                               ],
                                                             );
@@ -1013,15 +1178,14 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                               if (filterIndex ==
                                                                   0) {
                                                                 return Row(
-                                                                  spacing: 5,
+                                                                  spacing:
+                                                                      5,
                                                                   mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
+                                                                      MainAxisAlignment.center,
                                                                   children: [
                                                                     ProductsFilterButton(
                                                                       length:
-                                                                          filterProducts()
-                                                                              .length,
+                                                                          filterProducts().length,
                                                                       action: () {
                                                                         setState(
                                                                           () {
@@ -1033,7 +1197,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                       },
                                                                       currentSelected:
                                                                           currentSelect,
-                                                                      number: 0,
+                                                                      number:
+                                                                          0,
                                                                       title:
                                                                           'All Items',
                                                                       theme:
@@ -1041,8 +1206,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     ),
                                                                     ProductsFilterButton(
                                                                       length:
-                                                                          filterProducts()
-                                                                              .length,
+                                                                          filterProducts().length,
                                                                       action: () {
                                                                         setState(
                                                                           () {
@@ -1054,7 +1218,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                       },
                                                                       currentSelected:
                                                                           currentSelect,
-                                                                      number: 1,
+                                                                      number:
+                                                                          1,
                                                                       title:
                                                                           'In Stock',
                                                                       theme:
@@ -1062,8 +1227,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     ),
                                                                     ProductsFilterButton(
                                                                       length:
-                                                                          filterProducts()
-                                                                              .length,
+                                                                          filterProducts().length,
                                                                       action: () {
                                                                         setState(
                                                                           () {
@@ -1075,7 +1239,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                       },
                                                                       currentSelected:
                                                                           currentSelect,
-                                                                      number: 2,
+                                                                      number:
+                                                                          2,
                                                                       title:
                                                                           'Low Stock',
                                                                       theme:
@@ -1083,8 +1248,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     ),
                                                                     ProductsFilterButton(
                                                                       length:
-                                                                          filterProducts()
-                                                                              .length,
+                                                                          filterProducts().length,
                                                                       currentSelected:
                                                                           currentSelect,
                                                                       action: () {
@@ -1096,7 +1260,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                           },
                                                                         );
                                                                       },
-                                                                      number: 3,
+                                                                      number:
+                                                                          3,
                                                                       title:
                                                                           'Out of Stock',
                                                                       theme:
@@ -1104,8 +1269,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     ),
                                                                     ProductsFilterButton(
                                                                       length:
-                                                                          filterProducts()
-                                                                              .length,
+                                                                          filterProducts().length,
                                                                       currentSelected:
                                                                           currentSelect,
                                                                       action: () {
@@ -1117,7 +1281,8 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                           },
                                                                         );
                                                                       },
-                                                                      number: 4,
+                                                                      number:
+                                                                          4,
                                                                       title:
                                                                           'UnManaged',
                                                                       theme:
@@ -1125,9 +1290,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                     ),
                                                                     Visibility(
                                                                       visible:
-                                                                          returnShopProvider()
-                                                                              .userShop()
-                                                                              ?.manageDepartments ==
+                                                                          returnShopProvider().userShop()?.manageDepartments ==
                                                                           true,
                                                                       child: ProductsFilterButton(
                                                                         length:
@@ -1135,11 +1298,13 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                         currentSelected:
                                                                             currentSelect,
                                                                         action: () {
-                                                                          setState(() {
-                                                                            changeSelected(
-                                                                              5,
-                                                                            );
-                                                                          });
+                                                                          setState(
+                                                                            () {
+                                                                              changeSelected(
+                                                                                5,
+                                                                              );
+                                                                            },
+                                                                          );
                                                                         },
                                                                         number:
                                                                             5,
@@ -1153,10 +1318,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                 );
                                                               } else {
                                                                 return Row(
-                                                                  spacing: 5,
+                                                                  spacing:
+                                                                      5,
                                                                   mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
+                                                                      MainAxisAlignment.center,
                                                                   children:
                                                                       returnCategoriesProvider()
                                                                           .categories()
@@ -1193,27 +1358,30 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(height: 10),
+                                                SizedBox(
+                                                  height:
+                                                      10,
+                                                ),
                                                 Expanded(
                                                   child: Builder(
-                                                    builder: (context) {
-                                                      if (filterIndex == 0) {
-                                                        if (filterProducts()
-                                                            .isNotEmpty) {
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      if (filterIndex ==
+                                                          0) {
+                                                        if (filterProducts().isNotEmpty) {
                                                           return RefreshIndicator(
                                                             onRefresh:
                                                                 getProductList,
                                                             color:
-                                                                theme
-                                                                    .lightModeColor
-                                                                    .prColor300,
+                                                                theme.lightModeColor.prColor300,
                                                             backgroundColor:
                                                                 Colors.white,
-                                                            displacement: 10,
+                                                            displacement:
+                                                                10,
                                                             child: ListView.builder(
                                                               itemCount:
-                                                                  filterProducts()
-                                                                      .length,
+                                                                  filterProducts().length,
                                                               itemBuilder: (
                                                                 context,
                                                                 index,
@@ -1224,8 +1392,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                 products =
                                                                     filterProducts();
 
-                                                                TempProductClass
-                                                                product =
+                                                                TempProductClass product =
                                                                     products[index];
 
                                                                 return ProductTileMain(
@@ -1238,8 +1405,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                       returnData(
                                                                             context:
                                                                                 context,
-                                                                          )
-                                                                          .selectedProducts
+                                                                          ).selectedProducts
                                                                           .map(
                                                                             (
                                                                               pr,
@@ -1248,12 +1414,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                           )
                                                                           .toList(),
                                                                   action: () {
-                                                                    if (returnData()
-                                                                        .isSelectProducts) {
-                                                                      returnData()
-                                                                          .selectProduct(
-                                                                            product,
-                                                                          );
+                                                                    if (returnData().isSelectProducts) {
+                                                                      returnData().selectProduct(
+                                                                        product,
+                                                                      );
                                                                     } else {
                                                                       Navigator.push(
                                                                         context,
@@ -1267,33 +1431,35 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                             );
                                                                           },
                                                                         ),
-                                                                      ).then((
-                                                                        _,
-                                                                      ) {
-                                                                        if (context
-                                                                            .mounted) {
-                                                                          setState(
-                                                                            () {},
-                                                                          );
-                                                                        }
-                                                                      });
+                                                                      ).then(
+                                                                        (
+                                                                          _,
+                                                                        ) {
+                                                                          if (context.mounted) {
+                                                                            setState(
+                                                                              () {},
+                                                                            );
+                                                                          }
+                                                                        },
+                                                                      );
                                                                     }
                                                                   },
                                                                   longPress: () {
-                                                                    returnData()
-                                                                        .toggleIsSelectProduct(
-                                                                          true,
-                                                                        );
-                                                                    setState(() {
-                                                                      filterIndex =
-                                                                          0;
-                                                                    });
-                                                                    returnData()
-                                                                        .selectProduct(
-                                                                          product,
-                                                                        );
+                                                                    returnData().toggleIsSelectProduct(
+                                                                      true,
+                                                                    );
+                                                                    setState(
+                                                                      () {
+                                                                        filterIndex =
+                                                                            0;
+                                                                      },
+                                                                    );
+                                                                    returnData().selectProduct(
+                                                                      product,
+                                                                    );
                                                                   },
-                                                                  theme: theme,
+                                                                  theme:
+                                                                      theme,
                                                                   product:
                                                                       product,
                                                                 );
@@ -1302,10 +1468,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                           );
                                                         } else {
                                                           return Padding(
-                                                            padding:
-                                                                const EdgeInsets.only(
-                                                                  bottom: 30.0,
-                                                                ),
+                                                            padding: const EdgeInsets.only(
+                                                              bottom:
+                                                                  30.0,
+                                                            ),
                                                             child: EmptyWidgetDisplayOnly(
                                                               title:
                                                                   'Empty List',
@@ -1313,30 +1479,28 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                   'You Don\'t have any item under this category',
 
                                                               icon:
-                                                                  Icons
-                                                                      .dangerous_outlined,
-                                                              theme: theme,
-                                                              height: 40,
+                                                                  Icons.dangerous_outlined,
+                                                              theme:
+                                                                  theme,
+                                                              height:
+                                                                  40,
                                                             ),
                                                           );
                                                         }
                                                       } else {
-                                                        if (categoryFilterProducts()
-                                                            .isNotEmpty) {
+                                                        if (categoryFilterProducts().isNotEmpty) {
                                                           return RefreshIndicator(
                                                             onRefresh:
                                                                 getProductList,
                                                             color:
-                                                                theme
-                                                                    .lightModeColor
-                                                                    .prColor300,
+                                                                theme.lightModeColor.prColor300,
                                                             backgroundColor:
                                                                 Colors.white,
-                                                            displacement: 10,
+                                                            displacement:
+                                                                10,
                                                             child: ListView.builder(
                                                               itemCount:
-                                                                  categoryFilterProducts()
-                                                                      .length,
+                                                                  categoryFilterProducts().length,
                                                               itemBuilder: (
                                                                 context,
                                                                 index,
@@ -1347,8 +1511,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                 products =
                                                                     categoryFilterProducts();
 
-                                                                TempProductClass
-                                                                product =
+                                                                TempProductClass product =
                                                                     products[index];
 
                                                                 return ProductTileMain(
@@ -1361,8 +1524,7 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                       returnData(
                                                                             context:
                                                                                 context,
-                                                                          )
-                                                                          .selectedProducts
+                                                                          ).selectedProducts
                                                                           .map(
                                                                             (
                                                                               pr,
@@ -1371,12 +1533,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                           )
                                                                           .toList(),
                                                                   action: () {
-                                                                    if (returnData()
-                                                                        .isSelectProducts) {
-                                                                      returnData()
-                                                                          .selectProduct(
-                                                                            product,
-                                                                          );
+                                                                    if (returnData().isSelectProducts) {
+                                                                      returnData().selectProduct(
+                                                                        product,
+                                                                      );
                                                                     } else {
                                                                       Navigator.push(
                                                                         context,
@@ -1390,33 +1550,35 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                             );
                                                                           },
                                                                         ),
-                                                                      ).then((
-                                                                        _,
-                                                                      ) {
-                                                                        if (context
-                                                                            .mounted) {
-                                                                          setState(
-                                                                            () {},
-                                                                          );
-                                                                        }
-                                                                      });
+                                                                      ).then(
+                                                                        (
+                                                                          _,
+                                                                        ) {
+                                                                          if (context.mounted) {
+                                                                            setState(
+                                                                              () {},
+                                                                            );
+                                                                          }
+                                                                        },
+                                                                      );
                                                                     }
                                                                   },
                                                                   longPress: () {
-                                                                    returnData()
-                                                                        .toggleIsSelectProduct(
-                                                                          true,
-                                                                        );
-                                                                    setState(() {
-                                                                      filterIndex =
-                                                                          0;
-                                                                    });
-                                                                    returnData()
-                                                                        .selectProduct(
-                                                                          product,
-                                                                        );
+                                                                    returnData().toggleIsSelectProduct(
+                                                                      true,
+                                                                    );
+                                                                    setState(
+                                                                      () {
+                                                                        filterIndex =
+                                                                            0;
+                                                                      },
+                                                                    );
+                                                                    returnData().selectProduct(
+                                                                      product,
+                                                                    );
                                                                   },
-                                                                  theme: theme,
+                                                                  theme:
+                                                                      theme,
                                                                   product:
                                                                       product,
                                                                 );
@@ -1425,10 +1587,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                           );
                                                         } else {
                                                           return Padding(
-                                                            padding:
-                                                                const EdgeInsets.only(
-                                                                  bottom: 30.0,
-                                                                ),
+                                                            padding: const EdgeInsets.only(
+                                                              bottom:
+                                                                  30.0,
+                                                            ),
                                                             child: EmptyWidgetDisplayOnly(
                                                               title:
                                                                   'Empty List',
@@ -1436,10 +1598,11 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                                                                   'You Don\'t have any item under this category',
 
                                                               icon:
-                                                                  Icons
-                                                                      .dangerous_outlined,
-                                                              theme: theme,
-                                                              height: 40,
+                                                                  Icons.dangerous_outlined,
+                                                              theme:
+                                                                  theme,
+                                                              height:
+                                                                  40,
                                                             ),
                                                           );
                                                         }
@@ -1464,10 +1627,13 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                     Visibility(
                       visible: isDeleteLoading,
                       child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 15),
+                        margin: EdgeInsets.symmetric(
+                          vertical: 15,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(40),
+                          borderRadius:
+                              BorderRadius.circular(40),
                         ),
                         child: returnCompProvider(
                           context,
@@ -1481,8 +1647,10 @@ class _TotalProductsDesktopState extends State<TotalProductsDesktop> {
                 width:
                     screenWidth(context) < tabletScreenSmall
                         ? 50
-                        : (screenWidth(context) > tabletScreenSmall &&
-                            screenWidth(context) < tabletScreen + 100)
+                        : (screenWidth(context) >
+                                tabletScreenSmall &&
+                            screenWidth(context) <
+                                tabletScreen + 100)
                         ? 100
                         : 230,
               ),
@@ -1523,21 +1691,36 @@ void duplicateItemsAction({
                 themeProvider: theme,
                 constraints: BoxConstraints(),
                 text: 'Create Copy',
-                action: () {
+                action: () async {
+                  final config =
+                      await promptDuplicationQuantityOptions(
+                        context: firstContext,
+                        products:
+                            returnData().selectedProducts,
+                      );
+                  if (config == null) {
+                    return;
+                  }
                   showDialog(
                     context: context,
                     builder: (confirmContext) {
                       return ConfirmationAlert(
                         theme: theme,
                         message:
-                            'You are about to Duplicate all the selected items. Please not that this action can not be reversed. Are you sure you want to proceed?',
+                            'You are about to Duplicate all the selected items. Please note that this action can not be reversed. Are you sure you want to proceed?',
                         title: 'Duplicate Selected Items',
                         action: () async {
-                          Navigator.of(confirmContext).pop();
+                          Navigator.of(
+                            confirmContext,
+                          ).pop();
                           Navigator.of(firstContext).pop();
                           loadingAction(true);
-                          var res =
-                              await returnData().duplicateSelectedProducts();
+                          var res = await returnData()
+                              .duplicateSelectedProducts(
+                                quantityMode: config.mode,
+                                customQuantities:
+                                    config.customQuantities,
+                              );
                           if (res == 0) {
                             loadingAction(false);
                             showDialog(
@@ -1563,7 +1746,10 @@ void duplicateItemsAction({
               ),
               Visibility(
                 visible:
-                    returnShopProvider().userShop()?.manageDepartments == true,
+                    returnShopProvider()
+                        .userShop()
+                        ?.manageDepartments ==
+                    true,
                 child: MainButtonTransparent(
                   themeProvider: theme,
                   constraints: BoxConstraints(),
@@ -1579,13 +1765,17 @@ void duplicateItemsAction({
                 ),
               ),
               Visibility(
-                visible: returnShopProvider().userShops.length > 1,
+                visible:
+                    returnShopProvider().userShops.length >
+                    1,
                 child: MainButtonTransparent(
                   themeProvider: theme,
                   constraints: BoxConstraints(),
                   text: 'Copy To Store Branch(s)',
                   action: () {
-                    bool isOnline = returnConnectivityProvider().isConnected;
+                    bool isOnline =
+                        returnConnectivityProvider()
+                            .isConnected;
                     if (!isOnline) {
                       showDialog(
                         context: context,
@@ -1632,9 +1822,29 @@ void selectDepartmentProducts({
             builder: (secondContext, setState) {
               return DialogTemplate(
                 theme: theme,
-                message: 'Select Department(s) From the List Below',
+                message:
+                    'Select Department(s) From the List Below',
                 title: 'Select Department(s)',
-                action: () {
+                action: () async {
+                  if (returnDepartmentProvider()
+                      .multipleSelectedDepartments
+                      .isEmpty) {
+                    return;
+                  }
+                  final config =
+                      await promptDuplicationQuantityOptions(
+                        context: secondContext,
+                        products:
+                            returnData().selectedProducts,
+                        destinationLabel:
+                            returnDepartmentProvider()
+                                .multipleSelectedDepartments
+                                .map((d) => d.name)
+                                .join(', '),
+                      );
+                  if (config == null) {
+                    return;
+                  }
                   showDialog(
                     context: context,
                     builder: (confirmContext) {
@@ -1642,12 +1852,16 @@ void selectDepartmentProducts({
                         theme: theme,
                         message:
                             'You are about to Copy all the selected items Into these Selected Departments. Please note that this action can not be reversed. Are you sure you want to proceed?',
-                        title: 'Copy Items Into Departments',
+                        title:
+                            'Copy Items Into Departments',
                         action: () async {
                           loadingAction(true);
-                          var res =
-                              await returnData()
-                                  .duplicateSelectedProductsForDepartments();
+                          var res = await returnData()
+                              .duplicateSelectedProductsForDepartments(
+                                quantityMode: config.mode,
+                                customQuantities:
+                                    config.customQuantities,
+                              );
                           Navigator.of(
                             // ignore: use_build_context_synchronously
                             secondContext,
@@ -1690,7 +1904,8 @@ void selectDepartmentProducts({
                       ),
                       child: Builder(
                         builder: (context) {
-                          if (returnDepartmentProvider().departments
+                          if (returnDepartmentProvider()
+                              .departments
                               .where(
                                 (dept) =>
                                     dept.uuid !=
@@ -1702,7 +1917,8 @@ void selectDepartmentProducts({
                             return SizedBox(
                               height: 400,
                               child: EmptyWidgetDisplayOnly(
-                                title: 'No Department Found',
+                                title:
+                                    'No Department Found',
                                 subText:
                                     'You have not been added to any departments.',
                                 theme: theme,
@@ -1720,8 +1936,9 @@ void selectDepartmentProducts({
                             return Column(
                               spacing: 5,
                               children:
-                                  returnDepartmentProvider(context: context)
-                                      .departments
+                                  returnDepartmentProvider(
+                                        context: context,
+                                      ).departments
                                       .where(
                                         (dept) =>
                                             dept.uuid !=
@@ -1731,10 +1948,13 @@ void selectDepartmentProducts({
                                       )
                                       .map(
                                         (dept) => Material(
-                                          color: Colors.transparent,
+                                          color:
+                                              Colors
+                                                  .transparent,
                                           child: InkWell(
                                             mouseCursor:
-                                                SystemMouseCursors.click,
+                                                SystemMouseCursors
+                                                    .click,
                                             onTap: () {
                                               returnDepartmentProvider()
                                                   .selectMultipleDepartments(
@@ -1744,8 +1964,10 @@ void selectDepartmentProducts({
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                    vertical: 9.0,
-                                                    horizontal: 12,
+                                                    vertical:
+                                                        9.0,
+                                                    horizontal:
+                                                        12,
                                                   ),
                                               child: Row(
                                                 mainAxisAlignment:
@@ -1755,40 +1977,39 @@ void selectDepartmentProducts({
                                                   Text(
                                                     style: TextStyle(
                                                       fontSize:
-                                                          theme
-                                                              .mobileTexts
-                                                              .b3
-                                                              .fontSize,
+                                                          theme.mobileTexts.b3.fontSize,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
                                                     dept.name,
                                                   ),
                                                   Container(
-                                                    padding: EdgeInsets.all(2),
+                                                    padding:
+                                                        EdgeInsets.all(
+                                                          2,
+                                                        ),
                                                     decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
+                                                      shape:
+                                                          BoxShape.circle,
                                                       border: Border.all(
-                                                        color: Colors.grey,
+                                                        color:
+                                                            Colors.grey,
                                                       ),
                                                     ),
                                                     child: Container(
-                                                      padding: EdgeInsets.all(
-                                                        5,
-                                                      ),
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            5,
+                                                          ),
                                                       decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
+                                                        shape:
+                                                            BoxShape.circle,
                                                         color:
-                                                            returnDepartmentProvider()
-                                                                    .multipleSelectedDepartments
-                                                                    .contains(
-                                                                      dept,
-                                                                    )
-                                                                ? theme
-                                                                    .lightModeColor
-                                                                    .prColor250
-                                                                : Colors
-                                                                    .transparent,
+                                                            returnDepartmentProvider().multipleSelectedDepartments.contains(
+                                                                  dept,
+                                                                )
+                                                                ? theme.lightModeColor.prColor250
+                                                                : Colors.transparent,
                                                       ),
                                                     ),
                                                   ),
@@ -1811,7 +2032,8 @@ void selectDepartmentProducts({
           );
         },
       ).then((_) {
-        returnDepartmentProvider().clearMulitpleSelectedDepartments();
+        returnDepartmentProvider()
+            .clearMulitpleSelectedDepartments();
       });
     },
   );
@@ -1833,9 +2055,27 @@ void selectShopsProducts({
             title: 'Select Shops(s)',
             cancelAction: () {
               Navigator.of(context).pop();
-              returnShopProvider().clearMulitpleSelectedShops();
+              returnShopProvider()
+                  .clearMulitpleSelectedShops();
             },
-            action: () {
+            action: () async {
+              if (returnShopProvider()
+                  .multipleSelectedShops
+                  .isEmpty) {
+                return;
+              }
+              final config =
+                  await promptDuplicationQuantityOptions(
+                    context: secondContext,
+                    products: returnData().selectedProducts,
+                    destinationLabel: returnShopProvider()
+                        .multipleSelectedShops
+                        .map((s) => s.name)
+                        .join(', '),
+                  );
+              if (config == null) {
+                return;
+              }
               showDialog(
                 context: context,
                 builder: (confirmContext) {
@@ -1849,9 +2089,12 @@ void selectShopsProducts({
                       Navigator.of(secondContext).pop();
                       Navigator.of(firstContext).pop();
                       Navigator.of(confirmContext).pop();
-                      var res =
-                          await returnData()
-                              .duplicateSelectedProductsForShops();
+                      var res = await returnData()
+                          .duplicateSelectedProductsForShops(
+                            quantityMode: config.mode,
+                            customQuantities:
+                                config.customQuantities,
+                          );
                       if (res == 0) {
                         loadingAction(false);
                         showDialog(
@@ -1888,18 +2131,22 @@ void selectShopsProducts({
                           .where(
                             (shop) =>
                                 shop.shopId !=
-                                returnShopProvider().userShop()?.shopId,
+                                returnShopProvider()
+                                    .userShop()
+                                    ?.shopId,
                           )
                           .isEmpty) {
                         return SizedBox(
                           height: 400,
                           child: EmptyWidgetDisplayOnly(
                             title: 'No Shop Found',
-                            subText: 'No Shop Branches Was Found.',
+                            subText:
+                                'No Shop Branches Was Found.',
                             theme: theme,
                             height: 30,
                             altAction: () async {
-                              await returnShopProvider().getUserShops();
+                              await returnShopProvider()
+                                  .getUserShops();
                               setState(() {});
                             },
                             altActionText: 'Refresh',
@@ -1910,29 +2157,43 @@ void selectShopsProducts({
                         return Column(
                           spacing: 5,
                           children:
-                              returnShopProvider(context: context).userShops
+                              returnShopProvider(
+                                    context: context,
+                                  ).userShops
                                   .where(
                                     (shop) =>
                                         shop.shopId !=
-                                        returnShopProvider().userShop()?.shopId,
+                                        returnShopProvider()
+                                            .userShop()
+                                            ?.shopId,
                                   )
                                   .map(
                                     (shop) => Material(
-                                      color: Colors.transparent,
+                                      color:
+                                          Colors
+                                              .transparent,
                                       child: InkWell(
-                                        mouseCursor: SystemMouseCursors.click,
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
                                         onTap: () {
                                           returnShopProvider()
-                                              .selectMultipleShop(shop);
+                                              .selectMultipleShop(
+                                                shop,
+                                              );
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 9.0,
-                                            horizontal: 12,
-                                          ),
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                vertical:
+                                                    9.0,
+                                                horizontal:
+                                                    12,
+                                              ),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                             children: [
                                               Text(
                                                 style: TextStyle(
@@ -1941,31 +2202,38 @@ void selectShopsProducts({
                                                           .mobileTexts
                                                           .b3
                                                           .fontSize,
-                                                  fontWeight: FontWeight.bold,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
                                                 ),
                                                 shop.name,
                                               ),
                                               Container(
-                                                padding: EdgeInsets.all(2),
+                                                padding:
+                                                    EdgeInsets.all(
+                                                      2,
+                                                    ),
                                                 decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
+                                                  shape:
+                                                      BoxShape
+                                                          .circle,
                                                   border: Border.all(
-                                                    color: Colors.grey,
+                                                    color:
+                                                        Colors.grey,
                                                   ),
                                                 ),
                                                 child: Container(
-                                                  padding: EdgeInsets.all(5),
+                                                  padding:
+                                                      EdgeInsets.all(
+                                                        5,
+                                                      ),
                                                   decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
+                                                    shape:
+                                                        BoxShape.circle,
                                                     color:
-                                                        returnShopProvider()
-                                                                .multipleSelectedShops
-                                                                .contains(shop)
-                                                            ? theme
-                                                                .lightModeColor
-                                                                .prColor250
-                                                            : Colors
-                                                                .transparent,
+                                                        returnShopProvider().multipleSelectedShops.contains(shop)
+                                                            ? theme.lightModeColor.prColor250
+                                                            : Colors.transparent,
                                                   ),
                                                 ),
                                               ),
@@ -2013,7 +2281,10 @@ class ProductSelectionActionButton extends StatelessWidget {
         onTap: action,
         child: Container(
           padding: EdgeInsets.symmetric(
-            horizontal: screenWidth(context) < mobileScreen ? 6 : 10,
+            horizontal:
+                screenWidth(context) < mobileScreen
+                    ? 6
+                    : 10,
             vertical: 5,
           ),
           decoration: BoxDecoration(
@@ -2021,7 +2292,8 @@ class ProductSelectionActionButton extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade400),
           ),
           child: Row(
-            spacing: screenWidth(context) < mobileScreen ? 3 : 5,
+            spacing:
+                screenWidth(context) < mobileScreen ? 3 : 5,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
@@ -2032,7 +2304,10 @@ class ProductSelectionActionButton extends StatelessWidget {
                 title,
               ),
               Icon(
-                size: screenWidth(context) < mobileScreen ? 14 : 16,
+                size:
+                    screenWidth(context) < mobileScreen
+                        ? 14
+                        : 16,
                 color: color,
                 icon,
               ),

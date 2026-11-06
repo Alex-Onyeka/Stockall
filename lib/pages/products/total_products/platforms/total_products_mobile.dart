@@ -21,6 +21,7 @@ import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/total_products/platforms/total_products_desktop.dart';
+import 'package:stockall/pages/products/total_products/platforms/components/bulk_transfer_dialog.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class TotalProductsMobile extends StatefulWidget {
@@ -646,7 +647,35 @@ class _TotalProductsMobileState extends State<TotalProductsMobile> {
                                                               Icons
                                                                   .control_point_duplicate_rounded,
                                                           color: Colors.grey,
-                                                        ),
+                                                        ),                                                         Visibility(
+                                                           visible:
+                                                               authorization(
+                                                             authorized:
+                                                                 Authorizations()
+                                                                     .transferProduct,
+                                                           ),
+                                                           child:
+                                                               ProductSelectionActionButton(
+                                                             title: 'Transfer',
+                                                             action: () {
+                                                               launchBulkTransferWorkflow(
+                                                                 context:
+                                                                     context,
+                                                                 loadingAction:
+                                                                     (value) {
+                                                                   setState(() {
+                                                                     isDeleteLoading =
+                                                                         value;
+                                                                   });
+                                                                 },
+                                                               );
+                                                             },
+                                                             icon: Icons
+                                                                 .swap_horiz_rounded,
+                                                             color: Colors
+                                                                 .blue.shade600,
+                                                           ),
+                                                         ),
                                                         Visibility(
                                                           visible:
                                                               shop(
