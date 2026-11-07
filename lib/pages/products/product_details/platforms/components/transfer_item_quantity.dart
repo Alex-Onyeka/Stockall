@@ -748,19 +748,26 @@ void selectItemInADepartmentProducts({
                                 selectedItem!;
                             TempProductClass newProduct =
                                 oldProduct.copyWith();
-                            newProduct.quantity =
+                            final double
+                            transferArea = mainItem
+                                .getProductUnit(
+                                  unitUuid: unitUuid,
+                                )
+                                .getQuantityEquivMultiplied(
+                                  index: 1,
+                                  newQuantity: enteredValue,
+                                );
+                            final double newTotalArea =
                                 (newProduct
                                         .getActualQuantity() ??
                                     0) +
-                                mainItem
-                                    .getProductUnit(
-                                      unitUuid: unitUuid,
-                                    )
-                                    .getQuantityEquivMultiplied(
-                                      index: 1,
-                                      newQuantity:
-                                          enteredValue,
-                                    );
+                                transferArea;
+                            newProduct.quantity =
+                                newProduct.quantityType == 2
+                                    ? newTotalArea /
+                                        newProduct
+                                            .dimensionArea()
+                                    : newTotalArea;
                             ItemHistory
                             itemHistory = ItemHistory(
                               event:
@@ -842,7 +849,7 @@ void selectItemInADepartmentProducts({
 
                             TempProductClass newProduct2 =
                                 mainItem.copyWith();
-                            newProduct2.quantity =
+                            final double remainingArea =
                                 ((newProduct2
                                             .getActualQuantity() ??
                                         0) -
@@ -856,6 +863,13 @@ void selectItemInADepartmentProducts({
                                           newQuantity:
                                               enteredValue,
                                         ));
+                            newProduct2.quantity =
+                                newProduct2.quantityType ==
+                                        2
+                                    ? remainingArea /
+                                        newProduct2
+                                            .dimensionArea()
+                                    : remainingArea;
                             ItemHistory
                             itemHistory2 = ItemHistory(
                               event:
@@ -1042,7 +1056,13 @@ void selectItemInADepartmentProducts({
                                                     .toLowerCase(),
                                               ) &&
                                           item.uuid !=
-                                              mainItem.uuid,
+                                              mainItem
+                                                  .uuid &&
+                                          (item.quantityType ==
+                                                  2) ==
+                                              (mainItem
+                                                      .quantityType ==
+                                                  2),
                                     )
                                     .isEmpty) {
                                   return SizedBox(
@@ -1086,7 +1106,11 @@ void selectItemInADepartmentProducts({
                                                   ) &&
                                                   item.uuid !=
                                                       mainItem
-                                                          .uuid,
+                                                          .uuid &&
+                                                  (item.quantityType ==
+                                                          2) ==
+                                                      (mainItem.quantityType ==
+                                                          2),
                                             )
                                             .map(
                                               (
@@ -1439,18 +1463,25 @@ void selectItemInAShop({
                             selectedItem!;
                         TempProductClass newProduct =
                             oldProduct.copyWith();
-                        newProduct.quantity =
+                        final double transferArea = mainItem
+                            .getProductUnit(
+                              unitUuid: unitUuid,
+                            )
+                            .getQuantityEquivMultiplied(
+                              index: 1,
+                              newQuantity: enteredValue,
+                            );
+                        final double newTotalArea =
                             (newProduct
                                     .getActualQuantity() ??
                                 0) +
-                            mainItem
-                                .getProductUnit(
-                                  unitUuid: unitUuid,
-                                )
-                                .getQuantityEquivMultiplied(
-                                  index: 1,
-                                  newQuantity: enteredValue,
-                                );
+                            transferArea;
+                        newProduct.quantity =
+                            newProduct.quantityType == 2
+                                ? newTotalArea /
+                                    newProduct
+                                        .dimensionArea()
+                                : newTotalArea;
                         ItemHistory
                         itemHistory = ItemHistory(
                           event:
@@ -1521,7 +1552,7 @@ void selectItemInAShop({
 
                         TempProductClass newProduct2 =
                             mainItem.copyWith();
-                        newProduct2.quantity =
+                        final double remainingArea =
                             ((newProduct2
                                         .getActualQuantity() ??
                                     0) -
@@ -1534,6 +1565,12 @@ void selectItemInAShop({
                                       newQuantity:
                                           enteredValue,
                                     ));
+                        newProduct2.quantity =
+                            newProduct2.quantityType == 2
+                                ? remainingArea /
+                                    newProduct2
+                                        .dimensionArea()
+                                : remainingArea;
                         ItemHistory
                         itemHistory2 = ItemHistory(
                           event:
@@ -1728,7 +1765,12 @@ void selectItemInAShop({
                                                   .toLowerCase(),
                                             ) &&
                                         item.uuid !=
-                                            mainItem.uuid,
+                                            mainItem.uuid &&
+                                        (item.quantityType ==
+                                                2) ==
+                                            (mainItem
+                                                    .quantityType ==
+                                                2),
                                   )
                                   .toList();
                           return SingleChildScrollView(

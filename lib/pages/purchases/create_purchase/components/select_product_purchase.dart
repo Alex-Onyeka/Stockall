@@ -35,10 +35,9 @@ void selectProductPurchase({
   final TempStorageProducts? storageProduct =
       purchaseItem.storageItemUuid != null
           ? returnStorageProductProvider(
-              context: context,
-              listen: false,
-            )
-              .storageProductListMain
+                context: context,
+                listen: false,
+              ).storageProductListMain
               .where(
                 (s) =>
                     s.uuid == purchaseItem.storageItemUuid,
@@ -61,7 +60,9 @@ void selectProductPurchase({
       product?.dimensionUnit ??
       storageProduct?.dimensionUnit;
 
-  final trackingNumberController = TextEditingController(text: purchaseItem.trackingNumber ?? '');
+  final trackingNumberController = TextEditingController(
+    text: purchaseItem.trackingNumber ?? '',
+  );
   final widthController = TextEditingController();
   final heightController = TextEditingController();
   if (purchaseItem.widthDimension != null) {
@@ -466,9 +467,7 @@ void selectProductPurchase({
                                       priceController
                                           .text
                                           .isNotEmpty)) {
-                                if (is2D &&
-                                    !isAreaUnit() &&
-                                    !itemHasDimensions) {
+                                if (is2D && !isAreaUnit()) {
                                   final w = double.tryParse(
                                     widthController.text
                                         .replaceAll(',', '')
@@ -482,7 +481,13 @@ void selectProductPurchase({
                                   if (w == null ||
                                       h == null ||
                                       w <= 0 ||
-                                      h <= 0) {
+                                      h <= 0 ||
+                                      (originalWidth !=
+                                              null &&
+                                          w > originalWidth) ||
+                                      (originalHeight !=
+                                              null &&
+                                          h > originalHeight)) {
                                     showDialog(
                                       context: context,
                                       builder:
@@ -491,7 +496,9 @@ void selectProductPurchase({
                                           ) => InfoAlert(
                                             theme: theme,
                                             message:
-                                                'Enter positive Width and Height for this item.',
+                                                itemHasDimensions
+                                                    ? 'Enter positive dimensions no larger than the original slab / sheet.'
+                                                    : 'Enter positive Width and Height for this item.',
                                             title:
                                                 'Invalid Dimensions',
                                           ),
@@ -583,7 +590,15 @@ void selectProductPurchase({
                                           customW,
                                       heightDimension:
                                           customH,
-                                        trackingNumber: trackingNumberController.text.trim().isEmpty ? null : trackingNumberController.text.trim(),
+                                      trackingNumber:
+                                          trackingNumberController
+                                                  .text
+                                                  .trim()
+                                                  .isEmpty
+                                              ? null
+                                              : trackingNumberController
+                                                  .text
+                                                  .trim(),
                                     ),
                                   );
                                 } else {
@@ -638,7 +653,15 @@ void selectProductPurchase({
                                           customW,
                                       heightDimension:
                                           customH,
-                                        trackingNumber: trackingNumberController.text.trim().isEmpty ? null : trackingNumberController.text.trim(),
+                                      trackingNumber:
+                                          trackingNumberController
+                                                  .text
+                                                  .trim()
+                                                  .isEmpty
+                                              ? null
+                                              : trackingNumberController
+                                                  .text
+                                                  .trim(),
                                     ),
                                   );
                                   Navigator.of(

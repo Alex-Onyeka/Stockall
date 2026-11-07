@@ -716,7 +716,11 @@ class _UpdateItemQuantityWidgetState
                                   return;
                                 }
 
-                                if (!isAreaUnit() &&
+                                if (widget
+                                            .product
+                                            .quantityType ==
+                                        2 &&
+                                    !isAreaUnit() &&
                                     (quantityTypeTemp ==
                                             2 ||
                                         !itemHasDimensions)) {
