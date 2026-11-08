@@ -26,28 +26,33 @@ Future<void> launchBulkTransferWorkflow({
   if (selectedProducts.isEmpty) {
     showDialog(
       context: context,
-      builder: (_) => InfoAlert(
-        theme: theme,
-        title: 'No Products Selected',
-        message: 'Please select one or more products to perform a bulk transfer.',
-      ),
+      builder:
+          (_) => InfoAlert(
+            theme: theme,
+            title: 'No Products Selected',
+            message:
+                'Please select one or more products to perform a bulk transfer.',
+          ),
     );
     return;
   }
 
   final canTransferDept =
-      returnShopProvider().userShop()?.manageDepartments == true;
-  final canTransferBranch = returnShopProvider().userShops.length > 1;
+      returnShopProvider().userShop()?.manageDepartments ==
+      true;
+  final canTransferBranch =
+      returnShopProvider().userShops.length > 1;
 
   if (!canTransferDept && !canTransferBranch) {
     showDialog(
       context: context,
-      builder: (_) => InfoAlert(
-        theme: theme,
-        title: 'Transfer Unavailable',
-        message:
-            'You need multiple branches or department management enabled to transfer stock.',
-      ),
+      builder:
+          (_) => InfoAlert(
+            theme: theme,
+            title: 'Transfer Unavailable',
+            message:
+                'You need multiple branches or department management enabled to transfer stock.',
+          ),
     );
     return;
   }
@@ -74,30 +79,30 @@ Future<void> launchBulkTransferWorkflow({
                   themeProvider: theme,
                   constraints: const BoxConstraints(),
                   text: 'Transfer To Store Branch',
-                action: () {
-                  Navigator.of(step1Context).pop();
-                  _startBranchBulkTransfer(
-                    context: context,
-                    loadingAction: loadingAction,
-                  );
-                },
-              ),
-              MainButtonTransparent(
-                themeProvider: theme,
-                constraints: const BoxConstraints(),
-                text: 'Transfer To Department',
-                action: () {
-                  Navigator.of(step1Context).pop();
-                  _startDepartmentBulkTransfer(
-                    context: context,
-                    loadingAction: loadingAction,
-                  );
-                },
-              ),
-            ],
+                  action: () {
+                    Navigator.of(step1Context).pop();
+                    _startBranchBulkTransfer(
+                      context: context,
+                      loadingAction: loadingAction,
+                    );
+                  },
+                ),
+                MainButtonTransparent(
+                  themeProvider: theme,
+                  constraints: const BoxConstraints(),
+                  text: 'Transfer To Department',
+                  action: () {
+                    Navigator.of(step1Context).pop();
+                    _startDepartmentBulkTransfer(
+                      context: context,
+                      loadingAction: loadingAction,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      );
+        );
       },
     );
   } else if (canTransferBranch) {
@@ -123,12 +128,13 @@ void _startBranchBulkTransfer({
   if (!isOnline) {
     showDialog(
       context: context,
-      builder: (_) => InfoAlert(
-        theme: theme,
-        title: 'No Internet Connection',
-        message:
-            'You can only transfer items into other store branches when you have an active internet connection. Please connect to the internet and try again.',
-      ),
+      builder:
+          (_) => InfoAlert(
+            theme: theme,
+            title: 'No Internet Connection',
+            message:
+                'You can only transfer items into other store branches when you have an active internet connection. Please connect to the internet and try again.',
+          ),
     );
     return;
   }
@@ -140,10 +146,10 @@ void _startBranchBulkTransfer({
     builder: (branchPickContext) {
       return StatefulBuilder(
         builder: (stateContext, setState) {
-          final otherShops = returnShopProvider()
-              .userShops
-              .where((s) => s.shopId != shopId())
-              .toList();
+          final otherShops =
+              returnShopProvider().userShops
+                  .where((s) => s.shopId != shopId())
+                  .toList();
 
           return DialogTemplate(
             theme: theme,
@@ -164,47 +170,68 @@ void _startBranchBulkTransfer({
             actionButtonText: 'Next',
             widget: SizedBox(
               width: 500,
-              height: (screenHeight(stateContext) * 0.45).clamp(200.0, 420.0),
-              child: otherShops.isEmpty
-                  ? EmptyWidgetDisplayOnly(
-                      title: 'No Other Branches',
-                      subText: 'No other store branches found.',
-                      theme: theme,
-                      height: 30,
-                      icon: Icons.clear,
-                    )
-                  : SingleChildScrollView(
-                      child: Column(
-                        spacing: 4,
-                        children: otherShops.map((shop) {
-                          final isSelected = selectedShop?.shopId == shop.shopId;
-                          return ListTile(
-                            title: Text(
-                              shop.name,
-                              style: TextStyle(
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: theme.mobileTexts.b3.fontSize,
-                              ),
-                            ),
-                            trailing: Icon(
-                              isSelected
-                                  ? Icons.radio_button_checked
-                                  : Icons.radio_button_off,
-                              color: isSelected
-                                  ? theme.lightModeColor.prColor250
-                                  : Colors.grey,
-                            ),
-                            onTap: () {
-                              setState(() {
-                                selectedShop = isSelected ? null : shop;
-                              });
-                            },
-                          );
-                        }).toList(),
+              height: (screenHeight(stateContext) * 0.45)
+                  .clamp(200.0, 420.0),
+              child:
+                  otherShops.isEmpty
+                      ? EmptyWidgetDisplayOnly(
+                        title: 'No Other Branches',
+                        subText:
+                            'No other store branches found.',
+                        theme: theme,
+                        height: 30,
+                        icon: Icons.clear,
+                      )
+                      : SingleChildScrollView(
+                        child: Column(
+                          spacing: 4,
+                          children:
+                              otherShops.map((shop) {
+                                final isSelected =
+                                    selectedShop?.shopId ==
+                                    shop.shopId;
+                                return ListTile(
+                                  title: Text(
+                                    shop.name,
+                                    style: TextStyle(
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight
+                                                  .bold
+                                              : FontWeight
+                                                  .normal,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                    ),
+                                  ),
+                                  trailing: Icon(
+                                    isSelected
+                                        ? Icons
+                                            .radio_button_checked
+                                        : Icons
+                                            .radio_button_off,
+                                    color:
+                                        isSelected
+                                            ? theme
+                                                .lightModeColor
+                                                .prColor250
+                                            : Colors.grey,
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      selectedShop =
+                                          isSelected
+                                              ? null
+                                              : shop;
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                        ),
                       ),
-                    ),
             ),
           );
         },
@@ -226,11 +253,13 @@ void _startDepartmentBulkTransfer({
       return StatefulBuilder(
         builder: (stateContext, setState) {
           final currentDeptUuid =
-              returnDepartmentProvider().currentDepartment()?.uuid;
-          final availableDepts = returnDepartmentProvider()
-              .departments
-              .where((d) => d.uuid != currentDeptUuid)
-              .toList();
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          final availableDepts =
+              returnDepartmentProvider().departments
+                  .where((d) => d.uuid != currentDeptUuid)
+                  .toList();
 
           return DialogTemplate(
             theme: theme,
@@ -251,47 +280,68 @@ void _startDepartmentBulkTransfer({
             actionButtonText: 'Next',
             widget: SizedBox(
               width: 500,
-              height: (screenHeight(stateContext) * 0.45).clamp(200.0, 420.0),
-              child: availableDepts.isEmpty
-                  ? EmptyWidgetDisplayOnly(
-                      title: 'No Other Departments',
-                      subText: 'No other departments available.',
-                      theme: theme,
-                      height: 30,
-                      icon: Icons.clear,
-                    )
-                  : SingleChildScrollView(
-                      child: Column(
-                        spacing: 4,
-                        children: availableDepts.map((dept) {
-                          final isSelected = selectedDept?.uuid == dept.uuid;
-                          return ListTile(
-                            title: Text(
-                              dept.name,
-                              style: TextStyle(
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                                fontSize: theme.mobileTexts.b3.fontSize,
-                              ),
-                            ),
-                            trailing: Icon(
-                              isSelected
-                                  ? Icons.radio_button_checked
-                                  : Icons.radio_button_off,
-                              color: isSelected
-                                  ? theme.lightModeColor.prColor250
-                                  : Colors.grey,
-                            ),
-                            onTap: () {
-                              setState(() {
-                                selectedDept = isSelected ? null : dept;
-                              });
-                            },
-                          );
-                        }).toList(),
+              height: (screenHeight(stateContext) * 0.45)
+                  .clamp(200.0, 420.0),
+              child:
+                  availableDepts.isEmpty
+                      ? EmptyWidgetDisplayOnly(
+                        title: 'No Other Departments',
+                        subText:
+                            'No other departments available.',
+                        theme: theme,
+                        height: 30,
+                        icon: Icons.clear,
+                      )
+                      : SingleChildScrollView(
+                        child: Column(
+                          spacing: 4,
+                          children:
+                              availableDepts.map((dept) {
+                                final isSelected =
+                                    selectedDept?.uuid ==
+                                    dept.uuid;
+                                return ListTile(
+                                  title: Text(
+                                    dept.name,
+                                    style: TextStyle(
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight
+                                                  .bold
+                                              : FontWeight
+                                                  .normal,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                    ),
+                                  ),
+                                  trailing: Icon(
+                                    isSelected
+                                        ? Icons
+                                            .radio_button_checked
+                                        : Icons
+                                            .radio_button_off,
+                                    color:
+                                        isSelected
+                                            ? theme
+                                                .lightModeColor
+                                                .prColor250
+                                            : Colors.grey,
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      selectedDept =
+                                          isSelected
+                                              ? null
+                                              : dept;
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                        ),
                       ),
-                    ),
             ),
           );
         },
@@ -327,6 +377,7 @@ class _TransferLineItem {
   TempProductClass? destinationProduct;
   bool isAutoLinked;
   bool isNewlyLinked;
+  bool isCreateInDestination;
   double transferQuantity = 0.0;
   String? unitUuid;
   final TextEditingController quantityController;
@@ -337,9 +388,11 @@ class _TransferLineItem {
     this.destinationProduct,
     this.isAutoLinked = false,
     this.isNewlyLinked = false,
+    this.isCreateInDestination = false,
     this.unitUuid,
     TextEditingController? controller,
-  }) : quantityController = controller ?? TextEditingController(text: '0');
+  }) : quantityController =
+           controller ?? TextEditingController(text: '0');
 }
 
 class BulkTransferWizardDialog extends StatefulWidget {
@@ -361,7 +414,8 @@ class BulkTransferWizardDialog extends StatefulWidget {
       _BulkTransferWizardDialogState();
 }
 
-class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
+class _BulkTransferWizardDialogState
+    extends State<BulkTransferWizardDialog> {
   // Wizard steps: 0 = Resolve Products, 1 = Specify Quantities, 2 = Confirmation
   int _currentStep = 0;
   bool _isLoadingProducts = true;
@@ -392,30 +446,42 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
 
     try {
       if (widget.isBranchTransfer) {
-        _destinationPool = await returnData().getProductsForOtherShops(
-          widget.targetShop!.shopId!,
-        );
+        _destinationPool = await returnData()
+            .getProductsForOtherShops(
+              widget.targetShop!.shopId!,
+            );
       } else {
-        _destinationPool = returnData()
-            .productListMain
-            .where((p) => p.departmentUuid == widget.targetDepartment?.uuid)
-            .toList();
+        _destinationPool =
+            returnData().productListMain
+                .where(
+                  (p) =>
+                      p.departmentUuid ==
+                      widget.targetDepartment?.uuid,
+                )
+                .toList();
       }
 
       final sources = returnData().selectedProducts;
       _transferItems.clear();
 
       for (final src in sources) {
-        final resolved = ProductLinkingHelper.resolveLinkedProduct(
-          sourceProduct: src,
-          destinationProducts: _destinationPool,
-        );
+        final resolved =
+            widget.isBranchTransfer
+                ? ProductLinkingHelper.resolveLinkedProduct(
+                  sourceProduct: src,
+                  destinationProducts: _destinationPool,
+                )
+                : ProductLinkingHelper.resolveLinkedProductDepartment(
+                  sourceProduct: src,
+                  destinationProducts: _destinationPool,
+                );
 
         final item = _TransferLineItem(
           sourceProduct: src,
           destinationProduct: resolved,
           isAutoLinked: resolved != null,
           isNewlyLinked: false,
+          isCreateInDestination: false,
           unitUuid: src.getPrimaryUnit().uuid,
         );
         _transferItems.add(item);
@@ -427,12 +493,15 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
     } catch (e) {
       setState(() {
         _isLoadingProducts = false;
-        _loadError = 'Failed to load destination products: $e';
+        _loadError =
+            'Failed to load destination products: $e';
       });
     }
   }
 
-  void _manuallySelectDestinationProduct(_TransferLineItem item) {
+  void _manuallySelectDestinationProduct(
+    _TransferLineItem item,
+  ) {
     final theme = returnTheme(context, listen: false);
     final searchCtrl = TextEditingController();
 
@@ -441,13 +510,21 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
       builder: (pickerContext) {
         return StatefulBuilder(
           builder: (stateContext, setPickerState) {
-            final query = searchCtrl.text.toLowerCase().trim();
-            final filtered = _destinationPool.where((p) {
-              if (p.uuid == item.sourceProduct.uuid) return false;
-              if (query.isEmpty) return true;
-              return p.name.toLowerCase().contains(query) ||
-                  (p.barcode != null && p.barcode!.toLowerCase().contains(query));
-            }).toList();
+            final query =
+                searchCtrl.text.toLowerCase().trim();
+            final filtered =
+                _destinationPool.where((p) {
+                  if (p.uuid == item.sourceProduct.uuid)
+                    return false;
+                  if (query.isEmpty) return true;
+                  return p.name.toLowerCase().contains(
+                        query,
+                      ) ||
+                      (p.barcode != null &&
+                          p.barcode!.toLowerCase().contains(
+                            query,
+                          ));
+                }).toList();
 
             return DialogTemplate(
               theme: theme,
@@ -458,7 +535,8 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
               showBottomActionButtons: false,
               widget: SizedBox(
                 width: 500,
-                height: (screenHeight(context) * 0.55).clamp(280.0, 500.0),
+                height: (screenHeight(context) * 0.55)
+                    .clamp(280.0, 500.0),
                 child: Column(
                   children: [
                     GeneralTextfieldOnly(
@@ -466,59 +544,180 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
                       controller: searchCtrl,
                       lines: 1,
                       theme: theme,
-                      onChanged: (_) => setPickerState(() {}),
+                      onChanged:
+                          (_) => setPickerState(() {}),
+                    ),
+                    const SizedBox(height: 8),
+                    InkWell(
+                      mouseCursor: SystemMouseCursors.click,
+                      onTap: () {
+                        setState(() {
+                          item.isCreateInDestination = true;
+                          item.destinationProduct = item
+                              .sourceProduct
+                              .copyWith(
+                                name:
+                                    item.sourceProduct.name,
+                                shopId:
+                                    widget.isBranchTransfer
+                                        ? widget
+                                            .targetShop!
+                                            .shopId
+                                        : shopId(),
+                                departmentUuid:
+                                    !widget.isBranchTransfer
+                                        ? widget
+                                            .targetDepartment
+                                            ?.uuid
+                                        : null,
+                                departmentName:
+                                    !widget.isBranchTransfer
+                                        ? widget
+                                            .targetDepartment
+                                            ?.name
+                                        : null,
+                              );
+                          item.isAutoLinked = false;
+                          item.isNewlyLinked = true;
+                          item.error = null;
+                        });
+                        Navigator.of(pickerContext).pop();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme
+                              .lightModeColor
+                              .prColor250
+                              .withValues(alpha: 0.08),
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          border: Border.all(
+                            color: theme
+                                .lightModeColor
+                                .prColor250
+                                .withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons
+                                  .add_circle_outline_rounded,
+                              size: 16,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor250,
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'Create "${item.sourceProduct.name}" in ${widget.targetShop?.name ?? widget.targetDepartment?.name}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .prColor250,
+                                ),
+                                overflow:
+                                    TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Expanded(
-                      child: filtered.isEmpty
-                          ? EmptyWidgetDisplayOnly(
-                              title: 'No Matching Products',
-                              subText:
-                                  'No matching products found in destination.',
-                              theme: theme,
-                              height: 25,
-                              icon: Icons.search_off,
-                            )
-                          : SingleChildScrollView(
-                              child: Column(
-                                spacing: 4,
-                                children: filtered.map((p) {
-                                  final isChosen =
-                                      item.destinationProduct?.uuid == p.uuid;
-                                  return ListTile(
-                                    dense: true,
-                                    title: Text(
-                                      p.name,
-                                      style: TextStyle(
-                                        fontWeight: isChosen
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                        fontSize: theme.mobileTexts.b3.fontSize,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      'Available: ${p.getActualQuantity() ?? 0} ${p.getProductUnit().name}',
-                                      style: const TextStyle(fontSize: 11),
-                                    ),
-                                    trailing: isChosen
-                                        ? Icon(Icons.check_circle,
-                                            color:
-                                                theme.lightModeColor.prColor250)
-                                        : const Icon(Icons.chevron_right,
-                                            color: Colors.grey),
-                                    onTap: () {
-                                      setState(() {
-                                        item.destinationProduct = p;
-                                        item.isAutoLinked = false;
-                                        item.isNewlyLinked = true;
-                                        item.error = null;
-                                      });
-                                      Navigator.of(pickerContext).pop();
-                                    },
-                                  );
-                                }).toList(),
+                      child:
+                          filtered.isEmpty
+                              ? EmptyWidgetDisplayOnly(
+                                title:
+                                    'No Matching Products',
+                                subText:
+                                    'No matching products found in destination.',
+                                theme: theme,
+                                height: 25,
+                                icon: Icons.search_off,
+                              )
+                              : SingleChildScrollView(
+                                child: Column(
+                                  spacing: 4,
+                                  children:
+                                      filtered.map((p) {
+                                        final isChosen =
+                                            item
+                                                .destinationProduct
+                                                ?.uuid ==
+                                            p.uuid;
+                                        return ListTile(
+                                          dense: true,
+                                          title: Text(
+                                            p.name,
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  isChosen
+                                                      ? FontWeight
+                                                          .bold
+                                                      : FontWeight
+                                                          .normal,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            'Available: ${p.getActualQuantity() ?? 0} ${p.getProductUnit().name}',
+                                            style:
+                                                const TextStyle(
+                                                  fontSize:
+                                                      11,
+                                                ),
+                                          ),
+                                          trailing:
+                                              isChosen
+                                                  ? Icon(
+                                                    Icons
+                                                        .check_circle,
+                                                    color:
+                                                        theme.lightModeColor.prColor250,
+                                                  )
+                                                  : const Icon(
+                                                    Icons
+                                                        .chevron_right,
+                                                    color:
+                                                        Colors.grey,
+                                                  ),
+                                          onTap: () {
+                                            setState(() {
+                                              item.destinationProduct =
+                                                  p;
+                                              item.isAutoLinked =
+                                                  false;
+                                              item.isNewlyLinked =
+                                                  true;
+                                              item.error =
+                                                  null;
+                                            });
+                                            Navigator.of(
+                                              pickerContext,
+                                            ).pop();
+                                          },
+                                        );
+                                      }).toList(),
+                                ),
                               ),
-                            ),
                     ),
                   ],
                 ),
@@ -550,11 +749,14 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
       final src = item.sourceProduct;
       final dest = item.destinationProduct;
 
-      final text = item.quantityController.text.trim().replaceAll(',', '');
+      final text = item.quantityController.text
+          .trim()
+          .replaceAll(',', '');
       final val = double.tryParse(text);
 
       if (val == null || val <= 0) {
-        item.error = 'Enter a valid transfer quantity (> 0)';
+        item.error =
+            'Enter a valid transfer quantity (> 0)';
         hasError = true;
         continue;
       }
@@ -566,20 +768,34 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
       }
 
       if (dest.uuid != null && dest.uuid == src.uuid) {
-        item.error = 'Source and destination cannot be the same product';
+        item.error =
+            'Source and destination cannot be the same product';
         hasError = true;
         continue;
       }
 
+      final selectedUnit = src.getProductUnit(
+        unitUuid: item.unitUuid,
+      );
       // Check available quantity in base unit
-      final primaryUnitEquiv = src
-          .getProductUnit(unitUuid: item.unitUuid)
-          .getQuantityEquivMultiplied(index: 1, newQuantity: val);
+      final primaryUnitEquiv = selectedUnit
+          .getQuantityEquivMultiplied(
+            index: 1,
+            newQuantity: val,
+            product: src,
+          );
 
-      final availableActual = src.getActualQuantity() ?? 0.0;
+      final availableActual =
+          src.getActualQuantity() ?? 0.0;
       if (primaryUnitEquiv > availableActual + 0.00001) {
+        final availableInSelected = selectedUnit
+            .getQuantityEquivDivided(
+              index: 1,
+              product: src,
+              newQuantity: availableActual,
+            );
         item.error =
-            'Exceeds available stock (${availableActual.toStringAsFixed(2)})';
+            'Exceeds available stock (Max ${formatLargeNumberDouble(availableInSelected)} ${selectedUnit.name})';
         hasError = true;
         continue;
       }
@@ -614,80 +830,121 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
       try {
         final equivQty = src
             .getProductUnit(unitUuid: unitUuid)
-            .getQuantityEquivMultiplied(index: 1, newQuantity: enteredVal);
+            .getQuantityEquivMultiplied(
+              index: 1,
+              newQuantity: enteredVal,
+              product: src,
+            );
 
-        // 1. Destination addition
-        final destArea = dest.dimensionArea();
-        final currentDestActual = dest.getActualQuantity() ?? 0.0;
-        final newDestActual = currentDestActual + equivQty;
-        final updatedDest = dest.copyWith(
-          quantity: newDestActual / destArea,
-        );
-
-        final destHistory = ItemHistory(
-          event: ItemHistoryEventClass.transferedIn,
-          isManaged: dest.isManaged,
-          source: isBranch
-              ? ItemHistoryEventClass.branchStoreSource
-              : ItemHistoryEventClass.departmentSource,
-          destination: ItemHistoryEventClass.productDestination,
-          shopId: isBranch ? targetShop!.shopId! : shopId(),
-          isIncreased: true,
-          title: 'Transfered In',
-          desc: isBranch
-              ? 'Item Quantity Received From Transfer - From Item Name: ${src.name}. Shop Name: ${returnShopProvider().userShop()?.name ?? 'Main Branch'}.'
-              : 'Item Quantity Received From Transfer - From Item Name: ${src.name}. Department Name: ${returnDepartmentProvider().currentDepartment()?.name ?? 'Not Set'}.',
-          createdAt: DateTime.now(),
-          itemUuid: updatedDest.uuid,
-          itemName: updatedDest.name,
-          newValue: formatLargeNumberDouble(
-            updatedDest.getProductUnit().getQuantityEquivDivided(
-                  index: 1,
-                  newQuantity: newDestActual,
-                ),
-          ),
-          oldValue: formatLargeNumberDouble(
-            dest.getProductUnit().getQuantityEquivDivided(
-                  index: 1,
-                  newQuantity: currentDestActual,
-                ),
-          ),
-          quantityChange: enteredVal,
-          staffId: currentUser().userId,
-          staffName: currentUser().name,
-          unit: src.getProductUnit(unitUuid: unitUuid).name,
-          primaryUnit: updatedDest.getProductUnit().name,
-          departmentName: updatedDest.departmentName,
-          departmentUuid: updatedDest.departmentUuid,
-        );
-
-        dynamic resDest;
-        if (isBranch) {
-          resDest = await returnData().updateProductForOtherShops(
-            product: updatedDest,
-            itemHistory: destHistory,
-          );
+        TempProductClass? updatedDest;
+        if (item.isCreateInDestination) {
+          updatedDest =
+              await ProductLinkingHelper.createDestinationProductFromTransfer(
+                sourceProduct: src,
+                enteredTransferQuantity: enteredVal,
+                unitUuid: unitUuid,
+                isBranchTransfer: isBranch,
+                targetShop: targetShop,
+                targetDepartment: targetDept,
+              );
+          if (updatedDest == null) {
+            failedItems.add(
+              '${src.name}: Failed to create product in destination',
+            );
+            continue;
+          }
         } else {
-          resDest = await returnData().updateProduct(
-            product: updatedDest,
-            isQuantityUpdate: true,
-            includeQuantity: true,
-            quantityChange: equivQty,
-            isIncrement: true,
-            itemHistory: destHistory,
-            isMultipleUpdate: true,
+          // 1. Destination addition
+          final destArea = dest.dimensionArea();
+          final currentDestActual =
+              dest.getActualQuantity() ?? 0.0;
+          final newDestActual =
+              currentDestActual + equivQty;
+          updatedDest = dest.copyWith(
+            quantity: newDestActual / destArea,
           );
-        }
 
-        if (resDest == null) {
-          failedItems.add('${src.name}: Destination update failed');
-          continue;
+          final destHistory = ItemHistory(
+            event: ItemHistoryEventClass.transferedIn,
+            isManaged: dest.isManaged,
+            source:
+                isBranch
+                    ? ItemHistoryEventClass
+                        .branchStoreSource
+                    : ItemHistoryEventClass
+                        .departmentSource,
+            destination:
+                ItemHistoryEventClass.productDestination,
+            shopId:
+                isBranch ? targetShop!.shopId! : shopId(),
+            isIncreased: true,
+            title: 'Transfered In',
+            desc:
+                isBranch
+                    ? 'Item Quantity Received From Transfer - From Item Name: ${src.name}. Shop Name: ${returnShopProvider().userShop()?.name ?? 'Main Branch'}.'
+                    : 'Item Quantity Received From Transfer - From Item Name: ${src.name}. Department Name: ${returnDepartmentProvider().currentDepartment()?.name ?? 'Not Set'}.',
+            createdAt: DateTime.now(),
+            itemUuid: updatedDest.uuid,
+            itemName: updatedDest.name,
+            newValue: formatLargeNumberDouble(
+              updatedDest
+                  .getProductUnit()
+                  .getQuantityEquivDivided(
+                    index: 1,
+                    newQuantity: newDestActual,
+                    product: updatedDest,
+                  ),
+            ),
+            oldValue: formatLargeNumberDouble(
+              dest.getProductUnit().getQuantityEquivDivided(
+                index: 1,
+                newQuantity: currentDestActual,
+                product: dest,
+              ),
+            ),
+            quantityChange: enteredVal,
+            staffId: currentUser().userId,
+            staffName: currentUser().name,
+            unit:
+                src.getProductUnit(unitUuid: unitUuid).name,
+            primaryUnit: updatedDest.getProductUnit().name,
+            departmentName: updatedDest.departmentName,
+            departmentUuid: updatedDest.departmentUuid,
+          );
+
+          dynamic resDest;
+          if (isBranch) {
+            resDest = await returnData()
+                .updateProductForOtherShops(
+                  product: updatedDest,
+                  itemHistory: destHistory,
+                );
+          } else {
+            resDest = await returnData().updateProduct(
+              product: updatedDest,
+              isQuantityUpdate: true,
+              includeQuantity: true,
+              quantityChange: equivQty,
+              isIncrement: true,
+              itemHistory: destHistory,
+              isMultipleUpdate: true,
+            );
+          }
+
+          if (resDest == null) {
+            failedItems.add(
+              '${src.name}: Destination update failed',
+            );
+            continue;
+          }
         }
 
         // 2. Source deduction
         final sourceArea = src.dimensionArea();
-        final currentSourceActual = src.getActualQuantity() ?? 0.0;
-        final newSourceActual = currentSourceActual - equivQty;
+        final currentSourceActual =
+            src.getActualQuantity() ?? 0.0;
+        final newSourceActual =
+            currentSourceActual - equivQty;
         final updatedSource = src.copyWith(
           quantity: newSourceActual / sourceArea,
         );
@@ -696,34 +953,45 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
           event: ItemHistoryEventClass.transferedOut,
           isManaged: src.isManaged,
           source: ItemHistoryEventClass.productSource,
-          destination: isBranch
-              ? ItemHistoryEventClass.branchStoreDestination
-              : ItemHistoryEventClass.departmentDestination,
+          destination:
+              isBranch
+                  ? ItemHistoryEventClass
+                      .branchStoreDestination
+                  : ItemHistoryEventClass
+                      .departmentDestination,
           shopId: shopId(),
           isIncreased: false,
           title: 'Transfered Out',
-          desc: isBranch
-              ? 'Item Quantity Transfered To - Item Name: ${dest.name}, Shop Name: ${targetShop!.name}.'
-              : 'Item Quantity Transfered To - Item Name: ${dest.name}, Department Name: ${targetDept?.name ?? 'Not Set'}.',
+          desc:
+              isBranch
+                  ? 'Item Quantity Transfered To - Item Name: ${dest.name}, Shop Name: ${targetShop!.name}.'
+                  : 'Item Quantity Transfered To - Item Name: ${dest.name}, Department Name: ${targetDept?.name ?? 'Not Set'}.',
           createdAt: DateTime.now(),
           itemUuid: updatedSource.uuid,
           itemName: updatedSource.name,
           newValue: formatLargeNumberDouble(
-            updatedSource.getProductUnit().getQuantityEquivDivided(
+            updatedSource
+                .getProductUnit()
+                .getQuantityEquivDivided(
                   index: 1,
                   newQuantity: newSourceActual,
+                  product: updatedSource,
                 ),
           ),
           oldValue: formatLargeNumberDouble(
             src.getProductUnit().getQuantityEquivDivided(
-                  index: 1,
-                  newQuantity: currentSourceActual,
-                ),
+              index: 1,
+              newQuantity: currentSourceActual,
+              product: src,
+            ),
           ),
           quantityChange: -enteredVal,
           staffId: currentUser().userId,
           staffName: currentUser().name,
-          unit: updatedSource.getProductUnit(unitUuid: unitUuid).name,
+          unit:
+              updatedSource
+                  .getProductUnit(unitUuid: unitUuid)
+                  .name,
           primaryUnit: src.getProductUnit().name,
         );
 
@@ -738,30 +1006,26 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
         );
 
         if (resSource == null) {
-          failedItems.add('${src.name}: Source deduction failed');
+          failedItems.add(
+            '${src.name}: Source deduction failed',
+          );
           continue;
         }
 
-        // 3. Save relationship if newly linked
-        if (item.isNewlyLinked && isBranch && dest.uuid != null) {
-          updatedSource.transferedProductId = dest.uuid;
-          await returnData().updateProduct(
-            product: updatedSource,
-            isQuantityUpdate: false,
-            includeQuantity: false,
-            quantityChange: null,
-            isIncrement: null,
-            itemHistory: null,
-            isMultipleUpdate: true,
-          );
-
-          final targetLinked = updatedDest.copyWith(
-            transferedProductId: src.uuid,
-          );
-          await returnData().updateProductForOtherShops(
-            product: targetLinked,
-            itemHistory: null,
-          );
+        // 3. Save relationship if newly linked manually (and not already linked by creation)
+        if (item.isNewlyLinked &&
+            !item.isCreateInDestination) {
+          if (isBranch && dest.uuid != null) {
+            await ProductLinkingHelper.linkProducts(
+              sourceProduct: updatedSource,
+              targetProduct: updatedDest,
+            );
+          } else if (!isBranch && dest.uuid != null) {
+            await ProductLinkingHelper.linkProductsDepartment(
+              sourceProduct: updatedSource,
+              targetProduct: updatedDest,
+            );
+          }
         }
 
         successItems.add(src.name);
@@ -783,24 +1047,27 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
     if (failedItems.isEmpty) {
       showDialog(
         context: context,
-        builder: (_) => InfoAlert(
-          theme: theme,
-          title: 'Bulk Transfer Complete',
-          message:
-              'Successfully transferred all ${successItems.length} product(s) to ${widget.targetShop?.name ?? widget.targetDepartment?.name}.',
-        ),
+        builder:
+            (_) => InfoAlert(
+              theme: theme,
+              title: 'Bulk Transfer Complete',
+              message:
+                  'Successfully transferred all ${successItems.length} product(s) to ${widget.targetShop?.name ?? widget.targetDepartment?.name}.',
+            ),
       );
     } else {
       showDialog(
         context: context,
-        builder: (_) => InfoAlert(
-          theme: theme,
-          title: successItems.isNotEmpty
-              ? 'Partial Transfer Completed'
-              : 'Bulk Transfer Failed',
-          message:
-              'Transferred ${successItems.length} product(s) successfully.\n\nFailed (${failedItems.length}):\n${failedItems.join('\n')}',
-        ),
+        builder:
+            (_) => InfoAlert(
+              theme: theme,
+              title:
+                  successItems.isNotEmpty
+                      ? 'Partial Transfer Completed'
+                      : 'Bulk Transfer Failed',
+              message:
+                  'Transferred ${successItems.length} product(s) successfully.\n\nFailed (${failedItems.length}):\n${failedItems.join('\n')}',
+            ),
       );
     }
   }
@@ -809,13 +1076,17 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
   Widget build(BuildContext context) {
     final theme = returnTheme(context, listen: false);
     final isMobile = screenWidth(context) < mobileScreen;
-    final destTitle = widget.targetShop?.name ?? widget.targetDepartment?.name ?? 'Destination';
+    final destTitle =
+        widget.targetShop?.name ??
+        widget.targetDepartment?.name ??
+        'Destination';
 
     if (_isLoadingProducts) {
       return DialogTemplate(
         theme: theme,
         title: 'Resolving Products',
-        message: 'Identifying linked destination products...',
+        message:
+            'Identifying linked destination products...',
         action: () {},
         showBottomActionButtons: false,
         widget: const SizedBox(
@@ -840,11 +1111,13 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
     if (_currentStep == 0) {
       // Step 1: Destination Resolution Screen
       final unlinkedCount =
-          _transferItems.where((i) => i.destinationProduct == null).length;
+          _transferItems
+              .where((i) => i.destinationProduct == null)
+              .length;
 
       return DialogTemplate(
         theme: theme,
-        title: 'Bulk Transfer – Resolve Destinations',
+        title: 'Bulk Transfer',
         message:
             'Destination: $destTitle. Linked products are automatically identified. Manually match unlinked products.',
         action: () {
@@ -856,23 +1129,32 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
         cancelAction: () => Navigator.of(context).pop(),
         widget: SizedBox(
           width: 500,
-          height: isMobile
-              ? (screenHeight(context) * 0.6).clamp(300.0, 520.0)
-              : 460,
+          height:
+              isMobile
+                  ? (screenHeight(context) * 0.6).clamp(
+                    300.0,
+                    520.0,
+                  )
+                  : 460,
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
-                  color: unlinkedCount == 0
-                      ? Colors.green.shade50
-                      : Colors.orange.shade50,
+                  color:
+                      unlinkedCount == 0
+                          ? Colors.green.shade50
+                          : Colors.orange.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: unlinkedCount == 0
-                        ? Colors.green.shade200
-                        : Colors.orange.shade200,
+                    color:
+                        unlinkedCount == 0
+                            ? Colors.green.shade200
+                            : Colors.orange.shade200,
                   ),
                 ),
                 child: Row(
@@ -881,9 +1163,10 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
                       unlinkedCount == 0
                           ? Icons.check_circle_rounded
                           : Icons.info_outline_rounded,
-                      color: unlinkedCount == 0
-                          ? Colors.green.shade700
-                          : Colors.orange.shade800,
+                      color:
+                          unlinkedCount == 0
+                              ? Colors.green.shade700
+                              : Colors.orange.shade800,
                       size: 18,
                     ),
                     const SizedBox(width: 8),
@@ -895,9 +1178,10 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: unlinkedCount == 0
-                              ? Colors.green.shade800
-                              : Colors.orange.shade900,
+                          color:
+                              unlinkedCount == 0
+                                  ? Colors.green.shade800
+                                  : Colors.orange.shade900,
                         ),
                       ),
                     ),
@@ -908,132 +1192,289 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
                 child: SingleChildScrollView(
                   child: Column(
                     spacing: 12,
-                    children: _transferItems.map((item) {
-                      final dest = item.destinationProduct;
+                    children:
+                        _transferItems.map((item) {
+                          final dest =
+                              item.destinationProduct;
 
-                      return Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: item.error != null
-                                ? Colors.red.shade300
-                                : Colors.grey.shade200,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    item.sourceProduct.name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: theme.mobileTexts.b3.fontSize,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  'Available: ${item.sourceProduct.getActualQuantity() ?? 0} ${item.sourceProduct.getProductUnit().name}',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
+                          return Container(
+                            padding: const EdgeInsets.all(
+                              10,
                             ),
-                            const SizedBox(height: 6),
-                            Row(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade50,
+                              borderRadius:
+                                  BorderRadius.circular(8),
+                              border: Border.all(
+                                color:
+                                    item.error != null
+                                        ? Colors
+                                            .red
+                                            .shade300
+                                        : Colors
+                                            .grey
+                                            .shade200,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.subdirectory_arrow_right_rounded,
-                                    size: 18, color: Colors.grey),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: dest != null
-                                      ? Row(
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 6, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: item.isAutoLinked
-                                                    ? Colors.green.shade100
-                                                    : Colors.blue.shade100,
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                              ),
-                                              child: Text(
-                                                item.isAutoLinked
-                                                    ? 'Auto-Linked'
-                                                    : 'Selected',
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        item
+                                            .sourceProduct
+                                            .name,
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      'Available: ${item.sourceProduct.getActualQuantity() ?? 0} ${item.sourceProduct.getProductUnit().name}',
+                                      style: TextStyle(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade600,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons
+                                          .subdirectory_arrow_right_rounded,
+                                      size: 18,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(
+                                      width: 6,
+                                    ),
+                                    Expanded(
+                                      child:
+                                          dest != null
+                                              ? Row(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal:
+                                                          6,
+                                                      vertical:
+                                                          2,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          item.isCreateInDestination
+                                                              ? Colors.purple.shade100
+                                                              : (item.isAutoLinked
+                                                                  ? Colors.green.shade100
+                                                                  : Colors.blue.shade100),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            4,
+                                                          ),
+                                                    ),
+                                                    child: Text(
+                                                      item.isCreateInDestination
+                                                          ? 'Will Create'
+                                                          : (item.isAutoLinked
+                                                              ? 'Auto-Linked'
+                                                              : 'Selected'),
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            10,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            item.isCreateInDestination
+                                                                ? Colors.purple.shade800
+                                                                : (item.isAutoLinked
+                                                                    ? Colors.green.shade800
+                                                                    : Colors.blue.shade800),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width:
+                                                        6,
+                                                  ),
+                                                  Expanded(
+                                                    child: Text(
+                                                      item.isCreateInDestination
+                                                          ? '${dest.name} (New Product)'
+                                                          : dest.name,
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                              : Text(
+                                                'No matching destination product',
                                                 style: TextStyle(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: item.isAutoLinked
-                                                      ? Colors.green.shade800
-                                                      : Colors.blue.shade800,
+                                                  color:
+                                                      Colors
+                                                          .red
+                                                          .shade700,
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  fontStyle:
+                                                      FontStyle
+                                                          .italic,
                                                 ),
                                               ),
+                                    ),
+                                    Row(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      children: [
+                                        if (dest == null)
+                                          TextButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                item.isCreateInDestination =
+                                                    true;
+                                                item.destinationProduct = item.sourceProduct.copyWith(
+                                                  name:
+                                                      item
+                                                          .sourceProduct
+                                                          .name,
+                                                  shopId:
+                                                      widget.isBranchTransfer
+                                                          ? widget.targetShop!.shopId
+                                                          : shopId(),
+                                                  departmentUuid:
+                                                      !widget.isBranchTransfer
+                                                          ? widget.targetDepartment?.uuid
+                                                          : null,
+                                                  departmentName:
+                                                      !widget.isBranchTransfer
+                                                          ? widget.targetDepartment?.name
+                                                          : null,
+                                                );
+                                                item.isAutoLinked =
+                                                    false;
+                                                item.isNewlyLinked =
+                                                    true;
+                                                item.error =
+                                                    null;
+                                              });
+                                            },
+                                            style: TextButton.styleFrom(
+                                              visualDensity:
+                                                  VisualDensity
+                                                      .compact,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        6,
+                                                    vertical:
+                                                        4,
+                                                  ),
                                             ),
-                                            const SizedBox(width: 6),
-                                            Expanded(
-                                              child: Text(
-                                                dest.name,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: theme.mobileTexts.b4.fontSize,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
+                                            child: Text(
+                                              '+ Create${screenWidth(context) > mobileScreen ? ' New' : ''}',
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b4
+                                                        .fontSize,
+                                                color:
+                                                    Colors
+                                                        .purple
+                                                        .shade700,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
                                               ),
                                             ),
-                                          ],
-                                        )
-                                      : Text(
-                                          'No matching destination product',
-                                          style: TextStyle(
-                                            color: Colors.red.shade700,
-                                            fontSize: 12,
-                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  _manuallySelectDestinationProduct(
+                                                    item,
+                                                  ),
+                                          style: TextButton.styleFrom(
+                                            visualDensity:
+                                                VisualDensity
+                                                    .compact,
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      8,
+                                                  vertical:
+                                                      4,
+                                                ),
+                                          ),
+                                          child: Text(
+                                            dest != null
+                                                ? 'Change'
+                                                : 'Select${screenWidth(context) > mobileScreen ? ' Product' : ''}',
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .prColor250,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                TextButton(
-                                  onPressed: () =>
-                                      _manuallySelectDestinationProduct(item),
-                                  style: TextButton.styleFrom(
-                                    visualDensity: VisualDensity.compact,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                  ),
-                                  child: Text(
-                                    dest != null ? 'Change' : 'Select Product',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: theme.lightModeColor.prColor250,
-                                      fontWeight: FontWeight.bold,
+                                if (item.error != null)
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(
+                                          top: 4,
+                                        ),
+                                    child: Text(
+                                      item.error!,
+                                      style: TextStyle(
+                                        color:
+                                            Colors
+                                                .red
+                                                .shade700,
+                                        fontSize: 11,
+                                      ),
                                     ),
                                   ),
-                                ),
                               ],
                             ),
-                            if (item.error != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  item.error!,
-                                  style: TextStyle(
-                                    color: Colors.red.shade700,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                   ),
                 ),
               ),
@@ -1047,161 +1488,378 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
       // Step 2: Quantity Specification Screen
       return DialogTemplate(
         theme: theme,
-        title: 'Bulk Transfer – Specify Quantities',
-        message: 'Enter the quantity to transfer for each product to $destTitle.',
+        title: 'Specify Quantities',
+        message:
+            'Enter the quantity to transfer for each product to $destTitle.',
         action: () {
           if (_validateStep2()) {
             setState(() => _currentStep = 2);
           }
         },
         actionButtonText: 'Review Transfer',
-        cancelAction: () => setState(() => _currentStep = 0),
+        cancelAction:
+            () => setState(() => _currentStep = 0),
         cancelText: 'Back',
         widget: SizedBox(
           width: 500,
-          height: isMobile
-              ? (screenHeight(context) * 0.6).clamp(300.0, 520.0)
-              : 460,
+          height:
+              isMobile
+                  ? (screenHeight(context) * 0.6).clamp(
+                    300.0,
+                    520.0,
+                  )
+                  : 460,
           child: SingleChildScrollView(
             child: Column(
               spacing: 12,
-              children: _transferItems.map((item) {
-                final src = item.sourceProduct;
-                final dest = item.destinationProduct!;
-                final available = src.getActualQuantity() ?? 0.0;
+              children:
+                  _transferItems.map((item) {
+                    final src = item.sourceProduct;
+                    final dest = item.destinationProduct!;
+                    final totalBaseActual =
+                        src.getActualQuantity() ?? 0.0;
+                    final selectedUnit = src.getProductUnit(
+                      unitUuid: item.unitUuid,
+                    );
+                    final availableInSelectedUnit =
+                        selectedUnit
+                            .getQuantityEquivDivided(
+                              index: 1,
+                              product: src,
+                              newQuantity: totalBaseActual,
+                            );
 
-                final units = (src.unitsList ?? []).isNotEmpty
-                    ? src.unitsList!
-                    : [src.getProductUnit()];
+                    final units =
+                        (src.unitsList ?? []).isNotEmpty
+                            ? src.unitsList!
+                            : [src.getProductUnit()];
 
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: item.error != null
-                          ? Colors.red.shade300
-                          : Colors.grey.shade200,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              src.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: theme.mobileTexts.b3.fontSize,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            'Available: ${formatLargeNumberDouble(available)} ${src.getProductUnit().name}',
-                            style: TextStyle(
-                              color: Colors.grey.shade700,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Destination: ${dest.name} ($destTitle)',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade600,
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(
+                          8,
+                        ),
+                        border: Border.all(
+                          color:
+                              item.error != null
+                                  ? Colors.red.shade300
+                                  : Colors.grey.shade200,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            flex: 3,
-                            child: GeneralTextfieldOnly(
-                              hint: 'Transfer Qty',
-                              controller: item.quantityController,
-                              lines: 1,
-                              theme: theme,
-                              onChanged: (_) {
-                                if (item.error != null) {
-                                  setState(() => item.error = null);
-                                }
-                              },
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  src.name,
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                'Available: ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}${!selectedUnit.isPrimary ? ' (${formatLargeNumberDouble(totalBaseActual)} ${src.getPrimaryUnit().name})' : ''}',
+                                style: TextStyle(
+                                  color:
+                                      Colors.grey.shade700,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Destination: ${dest.name} ($destTitle)',
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              color: Colors.grey.shade600,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          if (units.length > 1)
-                            Expanded(
-                              flex: 2,
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: item.unitUuid ?? units.first.uuid,
-                                  isExpanded: true,
-                                  items: units.map((u) {
-                                    return DropdownMenuItem<String>(
-                                      value: u.uuid,
-                                      child: Text(
-                                        u.name,
-                                        style: const TextStyle(fontSize: 12),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      item.unitUuid = val;
-                                    });
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: GeneralTextfieldOnly(
+                                  hint: 'Transfer Qty',
+                                  controller:
+                                      item.quantityController,
+                                  lines: 1,
+                                  theme: theme,
+                                  onChanged: (text) {
+                                    final clean = text
+                                        .trim()
+                                        .replaceAll(
+                                          ',',
+                                          '',
+                                        );
+                                    final val =
+                                        double.tryParse(
+                                          clean,
+                                        );
+                                    if (val != null &&
+                                        val > 0) {
+                                      final inBase =
+                                          selectedUnit
+                                              .getQuantityEquivMultiplied(
+                                                index: 1,
+                                                newQuantity:
+                                                    val,
+                                                product:
+                                                    src,
+                                              );
+                                      if (inBase >
+                                          totalBaseActual +
+                                              0.00001) {
+                                        setState(() {
+                                          item.error =
+                                              'Exceeds available stock: Max is ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}';
+                                        });
+                                        return;
+                                      }
+                                    }
+                                    if (item.error !=
+                                        null) {
+                                      setState(
+                                        () =>
+                                            item.error =
+                                                null,
+                                      );
+                                    }
                                   },
                                 ),
                               ),
-                            )
-                          else
+                              const SizedBox(width: 8),
+                              if (units.length > 1)
+                                Expanded(
+                                  flex: 2,
+                                  child: Container(
+                                    padding:
+                                        EdgeInsets.fromLTRB(
+                                          10,
+                                          0,
+                                          5,
+                                          0,
+                                        ),
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            2,
+                                          ),
+                                      color: Colors.white,
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<
+                                        String
+                                      >(
+                                        value:
+                                            item.unitUuid ??
+                                            units
+                                                .first
+                                                .uuid,
+                                        isExpanded: true,
+                                        items:
+                                            units.map((u) {
+                                              return DropdownMenuItem<
+                                                String
+                                              >(
+                                                value:
+                                                    u.uuid,
+                                                child: Text(
+                                                  u.name,
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b4.fontSize,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow
+                                                          .ellipsis,
+                                                ),
+                                              );
+                                            }).toList(),
+                                        onChanged: (
+                                          newUuid,
+                                        ) {
+                                          if (newUuid ==
+                                                  null ||
+                                              newUuid ==
+                                                  item.unitUuid)
+                                            return;
+                                          final oldUnit = src
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    item.unitUuid,
+                                              );
+                                          final newUnit = src
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    newUuid,
+                                              );
+
+                                          final currentText = item
+                                              .quantityController
+                                              .text
+                                              .trim()
+                                              .replaceAll(
+                                                ',',
+                                                '',
+                                              );
+                                          final currentVal =
+                                              double.tryParse(
+                                                currentText,
+                                              );
+
+                                          final newMax = newUnit
+                                              .getQuantityEquivDivided(
+                                                index: 1,
+                                                product:
+                                                    src,
+                                                newQuantity:
+                                                    totalBaseActual,
+                                              );
+
+                                          if (currentVal !=
+                                                  null &&
+                                              currentVal >
+                                                  0) {
+                                            final inBase = oldUnit
+                                                .getQuantityEquivMultiplied(
+                                                  index: 1,
+                                                  newQuantity:
+                                                      currentVal,
+                                                  product:
+                                                      src,
+                                                );
+                                            final inNewUnit =
+                                                newUnit.getQuantityEquivDivided(
+                                                  index: 1,
+                                                  product:
+                                                      src,
+                                                  newQuantity:
+                                                      inBase,
+                                                );
+                                            final clamped =
+                                                inNewUnit >
+                                                        newMax
+                                                    ? newMax
+                                                    : inNewUnit;
+                                            item
+                                                    .quantityController
+                                                    .text =
+                                                formatLargeNumberDouble(
+                                                  clamped,
+                                                );
+                                          }
+
+                                          setState(() {
+                                            item.unitUuid =
+                                                newUuid;
+                                            item.error =
+                                                null;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                  child: Text(
+                                    src
+                                        .getProductUnit()
+                                        .name,
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b5
+                                              .fontSize,
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(width: 8),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    item
+                                            .quantityController
+                                            .text =
+                                        formatLargeNumberDouble(
+                                          availableInSelectedUnit,
+                                        );
+                                    item.error = null;
+                                  });
+                                },
+                                style: TextButton.styleFrom(
+                                  visualDensity:
+                                      VisualDensity.compact,
+                                ),
+                                child: Text(
+                                  'MAX',
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (item.error != null)
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.only(
+                                    top: 4,
+                                  ),
                               child: Text(
-                                src.getProductUnit().name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 12),
+                                item.error!,
+                                style: TextStyle(
+                                  color:
+                                      Colors.red.shade700,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                ),
                               ),
                             ),
-                          const SizedBox(width: 8),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                item.quantityController.text =
-                                    available.toString();
-                                item.error = null;
-                              });
-                            },
-                            style: TextButton.styleFrom(
-                              visualDensity: VisualDensity.compact,
-                            ),
-                            child: const Text('MAX',
-                                style: TextStyle(
-                                    fontSize: 11, fontWeight: FontWeight.bold)),
-                          ),
                         ],
                       ),
-                      if (item.error != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            item.error!,
-                            style: TextStyle(
-                              color: Colors.red.shade700,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                );
-              }).toList(),
+                    );
+                  }).toList(),
             ),
           ),
         ),
@@ -1221,69 +1879,96 @@ class _BulkTransferWizardDialogState extends State<BulkTransferWizardDialog> {
       widget: SizedBox(
         width: 500,
         height:
-            isMobile ? (screenHeight(context) * 0.55).clamp(280.0, 480.0) : 420,
+            isMobile
+                ? (screenHeight(context) * 0.55).clamp(
+                  280.0,
+                  480.0,
+                )
+                : 420,
         child: SingleChildScrollView(
           child: Column(
             spacing: 12,
-            children: _transferItems.map((item) {
-              final src = item.sourceProduct;
-              final dest = item.destinationProduct!;
-              final unitName =
-                  src.getProductUnit(unitUuid: item.unitUuid).name;
+            children:
+                _transferItems.map((item) {
+                  final src = item.sourceProduct;
+                  final dest = item.destinationProduct!;
+                  final unitName =
+                      src
+                          .getProductUnit(
+                            unitUuid: item.unitUuid,
+                          )
+                          .name;
 
-              return Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            src.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'To: ${dest.name} ($destTitle)',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
+                  return Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(
+                        8,
+                      ),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: theme.lightModeColor.prColor250
-                            .withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${formatLargeNumberDouble(item.transferQuantity)} $unitName',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: theme.lightModeColor.prColor250,
-                          fontSize: 12,
+                    child: Row(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                src.name,
+                                style: const TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'To: ${dest.name} ($destTitle)',
+                                style: TextStyle(
+                                  color:
+                                      Colors.grey.shade600,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                          decoration: BoxDecoration(
+                            color: theme
+                                .lightModeColor
+                                .prColor250
+                                .withValues(alpha: 0.12),
+                            borderRadius:
+                                BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            '${formatLargeNumberDouble(item.transferQuantity)} $unitName',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor250,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
       ),

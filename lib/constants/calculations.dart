@@ -458,11 +458,11 @@ String formatMoney(num amount, BuildContext context) {
     String suffix = '';
     double value = amount.toDouble();
 
-    if (value >= 1_000_000_000) {
-      value = value / 1_000_000_000;
+    if (value >= 1000000000) {
+      value = value / 1000000000;
       suffix = 'B';
-    } else if (value >= 1_000_000) {
-      value = value / 1_000_000;
+    } else if (value >= 1000000) {
+      value = value / 1000000;
       suffix = 'M';
     }
 
@@ -486,11 +486,11 @@ String formatMoneyMid({
     String suffix = '';
     double value = amount.toDouble();
 
-    if (value >= 1_000_000_000) {
-      value = value / 1_000_000_000;
+    if (value >= 1000000000) {
+      value = value / 1000000000;
       suffix = 'B';
-    } else if (value >= 1_000_000) {
-      value = value / 1_000_000;
+    } else if (value >= 1000000) {
+      value = value / 1000000;
       suffix = 'M';
     }
 
@@ -510,11 +510,11 @@ String formatMoneyAlt({
     String suffix = '';
     double value = amount.toDouble();
 
-    if (value >= 1_000_000_000) {
-      value = value / 1_000_000_000;
+    if (value >= 1000000000) {
+      value = value / 1000000000;
       suffix = 'B';
-    } else if (value >= 1_000_000) {
-      value = value / 1_000_000;
+    } else if (value >= 1000000) {
+      value = value / 1000000;
       suffix = 'M';
     }
 
@@ -543,11 +543,11 @@ String formatMoneyBig({
     String suffix = '';
     double value = amount.toDouble();
 
-    if (value >= 1_000_000_000) {
-      value = value / 1_000_000_000;
+    if (value >= 1000000000) {
+      value = value / 1000000000;
       suffix = 'B';
-    } else if (value >= 1_000_000) {
-      value = value / 1_000_000;
+    } else if (value >= 1000000) {
+      value = value / 1000000;
       suffix = 'M';
     }
 

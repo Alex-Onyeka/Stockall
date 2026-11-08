@@ -4326,7 +4326,7 @@ class DataProvider extends ChangeNotifier {
           name: '${pr.name} Copy ${randomCode()}',
           createdAt: DateTime.now(),
           quantity: newQty,
-          transferedProductId: pr.uuid,
+          globalProductId: uuidGen(),
         );
 
         List<ProductUnitsClass> tempItems =
@@ -4407,14 +4407,28 @@ class DataProvider extends ChangeNotifier {
             newQty = customQuantities?[pr.uuid] ?? 0;
           }
 
+          final clusterId =
+              pr.globalProductId ?? pr.uuid ?? uuidGen();
+          if (pr.globalProductId != clusterId) {
+            pr.globalProductId = clusterId;
+            await updateProduct(
+              product: pr,
+              isQuantityUpdate: false,
+              includeQuantity: false,
+              quantityChange: null,
+              isIncrement: null,
+              itemHistory: null,
+            );
+          }
+
           final newProduct = pr.copyWith(
             uuid: newUuid,
             shopId: shop.shopId,
             name: pr.name,
             createdAt: DateTime.now(),
             quantity: newQty,
-            transferedProductId:
-                pr.uuid, // Auto-link duplicate to original
+            globalProductId: clusterId,
+            globalDepartmentProductId: uuidGen(),
           );
           List<ProductUnitsClass> tempItems =
               (newProduct.unitsList ?? [])
@@ -4427,13 +4441,26 @@ class DataProvider extends ChangeNotifier {
             item.createdAt = DateTime.now();
           }
 
+          final tempPrices =
+              (newProduct.pricesList ?? [])
+                  .map((p) => p.copyWith())
+                  .toList();
+          for (final price in tempPrices) {
+            price.uuid = uuidGen();
+            price.itemUuid = newUuid;
+            price.createdAt = DateTime.now();
+          }
+
           newProduct.unitsList = tempItems;
+          newProduct.pricesList = tempPrices;
           newProduct.departmentName = null;
           newProduct.departmentUuid = null;
           newProduct.category = null;
           newProduct.categoryUuid = null;
           newProduct.categories = [];
           newProduct.storageUuid = null;
+          newProduct.totalQttyInStorage = 0;
+          newProduct.totalQttyInStorageDouble = 0.0;
 
           await supabase
               .from('products')
@@ -4478,6 +4505,23 @@ class DataProvider extends ChangeNotifier {
             newQty = customQuantities?[pr.uuid] ?? 0;
           }
 
+          final deptClusterId =
+              pr.globalDepartmentProductId ??
+              pr.uuid ??
+              uuidGen();
+          if (pr.globalDepartmentProductId !=
+              deptClusterId) {
+            pr.globalDepartmentProductId = deptClusterId;
+            await updateProduct(
+              product: pr,
+              isQuantityUpdate: false,
+              includeQuantity: false,
+              quantityChange: null,
+              isIncrement: null,
+              itemHistory: null,
+            );
+          }
+
           final newProduct = pr.copyWith(
             uuid: newUuid,
             departmentUuid: depart.uuid,
@@ -4485,8 +4529,8 @@ class DataProvider extends ChangeNotifier {
             name: pr.name,
             createdAt: DateTime.now(),
             quantity: newQty,
-            transferedProductId:
-                pr.uuid, // Link to original
+            globalDepartmentProductId: deptClusterId,
+            globalProductId: uuidGen(),
           );
 
           List<ProductUnitsClass> tempItems =

@@ -17,7 +17,6 @@ import 'package:stockall/pages/products/product_details/platforms/components/bot
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/manage_this_item_toggle_switch.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/price_section_widget.dart';
-import 'package:stockall/pages/products/product_details/platforms/components/product_branch_link_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/product_details_more_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/quanitity_in_stock_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/transfer_item_quantity.dart';
@@ -587,13 +586,6 @@ class _ProductDetailsDesktopState
                                   ],
                                 ),
                               ),
-                            ),
-                            ProductBranchLinkWidget(
-                              product: product,
-                              theme: widget.theme,
-                              onUpdated: () {
-                                setState(() {});
-                              },
                             ),
                             SizedBox(height: 10),
                             Row(

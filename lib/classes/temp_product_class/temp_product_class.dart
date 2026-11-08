@@ -145,7 +145,10 @@ class TempProductClass {
   bool? deriveQuantityFromPrice;
 
   @HiveField(44)
-  String? transferedProductId;
+  String? globalProductId;
+
+  @HiveField(45)
+  String? globalDepartmentProductId;
 
   TempProductClass({
     this.id,
@@ -192,7 +195,8 @@ class TempProductClass {
     this.dimensionUnit,
     this.dimensionUnitConversion,
     this.deriveQuantityFromPrice,
-    this.transferedProductId,
+    this.globalProductId,
+    this.globalDepartmentProductId,
   });
 
   factory TempProductClass.fromJson(
@@ -301,8 +305,10 @@ class TempProductClass {
       deriveQuantityFromPrice:
           json['derive_quantity_from_price'] as bool? ??
           false,
-      transferedProductId:
-          json['transfered_product_id'] as String?,
+      globalProductId:
+          json['global_product_id'] as String?,
+      globalDepartmentProductId:
+          json['global_department_product_id'] as String?,
     );
   }
 
@@ -371,7 +377,8 @@ class TempProductClass {
             dimensionUnitConversion,
         'derive_quantity_from_price':
             deriveQuantityFromPrice,
-        'transfered_product_id': transferedProductId,
+        'global_product_id': globalProductId,
+        'global_department_product_id': globalDepartmentProductId,
       };
     } else {
       return {
@@ -435,7 +442,8 @@ class TempProductClass {
             dimensionUnitConversion,
         'derive_quantity_from_price':
             deriveQuantityFromPrice,
-        'transfered_product_id': transferedProductId,
+        'global_product_id': globalProductId,
+        'global_department_product_id': globalDepartmentProductId,
       };
     }
   }
@@ -485,7 +493,8 @@ class TempProductClass {
     String? dimensionUnit,
     double? dimensionUnitConversion,
     bool? deriveQuantityFromPrice,
-    String? transferedProductId,
+    String? globalProductId,
+    String? globalDepartmentProductId,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -541,8 +550,10 @@ class TempProductClass {
       deriveQuantityFromPrice:
           deriveQuantityFromPrice ??
           this.deriveQuantityFromPrice,
-      transferedProductId:
-          transferedProductId ?? this.transferedProductId,
+      globalProductId:
+          globalProductId ?? this.globalProductId,
+      globalDepartmentProductId: globalDepartmentProductId ??
+          this.globalDepartmentProductId,
     );
   }
 

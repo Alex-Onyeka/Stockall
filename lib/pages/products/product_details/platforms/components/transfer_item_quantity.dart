@@ -184,7 +184,7 @@ class _TransferItemQuantityWidgetState
                                   widget.item.getActualQuantity() ==
                                           null
                                       ? 'Quantity Not Set'
-                                      : 'Current Quantity in ${widget.item.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.item.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context))}',
+                                      : 'Current Quantity in ${widget.item.getProductUnit(unitUuid: unitUuid).name}: ${formatLargeNumberDouble(widget.item.getProductUnit(unitUuid: unitUuid).getQuantityEquivDivided(index: 1, context: context, product: widget.item))}',
                                 ),
                                 EditCartTextField(
                                   onChanged: (value) {
@@ -437,34 +437,51 @@ void transferItemAction({
   required double enteredValue,
 }) {
   var theme = returnTheme(firstContext, listen: false);
-  showDialog(
-    context: firstContext,
-    builder: (secondContext) {
-      return DialogTemplate(
-        theme: theme,
-        message: 'Select the action you want to Perform',
-        title: 'Select Action',
-        action: () {},
-        showBottomActionButtons: false,
-        widget: Column(
-          spacing: 5,
-          children: [
-            Visibility(
-              visible:
-                  returnShopProvider()
-                      .userShop()
-                      ?.manageDepartments ==
-                  true,
-              child: MainButtonTransparent(
+  final canTransferDept =
+      returnShopProvider().userShop()?.manageDepartments ==
+      true;
+  final canTransferBranch =
+      returnShopProvider().userShops.length > 1;
+
+  if (!canTransferDept && !canTransferBranch) {
+    showDialog(
+      context: firstContext,
+      builder: (errorContext) {
+        return InfoAlert(
+          theme: theme,
+          message:
+              'Transfer unavailable. Multiple branches or department management must be enabled to transfer stock.',
+          title: 'Transfer Unavailable',
+        );
+      },
+    );
+    return;
+  }
+
+  if (canTransferDept && canTransferBranch) {
+    showDialog(
+      context: firstContext,
+      builder: (secondContext) {
+        return DialogTemplate(
+          theme: theme,
+          message: 'Select the action you want to Perform',
+          title: 'Select Action',
+          action: () {},
+          showBottomActionButtons: false,
+          widget: Column(
+            spacing: 5,
+            children: [
+              MainButtonTransparent(
                 themeProvider: theme,
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
                 text: 'Transfer To Department',
                 action: () {
+                  Navigator.of(secondContext).pop();
                   selectDepartmentProducts(
                     unitUuid: unitUuid,
                     mainItem: mainItem,
                     firstContext: firstContext,
-                    secondContext: secondContext,
+                    secondContext: null,
                     enteredValue: enteredValue,
                     loadingAction: (value) {
                       loadingAction(value);
@@ -472,15 +489,12 @@ void transferItemAction({
                   );
                 },
               ),
-            ),
-            Visibility(
-              visible:
-                  returnShopProvider().userShops.length > 1,
-              child: MainButtonTransparent(
+              MainButtonTransparent(
                 themeProvider: theme,
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
                 text: 'Transfer To Branch',
                 action: () {
+                  Navigator.of(secondContext).pop();
                   bool isOnline =
                       returnConnectivityProvider()
                           .isConnected;
@@ -499,7 +513,7 @@ void transferItemAction({
                   } else {
                     selectShopsProducts(
                       unitUuid: unitUuid,
-                      secondContext: secondContext,
+                      secondContext: null,
                       firstContext: firstContext,
                       enteredValue: enteredValue,
                       mainItem: mainItem,
@@ -510,12 +524,50 @@ void transferItemAction({
                   }
                 },
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+        );
+      },
+    );
+  } else if (canTransferBranch) {
+    bool isOnline =
+        returnConnectivityProvider().isConnected;
+    if (!isOnline) {
+      showDialog(
+        context: firstContext,
+        builder: (errorContext) {
+          return InfoAlert(
+            theme: theme,
+            message:
+                'You Can Only Transfer Items Into Other Stores When you have Internet Connection. Please turn on your internet connection and try again.',
+            title: 'No Internet Connection',
+          );
+        },
       );
-    },
-  );
+    } else {
+      selectShopsProducts(
+        unitUuid: unitUuid,
+        secondContext: null,
+        firstContext: firstContext,
+        enteredValue: enteredValue,
+        mainItem: mainItem,
+        loadingAction: (value) {
+          loadingAction(value);
+        },
+      );
+    }
+  } else {
+    selectDepartmentProducts(
+      unitUuid: unitUuid,
+      mainItem: mainItem,
+      firstContext: firstContext,
+      secondContext: null,
+      enteredValue: enteredValue,
+      loadingAction: (value) {
+        loadingAction(value);
+      },
+    );
+  }
 }
 
 void selectDepartmentProducts({
@@ -722,16 +774,22 @@ void selectItemInADepartmentProducts({
     context: thirdContext,
     action: () {
       final searchController = TextEditingController();
-      final deptProducts = returnData()
-          .productListMain
-          .where((item) =>
-              (department != null ? item.departmentUuid == department.uuid : true) &&
-              item.uuid != mainItem.uuid)
-          .toList();
-      TempProductClass? selectedItem = ProductLinkingHelper.resolveLinkedProduct(
-        sourceProduct: mainItem,
-        destinationProducts: deptProducts,
-      );
+      final deptProducts =
+          returnData().productListMain
+              .where(
+                (item) =>
+                    (department != null
+                        ? item.departmentUuid ==
+                            department.uuid
+                        : true) &&
+                    item.uuid != mainItem.uuid,
+              )
+              .toList();
+      TempProductClass? selectedItem =
+          ProductLinkingHelper.resolveLinkedProductDepartment(
+            sourceProduct: mainItem,
+            destinationProducts: deptProducts,
+          );
       showDialog(
         context: thirdContext,
         builder: (fourthContext) {
@@ -760,17 +818,19 @@ void selectItemInADepartmentProducts({
                                 oldProduct.copyWith();
                             newProduct.quantity =
                                 ((newProduct
-                                        .getActualQuantity() ??
-                                    0) +
-                                mainItem
-                                    .getProductUnit(
-                                      unitUuid: unitUuid,
-                                    )
-                                    .getQuantityEquivMultiplied(
-                                      index: 1,
-                                      newQuantity:
-                                          enteredValue,
-                                    )) /
+                                            .getActualQuantity() ??
+                                        0) +
+                                    mainItem
+                                        .getProductUnit(
+                                          unitUuid:
+                                              unitUuid,
+                                        )
+                                        .getQuantityEquivMultiplied(
+                                          index: 1,
+                                          newQuantity:
+                                              enteredValue,
+                                          product: mainItem,
+                                        )) /
                                 newProduct.dimensionArea();
                             ItemHistory
                             itemHistory = ItemHistory(
@@ -944,7 +1004,7 @@ void selectItemInADepartmentProducts({
                                 );
                             if (res == null ||
                                 res2 == null) {
-                          loadingAction(false);
+                              loadingAction(false);
                               showDialog(
                                 // ignore: use_build_context_synchronously
                                 context: fifthContext,
@@ -982,7 +1042,16 @@ void selectItemInADepartmentProducts({
                                 // ignore: use_build_context_synchronously
                                 firstContext,
                               ).pop();
-                          loadingAction(false);
+                              if (mainItem.globalDepartmentProductId == null ||
+                                  mainItem.globalDepartmentProductId !=
+                                      oldProduct.globalDepartmentProductId) {
+                                await ProductLinkingHelper
+                                    .linkProductsDepartment(
+                                      sourceProduct: mainItem,
+                                      targetProduct: oldProduct,
+                                    );
+                              }
+                              loadingAction(false);
                             }
                           },
                         );
@@ -1024,6 +1093,237 @@ void selectItemInADepartmentProducts({
                             ),
                           ),
                         ],
+                      ),
+                      SizedBox(height: 8),
+                      InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onTap: () {
+                          showDialog(
+                            context: fourthContext,
+                            builder: (
+                              createConfirmContext,
+                            ) {
+                              return ConfirmationAlert(
+                                theme: theme,
+                                title:
+                                    'Create & Transfer to Department',
+                                message:
+                                    'Create "${mainItem.name}" in "${department?.name ?? 'this department'}" with ${formatLargeNumberDouble(enteredValue)} ${mainItem.getProductUnit(unitUuid: unitUuid).name} and link them automatically?',
+                                action: () async {
+                                  loadingAction(true);
+                                  final equivQty = mainItem
+                                      .getProductUnit(
+                                        unitUuid: unitUuid,
+                                      )
+                                      .getQuantityEquivMultiplied(
+                                        index: 1,
+                                        newQuantity:
+                                            enteredValue,
+                                        product: mainItem,
+                                      );
+                                  final created =
+                                      await ProductLinkingHelper.createDestinationProductFromTransfer(
+                                        sourceProduct:
+                                            mainItem,
+                                        enteredTransferQuantity:
+                                            enteredValue,
+                                        unitUuid: unitUuid,
+                                        isBranchTransfer:
+                                            false,
+                                        targetDepartment:
+                                            department,
+                                      );
+                                  if (created == null) {
+                                    loadingAction(false);
+                                    showDialog(
+                                      context:
+                                          createConfirmContext,
+                                      builder:
+                                          (_) => InfoAlert(
+                                            theme: theme,
+                                            title:
+                                                'Creation Failed',
+                                            message:
+                                                'Failed to create product in department.',
+                                          ),
+                                    );
+                                    return;
+                                  }
+
+                                  // Deduct from source
+                                  final currentSourceActual =
+                                      mainItem
+                                          .getActualQuantity() ??
+                                      0.0;
+                                  final newSourceActual =
+                                      currentSourceActual -
+                                      equivQty;
+                                  final updatedSource =
+                                      mainItem.copyWith(
+                                        quantity:
+                                            newSourceActual /
+                                            mainItem
+                                                .dimensionArea(),
+                                      );
+                                  final sourceHistory = ItemHistory(
+                                    event:
+                                        ItemHistoryEventClass
+                                            .transferedOut,
+                                    isManaged:
+                                        mainItem.isManaged,
+                                    source:
+                                        ItemHistoryEventClass
+                                            .productSource,
+                                    destination:
+                                        ItemHistoryEventClass
+                                            .departmentDestination,
+                                    shopId: shopId(),
+                                    isIncreased: false,
+                                    desc:
+                                        'Item Quantity Transferred To - Item Name: ${created.name}, Department Name: ${department?.name ?? 'Department Not Set'}.',
+                                    title:
+                                        'Transferred Out',
+                                    createdAt:
+                                        DateTime.now(),
+                                    itemUuid:
+                                        updatedSource.uuid,
+                                    itemName:
+                                        updatedSource.name,
+                                    newValue: formatLargeNumberDouble(
+                                      updatedSource
+                                          .getProductUnit()
+                                          .getQuantityEquivDivided(
+                                            index: 1,
+                                            newQuantity:
+                                                newSourceActual,
+                                            product:
+                                                updatedSource,
+                                          ),
+                                    ),
+                                    oldValue: formatLargeNumberDouble(
+                                      mainItem
+                                          .getProductUnit()
+                                          .getQuantityEquivDivided(
+                                            index: 1,
+                                            newQuantity:
+                                                currentSourceActual,
+                                            product:
+                                                mainItem,
+                                          ),
+                                    ),
+                                    quantityChange:
+                                        -enteredValue,
+                                    staffId:
+                                        currentUser()
+                                            .userId,
+                                    staffName:
+                                        currentUser().name,
+                                    unit:
+                                        updatedSource
+                                            .getProductUnit(
+                                              unitUuid:
+                                                  unitUuid,
+                                            )
+                                            .name,
+                                    primaryUnit:
+                                        updatedSource
+                                            .getProductUnit()
+                                            .name,
+                                  );
+
+                                  await returnData()
+                                      .updateProduct(
+                                        product:
+                                            updatedSource,
+                                        isQuantityUpdate:
+                                            true,
+                                        includeQuantity:
+                                            true,
+                                        quantityChange:
+                                            equivQty,
+                                        isIncrement: false,
+                                        itemHistory:
+                                            sourceHistory,
+                                      );
+
+                                  loadingAction(false);
+                                  Navigator.of(
+                                    createConfirmContext,
+                                  ).pop();
+                                  Navigator.of(
+                                    fourthContext,
+                                  ).pop();
+                                  Navigator.of(
+                                    thirdContext,
+                                  ).pop();
+                                  if (secondContext !=
+                                      null) {
+                                    Navigator.of(
+                                      secondContext,
+                                    ).pop();
+                                  }
+                                  Navigator.of(
+                                    firstContext,
+                                  ).pop();
+                                },
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 7,
+                              ),
+                          decoration: BoxDecoration(
+                            color: theme
+                                .lightModeColor
+                                .prColor250
+                                .withValues(alpha: 0.08),
+                            borderRadius:
+                                BorderRadius.circular(6),
+                            border: Border.all(
+                              color: theme
+                                  .lightModeColor
+                                  .prColor250
+                                  .withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons
+                                    .add_circle_outline_rounded,
+                                size: 16,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor250,
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  'Create "${mainItem.name}" in ${department?.name ?? 'Department'}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .prColor250,
+                                  ),
+                                  overflow:
+                                      TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       SizedBox(height: 5),
                       Expanded(
@@ -1453,16 +1753,17 @@ void selectItemInAShop({
                             oldProduct.copyWith();
                         newProduct.quantity =
                             ((newProduct
-                                    .getActualQuantity() ??
-                                0) +
-                            mainItem
-                                .getProductUnit(
-                                  unitUuid: unitUuid,
-                                )
-                                .getQuantityEquivMultiplied(
-                                  index: 1,
-                                  newQuantity: enteredValue,
-                                )) /
+                                        .getActualQuantity() ??
+                                    0) +
+                                mainItem
+                                    .getProductUnit(
+                                      unitUuid: unitUuid,
+                                    )
+                                    .getQuantityEquivMultiplied(
+                                      index: 1,
+                                      newQuantity:
+                                          enteredValue,
+                                    )) /
                             newProduct.dimensionArea();
                         ItemHistory
                         itemHistory = ItemHistory(
@@ -1546,6 +1847,7 @@ void selectItemInAShop({
                                       index: 1,
                                       newQuantity:
                                           enteredValue,
+                                      product: mainItem,
                                     ))) /
                             newProduct2.dimensionArea();
                         ItemHistory
@@ -1622,13 +1924,6 @@ void selectItemInAShop({
                               itemHistory: itemHistory2,
                             );
                         if (res == null || res2 == null) {
-                          if (mainItem.transferedProductId == null ||
-                              mainItem.transferedProductId!.isEmpty) {
-                            await ProductLinkingHelper.linkProducts(
-                              sourceProduct: mainItem,
-                              targetProduct: oldProduct,
-                            );
-                          }
                           loadingAction(false);
                           showDialog(
                             // ignore: use_build_context_synchronously
@@ -1666,8 +1961,11 @@ void selectItemInAShop({
                             // ignore: use_build_context_synchronously
                             firstContext,
                           ).pop();
-                          if (mainItem.transferedProductId == null ||
-                              mainItem.transferedProductId!.isEmpty) {
+                          if (mainItem.globalProductId ==
+                                  null ||
+                              mainItem.globalProductId !=
+                                  oldProduct
+                                      .globalProductId) {
                             await ProductLinkingHelper.linkProducts(
                               sourceProduct: mainItem,
                               targetProduct: oldProduct,
@@ -1744,12 +2042,16 @@ void selectItemInAShop({
                             ),
                           );
                         } else {
-                          final allShopProducts = snapshot.data ?? [];
-                          final autoLinked = ProductLinkingHelper.resolveLinkedProduct(
-                            sourceProduct: mainItem,
-                            destinationProducts: allShopProducts,
-                          );
-                          if (selectedItem == null && autoLinked != null) {
+                          final allShopProducts =
+                              snapshot.data ?? [];
+                          final autoLinked =
+                              ProductLinkingHelper.resolveLinkedProduct(
+                                sourceProduct: mainItem,
+                                destinationProducts:
+                                    allShopProducts,
+                              );
+                          if (selectedItem == null &&
+                              autoLinked != null) {
                             selectedItem = autoLinked;
                           }
                           List<TempProductClass> products =
@@ -1768,44 +2070,347 @@ void selectItemInAShop({
                                   )
                                   .toList();
                           return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.stretch,
                             children: [
+                              InkWell(
+                                mouseCursor:
+                                    SystemMouseCursors
+                                        .click,
+                                onTap: () {
+                                  showDialog(
+                                    context: fourthContext,
+                                    builder: (
+                                      createConfirmContext,
+                                    ) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        title:
+                                            'Create & Transfer to Branch',
+                                        message:
+                                            'Create "${mainItem.name}" in branch "${shop.name}" with ${formatLargeNumberDouble(enteredValue)} ${mainItem.getProductUnit(unitUuid: unitUuid).name} and link them automatically?',
+                                        action: () async {
+                                          loadingAction(
+                                            true,
+                                          );
+                                          final equivQty = mainItem
+                                              .getProductUnit(
+                                                unitUuid:
+                                                    unitUuid,
+                                              )
+                                              .getQuantityEquivMultiplied(
+                                                index: 1,
+                                                newQuantity:
+                                                    enteredValue,
+                                                product:
+                                                    mainItem,
+                                              );
+                                          final created = await ProductLinkingHelper.createDestinationProductFromTransfer(
+                                            sourceProduct:
+                                                mainItem,
+                                            enteredTransferQuantity:
+                                                enteredValue,
+                                            unitUuid:
+                                                unitUuid,
+                                            isBranchTransfer:
+                                                true,
+                                            targetShop:
+                                                shop,
+                                          );
+                                          if (created ==
+                                              null) {
+                                            loadingAction(
+                                              false,
+                                            );
+                                            showDialog(
+                                              context:
+                                                  createConfirmContext,
+                                              builder:
+                                                  (
+                                                    _,
+                                                  ) => InfoAlert(
+                                                    theme:
+                                                        theme,
+                                                    title:
+                                                        'Creation Failed',
+                                                    message:
+                                                        'Failed to create product in branch.',
+                                                  ),
+                                            );
+                                            return;
+                                          }
+
+                                          // Deduct from source
+                                          final currentSourceActual =
+                                              mainItem
+                                                  .getActualQuantity() ??
+                                              0.0;
+                                          final newSourceActual =
+                                              currentSourceActual -
+                                              equivQty;
+                                          final updatedSource =
+                                              mainItem.copyWith(
+                                                quantity:
+                                                    newSourceActual /
+                                                    mainItem
+                                                        .dimensionArea(),
+                                              );
+                                          final sourceHistory = ItemHistory(
+                                            event:
+                                                ItemHistoryEventClass
+                                                    .transferedOut,
+                                            isManaged:
+                                                mainItem
+                                                    .isManaged,
+                                            source:
+                                                ItemHistoryEventClass
+                                                    .productSource,
+                                            destination:
+                                                ItemHistoryEventClass
+                                                    .branchStoreDestination,
+                                            shopId:
+                                                shopId(),
+                                            isIncreased:
+                                                false,
+                                            desc:
+                                                'Item Quantity Transferred To - Item Name: ${created.name}, Shop Name: ${shop.name}.',
+                                            title:
+                                                'Transferred Out',
+                                            createdAt:
+                                                DateTime.now(),
+                                            itemUuid:
+                                                updatedSource
+                                                    .uuid,
+                                            itemName:
+                                                updatedSource
+                                                    .name,
+                                            newValue: formatLargeNumberDouble(
+                                              updatedSource
+                                                  .getProductUnit()
+                                                  .getQuantityEquivDivided(
+                                                    index:
+                                                        1,
+                                                    newQuantity:
+                                                        newSourceActual,
+                                                    product:
+                                                        updatedSource,
+                                                  ),
+                                            ),
+                                            oldValue: formatLargeNumberDouble(
+                                              mainItem
+                                                  .getProductUnit()
+                                                  .getQuantityEquivDivided(
+                                                    index:
+                                                        1,
+                                                    newQuantity:
+                                                        currentSourceActual,
+                                                    product:
+                                                        mainItem,
+                                                  ),
+                                            ),
+                                            quantityChange:
+                                                -enteredValue,
+                                            staffId:
+                                                currentUser()
+                                                    .userId,
+                                            staffName:
+                                                currentUser()
+                                                    .name,
+                                            unit:
+                                                updatedSource
+                                                    .getProductUnit(
+                                                      unitUuid:
+                                                          unitUuid,
+                                                    )
+                                                    .name,
+                                            primaryUnit:
+                                                updatedSource
+                                                    .getProductUnit()
+                                                    .name,
+                                          );
+
+                                          await returnData().updateProduct(
+                                            product:
+                                                updatedSource,
+                                            isQuantityUpdate:
+                                                true,
+                                            includeQuantity:
+                                                true,
+                                            quantityChange:
+                                                equivQty,
+                                            isIncrement:
+                                                false,
+                                            itemHistory:
+                                                sourceHistory,
+                                          );
+
+                                          loadingAction(
+                                            false,
+                                          );
+                                          Navigator.of(
+                                            createConfirmContext,
+                                          ).pop();
+                                          Navigator.of(
+                                            fourthContext,
+                                          ).pop();
+                                          Navigator.of(
+                                            thirdContext,
+                                          ).pop();
+                                          if (secondContext !=
+                                              null) {
+                                            Navigator.of(
+                                              secondContext,
+                                            ).pop();
+                                          }
+                                          Navigator.of(
+                                            firstContext,
+                                          ).pop();
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  margin:
+                                      const EdgeInsets.only(
+                                        bottom: 8,
+                                      ),
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 7,
+                                      ),
+                                  decoration: BoxDecoration(
+                                    color: theme
+                                        .lightModeColor
+                                        .prColor250
+                                        .withValues(
+                                          alpha: 0.08,
+                                        ),
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          6,
+                                        ),
+                                    border: Border.all(
+                                      color: theme
+                                          .lightModeColor
+                                          .prColor250
+                                          .withValues(
+                                            alpha: 0.3,
+                                          ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    children: [
+                                      Icon(
+                                        Icons
+                                            .add_circle_outline_rounded,
+                                        size: 16,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .prColor250,
+                                      ),
+                                      const SizedBox(
+                                        width: 6,
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          'Create "${mainItem.name}" in ${shop.name}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor250,
+                                          ),
+                                          overflow:
+                                              TextOverflow
+                                                  .ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               if (autoLinked != null)
                                 Container(
-                                  margin: const EdgeInsets.only(bottom: 8),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 8),
+                                  margin:
+                                      const EdgeInsets.only(
+                                        bottom: 8,
+                                      ),
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 8,
+                                      ),
                                   decoration: BoxDecoration(
-                                    color: Colors.green.shade50,
-                                    borderRadius: BorderRadius.circular(8),
+                                    color:
+                                        Colors
+                                            .green
+                                            .shade50,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          8,
+                                        ),
                                     border: Border.all(
-                                        color: Colors.green.shade200),
+                                      color:
+                                          Colors
+                                              .green
+                                              .shade200,
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.link_rounded,
-                                          color: Colors.green.shade700,
-                                          size: 18),
-                                      const SizedBox(width: 8),
+                                      Icon(
+                                        Icons.link_rounded,
+                                        color:
+                                            Colors
+                                                .green
+                                                .shade700,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                              CrossAxisAlignment
+                                                  .start,
                                           children: [
                                             Text(
                                               'Auto-Selected Linked Destination',
                                               style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.green.shade900,
+                                                fontSize:
+                                                    11,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                                color:
+                                                    Colors
+                                                        .green
+                                                        .shade900,
                                               ),
                                             ),
                                             Text(
                                               '${autoLinked.name} (${shop.name})',
                                               style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.green.shade800,
+                                                fontSize:
+                                                    12,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                                color:
+                                                    Colors
+                                                        .green
+                                                        .shade800,
                                               ),
                                             ),
                                           ],
@@ -1816,129 +2421,133 @@ void selectItemInAShop({
                                 ),
                               Expanded(
                                 child: SingleChildScrollView(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 5.0,
-                                    vertical: 10,
-                                  ),
-                              child: Builder(
-                                builder: (context) {
-                                  if (products.isEmpty) {
-                                    return SizedBox(
-                                      height: 400,
-                                      child: EmptyWidgetDisplayOnly(
-                                        title:
-                                            'No Item Found',
-                                        subText:
-                                            'You have not added any item under this Shop.',
-                                        theme: theme,
-                                        height: 30,
-                                        icon: Icons.clear,
-                                      ),
-                                    );
-                                  } else {
-                                    return Column(
-                                      spacing: 5,
-                                      children:
-                                          products
-                                              .map(
-                                                (
-                                                  item,
-                                                ) => Material(
-                                                  color:
-                                                      Colors
-                                                          .transparent,
-                                                  child: InkWell(
-                                                    mouseCursor:
-                                                        SystemMouseCursors.click,
-                                                    onTap: () {
-                                                      setState(() {
-                                                        if (selectedItem?.uuid ==
-                                                            item.uuid) {
-                                                          selectedItem =
-                                                              null;
-                                                        } else {
-                                                          selectedItem =
-                                                              item;
-                                                        }
-                                                      });
-                                                    },
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.symmetric(
-                                                        vertical:
-                                                            9.0,
-                                                        horizontal:
-                                                            10,
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 5.0,
+                                          vertical: 10,
+                                        ),
+                                    child: Builder(
+                                      builder: (context) {
+                                        if (products
+                                            .isEmpty) {
+                                          return SizedBox(
+                                            height: 400,
+                                            child: EmptyWidgetDisplayOnly(
+                                              title:
+                                                  'No Item Found',
+                                              subText:
+                                                  'You have not added any item under this Shop.',
+                                              theme: theme,
+                                              height: 30,
+                                              icon:
+                                                  Icons
+                                                      .clear,
+                                            ),
+                                          );
+                                        } else {
+                                          return Column(
+                                            spacing: 5,
+                                            children:
+                                                products
+                                                    .map(
+                                                      (
+                                                        item,
+                                                      ) => Material(
+                                                        color:
+                                                            Colors.transparent,
+                                                        child: InkWell(
+                                                          mouseCursor:
+                                                              SystemMouseCursors.click,
+                                                          onTap: () {
+                                                            setState(
+                                                              () {
+                                                                if (selectedItem?.uuid ==
+                                                                    item.uuid) {
+                                                                  selectedItem =
+                                                                      null;
+                                                                } else {
+                                                                  selectedItem =
+                                                                      item;
+                                                                }
+                                                              },
+                                                            );
+                                                          },
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.symmetric(
+                                                              vertical:
+                                                                  9.0,
+                                                              horizontal:
+                                                                  10,
                                                             ),
-                                                            item.name,
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment.spaceBetween,
+                                                              children: [
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b3.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                  ),
+                                                                  item.name,
+                                                                ),
+                                                                Row(
+                                                                  spacing:
+                                                                      15,
+                                                                  children: [
+                                                                    Text(
+                                                                      style: TextStyle(
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                      '${item.getProductUnit().getQuantityEquivDivided(index: 1, product: item)} ${item.getProductUnit().name}',
+                                                                    ),
+                                                                    Container(
+                                                                      padding: EdgeInsets.all(
+                                                                        2,
+                                                                      ),
+                                                                      decoration: BoxDecoration(
+                                                                        shape:
+                                                                            BoxShape.circle,
+                                                                        border: Border.all(
+                                                                          color:
+                                                                              Colors.grey,
+                                                                        ),
+                                                                      ),
+                                                                      child: Container(
+                                                                        padding: EdgeInsets.all(
+                                                                          5,
+                                                                        ),
+                                                                        decoration: BoxDecoration(
+                                                                          shape:
+                                                                              BoxShape.circle,
+                                                                          color:
+                                                                              selectedItem?.uuid ==
+                                                                                      item.uuid
+                                                                                  ? theme.lightModeColor.prColor250
+                                                                                  : Colors.transparent,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
-                                                          Row(
-                                                            spacing:
-                                                                15,
-                                                            children: [
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
-                                                                ),
-                                                                '${item.getProductUnit().getQuantityEquivDivided(index: 1, product: item)} ${item.getProductUnit().name}',
-                                                              ),
-                                                              Container(
-                                                                padding: EdgeInsets.all(
-                                                                  2,
-                                                                ),
-                                                                decoration: BoxDecoration(
-                                                                  shape:
-                                                                      BoxShape.circle,
-                                                                  border: Border.all(
-                                                                    color:
-                                                                        Colors.grey,
-                                                                  ),
-                                                                ),
-                                                                child: Container(
-                                                                  padding: EdgeInsets.all(
-                                                                    5,
-                                                                  ),
-                                                                  decoration: BoxDecoration(
-                                                                    shape:
-                                                                        BoxShape.circle,
-                                                                    color:
-                                                                        selectedItem?.uuid ==
-                                                                                item.uuid
-                                                                            ? theme.lightModeColor.prColor250
-                                                                            : Colors.transparent,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
+                                                    )
+                                                    .toList(),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           );
