@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/manage_payment_methods_dialog.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -228,6 +229,23 @@ class _SettingsPageDesktopState
                                   },
                                   title: 'Manage Shop',
                                   icon: Icons.home_filled,
+                                ),
+                              ),
+                              Visibility(
+                                visible: authorization(
+                                  authorized: Authorizations().manageShop,
+                                ),
+                                child: NavListTileDesktopAlt(
+                                  height: 18,
+                                  action: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          const ManagePaymentMethodsDialog(),
+                                    );
+                                  },
+                                  title: 'Payment Methods & Bank Accounts',
+                                  icon: Icons.account_balance_outlined,
                                 ),
                               ),
                               Visibility(

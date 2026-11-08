@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
@@ -412,6 +413,28 @@ class InvoicesProvider extends ChangeNotifier {
   }
 
   int paymentOption = 1;
+  PaymentMethod? selectedBank;
+  String? selectedBankName;
+
+  void setSelectedBank(PaymentMethod? bank) {
+    selectedBank = bank;
+    selectedBankName = bank?.displayName;
+    notifyListeners();
+  }
+
+  void setSelectedBankName(String? name) {
+    selectedBankName = name;
+    if (name == null) {
+      selectedBank = null;
+    } else {
+      final customBanks = returnShopProvider().getCustomPaymentMethods();
+      final match = customBanks
+          .where((b) => b.displayName == name || b.bankName == name);
+      selectedBank =
+          match.isNotEmpty ? match.first : PaymentMethod(bankName: name);
+    }
+    notifyListeners();
+  }
 
   void changePaymentOptions(int index) {
     paymentOption = index;
@@ -490,13 +513,17 @@ class InvoicesProvider extends ChangeNotifier {
     try {
       final createdAt =
           paymentDate ?? DateTime.now().toUtc();
+      final resolvedBankName =
+          selectedBank?.displayName ?? selectedBankName;
       final effectivePaymentMethod =
           paymentMethod ??
-          PaymentBreakdown.fromAmounts(
-            bank: bankAmount,
-            cash: cashAmount,
-            account: customerAmount,
-          ).label;
+          (bankAmount > 0 && cashAmount == 0 && customerAmount == 0
+              ? (resolvedBankName ?? PaymentMethods.bank)
+              : PaymentBreakdown.fromAmounts(
+                  bank: bankAmount,
+                  cash: cashAmount,
+                  account: customerAmount,
+                ).label);
 
       TempMainReceipt receipt = TempMainReceipt(
         tempItems: null,
@@ -527,6 +554,18 @@ class InvoicesProvider extends ChangeNotifier {
         balance: invoice.getBalance() - currentPayment,
         subStaffUuid: invoice.subStaffUuid,
         cartName: invoice.cartName,
+        paymentEntries: [
+          if (cashAmount > 0)
+            PaymentEntry(method: PaymentMethods.cash, amount: cashAmount),
+          if (bankAmount > 0)
+            PaymentEntry(
+              method: resolvedBankName ?? PaymentMethods.bank,
+              amount: bankAmount,
+            ),
+          if (customerAmount > 0)
+            PaymentEntry(method: PaymentMethods.account, amount: customerAmount),
+        ],
+        selectedBank: selectedBank,
       );
 
       // Built before the receipt is saved so the same lines are

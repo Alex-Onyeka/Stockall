@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/main.dart';
@@ -103,6 +104,12 @@ class TempCart extends HiveObject {
   @HiveField(30)
   List<TempCartItem>? tempCartItems;
 
+  @HiveField(31)
+  String? selectedBankName;
+
+  @HiveField(32)
+  PaymentMethod? selectedBank;
+
   TempCart({
     required this.cartItems,
     this.isInvoice = false,
@@ -135,6 +142,8 @@ class TempCart extends HiveObject {
     this.splitPayments,
     this.draftUuid,
     required this.tempCartItems,
+    this.selectedBankName,
+    this.selectedBank,
   });
 
   List<TempCartItem> getCartItemsAll() {

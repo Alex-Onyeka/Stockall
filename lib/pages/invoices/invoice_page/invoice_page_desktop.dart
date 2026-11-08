@@ -2301,7 +2301,7 @@ void makePartPaymentAction({
                         shopId: invoice.shopId,
                         staffId: invoice.staffId,
                         staffName: invoice.staffName,
-                        paymentMethod:
+                        paymentMethod: invoice.selectedBank?.displayName ??
                             invoice.paymentMethod,
                         bank: (invoice.bank),
                         cashAlt: (invoice.cashAlt),
@@ -2322,6 +2322,8 @@ void makePartPaymentAction({
                         // Kept so updateInvoice doesn't save the
                         // invoice without its items.
                         items: invoice.items,
+                        selectedBank: invoice.selectedBank,
+                        paymentEntries: invoice.paymentEntries,
                       );
 
                       var res =

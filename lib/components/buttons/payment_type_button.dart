@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/alert_dialogues/manage_payment_methods_dialog.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -30,6 +32,13 @@ class _PaymentTypeButtonState
     extends State<PaymentTypeButton> {
   TextEditingController topUpController =
       TextEditingController();
+
+  @override
+  void dispose() {
+    topUpController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     TempCustomersClass? customersClass;
@@ -66,6 +75,21 @@ class _PaymentTypeButtonState
         );
         widget.action != null ? widget.action!() : {};
       }
+    }
+
+    final selectedBank =
+        returnSalesProviderContext(
+          context,
+        ).currentCart().selectedBankName;
+    String displayMethodTitle =
+        returnSalesProviderContext(
+          context,
+        ).returnPaymentMethodSalesPage(
+          widget.index,
+        )['method'];
+    if (widget.index == 1 && selectedBank != null) {
+      displayMethodTitle =
+          'Pay with Transfer / Atm ($selectedBank)';
     }
 
     return Column(
@@ -121,7 +145,7 @@ class _PaymentTypeButtonState
                                       ? Colors.grey
                                       : null,
                             ),
-                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(widget.index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
+                            "$displayMethodTitle${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                           ),
                           Text(
                             style: TextStyle(
@@ -191,6 +215,167 @@ class _PaymentTypeButtonState
             ),
           ),
         ),
+        // Bank Selection Section (Index 1)
+        Visibility(
+          visible:
+              widget.index == 1 &&
+              returnSalesProviderContext(
+                    context,
+                  ).currentCart().paymentMethod ==
+                  1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(5),
+                bottomRight: Radius.circular(5),
+              ),
+              color: Colors.grey.shade50,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                left: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                right: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (returnShopProvider(
+                  context: context,
+                ).getCustomPaymentMethods().isNotEmpty) ...[
+                  Text(
+                    'Select Bank Account:',
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: [
+                      ...returnShopProvider(
+                        context: context,
+                      ).getCustomPaymentMethods().map((
+                        bMethod,
+                      ) {
+                        final isSelected =
+                            returnSalesProviderContext(
+                                  context,
+                                )
+                                .currentCart()
+                                .selectedBankName ==
+                            bMethod.displayName;
+                        return ChoiceChip(
+                          label: Text(
+                            bMethod.displayName,
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              color:
+                                  isSelected
+                                      ? Colors.white
+                                      : Colors.black87,
+                              fontWeight:
+                                  isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                            ),
+                          ),
+                          selected: isSelected,
+                          selectedColor:
+                              theme
+                                  .lightModeColor
+                                  .prColor250,
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(6),
+                            side: BorderSide(
+                              color:
+                                  isSelected
+                                      ? theme
+                                          .lightModeColor
+                                          .prColor250
+                                      : Colors
+                                          .grey
+                                          .shade300,
+                            ),
+                          ),
+                          onSelected: (val) {
+                            returnSalesProvider()
+                                .setSelectedBankName(
+                                  val
+                                      ? bMethod.displayName
+                                      : null,
+                                );
+                            setState(() {});
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton.icon(
+                      icon: Icon(
+                        Icons.add_circle_outline,
+                        size: 16,
+                        color:
+                            theme.lightModeColor.prColor250,
+                      ),
+                      label: Text(
+                        returnShopProvider(context: context)
+                                .getCustomPaymentMethods()
+                                .isEmpty
+                            ? '+ Add Bank Account'
+                            : 'Manage Accounts',
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .prColor250,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) =>
+                                  const ManagePaymentMethodsDialog(),
+                        ).then((_) {
+                          setState(() {});
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        // Customer Account Section (Index 3)
         Visibility(
           visible:
               widget.index == 3 &&
@@ -244,10 +429,10 @@ class _PaymentTypeButtonState
                 Visibility(
                   visible:
                       (returnSalesProviderContext(
-                                context,
-                              ).availableAccountBalance() ??
-                              0) >
-                          0,
+                            context,
+                          ).availableAccountBalance() ??
+                          0) >
+                      0,
                   child: Column(
                     spacing: 5,
                     crossAxisAlignment:
@@ -270,10 +455,13 @@ class _PaymentTypeButtonState
                                 var payments =
                                     await returnSalesProvider()
                                         .splitRemainderWith(
-                                          PaymentMethods.cash,
+                                          PaymentMethods
+                                              .cash,
                                         );
-                                widget.onSplitPayments != null
-                                    ? widget.onSplitPayments!(
+                                widget.onSplitPayments !=
+                                        null
+                                    ? widget
+                                        .onSplitPayments!(
                                       payments,
                                     )
                                     : {};
@@ -287,10 +475,13 @@ class _PaymentTypeButtonState
                                 var payments =
                                     await returnSalesProvider()
                                         .splitRemainderWith(
-                                          PaymentMethods.bank,
+                                          PaymentMethods
+                                              .bank,
                                         );
-                                widget.onSplitPayments != null
-                                    ? widget.onSplitPayments!(
+                                widget.onSplitPayments !=
+                                        null
+                                    ? widget
+                                        .onSplitPayments!(
                                       payments,
                                     )
                                     : {};
@@ -484,8 +675,6 @@ class _PaymentTypeDropdownState
     });
   }
 
-  bool isUpdating = false;
-
   @override
   Widget build(BuildContext context) {
     TempCustomersClass? customersClass;
@@ -511,6 +700,27 @@ class _PaymentTypeDropdownState
       }
     }
     var theme = returnTheme(context);
+    final selectedBank =
+        returnSalesProviderContext(
+          context,
+        ).currentCart().selectedBankName;
+    String displayMethodTitle =
+        returnSalesProviderContext(
+          context,
+        ).returnPaymentMethodSalesPage(
+          returnSalesProviderContext(
+            context,
+          ).currentCart().paymentMethod,
+        )['method'];
+    if (returnSalesProviderContext(
+              context,
+            ).currentCart().paymentMethod ==
+            1 &&
+        selectedBank != null) {
+      displayMethodTitle =
+          'Pay with Transfer / Atm ($selectedBank)';
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Column(
@@ -552,7 +762,7 @@ class _PaymentTypeDropdownState
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(returnSalesProviderContext(context).currentCart().paymentMethod)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
+                            "$displayMethodTitle${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                           ),
                           Text(
                             style: TextStyle(
@@ -617,6 +827,8 @@ class PaymentMethodSection extends StatefulWidget {
 class _PaymentMethodSectionState
     extends State<PaymentMethodSection> {
   bool isUpdating = false;
+  final Map<String, TextEditingController>
+  _customBankControllers = {};
 
   @override
   void initState() {
@@ -636,6 +848,15 @@ class _PaymentMethodSectionState
     }
   }
 
+  @override
+  void dispose() {
+    for (final controller
+        in _customBankControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
   double _amount(TextEditingController controller) {
     return double.tryParse(
           controller.text.replaceAll(',', ''),
@@ -643,7 +864,40 @@ class _PaymentMethodSectionState
         0;
   }
 
+  TextEditingController _getCustomBankController(
+    String method,
+  ) {
+    if (!_customBankControllers.containsKey(method)) {
+      _customBankControllers[method] =
+          TextEditingController(text: '0');
+    }
+    return _customBankControllers[method]!;
+  }
+
   PaymentBreakdown _currentBreakdown() {
+    final customBanks =
+        returnShopProvider().getCustomPaymentMethods();
+    if (customBanks.isNotEmpty) {
+      final entries = <PaymentEntry>[
+        PaymentEntry(
+          method: PaymentMethods.cash,
+          amount: _amount(widget.cashController),
+        ),
+        for (final PaymentMethod b in customBanks)
+          PaymentEntry(
+            method: b.displayName,
+            amount: _amount(
+              _getCustomBankController(b.displayName),
+            ),
+          ),
+        if (returnSalesProvider().canUseAccount())
+          PaymentEntry(
+            method: PaymentMethods.account,
+            amount: _amount(widget.accountController),
+          ),
+      ];
+      return PaymentBreakdown(entries);
+    }
     return PaymentBreakdown.fromAmounts(
       cash: _amount(widget.cashController),
       bank: _amount(widget.bankController),
@@ -661,6 +915,15 @@ class _PaymentMethodSectionState
         .toStringAsFixed(2);
     widget.accountController.text = breakdown.account
         .toStringAsFixed(2);
+
+    for (final entry in breakdown.entries) {
+      if (entry.method != PaymentMethods.cash &&
+          entry.method != PaymentMethods.account) {
+        _getCustomBankController(entry.method).text = entry
+            .amount
+            .toStringAsFixed(2);
+      }
+    }
   }
 
   void _applyPayments(List<PaymentEntry> payments) {
@@ -682,9 +945,95 @@ class _PaymentMethodSectionState
     );
   }
 
-  // Keeps the three fields adding up to the total. The edited field wins;
-  // the remainder goes to Cash, or to Bank when Cash is being edited.
+  // Handles dynamic changes across any payment method field in split mode
+  void _onDynamicFieldChanged(String method, String value) {
+    if (isUpdating) return;
+    isUpdating = true;
+
+    final total = returnSalesProvider().calcFinalTotal();
+    final customBanks =
+        returnShopProvider().getCustomPaymentMethods();
+    final useAccount =
+        returnSalesProvider().canUseAccount();
+
+    double editedAmount =
+        double.tryParse(value.replaceAll(',', '')) ?? 0;
+    if (editedAmount < 0) editedAmount = 0;
+
+    if (editedAmount > total) {
+      _showAlert(
+        'Overpayment',
+        '$method cannot exceed total amount.',
+      );
+      editedAmount = total;
+    }
+
+    if (method == PaymentMethods.account) {
+      double balance =
+          returnSalesProvider().availableAccountBalance() ??
+          0;
+      if (balance < 0) balance = 0;
+      if (editedAmount > balance) {
+        _showAlert(
+          'Insufficient Balance',
+          'Customer Account cannot exceed the customer\'s balance of ${formatMoneyMid(amount: balance, context: context)}.',
+        );
+        editedAmount = balance;
+      }
+    }
+
+    if (customBanks.isNotEmpty) {
+      double totalBank = 0;
+      for (final PaymentMethod b in customBanks) {
+        totalBank +=
+            _amount(_getCustomBankController(b.displayName));
+      }
+      widget.bankController.text = totalBank
+          .toStringAsFixed(2);
+    }
+
+    final entries = <PaymentEntry>[
+      PaymentEntry(
+        method: PaymentMethods.cash,
+        amount: _amount(widget.cashController),
+      ),
+      if (customBanks.isNotEmpty)
+        for (final PaymentMethod b in customBanks)
+          PaymentEntry(
+            method: b.displayName,
+            amount: _amount(
+              _getCustomBankController(b.displayName),
+            ),
+          )
+      else
+        PaymentEntry(
+          method: PaymentMethods.bank,
+          amount: _amount(widget.bankController),
+        ),
+      if (useAccount)
+        PaymentEntry(
+          method: PaymentMethods.account,
+          amount: _amount(widget.accountController),
+        ),
+    ];
+
+    returnSalesProvider().setSplitPayments(
+      PaymentBreakdown(entries).compact,
+    );
+
+    isUpdating = false;
+    setState(() {});
+  }
+
+  // Keeps the three fields adding up to the total when no custom banks are set.
   void _rebalance(String edited, String value) {
+    final customBanks =
+        returnShopProvider().getCustomPaymentMethods();
+    if (customBanks.isNotEmpty) {
+      _onDynamicFieldChanged(edited, value);
+      return;
+    }
+
     if (isUpdating) return;
     isUpdating = true;
 
@@ -694,7 +1043,9 @@ class _PaymentMethodSectionState
       PaymentMethods.cash: _amount(widget.cashController),
       PaymentMethods.bank: _amount(widget.bankController),
       PaymentMethods.account:
-          useAccount ? _amount(widget.accountController) : 0,
+          useAccount
+              ? _amount(widget.accountController)
+              : 0,
     };
     double editedAmount =
         double.tryParse(value.replaceAll(',', '')) ?? 0;
@@ -713,7 +1064,8 @@ class _PaymentMethodSectionState
     }
     if (edited == PaymentMethods.account) {
       double balance =
-          returnSalesProvider().availableAccountBalance() ?? 0;
+          returnSalesProvider().availableAccountBalance() ??
+          0;
       if (balance < 0) {
         balance = 0;
       }
@@ -738,9 +1090,10 @@ class _PaymentMethodSectionState
             .first;
     double rest = total - editedAmount - amounts[other]!;
     if (rest < 0) {
-      amounts[other] = (amounts[other]! + rest) < 0
-          ? 0
-          : amounts[other]! + rest;
+      amounts[other] =
+          (amounts[other]! + rest) < 0
+              ? 0
+              : amounts[other]! + rest;
       rest = 0;
     }
     amounts[target] = rest;
@@ -767,7 +1120,9 @@ class _PaymentMethodSectionState
             .toStringAsFixed(2);
       }
     }
-    returnSalesProvider().setSplitPayments(breakdown.compact);
+    returnSalesProvider().setSplitPayments(
+      breakdown.compact,
+    );
 
     isUpdating = false;
     setState(() {});
@@ -778,9 +1133,16 @@ class _PaymentMethodSectionState
     var theme = returnTheme(context, listen: false);
     bool showAccount =
         returnSalesProviderContext(context).canUseAccount();
+    final customBanks =
+        returnShopProvider(
+          context: context,
+        ).getCustomPaymentMethods();
     double remaining =
-        returnSalesProviderContext(context).calcFinalTotal() -
+        returnSalesProviderContext(
+          context,
+        ).calcFinalTotal() -
         _currentBreakdown().total;
+
     return Column(
       children: [
         Divider(color: Colors.grey.shade300),
@@ -823,34 +1185,91 @@ class _PaymentMethodSectionState
           child: Column(
             spacing: 10,
             children: [
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: EditCartTextField(
-                      title: 'Cash',
-                      hint: 'Cash Amount',
-                      controller: widget.cashController,
-                      theme: theme,
-                      onChanged: (value) {
-                        _rebalance(PaymentMethods.cash, value);
-                      },
+              if (customBanks.isEmpty)
+                Row(
+                  spacing: 10,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: EditCartTextField(
+                        title: 'Cash',
+                        hint: 'Cash Amount',
+                        controller: widget.cashController,
+                        theme: theme,
+                        onChanged: (value) {
+                          _rebalance(
+                            PaymentMethods.cash,
+                            value,
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: EditCartTextField(
-                      title: 'Bank',
-                      hint: 'Bank Amount',
-                      controller: widget.bankController,
-                      theme: theme,
-                      onChanged: (value) {
-                        _rebalance(PaymentMethods.bank, value);
-                      },
+                    Expanded(
+                      child: EditCartTextField(
+                        title: 'Bank',
+                        hint: 'Bank Amount',
+                        controller: widget.bankController,
+                        theme: theme,
+                        onChanged: (value) {
+                          _rebalance(
+                            PaymentMethods.bank,
+                            value,
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                )
+              else
+                Column(
+                  spacing: 10,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: EditCartTextField(
+                            title: 'Cash',
+                            hint: 'Cash Amount',
+                            controller:
+                                widget.cashController,
+                            theme: theme,
+                            onChanged: (value) {
+                              _onDynamicFieldChanged(
+                                PaymentMethods.cash,
+                                value,
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    ...customBanks.map((bMethod) {
+                      final name = bMethod.displayName;
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: EditCartTextField(
+                              title: name,
+                              hint: '$name Amount',
+                              controller:
+                                  _getCustomBankController(
+                                    name,
+                                  ),
+                              theme: theme,
+                              onChanged: (value) {
+                                _onDynamicFieldChanged(
+                                  name,
+                                  value,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
               Visibility(
                 visible: showAccount,
                 child: EditCartTextField(
@@ -860,7 +1279,10 @@ class _PaymentMethodSectionState
                   controller: widget.accountController,
                   theme: theme,
                   onChanged: (value) {
-                    _rebalance(PaymentMethods.account, value);
+                    _rebalance(
+                      PaymentMethods.account,
+                      value,
+                    );
                   },
                 ),
               ),
@@ -870,13 +1292,15 @@ class _PaymentMethodSectionState
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                     ),
                     'Remaining:',
                   ),
                   Text(
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                       color:
                           remaining.abs() >
@@ -892,6 +1316,38 @@ class _PaymentMethodSectionState
                               : 0,
                       context: context,
                     ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    icon: Icon(
+                      Icons.settings_outlined,
+                      size: 15,
+                      color:
+                          theme.lightModeColor.prColor250,
+                    ),
+                    label: Text(
+                      'Manage Bank Accounts',
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color:
+                            theme.lightModeColor.prColor250,
+                      ),
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) =>
+                                const ManagePaymentMethodsDialog(),
+                      ).then((_) {
+                        setState(() {});
+                      });
+                    },
                   ),
                 ],
               ),

@@ -101,7 +101,28 @@ class _PaymentTypeButtonInvoiceState
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            "${returnSalesProviderContext(context).returnPaymentMethodSalesPage(widget.index)['method']}${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
+                            () {
+                              final selBank =
+                                  returnInvoicesProvider(
+                                    context: context,
+                                  ).selectedBankName;
+                              final baseTitle =
+                                  returnSalesProviderContext(
+                                    context,
+                                  ).returnPaymentMethodSalesPage(
+                                    widget.index,
+                                  )['method'];
+                              final bankSuffix =
+                                  (widget.index == 1 &&
+                                          selBank != null)
+                                      ? ' ($selBank)'
+                                      : '';
+                              final custSuffix =
+                                  customersClass != null
+                                      ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})"
+                                      : '';
+                              return "$baseTitle$bankSuffix$custSuffix";
+                            }(),
                           ),
                           Text(
                             style: TextStyle(
@@ -150,6 +171,118 @@ class _PaymentTypeButtonInvoiceState
                   ),
                 ),
               ),
+            ),
+          ),
+        ),
+        Visibility(
+          visible:
+              widget.index == 1 &&
+              returnInvoicesProvider(
+                    context: context,
+                  ).paymentOption ==
+                  1 &&
+              returnShopProvider(
+                context: context,
+              ).getCustomPaymentMethods().isNotEmpty,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(5),
+                bottomRight: Radius.circular(5),
+              ),
+              color: Colors.grey.shade50,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                left: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                right: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Select Bank Account:',
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b4.fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    ...returnShopProvider(
+                      context: context,
+                    ).getCustomPaymentMethods().map((
+                      bMethod,
+                    ) {
+                      final isSelected =
+                          returnInvoicesProvider(
+                            context: context,
+                          ).selectedBankName ==
+                          bMethod.displayName;
+                      return ChoiceChip(
+                        label: Text(
+                          bMethod.displayName,
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : Colors.black87,
+                            fontWeight:
+                                isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedColor:
+                            theme.lightModeColor.prColor250,
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          side: BorderSide(
+                            color:
+                                isSelected
+                                    ? theme
+                                        .lightModeColor
+                                        .prColor250
+                                    : Colors.grey.shade300,
+                          ),
+                        ),
+                        onSelected: (val) {
+                          returnInvoicesProvider(
+                            context: context,
+                          ).setSelectedBankName(
+                            val
+                                ? bMethod.displayName
+                                : null,
+                          );
+                          setState(() {});
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              ],
             ),
           ),
         ),

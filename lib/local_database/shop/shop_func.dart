@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
@@ -15,6 +16,9 @@ class ShopFunc {
   Future<void> init() async {
     try {
       // await Hive.deleteBoxFromDisk(shopBoxName);
+      if (!Hive.isAdapterRegistered(154)) {
+        Hive.registerAdapter(PaymentMethodAdapter());
+      }
       Hive.registerAdapter(TempShopClassAdapter());
       shopBox = await Hive.openBox(shopBoxName);
       await UpdatedShopFunc().init();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 
 part 'temp_shop_class.g.dart';
 
@@ -182,6 +183,9 @@ class TempShopClass {
   @HiveField(60)
   bool? manageCustomerAccount;
 
+  @HiveField(61)
+  List<PaymentMethod>? customPaymentMethods;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -244,6 +248,7 @@ class TempShopClass {
     required this.customerPercentageReward,
     required this.manageCustomerReward,
     required this.manageCustomerAccount,
+    this.customPaymentMethods,
   });
 
   factory TempShopClass.fromJson(
@@ -329,6 +334,12 @@ class TempShopClass {
               ?.toDouble(),
       manageCustomerAccount:
           json['manage_customer_account'] as bool?,
+      customPaymentMethods:
+          json['custom_payment_methods'] != null
+              ? (json['custom_payment_methods'] as List)
+                  .map((e) => PaymentMethod.fromJson(e))
+                  .toList()
+              : null,
     );
   }
 
@@ -396,6 +407,10 @@ class TempShopClass {
       'customer_percentage_reward':
           customerPercentageReward,
       'manage_customer_account': manageCustomerAccount,
+      'custom_payment_methods':
+          customPaymentMethods
+              ?.map((e) => e.toJson())
+              .toList(),
     };
   }
 
@@ -459,6 +474,7 @@ class TempShopClass {
     bool? manageCustomerReward,
     double? customerPercentageReward,
     bool? manageCustomerAccount,
+    List<PaymentMethod>? customPaymentMethods,
   }) {
     return TempShopClass(
       shopId: shopId ?? this.shopId,
@@ -540,6 +556,8 @@ class TempShopClass {
       manageCustomerAccount:
           manageCustomerAccount ??
           this.manageCustomerAccount,
+      customPaymentMethods:
+          customPaymentMethods ?? this.customPaymentMethods,
     );
   }
 }

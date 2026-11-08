@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
@@ -39,7 +40,9 @@ EscPosBuilder buildReceiptEscPos({
   required int printerType,
   bool printLogo = true,
 }) {
-  final b = EscPosBuilder(paperDots: _paperDots(printerType));
+  final b = EscPosBuilder(
+    paperDots: _paperDots(printerType),
+  );
   final receiptsProvider = returnReceiptProvider(
     context,
     listen: false,
@@ -47,18 +50,27 @@ EscPosBuilder buildReceiptEscPos({
   String money(double amount) =>
       formatMoneyMid(amount: amount, context: context);
   final ticketId =
-      receipt.barcode ?? returnOnlyDigits(receipt.uuid ?? '');
+      receipt.barcode ??
+      returnOnlyDigits(receipt.uuid ?? '');
   final noReceiptDiscount =
       receipt.fixedDiscount == null &&
       receipt.generalDiscount == null;
 
-  _shopHeader(b, shop, 'Payment Receipt', printLogo: printLogo);
+  _shopHeader(
+    b,
+    shop,
+    'Payment Receipt',
+    printLogo: printLogo,
+  );
 
   if (shop.showFirst!) {
     _infoRow(b, [
       ('Staff Name:', staffName),
       if (receipt.customerUuid != null)
-        ('Customer Name:', receipt.customerName ?? 'Not Set'),
+        (
+          'Customer Name:',
+          receipt.customerName ?? 'Not Set',
+        ),
     ]);
     if (receipt.subStaffName != null) {
       _infoRow(b, [
@@ -69,22 +81,35 @@ EscPosBuilder buildReceiptEscPos({
   }
   if (shop.showSecond!) {
     final String payment;
-    if (receipt.bank == 0) {
+    final bankName =
+        receipt.selectedBank?.displayName ??
+        (PaymentMethods.isBankMethod(receipt.paymentMethod)
+            ? receipt.paymentMethod
+            : 'Bank');
+    if (receipt.paymentEntries != null &&
+        receipt.paymentEntries!.isNotEmpty) {
+      payment = receipt.paymentEntries!
+          .map((p) => '${p.method}: ${money(p.amount)}')
+          .join('\n');
+    } else if (receipt.bank == 0) {
       payment = 'Cash: ${money(receipt.cashAlt)}';
     } else if (receipt.cashAlt == 0) {
-      payment = 'Bank: ${money(receipt.bank)}';
+      payment = '$bankName: ${money(receipt.bank)}';
     } else if (receipt.customerAccount != 0) {
       payment =
           'Account: ${money(receipt.customerAccount ?? 0)}';
     } else {
       payment =
-          'Cash: ${money(receipt.cashAlt)}\nBank: ${money(receipt.bank)}';
+          'Cash: ${money(receipt.cashAlt)}\n$bankName: ${money(receipt.bank)}';
     }
     b.columns([
       EscCol('Payment Method:'),
       EscCol('#Ticket ID'),
     ]);
-    b.columns([EscCol(payment), EscCol(ticketId, bold: true)]);
+    b.columns([
+      EscCol(payment),
+      EscCol(ticketId, bold: true),
+    ]);
   }
   if (shop.showThird!) {
     _infoRow(b, [
@@ -94,7 +119,9 @@ EscPosBuilder buildReceiptEscPos({
   }
   if (receipt.comment != null &&
       receipt.comment?.isNotEmpty == true) {
-    _infoRow(b, [('Comment:', receipt.comment ?? 'Comment')]);
+    _infoRow(b, [
+      ('Comment:', receipt.comment ?? 'Comment'),
+    ]);
   }
 
   b.divider();
@@ -116,7 +143,11 @@ EscPosBuilder buildReceiptEscPos({
       ),
     );
     if (record.wastageNote().isNotEmpty) {
-      b.smallUnderColumn(record.wastageNote(), _itemFlex, 0);
+      b.smallUnderColumn(
+        record.wastageNote(),
+        _itemFlex,
+        0,
+      );
     }
   }
 
@@ -133,7 +164,9 @@ EscPosBuilder buildReceiptEscPos({
           ? 'Discount: (${receipt.generalDiscount}%)'
           : 'Discount:',
       money(
-        receiptsProvider.getDiscountAmountForReceipt(receipt),
+        receiptsProvider.getDiscountAmountForReceipt(
+          receipt,
+        ),
       ),
     );
   }
@@ -150,7 +183,9 @@ EscPosBuilder buildReceiptEscPos({
   _totalRow(
     b,
     'Total:',
-    money(receiptsProvider.getTotalMainRevenueReceipt(receipt)),
+    money(
+      receiptsProvider.getTotalMainRevenueReceipt(receipt),
+    ),
     emphasize: true,
   );
 
@@ -167,16 +202,24 @@ EscPosBuilder buildInvoiceEscPos({
   required int printerType,
   bool printLogo = true,
 }) {
-  final b = EscPosBuilder(paperDots: _paperDots(printerType));
+  final b = EscPosBuilder(
+    paperDots: _paperDots(printerType),
+  );
   String money(double amount) =>
       formatMoneyMid(amount: amount, context: context);
   final ticketId =
-      invoice.barcode ?? returnOnlyDigits(invoice.uuid ?? '');
+      invoice.barcode ??
+      returnOnlyDigits(invoice.uuid ?? '');
   final noInvoiceDiscount =
       invoice.fixedDiscount == null &&
       invoice.generalDiscount == null;
 
-  _shopHeader(b, shop, 'Invoice Receipt', printLogo: printLogo);
+  _shopHeader(
+    b,
+    shop,
+    'Invoice Receipt',
+    printLogo: printLogo,
+  );
 
   if (shop.showFirst!) {
     _infoRow(b, [
@@ -189,10 +232,19 @@ EscPosBuilder buildInvoiceEscPos({
       EscCol('Payment Method:'),
       EscCol('Amount(s):'),
     ]);
+    final invBankName =
+        invoice.selectedBank?.displayName ??
+        (PaymentMethods.isBankMethod(invoice.paymentMethod)
+            ? invoice.paymentMethod
+            : 'Bank');
     b.columns([
-      EscCol(invoice.paymentMethod, bold: true),
       EscCol(
-        'Cash: ${money(invoice.cashAlt)}\nBank: ${money(invoice.bank)}',
+        invoice.selectedBank?.displayName ??
+            invoice.paymentMethod,
+        bold: true,
+      ),
+      EscCol(
+        'Cash: ${money(invoice.cashAlt)}\n$invBankName: ${money(invoice.bank)}',
       ),
     ]);
     if (invoice.subStaffName != null) {
@@ -211,7 +263,9 @@ EscPosBuilder buildInvoiceEscPos({
   _infoRow(b, [('#Ticket ID', ticketId)]);
   if (invoice.comment != null &&
       invoice.comment?.isNotEmpty == true) {
-    _infoRow(b, [('Comment:', invoice.comment ?? 'Comment')]);
+    _infoRow(b, [
+      ('Comment:', invoice.comment ?? 'Comment'),
+    ]);
   }
 
   b.divider();
@@ -229,7 +283,11 @@ EscPosBuilder buildInvoiceEscPos({
       ),
     );
     if (record.wastageNote().isNotEmpty) {
-      b.smallUnderColumn(record.wastageNote(), _itemFlex, 0);
+      b.smallUnderColumn(
+        record.wastageNote(),
+        _itemFlex,
+        0,
+      );
     }
     // The PDF strikes through the original price; ESC/POS can't.
     if (record.discount != null &&
@@ -289,7 +347,9 @@ EscPosBuilder buildOrderEscPos({
   required int printerType,
   bool printLogo = true,
 }) {
-  final b = EscPosBuilder(paperDots: _paperDots(printerType));
+  final b = EscPosBuilder(
+    paperDots: _paperDots(printerType),
+  );
   final ordersProvider = returnOrdersProvider();
   String money(double amount) =>
       formatMoneyMid(amount: amount, context: context);
@@ -356,7 +416,9 @@ EscPosBuilder buildOrderEscPos({
       order.generalDiscount != null
           ? 'Discount: (${order.generalDiscount}%)'
           : 'Discount:',
-      money(ordersProvider.getDiscountAmountForOrder(order)),
+      money(
+        ordersProvider.getDiscountAmountForOrder(order),
+      ),
     );
   }
   if (order.vat != null) {
@@ -390,7 +452,9 @@ EscPosBuilder buildOrderEscPos({
   _totalRow(
     b,
     'Total:',
-    money(ordersProvider.getTotalMainRevenueOrder(order: order)),
+    money(
+      ordersProvider.getTotalMainRevenueOrder(order: order),
+    ),
     emphasize: true,
   );
 
@@ -437,7 +501,8 @@ void _shopHeader(
       (shop.shopAddress ?? '').isNotEmpty) {
     b.text(shop.shopAddress ?? '', align: EscAlign.center);
   }
-  if (shop.showFacebookTop! && shop.faceBookHandle != null) {
+  if (shop.showFacebookTop! &&
+      shop.faceBookHandle != null) {
     b.centeredLabel('Facebook:', shop.faceBookHandle ?? '');
   }
   if (shop.showInstaTop! && shop.instaHandle != null) {
@@ -555,7 +620,10 @@ List<Uint8List>? _logoBands(int paperDots) {
     height: logo.height,
     numChannels: 4,
   );
-  img.fill(canvas, color: img.ColorRgba8(255, 255, 255, 255));
+  img.fill(
+    canvas,
+    color: img.ColorRgba8(255, 255, 255, 255),
+  );
   img.compositeImage(canvas, logo, dstX: left);
 
   _logoCache = rasterImageBands(canvas);

@@ -48,13 +48,15 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       splitPayments: (fields[29] as List?)?.cast<PaymentEntry>(),
       draftUuid: fields[28] as String?,
       tempCartItems: (fields[30] as List?)?.cast<TempCartItem>(),
+      selectedBankName: fields[31] as String?,
+      selectedBank: fields[32] as PaymentMethod?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCart obj) {
     writer
-      ..writeByte(31)
+      ..writeByte(33)
       ..writeByte(0)
       ..write(obj.cartItems)
       ..writeByte(1)
@@ -116,7 +118,11 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       ..writeByte(28)
       ..write(obj.draftUuid)
       ..writeByte(30)
-      ..write(obj.tempCartItems);
+      ..write(obj.tempCartItems)
+      ..writeByte(31)
+      ..write(obj.selectedBankName)
+      ..writeByte(32)
+      ..write(obj.selectedBank);
   }
 
   @override

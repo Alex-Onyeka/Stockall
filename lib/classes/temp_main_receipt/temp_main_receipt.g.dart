@@ -6,7 +6,8 @@ part of 'temp_main_receipt.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
+class TempMainReceiptAdapter
+    extends TypeAdapter<TempMainReceipt> {
   @override
   final int typeId = 3;
 
@@ -14,7 +15,8 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
   TempMainReceipt read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempMainReceipt(
       id: fields[0] as int?,
@@ -47,15 +49,22 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       customerAccount: fields[27] as double?,
       orderUuid: fields[28] as String?,
       salesTypeIndex: fields[29] as int?,
-      items: (fields[30] as List?)?.cast<TempProductSaleRecord>(),
-      tempItems: (fields[31] as List?)?.cast<TempProductSaleRecord>(),
+      items:
+          (fields[30] as List?)
+              ?.cast<TempProductSaleRecord>(),
+      tempItems:
+          (fields[31] as List?)
+              ?.cast<TempProductSaleRecord>(),
+      paymentEntries:
+          (fields[32] as List?)?.cast<PaymentEntry>(),
+      selectedBank: fields[33] as PaymentMethod?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempMainReceipt obj) {
     writer
-      ..writeByte(32)
+      ..writeByte(34)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -119,7 +128,11 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       ..writeByte(30)
       ..write(obj.items)
       ..writeByte(31)
-      ..write(obj.tempItems);
+      ..write(obj.tempItems)
+      ..writeByte(32)
+      ..write(obj.paymentEntries)
+      ..writeByte(33)
+      ..write(obj.selectedBank);
   }
 
   @override

@@ -6,7 +6,8 @@ part of 'temp_shop_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
+class TempShopClassAdapter
+    extends TypeAdapter<TempShopClass> {
   @override
   final int typeId = 7;
 
@@ -14,7 +15,8 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
   TempShopClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempShopClass(
       shopId: fields[0] as int?,
@@ -75,13 +77,32 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       customerPercentageReward: fields[59] as double?,
       manageCustomerReward: fields[58] as bool?,
       manageCustomerAccount: fields[60] as bool?,
+      customPaymentMethods:
+          (fields[61] as List?)
+              ?.map((e) {
+                if (e is PaymentMethod) {
+                  return e;
+                }
+                if (e is Map) {
+                  return PaymentMethod.fromJson(e);
+                }
+                if (e is String) {
+                  return PaymentMethod(
+                    uuid: e,
+                    bankName: e,
+                  );
+                }
+                return null;
+              })
+              .whereType<PaymentMethod>()
+              .toList(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(58)
+      ..writeByte(59)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -192,12 +213,14 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..write(obj.manageProductionsStorage)
       ..writeByte(57)
       ..write(obj.manageProductionItems)
-      ..writeByte(58)
+      ..writeByte(59)
       ..write(obj.manageCustomerReward)
       ..writeByte(59)
       ..write(obj.customerPercentageReward)
       ..writeByte(60)
-      ..write(obj.manageCustomerAccount);
+      ..write(obj.manageCustomerAccount)
+      ..writeByte(61)
+      ..write(obj.customPaymentMethods);
   }
 
   @override

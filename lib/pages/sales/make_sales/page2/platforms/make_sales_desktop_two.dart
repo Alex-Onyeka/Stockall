@@ -89,6 +89,8 @@ class _MakeSalesDesktopTwoState
       cash: _amount(widget.cashController),
       bank: _amount(widget.bankController),
       account: _amount(widget.accountController),
+      splitPayments: returnSalesProvider().currentCart().splitPayments,
+      selectedBankMethod: returnSalesProvider().currentCart().selectedBankName,
     );
   }
 

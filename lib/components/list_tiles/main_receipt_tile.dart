@@ -167,7 +167,7 @@ class _MainReceiptTileMobileState
                                 .lightModeColor
                                 .secColor200,
                       ),
-                      '${widget.mainReceipt.paymentMethod} Payment',
+                      '${widget.mainReceipt.selectedBank?.displayName ?? widget.mainReceipt.paymentMethod} Payment',
                     ),
                     Text(
                       style: TextStyle(

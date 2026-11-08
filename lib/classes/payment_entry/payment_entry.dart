@@ -12,6 +12,10 @@ class PaymentMethods {
   static const String split = 'Split';
 
   static const List<String> all = [cash, bank, account];
+
+  static bool isBankMethod(String method) {
+    return method != cash && method != account && method != split;
+  }
 }
 
 @HiveType(typeId: 153)
@@ -67,16 +71,33 @@ class PaymentBreakdown {
   }
 
   double get cash => amountFor(PaymentMethods.cash);
-  double get bank => amountFor(PaymentMethods.bank);
+
+  // Sums all bank / electronic channels (either 'Bank' or any custom bank account)
+  double get bank {
+    return entries
+        .where(
+          (entry) =>
+              entry.method != PaymentMethods.cash &&
+              entry.method != PaymentMethods.account,
+        )
+        .fold<double>(0, (p, entry) => p + entry.amount);
+  }
+
   double get account => amountFor(PaymentMethods.account);
 
-  double get total => cash + bank + account;
+  double get total =>
+      entries.fold<double>(0, (p, entry) => p + entry.amount);
 
-  // Methods with a positive amount, always in Cash, Bank, Account order.
+  // Methods with a positive amount, preserving custom bank names
   List<String> get methodsUsed {
-    return PaymentMethods.all
-        .where((method) => amountFor(method) > 0)
-        .toList();
+    final Set<String> used = {};
+    for (final method in PaymentMethods.all) {
+      if (amountFor(method) > 0) used.add(method);
+    }
+    for (final entry in entries) {
+      if (entry.amount > 0) used.add(entry.method);
+    }
+    return used.toList();
   }
 
   bool uses(String method) => amountFor(method) > 0;
@@ -104,7 +125,6 @@ class PaymentBreakdown {
       return [PaymentEntry(method: PaymentMethods.cash, amount: 0)];
     }
     return used
-
         .map(
           (method) => PaymentEntry(
             method: method,
@@ -123,10 +143,8 @@ class PaymentBreakdown {
     if (entries.any((entry) => entry.amount < 0)) {
       return 'Payment amounts cannot be negative.';
     }
-    if (entries.any(
-      (entry) => !PaymentMethods.all.contains(entry.method),
-    )) {
-      return 'Unknown payment method.';
+    if (entries.any((entry) => entry.method.trim().isEmpty)) {
+      return 'Payment method cannot be empty.';
     }
     if (account > 0) {
       if (accountBalance == null) {

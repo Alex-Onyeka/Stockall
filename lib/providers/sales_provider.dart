@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
@@ -1699,7 +1700,11 @@ class SalesProvider extends ChangeNotifier {
         shopId: shopId,
         staffId: staffUuid(), // staffId,
         staffName: staffName(), // staffName,
-        paymentMethod: breakdown.label,
+        paymentMethod: breakdown.label == PaymentMethods.bank
+            ? (currentCart().selectedBank?.displayName ??
+                currentCart().selectedBankName ??
+                breakdown.label)
+            : breakdown.label,
         customerAccount: breakdown.account,
         bank: breakdown.bank,
         cashAlt: breakdown.cash,
@@ -1718,6 +1723,11 @@ class SalesProvider extends ChangeNotifier {
         balance: null,
         subStaffUuid: currentMainCart().subStaff?.uuid,
         cartName: currentCart().cartName,
+        paymentEntries: payments,
+        selectedBank: currentCart().selectedBank ??
+            (currentCart().selectedBankName != null
+                ? PaymentMethod(bankName: currentCart().selectedBankName!)
+                : null),
       );
       // Built before the receipt is saved so the same lines are
       // stored in receipt.items and in product_sales.
@@ -3637,17 +3647,26 @@ class SalesProvider extends ChangeNotifier {
     required double cash,
     required double bank,
     required double account,
+    List<PaymentEntry>? splitPayments,
+    String? selectedBankMethod,
   }) {
     double total = calcFinalTotal();
     switch (currentCart().paymentMethod) {
       case 1:
         return [
           PaymentEntry(
-            method: PaymentMethods.bank,
+            method: selectedBankMethod ?? currentCart().selectedBankName ?? PaymentMethods.bank,
             amount: total,
           ),
         ];
       case 2:
+        if (splitPayments != null && splitPayments.isNotEmpty) {
+          return PaymentBreakdown(splitPayments).compact;
+        }
+        if (currentCart().splitPayments != null &&
+            currentCart().splitPayments!.isNotEmpty) {
+          return PaymentBreakdown(currentCart().splitPayments!).compact;
+        }
         return PaymentBreakdown.fromAmounts(
           cash: cash,
           bank: bank,
@@ -4992,6 +5011,28 @@ class SalesProvider extends ChangeNotifier {
     },
   ];
 
+  void setSelectedBank(PaymentMethod? bank) {
+    currentCart().selectedBank = bank;
+    currentCart().selectedBankName = bank?.displayName;
+    CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+  }
+
+  void setSelectedBankName(String? name) {
+    currentCart().selectedBankName = name;
+    if (name == null) {
+      currentCart().selectedBank = null;
+    } else {
+      final customBanks = returnShopProvider().getCustomPaymentMethods();
+      final match = customBanks
+          .where((b) => b.displayName == name || b.bankName == name);
+      currentCart().selectedBank =
+          match.isNotEmpty ? match.first : PaymentMethod(bankName: name);
+    }
+    CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+  }
+
   void changePaymentMethod({
     required int index,
     required BuildContext context,
@@ -5011,7 +5052,9 @@ class SalesProvider extends ChangeNotifier {
       case 0:
         return 'Cash';
       case 1:
-        return 'Bank';
+        return currentCart().selectedBank?.displayName ??
+            currentCart().selectedBankName ??
+            'Bank';
       case 2:
         return 'Split';
       case 3:

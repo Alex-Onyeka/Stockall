@@ -987,7 +987,7 @@ class _ReceiptDetailsContainerState
                                                           fontWeight:
                                                               FontWeight.normal,
                                                         ),
-                                                        'Bank:',
+                                                        '${widget.mainReceipt.selectedBank?.displayName ?? (PaymentMethods.isBankMethod(widget.mainReceipt.paymentMethod) ? widget.mainReceipt.paymentMethod : 'Bank')}:',
                                                       ),
                                                       Text(
                                                         style: TextStyle(

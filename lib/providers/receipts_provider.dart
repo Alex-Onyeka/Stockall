@@ -1329,13 +1329,18 @@ class ReceiptsProvider extends ChangeNotifier {
     }
 
     var res = grouped.values.toList();
-    res.sort(
-      (a, b) => PaymentMethods.all
-          .indexOf(a.paymentMethod)
-          .compareTo(
-            PaymentMethods.all.indexOf(b.paymentMethod),
-          ),
-    );
+    res.sort((a, b) {
+      final aIdx = PaymentMethods.all.indexOf(a.paymentMethod);
+      final bIdx = PaymentMethods.all.indexOf(b.paymentMethod);
+      if (aIdx != -1 && bIdx != -1) {
+        return aIdx.compareTo(bIdx);
+      } else if (aIdx != -1) {
+        return -1;
+      } else if (bIdx != -1) {
+        return 1;
+      }
+      return a.paymentMethod.compareTo(b.paymentMethod);
+    });
     return res;
   }
 

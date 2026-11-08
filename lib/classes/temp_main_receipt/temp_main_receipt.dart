@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/main.dart';
 
@@ -106,6 +107,12 @@ class TempMainReceipt extends HiveObject {
   @HiveField(31)
   List<TempProductSaleRecord>? tempItems;
 
+  @HiveField(32)
+  List<PaymentEntry>? paymentEntries;
+
+  @HiveField(33)
+  PaymentMethod? selectedBank;
+
   TempMainReceipt({
     this.id,
     this.barcode,
@@ -139,6 +146,8 @@ class TempMainReceipt extends HiveObject {
     required this.salesTypeIndex,
     this.items,
     this.tempItems,
+    this.paymentEntries,
+    this.selectedBank,
   });
 
   factory TempMainReceipt.fromJson(
@@ -184,6 +193,22 @@ class TempMainReceipt extends HiveObject {
       items: TempProductSaleRecord.itemsFromJson(
         json['items'],
       ),
+      paymentEntries:
+          json['payment_entries'] != null
+              ? (json['payment_entries'] as List)
+                  .map(
+                    (e) => PaymentEntry.fromJson(
+                      e as Map<String, dynamic>,
+                    ),
+                  )
+                  .toList()
+              : null,
+      selectedBank:
+          json['selected_bank'] != null
+              ? PaymentMethod.fromJson(
+                json['selected_bank'],
+              )
+              : null,
     );
   }
 
@@ -222,6 +247,11 @@ class TempMainReceipt extends HiveObject {
       // Left out when empty so an update never clears stored items.
       if (items?.isNotEmpty == true)
         'items': TempProductSaleRecord.itemsToJson(items!),
+      if (paymentEntries?.isNotEmpty == true)
+        'payment_entries':
+            paymentEntries!.map((e) => e.toJson()).toList(),
+      if (selectedBank != null)
+        'selected_bank': selectedBank!.toJson(),
     };
   }
 
@@ -258,6 +288,8 @@ class TempMainReceipt extends HiveObject {
     int? salesTypeIndex,
     List<TempProductSaleRecord>? items,
     List<TempProductSaleRecord>? tempItems,
+    List<PaymentEntry>? paymentEntries,
+    PaymentMethod? selectedBank,
   }) {
     return TempMainReceipt(
       id: id ?? this.id,
@@ -295,6 +327,8 @@ class TempMainReceipt extends HiveObject {
       salesTypeIndex: salesTypeIndex ?? this.salesTypeIndex,
       items: items ?? this.items,
       tempItems: tempItems ?? this.tempItems,
+      paymentEntries: paymentEntries ?? this.paymentEntries,
+      selectedBank: selectedBank ?? this.selectedBank,
     );
   }
 
@@ -349,39 +383,71 @@ class TempMainReceipt extends HiveObject {
     return salesTypeIndex ?? 1;
   }
 
-  // Built from the explicit per-method amounts, so it works the same for
-  // receipts saved before split payments supported customer account.
+  // Built from the explicit per-method amounts or granular paymentEntries,
+  // preserving custom bank names and selected bank accounts.
   PaymentBreakdown paymentBreakdown() {
-    return PaymentBreakdown.fromAmounts(
-      cash: cashAlt,
-      bank: bank,
-      account: customerAccount ?? 0,
-    );
+    if (paymentEntries != null &&
+        paymentEntries!.isNotEmpty) {
+      return PaymentBreakdown(paymentEntries!);
+    }
+    final bankName =
+        selectedBank?.displayName ??
+        (PaymentMethods.isBankMethod(paymentMethod)
+            ? paymentMethod
+            : PaymentMethods.bank);
+    return PaymentBreakdown([
+      if (cashAlt > 0)
+        PaymentEntry(
+          method: PaymentMethods.cash,
+          amount: cashAlt,
+        ),
+      if (bank > 0)
+        PaymentEntry(method: bankName, amount: bank),
+      if ((customerAccount ?? 0) > 0)
+        PaymentEntry(
+          method: PaymentMethods.account,
+          amount: customerAccount!,
+        ),
+    ]);
   }
 
   List<PaymentEntry> payments() {
+    if (paymentEntries != null &&
+        paymentEntries!.isNotEmpty) {
+      return paymentEntries!;
+    }
     return paymentBreakdown().compact;
   }
 
   // For receipts and PDFs: never empty, so a zero-total receipt still shows
   // its saved method.
   List<PaymentEntry> displayPayments() {
+    if (paymentEntries != null &&
+        paymentEntries!.isNotEmpty) {
+      return paymentEntries!;
+    }
     var entries = payments();
     if (entries.isEmpty) {
+      final defaultMethod =
+          selectedBank?.displayName ??
+          (paymentMethod == PaymentMethods.split
+              ? PaymentMethods.cash
+              : paymentMethod);
       return [
-        PaymentEntry(
-          method:
-              paymentMethod == PaymentMethods.split
-                  ? PaymentMethods.cash
-                  : paymentMethod,
-          amount: 0,
-        ),
+        PaymentEntry(method: defaultMethod, amount: 0),
       ];
     }
     return entries;
   }
 
   bool showsPaymentMethod(String method) {
+    if (method == PaymentMethods.bank) {
+      return bank > 0 ||
+          selectedBank != null ||
+          displayPayments().any(
+            (p) => PaymentMethods.isBankMethod(p.method),
+          );
+    }
     return displayPayments().any(
       (payment) => payment.method == method,
     );

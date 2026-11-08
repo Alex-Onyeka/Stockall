@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/main.dart';
@@ -94,6 +96,12 @@ class TempInvoice extends HiveObject {
   @HiveField(28)
   List<TempProductSaleRecord>? tempItems;
 
+  @HiveField(29)
+  List<PaymentEntry>? paymentEntries;
+
+  @HiveField(30)
+  PaymentMethod? selectedBank;
+
   TempInvoice({
     this.id,
     this.barcode,
@@ -123,6 +131,8 @@ class TempInvoice extends HiveObject {
     required this.comment,
     this.items,
     this.tempItems,
+    this.paymentEntries,
+    this.selectedBank,
   });
 
   factory TempInvoice.fromJson(Map<String, dynamic> json) {
@@ -164,6 +174,18 @@ class TempInvoice extends HiveObject {
       items: TempProductSaleRecord.itemsFromJson(
         json['items'],
       ),
+      paymentEntries: json['payment_entries'] != null
+          ? (json['payment_entries'] as List)
+              .map(
+                (item) => PaymentEntry.fromJson(
+                  Map<String, dynamic>.from(item as Map),
+                ),
+              )
+              .toList()
+          : null,
+      selectedBank: json['selected_bank'] != null
+          ? PaymentMethod.fromJson(json['selected_bank'])
+          : null,
     );
   }
 
@@ -198,6 +220,10 @@ class TempInvoice extends HiveObject {
       // Left out when empty so an update never clears stored items.
       if (items?.isNotEmpty == true)
         'items': TempProductSaleRecord.itemsToJson(items!),
+      if (paymentEntries?.isNotEmpty == true)
+        'payment_entries': paymentEntries!.map((e) => e.toJson()).toList(),
+      if (selectedBank != null)
+        'selected_bank': selectedBank!.toJson(),
     };
   }
 
