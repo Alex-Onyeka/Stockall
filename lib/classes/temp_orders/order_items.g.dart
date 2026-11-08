@@ -59,9 +59,9 @@ class OrderItemsAdapter extends TypeAdapter<OrderItems> {
       manageSalesWastage: fields[39] as bool?,
       isPercentageWastage: fields[40] as bool?,
       wastageAmount: fields[41] as double?,
+      wastageUnitUuid: fields[44] as String?,
       dimensionUnit: fields[42] as String?,
       dimensionUnitConversion: fields[43] as double?,
-      wastageUnitUuid: fields[44] as String?,
     );
   }
 

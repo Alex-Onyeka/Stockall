@@ -1,3 +1,4 @@
+import 'package:stockall/pages/products/add_product_one/platforms/components/product_linking_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
@@ -97,6 +98,12 @@ class _AddProductMobileState
   //
   //
   bool isOpen = false;
+  List<LinkedProductInfo> stagedBranchLinks = [];
+  List<LinkedProductInfo> removedBranchLinks = [];
+  bool isBranchUnlinked = false;
+  List<LinkedDepartmentProductInfo> stagedDeptLinks = [];
+  List<LinkedDepartmentProductInfo> removedDeptLinks = [];
+  bool isDeptUnlinked = false;
 
   void checkFields() async {
     final hasWidth =
@@ -316,6 +323,50 @@ class _AddProductMobileState
                           : null,
                   quantity: 0,
                   barcode: barcode,
+                  globalProductId:
+                      stagedBranchLinks.isNotEmpty
+                          ? (() {
+                            for (final link
+                                in stagedBranchLinks) {
+                              if (link
+                                          .product
+                                          .globalProductId !=
+                                      null &&
+                                  link
+                                      .product
+                                      .globalProductId!
+                                      .trim()
+                                      .isNotEmpty) {
+                                return link
+                                    .product
+                                    .globalProductId;
+                              }
+                            }
+                            return createdProductUuid;
+                          })()
+                          : uuidGen(),
+                  globalDepartmentProductId:
+                      stagedDeptLinks.isNotEmpty
+                          ? (() {
+                            for (final link
+                                in stagedDeptLinks) {
+                              if (link
+                                          .product
+                                          .globalDepartmentProductId !=
+                                      null &&
+                                  link
+                                      .product
+                                      .globalDepartmentProductId!
+                                      .trim()
+                                      .isNotEmpty) {
+                                return link
+                                    .product
+                                    .globalDepartmentProductId;
+                              }
+                            }
+                            return createdProductUuid;
+                          })()
+                          : uuidGen(),
                   lowQtty:
                       widget.lowQttyController.text.isEmpty
                           ? 10
@@ -333,6 +384,71 @@ class _AddProductMobileState
                   uuid: createdProductUuid,
                 ),
               );
+
+              // 1. Sync staged branch products
+              if (stagedBranchLinks.isNotEmpty) {
+                String? savedBranchClusterId;
+                for (final link in stagedBranchLinks) {
+                  if (link.product.globalProductId !=
+                          null &&
+                      link.product.globalProductId!
+                          .trim()
+                          .isNotEmpty) {
+                    savedBranchClusterId =
+                        link.product.globalProductId;
+                    break;
+                  }
+                }
+                savedBranchClusterId ??= createdProductUuid;
+
+                for (final link in stagedBranchLinks) {
+                  await returnData()
+                      .updateProductForOtherShops(
+                        product: link.product.copyWith(
+                          globalProductId:
+                              savedBranchClusterId,
+                        ),
+                        itemHistory: null,
+                      );
+                }
+              }
+
+              // 2. Sync staged department products
+              if (stagedDeptLinks.isNotEmpty) {
+                String? savedDeptClusterId;
+                for (final link in stagedDeptLinks) {
+                  if (link
+                              .product
+                              .globalDepartmentProductId !=
+                          null &&
+                      link
+                          .product
+                          .globalDepartmentProductId!
+                          .trim()
+                          .isNotEmpty) {
+                    savedDeptClusterId =
+                        link
+                            .product
+                            .globalDepartmentProductId;
+                    break;
+                  }
+                }
+                savedDeptClusterId ??= createdProductUuid;
+
+                for (final link in stagedDeptLinks) {
+                  await returnData().updateProduct(
+                    product: link.product.copyWith(
+                      globalDepartmentProductId:
+                          savedDeptClusterId,
+                    ),
+                    isQuantityUpdate: false,
+                    includeQuantity: false,
+                    quantityChange: null,
+                    isIncrement: null,
+                    itemHistory: null,
+                  );
+                }
+              }
 
               setState(() {
                 isLoading = false;
@@ -428,6 +544,43 @@ class _AddProductMobileState
               setState(() {
                 isLoading = true;
               });
+
+              String? updatedBranchClusterId =
+                  widget.product?.globalProductId;
+              if (isBranchUnlinked) {
+                updatedBranchClusterId = uuidGen();
+              } else if (stagedBranchLinks.isNotEmpty) {
+                for (final link in stagedBranchLinks) {
+                  if (link.product.globalProductId != null &&
+                      link.product.globalProductId!.trim().isNotEmpty) {
+                    updatedBranchClusterId = link.product.globalProductId;
+                    break;
+                  }
+                }
+                updatedBranchClusterId ??=
+                    widget.product?.globalProductId ?? uuidGen();
+              } else {
+                updatedBranchClusterId ??= uuidGen();
+              }
+
+              String? updatedDeptClusterId =
+                  widget.product?.globalDepartmentProductId;
+              if (isDeptUnlinked) {
+                updatedDeptClusterId = uuidGen();
+              } else if (stagedDeptLinks.isNotEmpty) {
+                for (final link in stagedDeptLinks) {
+                  if (link.product.globalDepartmentProductId != null &&
+                      link.product.globalDepartmentProductId!.trim().isNotEmpty) {
+                    updatedDeptClusterId =
+                        link.product.globalDepartmentProductId;
+                    break;
+                  }
+                }
+                updatedDeptClusterId ??=
+                    widget.product?.globalDepartmentProductId ?? uuidGen();
+              } else {
+                updatedDeptClusterId ??= uuidGen();
+              }
 
               var res = await provider.updateProduct(
                 itemHistory: null,
@@ -557,6 +710,9 @@ class _AddProductMobileState
                   ),
                   // endDate: provider.endDate,
                   expiryDate: provider.expiryDate,
+                  globalProductId: updatedBranchClusterId,
+                  globalDepartmentProductId:
+                      updatedDeptClusterId,
                   lowQtty:
                       widget.lowQttyController.text.isEmpty
                           ? 10
@@ -574,6 +730,64 @@ class _AddProductMobileState
                   isLoading = false;
                 });
               } else {
+                if (!isBranchUnlinked) {
+                  for (final link in stagedBranchLinks) {
+                    if (link.product.globalProductId !=
+                        updatedBranchClusterId) {
+                      await returnData()
+                          .updateProductForOtherShops(
+                            product: link.product.copyWith(
+                              globalProductId:
+                                  updatedBranchClusterId,
+                            ),
+                            itemHistory: null,
+                          );
+                    }
+                  }
+                }
+                for (final link in removedBranchLinks) {
+                  await returnData()
+                      .updateProductForOtherShops(
+                        product: link.product.copyWith(
+                          globalProductId: uuidGen(),
+                        ),
+                        itemHistory: null,
+                      );
+                }
+
+                if (!isDeptUnlinked) {
+                  for (final link in stagedDeptLinks) {
+                    if (link
+                            .product
+                            .globalDepartmentProductId !=
+                        updatedDeptClusterId) {
+                      await returnData().updateProduct(
+                        product: link.product.copyWith(
+                          globalDepartmentProductId:
+                              updatedDeptClusterId,
+                        ),
+                        isQuantityUpdate: false,
+                        includeQuantity: false,
+                        quantityChange: null,
+                        isIncrement: null,
+                        itemHistory: null,
+                      );
+                    }
+                  }
+                }
+                for (final link in removedDeptLinks) {
+                  await returnData().updateProduct(
+                    product: link.product.copyWith(
+                      globalDepartmentProductId: uuidGen(),
+                    ),
+                    isQuantityUpdate: false,
+                    includeQuantity: false,
+                    quantityChange: null,
+                    isIncrement: null,
+                    itemHistory: null,
+                  );
+                }
+
                 setState(() {
                   isLoading = false;
                   showSuccess = true;
@@ -2080,6 +2294,62 @@ class _AddProductMobileState
                                           SizedBox(
                                             height: 10,
                                           ),
+                                          if (returnShopProvider()
+                                                  .userShops
+                                                  .length >
+                                              1) ...[
+                                            BranchProductLinkWidget(
+                                              currentProduct:
+                                                  widget
+                                                      .product,
+                                              theme: theme,
+                                              onBranchesChanged: (
+                                                staged,
+                                                removed,
+                                                unlinked,
+                                              ) {
+                                                setState(() {
+                                                  stagedBranchLinks =
+                                                      staged;
+                                                  removedBranchLinks =
+                                                      removed;
+                                                  isBranchUnlinked =
+                                                      unlinked;
+                                                });
+                                              },
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                          ],
+                                          if (returnShopProvider()
+                                                  .userShop()
+                                                  ?.manageDepartments ==
+                                              true) ...[
+                                            DepartmentProductLinkWidget(
+                                              currentProduct:
+                                                  widget
+                                                      .product,
+                                              theme: theme,
+                                              onDepartmentsChanged: (
+                                                staged,
+                                                removed,
+                                                unlinked,
+                                              ) {
+                                                setState(() {
+                                                  stagedDeptLinks =
+                                                      staged;
+                                                  removedDeptLinks =
+                                                      removed;
+                                                  isDeptUnlinked =
+                                                      unlinked;
+                                                });
+                                              },
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                          ],
                                         ],
                                       ),
                                     ],

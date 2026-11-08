@@ -72,7 +72,7 @@ List<SubplanClass> subPlans = [
       allowOfflineUse: true,
       manageVAT: true,
       manageDepartments: true,
-      numberOfDepartments: 10,
+      numberOfDepartments: 14,
       useCloseSale: true,
       useFloatingButton: true,
       useOnScreenKeyboard: true,

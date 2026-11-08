@@ -77,6 +77,7 @@ import 'package:stockall/local_database/products/unsync_funcs/quantity_update/qu
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
+import 'package:stockall/services/product_linking_helper.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
@@ -255,8 +256,10 @@ class DataProvider extends ChangeNotifier {
   Future<void> createProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      if (CreatedProductFunc().getProducts().isNotEmpty && isOnline) {
-        final tempProducts = CreatedProductFunc().getProducts().toList();
+      if (CreatedProductFunc().getProducts().isNotEmpty &&
+          isOnline) {
+        final tempProducts =
+            CreatedProductFunc().getProducts().toList();
         int count = 0;
         for (var item in tempProducts) {
           try {
@@ -264,7 +267,8 @@ class DataProvider extends ChangeNotifier {
                 .from('products')
                 .insert(
                   item.product.toJson(
-                    isIncludeQuantity: item.includeQuantity ?? true,
+                    isIncludeQuantity:
+                        item.includeQuantity ?? true,
                   ),
                 )
                 .select();
@@ -274,7 +278,9 @@ class DataProvider extends ChangeNotifier {
             );
           } on PostgrestException catch (e) {
             // 23505: duplicate, 23503: foreign key violation, 23502: not-null
-            if (e.code == '23505' || e.code == '23503' || e.code == '23502') {
+            if (e.code == '23505' ||
+                e.code == '23503' ||
+                e.code == '23502') {
               await CreatedProductFunc().deleteProduct(
                 item.product.uuid!,
               );
@@ -290,7 +296,9 @@ class DataProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog('$count items added successfully');
+        await mainLocalLog(
+          '$count items added successfully',
+        );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -299,9 +307,7 @@ class DataProvider extends ChangeNotifier {
         await mainLocalLog('Unsynced Products Cleared');
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Items insert failed: $e',
-      );
+      await mainLocalLog('Batch Items insert failed: $e');
     }
   }
 
@@ -309,22 +315,31 @@ class DataProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedProductsFunc().getProductIds().isNotEmpty && isOnline) {
-        final pendingDeletes = DeletedProductsFunc().getProductIds().toList();
-        final uuids = pendingDeletes.map((p) => p.productUuid).toList();
+      if (DeletedProductsFunc()
+              .getProductIds()
+              .isNotEmpty &&
+          isOnline) {
+        final pendingDeletes =
+            DeletedProductsFunc().getProductIds().toList();
+        final uuids =
+            pendingDeletes
+                .map((p) => p.productUuid)
+                .toList();
 
         try {
           // Attempt bulk delete first
-          final data = await supabase
-              .from('products')
-              .delete()
-              .inFilter('uuid', uuids)
-              .select();
+          final data =
+              await supabase
+                  .from('products')
+                  .delete()
+                  .inFilter('uuid', uuids)
+                  .select();
 
           await mainLocalLog(
             '${data.length} items deleted successfully',
           );
-          await DeletedProductsFunc().clearDeletedProducts();
+          await DeletedProductsFunc()
+              .clearDeletedProducts();
         } catch (batchErr) {
           await mainLocalLog(
             'Batch delete failed, falling back to item-by-item: $batchErr',
@@ -336,17 +351,23 @@ class DataProvider extends ChangeNotifier {
                   .from('products')
                   .delete()
                   .eq('uuid', p.productUuid);
-              await DeletedProductsFunc().deleteProductUuid(p.productUuid);
+              await DeletedProductsFunc().deleteProductUuid(
+                p.productUuid,
+              );
             } on PostgrestException catch (pe) {
               // 23503: foreign key constraint, 23505 / other terminal constraint
-              if (pe.code == '23503' || pe.code == '23505') {
-                await DeletedProductsFunc().deleteProductUuid(p.productUuid);
+              if (pe.code == '23503' ||
+                  pe.code == '23505') {
+                await DeletedProductsFunc()
+                    .deleteProductUuid(p.productUuid);
               }
               await mainLocalLog(
                 'Postgrest error deleting product ${p.productUuid}: $pe',
               );
             } catch (err) {
-              await mainLocalLog('Network error deleting product: $err');
+              await mainLocalLog(
+                'Network error deleting product: $err',
+              );
               break;
             }
           }
@@ -362,9 +383,7 @@ class DataProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Items delete failed: $e',
-      );
+      await mainLocalLog('Batch Items delete failed: $e');
     }
   }
 
@@ -378,8 +397,10 @@ class DataProvider extends ChangeNotifier {
             .toString(),
       );
 
-      if (UpdatedProductsFunc().getProducts().isNotEmpty && isOnline) {
-        final updatedProducts = UpdatedProductsFunc().getProducts();
+      if (UpdatedProductsFunc().getProducts().isNotEmpty &&
+          isOnline) {
+        final updatedProducts =
+            UpdatedProductsFunc().getProducts();
 
         for (final updated in updatedProducts) {
           final localProduct = updated.product;
@@ -387,70 +408,93 @@ class DataProvider extends ChangeNotifier {
           localProduct.updatedAt ??= DateTime.now().toUtc();
 
           if (localProduct.uuid == null) {
-            await mainLocalLog('Local Product Uuid is Null');
+            await mainLocalLog(
+              'Local Product Uuid is Null',
+            );
             continue;
           }
 
           try {
-            final remoteData = await supabase
-                .from('products')
-                .select('uuid, updated_at')
-                .eq('uuid', localProduct.uuid!)
-                .maybeSingle();
+            final remoteData =
+                await supabase
+                    .from('products')
+                    .select('uuid, updated_at')
+                    .eq('uuid', localProduct.uuid!)
+                    .maybeSingle();
 
             if (remoteData == null) {
               try {
-                await supabase.from('products').insert(
-                  localProduct.toJson(
-                    isIncludeQuantity: updated.includeQuantity,
-                  ),
-                );
+                await supabase
+                    .from('products')
+                    .insert(
+                      localProduct.toJson(
+                        isIncludeQuantity:
+                            updated.includeQuantity,
+                      ),
+                    );
                 await mainLocalLog(
                   'Inserted product with uuid ${localProduct.uuid}',
                 );
-                await UpdatedProductsFunc().deleteUpdatedProduct(
-                  localProduct.uuid ?? '',
-                );
+                await UpdatedProductsFunc()
+                    .deleteUpdatedProduct(
+                      localProduct.uuid ?? '',
+                    );
               } on PostgrestException catch (e) {
-                if (e.code == '23505' || e.code == '23503' || e.code == '23502') {
-                  await UpdatedProductsFunc().deleteUpdatedProduct(
-                    localProduct.uuid ?? '',
-                  );
+                if (e.code == '23505' ||
+                    e.code == '23503' ||
+                    e.code == '23502') {
+                  await UpdatedProductsFunc()
+                      .deleteUpdatedProduct(
+                        localProduct.uuid ?? '',
+                      );
                 }
                 await mainLocalLog(
                   'Error Synchronizing Product ${localProduct.name}: $e',
                 );
               }
             } else {
-              final remoteUpdatedAtRaw = remoteData['updated_at'];
-              final remoteUpdatedAt = remoteUpdatedAtRaw == null
-                  ? null
-                  : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+              final remoteUpdatedAtRaw =
+                  remoteData['updated_at'];
+              final remoteUpdatedAt =
+                  remoteUpdatedAtRaw == null
+                      ? null
+                      : DateTime.parse(
+                        remoteUpdatedAtRaw,
+                      ).toUtc();
 
-              localProduct.updatedAt = (localProduct.updatedAt ?? DateTime.now()).toUtc();
+              localProduct.updatedAt =
+                  (localProduct.updatedAt ?? DateTime.now())
+                      .toUtc();
 
               if (remoteUpdatedAt == null ||
-                  !localProduct.updatedAt!.isBefore(remoteUpdatedAt)) {
+                  !localProduct.updatedAt!.isBefore(
+                    remoteUpdatedAt,
+                  )) {
                 try {
                   await supabase
                       .from('products')
                       .update(
                         localProduct.toJson(
-                          isIncludeQuantity: updated.includeQuantity,
+                          isIncludeQuantity:
+                              updated.includeQuantity,
                         ),
                       )
                       .eq('uuid', localProduct.uuid!);
                   await mainLocalLog(
                     'Updated product with uuid ${localProduct.uuid}',
                   );
-                  await UpdatedProductsFunc().deleteUpdatedProduct(
-                    localProduct.uuid ?? '',
-                  );
+                  await UpdatedProductsFunc()
+                      .deleteUpdatedProduct(
+                        localProduct.uuid ?? '',
+                      );
                 } on PostgrestException catch (e) {
-                  if (e.code == '23505' || e.code == '23503' || e.code == '23502') {
-                    await UpdatedProductsFunc().deleteUpdatedProduct(
-                      localProduct.uuid ?? '',
-                    );
+                  if (e.code == '23505' ||
+                      e.code == '23503' ||
+                      e.code == '23502') {
+                    await UpdatedProductsFunc()
+                        .deleteUpdatedProduct(
+                          localProduct.uuid ?? '',
+                        );
                   }
                   await mainLocalLog(
                     'Error Synchronizing Product ${localProduct.name}: $e',
@@ -460,9 +504,10 @@ class DataProvider extends ChangeNotifier {
                 await mainLocalLog(
                   'Skipped product ${localProduct.uuid}, remote is newer',
                 );
-                await UpdatedProductsFunc().deleteUpdatedProduct(
-                  localProduct.uuid ?? '',
-                );
+                await UpdatedProductsFunc()
+                    .deleteUpdatedProduct(
+                      localProduct.uuid ?? '',
+                    );
               }
             }
           } catch (netErr) {
@@ -473,19 +518,18 @@ class DataProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog('Unsynced updated products cleared');
+        await mainLocalLog(
+          'Unsynced updated products cleared',
+        );
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
         );
         clearFields();
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Items update failed: $e',
-      );
+      await mainLocalLog('Batch Items update failed: $e');
     }
   }
-
 
   Future<void> clearTotalCache() async {
     await CreatedCustomersFunc().clearCustomers();
@@ -615,825 +659,838 @@ class DataProvider extends ChangeNotifier {
       toggleSyncing(true);
       try {
         bool isOnline = await connectivity.isOnline();
-      if (isOnline) {
-        List<TempShopClass> shop =
-            await returnShopProvider().getUserShops();
-        if (shop.isNotEmpty) {
-          if (CreatedCategoriesFunc()
-                  .getCreateCategories()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCategoriesProvider()
-                .createCategoriesSync();
-            await mainLocalLog(
-              'Finished Syncing Created Categories',
-            );
-            setSyncProgress(1);
-          }
-          if (UpdatedCategoriesFunc()
-                  .getCategories()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCategoriesProvider()
-                .updateCategoriesSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Categories',
-            );
-            setSyncProgress(2);
-          }
-          if (DeletedCategoriesFunc()
-                  .getCategoryIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCategoriesProvider()
-                .deleteCategoriesSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Categories',
-            );
-            setSyncProgress(3);
-          }
-          if (CreatedDepartmentsFunc()
-                  .getDepartment()
-                  .isNotEmpty &&
-              isOnline) {
-            await DepartmentProvider()
-                .createDepartmentsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Departments',
-            );
-            setSyncProgress(4);
-          }
-          if (UpdatedDepartmentFunc()
-                  .getDepartments()
-                  .isNotEmpty &&
-              isOnline) {
-            await DepartmentProvider()
-                .updateDepartmentsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Departments',
-            );
-            setSyncProgress(5);
-          }
-          if (DeletedDepartmentsFunc()
-                  .getDepartmentIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await DepartmentProvider()
-                .deleteDepartmentsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Departments',
-            );
-            setSyncProgress(6);
-          }
-          if (CreatedStorageProductsFunc()
-                  .getStorageProducts()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnStorageProductProvider()
-                .createStorageProductsSync();
-            await mainLocalLog(
-              'Finished Syncing Created StorageProductss',
-            );
-            setSyncProgress(7);
-          }
-          if (UpdatedStorageProductsFunc()
-                  .getStorageProductIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnStorageProductProvider()
-                .updateStorageProductsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated StorageProductss',
-            );
-            setSyncProgress(8);
-          }
-          if (DeletedStorageProductsFunc()
-                  .getStorageProductIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnStorageProductProvider()
-                .deleteStorageProductsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted StorageProductss',
-            );
-            setSyncProgress(9);
-          }
-          if (CreatedProductFunc()
-                  .getProducts()
-                  .isNotEmpty &&
-              isOnline) {
-            await createProductsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Products',
-            );
-            setSyncProgress(10);
-          }
-          if (DeletedProductsFunc()
-                  .getProductIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await deleteProductsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Products',
-            );
-            setSyncProgress(11);
-          }
-          if (UpdatedProductsFunc()
-                  .getProducts()
-                  .isNotEmpty &&
-              isOnline) {
-            await updateProductsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Products',
-            );
-            setSyncProgress(12);
-          }
-          if (QuantityUpdateFunc()
-                  .getQuantitiesUpdate()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnQuantityUpdateProvider()
-                .quantityUpdateSync();
-            await mainLocalLog(
-              'Finished Syncing Quantity Updates',
-            );
-            setSyncProgress(13);
-          }
-          if (CreatedExpensesFunc()
-                  .getExpenses()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnExpensesProviderSingle()
-                .createExpensesSync();
-            await mainLocalLog(
-              'Finished Syncing Created Expenses',
-            );
-            setSyncProgress(14);
-          }
-          if (UpdatedExpensesFunc()
-                  .getExpenses()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnExpensesProviderSingle()
-                .updateExpensesSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Expenses',
-            );
-            setSyncProgress(15);
-          }
-          if (DeletedExpensesFunc()
-                  .getExpenseIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnExpensesProviderSingle()
-                .deleteExpensesSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Expenses',
-            );
-            setSyncProgress(16);
-          }
-          if (CreatedCustomersFunc()
-                  .getCustomers()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCustomersSingle()
-                .createCustomersSync();
-            await mainLocalLog(
-              'Finished Syncing Created Customer',
-            );
-            setSyncProgress(17);
-          }
-          if (UpdatedCustomersFunc()
-                  .getCustomers()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCustomersSingle()
-                .updateCustomersSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Customers',
-            );
-            setSyncProgress(18);
-          }
-          if (DeletedCustomersFunc()
-                  .getCustomerIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCustomersSingle()
-                .deletedCustomersSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Customers',
-            );
-            setSyncProgress(19);
-          }
-          if (CreatedSubStaffFunc()
-                  .getSubStaffs()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSubStaffProvider()
-                .createSubStaffSync();
-            await mainLocalLog(
-              'Finished Syncing Created Sub Staffs',
-            );
-            setSyncProgress(20);
-          }
-          if (UpdatedSubStaffFunc()
-                  .getSubStaffs()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSubStaffProvider()
-                .updateSubStaffSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Sub Staffs',
-            );
-            setSyncProgress(21);
-          }
-          if (DeletedSubStaffFunc()
-                  .getSubStaffIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSubStaffProvider()
-                .deleteSubStaffSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Sub Staffs',
-            );
-            setSyncProgress(22);
-          }
-          if (CreatedSupplierFunc()
-                  .getSuppliers()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSuppliersProvider()
-                .createSupplierSync();
-            await mainLocalLog(
-              'Finished Syncing Created Suppliers',
-            );
-            setSyncProgress(23);
-          }
-          if (UpdatedSupplierFunc()
-                  .getSuppliers()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSuppliersProvider()
-                .updateSuppliersSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Suppliers',
-            );
-            setSyncProgress(24);
-          }
-          if (DeletedSupplierFunc()
-                  .getSupplierIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSuppliersProvider()
-                .deletedSuppliersSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Suppliers',
-            );
-            setSyncProgress(25);
-          }
-          if (DeletedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .deleteInvoicesSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Invoices',
-            );
-            setSyncProgress(26);
-          }
-          if (CreatedInvoicesFunc()
-                  .getInvoices()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .createInvoicesSync();
-            await mainLocalLog(
-              'Finished Syncing Created Invoices',
-            );
-            setSyncProgress(27);
-          }
-          if (UpdatedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .updateInvoicesSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Invoices',
-            );
-            setSyncProgress(28);
-          }
-          if (DeletedReceiptsFunc()
-                  .getReceiptIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnReceiptProviderSingle()
-                .deleteReceiptsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Receipts',
-            );
-            setSyncProgress(29);
-          }
-          if (CreatedReceiptsFunc()
-                  .getReceipts()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnReceiptProviderSingle()
-                .createReceiptsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Receipts',
-            );
-            setSyncProgress(30);
-          }
-          if (UpdatedReceiptsFunc()
-                  .getReceiptIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnReceiptProviderSingle()
-                .updateReceiptsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Receipts',
-            );
-            setSyncProgress(31);
-          }
-          // if (CreatedRecordsFunc()
-          //         .getRecords()
-          //         .isNotEmpty &&
-          //     isOnline) {
-          //   await returnReceiptProviderSingle()
-          //       .createRecordsSync();
-          //   await mainLocalLog(
-          //     'Finished Syncing Created Records Customers',
-          //   );
-          //   setSyncProgress(32);
-          // }
-          if (UpdatedShopFunc()
-                  .getUpdatedShop()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnShopProvider().updateShopSync();
-            await mainLocalLog(
-              'Finished Syncing Created Receipts',
-            );
-            setSyncProgress(33);
-          }
-          if (CreatedShopLogosFunc().getCreatedLogo() !=
-                  null &&
-              isOnline) {
-            await returnShopProvider().uploadShopLogoSync();
-            await mainLocalLog(
-              'Finished Syncing Created Logo',
-            );
-            setSyncProgress(34);
-          }
-          if (CreatedEventsLogFunc()
-                  .getCreatedEventsLogs()
-                  .isNotEmpty &&
-              isOnline) {
-            // await returnEventsLogProvider().eventsLogSync();
-            await CreatedEventsLogFunc().clearEvents();
-            await mainLocalLog(
-              'Finished Syncing Created Events Log',
-            );
-            setSyncProgress(35);
-          }
-          if (CreatedInventoryUpdatesFunc()
-                  .getCreatedInventoryUpdatess()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInventoryUpdatesProvider()
-                .inventoryUpdatesSync();
-            await mainLocalLog(
-              'Finished Syncing Inventory Updates',
-            );
-            setSyncProgress(36);
-          }
-          if (CreatedPurchasesFunc()
-                  .getPurchases()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnPurchaseProvider()
-                .createPurchasesSync();
-            await mainLocalLog(
-              'Finished Syncing Created Purchasess',
-            );
-            setSyncProgress(37);
-          }
-          if (UpdatedPurchasesFunc()
-                  .getPurchaseIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnPurchaseProvider()
-                .updatePurchaseSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Purchasess',
-            );
-            setSyncProgress(38);
-          }
-          if (DeletedPurchasesFunc()
-                  .getPurchaseIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnPurchaseProvider()
-                .deletePurchasesSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Purchasess',
-            );
-            setSyncProgress(39);
-          }
-          // if (CreatedItemPurchaseFunc()
-          //         .getRecords()
-          //         .isNotEmpty &&
-          //     isOnline) {
-          //   await returnPurchaseProvider()
-          //       .createRecordsSync();
-          //   await mainLocalLog(
-          //     'Finished Syncing Created Purchase Item Records',
-          //   );
-          //   setSyncProgress(40);
-          // }
-          // if (DeletedItemPurchaseFunc()
-          //         .getItemPurchaseIds()
-          //         .isNotEmpty &&
-          //     isOnline) {
-          //   await returnPurchaseProvider()
-          //       .deleteItemRecordsSync();
-          //   await mainLocalLog(
-          //     'Finished Syncing Deleted Purchase Item Records',
-          //   );
-          //   setSyncProgress(41);
-          // }
-          // if (CreatedWaybillsFunc()
-          //         .getWaybills()
-          //         .isNotEmpty &&
-          //     isOnline) {
-          //   await returnWaybillProvider()
-          //       .createWaybillsSync();
-          //   await mainLocalLog(
-          //     'Finished Syncing Created Waybills',
-          //   );
-          //   setSyncProgress(42);
-          // }
-          // if (UpdatedWaybillsFunc()
-          //         .getWaybillIds()
-          //         .isNotEmpty &&
-          //     isOnline) {
-          //   await returnWaybillProvider()
-          //       .updateWaybillSync();
-          //   await mainLocalLog(
-          //     'Finished Syncing Updated Waybills',
-          //   );
-          //   setSyncProgress(43);
-          // }
-          // if (DeletedWaybillsFunc()
-          //         .getWaybillIds()
-          //         .isNotEmpty &&
-          //     isOnline) {
-          //   await returnWaybillProvider()
-          //       .deleteWaybillsSync();
-          //   await mainLocalLog(
-          //     'Finished Syncing Deleted Waybills',
-          //   );
-          //   setSyncProgress(44);
-          // }
-          if (CreatedItemHistoriesFunc()
-                  .getCreatedItemHistoriess()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnItemHistoryProvider()
-                .itemHistoriesSync();
-            await mainLocalLog(
-              'Finished Syncing Item Histories',
-            );
-            setSyncProgress(45);
-          }
-          if (CreatedErrorLogFunc()
-                  .getCreatedErrorLogs()
-                  .isNotEmpty &&
-              isOnline) {
-            // await returnErrorLogProvider().errorsLogSync();
-            await CreatedErrorLogFunc().clearError();
-            await mainLocalLog(
-              'Finished Syncing Created Error Logs',
-            );
-            // setSyncProgress(44);
-          }
-          if (CreatedMaterialsFunc()
-                  .getMaterials()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsProvider()
-                .createdMaterialsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Materials',
-            );
-            setSyncProgress(46);
-          }
-          if (UpdatedMaterialsFunc()
-                  .getMaterials()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsProvider()
-                .updatedMaterialsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Materials',
-            );
-            setSyncProgress(47);
-          }
-          if (DeletedMaterialsFunc()
-                  .getMaterialIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsProvider()
-                .deletedMaterialsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Materials',
-            );
-            setSyncProgress(48);
-          }
-          if (MaterialsQuantityUpdateFunc()
-                  .getMaterialsQuantitiesUpdate()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsQuantityUpdateProvider()
-                .materialsQuantityUpdateSync();
-            await mainLocalLog(
-              'Finished Syncing Materials Quantity Updates',
-            );
-            setSyncProgress(49);
-          }
-          if (CreatedMaterialsItemHistoriesFunc()
-                  .getCreatedMaterialsItemHistoriess()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsItemHistoryProvider()
-                .materialsItemHistoriesSync();
-            await mainLocalLog(
-              'Finished Syncing Materials Item Histories',
-            );
-            setSyncProgress(50);
-          }
-          if (CreatedProductionItemsFunc()
-                  .getProductionItems()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionItemsProvider()
-                .createdProductionItemsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Production Items',
-            );
-            setSyncProgress(51);
-          }
-          if (UpdatedProductionItemsFunc()
-                  .getProductionItems()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionItemsProvider()
-                .updatedProductionItemsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Production Items',
-            );
-            setSyncProgress(52);
-          }
-          if (DeletedProductionItemsFunc()
-                  .getProductionItemIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionItemsProvider()
-                .deletedProductionItemsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Production Items',
-            );
-            setSyncProgress(53);
-          }
-          if (ProductionItemsQuantityUpdateFunc()
-                  .getProductionItemsQuantitiesUpdate()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionItemsQuantityUpdateProvider()
-                .productionItemsQuantityUpdateSync();
-            await mainLocalLog(
-              'Finished Syncing ProductionItems Quantity Updates',
-            );
-            setSyncProgress(54);
-          }
-          if (CreatedProductionItemHistoriesFunc()
-                  .getCreatedProductionItemHistoriess()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionItemHistoryProvider()
-                .productionItemHistoriesSync();
-            await mainLocalLog(
-              'Finished Syncing Production Item Histories',
-            );
-            setSyncProgress(55);
-          }
-          if (CreatedProductionRecordsFunc()
-                  .getProductions()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionRecordsProvider()
-                .createProductionRecordSync();
-            await mainLocalLog(
-              'Finished Syncing Created Production Records',
-            );
-            setSyncProgress(56);
-          }
-          if (UpdatedProductionRecordsFunc()
-                  .getProductionIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionRecordsProvider()
-                .updateProductionRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Production Records',
-            );
-            setSyncProgress(57);
-          }
-          if (DeletedProductionRecordsFunc()
-                  .getProductionIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnProductionRecordsProvider()
-                .deleteProductionRecordsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Production Records',
-            );
-            setSyncProgress(58);
-          }
-
-          if (CreatedProductionMaterialsUsageFunc()
-                  .getProductionMaterialsUsage()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsUsageProvider()
-                .createProductionMaterialsUsageSync();
-            await mainLocalLog(
-              'Finished Syncing Created Production Materials Usage',
-            );
-            setSyncProgress(59);
-          }
-          if (UpdatedProductionMaterialsUsageFunc()
-                  .getProductionMaterialsUsageIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsUsageProvider()
-                .updateProductionMaterialsUsageSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Production Materials Usage',
-            );
-            setSyncProgress(60);
-          }
-          if (DeletedProductionMaterialsUsageFunc()
-                  .getDeletedProductionMaterialsUsageIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnMaterialsUsageProvider()
-                .deleteProductionMaterialsUsageSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Production Materials Usage',
-            );
-            setSyncProgress(61);
-          }
-          if (CreatedCustomerAccountReceiptsFunc()
-                  .getCustomerAccountReceipts()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCustomerAccountReceiptsProvider()
-                .createCustomerAccountReceiptsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Customer Account Receipts',
-            );
-            setSyncProgress(62);
-          }
-          if (UpdatedCustomerAccountReceiptsFunc()
-                  .getCustomerAccountReceiptsIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCustomerAccountReceiptsProvider()
-                .updateCustomerAccountReceiptsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Customer Account Receipts',
-            );
-            setSyncProgress(63);
-          }
-          if (DeletedCustomerAccountReceiptsFunc()
-                  .getCustomerAccountReceiptsIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCustomerAccountReceiptsProvider()
-                .deleteCustomerAccountReceiptsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Customer Account Receipts',
-            );
-            setSyncProgress(64);
-          }
-          if (CustomerAccountUpdateFunc()
-                  .getQuantitiesUpdate()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnCustomerAccountReceiptsProvider()
-                .customerAccountUpdateSync();
-            await mainLocalLog(
-              'Finished Syncing Customer Account Updates',
-            );
-            setSyncProgress(65);
-          }
-          if (DeletedOrdersFunc()
-                  .getOrderIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnOrdersProvider().deleteOrdersSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Orders',
-            );
-            setSyncProgress(66);
-          }
-          if (CreatedOrdersFunc().getOrders().isNotEmpty &&
-              isOnline) {
-            await returnOrdersProvider().createOrdersSync();
-            await mainLocalLog(
-              'Finished Syncing Created Orders',
-            );
-            setSyncProgress(67);
-          }
-          if (UpdatedOrdersFunc()
-                  .getOrderIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnOrdersProvider().updateOrdersSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Orders',
-            );
-            setSyncProgress(68);
-          }
-          if (DeletedDraftsFunc()
-                  .getDraftIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnDraftsProvider().deleteDraftsSync();
-            await mainLocalLog(
-              'Finished Syncing Deleted Drafts',
-            );
-            setSyncProgress(69);
-          }
-          if (CreatedDraftsFunc().getDrafts().isNotEmpty &&
-              isOnline) {
-            await returnDraftsProvider().createDraftsSync();
-            await mainLocalLog(
-              'Finished Syncing Created Drafts',
-            );
-            setSyncProgress(70);
-          }
-          if (UpdatedDraftsFunc()
-                  .getDraftIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnDraftsProvider().updateDraftsSync();
-            await mainLocalLog(
-              'Finished Syncing Updated Drafts',
-            );
-            setSyncProgress(71);
-          }
-          if (CreatedStorageItemHistoriesFunc()
-                  .getCreatedStorageItemHistoriess()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnStorageItemHistoryProvider()
-                .storageItemHistoriesSync();
-            await mainLocalLog(
-              'Finished Syncing Storage Item Histories',
-            );
-            setSyncProgress(72);
-          }
-
-        } else {
-          // await ShopFunc().clearShop();
-        }
-      } else {
-        if (context != null && context.mounted) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return InfoAlert(
-                title: 'Syncing Error',
-                message:
-                    'You have to turn on your data to sync.',
-                theme: returnTheme(context, listen: false),
-                action: () {
-                  // Navigator.of(context).pop();
-                },
+        if (isOnline) {
+          List<TempShopClass> shop =
+              await returnShopProvider().getUserShops();
+          if (shop.isNotEmpty) {
+            if (CreatedCategoriesFunc()
+                    .getCreateCategories()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCategoriesProvider()
+                  .createCategoriesSync();
+              await mainLocalLog(
+                'Finished Syncing Created Categories',
               );
-            },
-          );
+              setSyncProgress(1);
+            }
+            if (UpdatedCategoriesFunc()
+                    .getCategories()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCategoriesProvider()
+                  .updateCategoriesSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Categories',
+              );
+              setSyncProgress(2);
+            }
+            if (DeletedCategoriesFunc()
+                    .getCategoryIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCategoriesProvider()
+                  .deleteCategoriesSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Categories',
+              );
+              setSyncProgress(3);
+            }
+            if (CreatedDepartmentsFunc()
+                    .getDepartment()
+                    .isNotEmpty &&
+                isOnline) {
+              await DepartmentProvider()
+                  .createDepartmentsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Departments',
+              );
+              setSyncProgress(4);
+            }
+            if (UpdatedDepartmentFunc()
+                    .getDepartments()
+                    .isNotEmpty &&
+                isOnline) {
+              await DepartmentProvider()
+                  .updateDepartmentsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Departments',
+              );
+              setSyncProgress(5);
+            }
+            if (DeletedDepartmentsFunc()
+                    .getDepartmentIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await DepartmentProvider()
+                  .deleteDepartmentsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Departments',
+              );
+              setSyncProgress(6);
+            }
+            if (CreatedStorageProductsFunc()
+                    .getStorageProducts()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnStorageProductProvider()
+                  .createStorageProductsSync();
+              await mainLocalLog(
+                'Finished Syncing Created StorageProductss',
+              );
+              setSyncProgress(7);
+            }
+            if (UpdatedStorageProductsFunc()
+                    .getStorageProductIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnStorageProductProvider()
+                  .updateStorageProductsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated StorageProductss',
+              );
+              setSyncProgress(8);
+            }
+            if (DeletedStorageProductsFunc()
+                    .getStorageProductIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnStorageProductProvider()
+                  .deleteStorageProductsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted StorageProductss',
+              );
+              setSyncProgress(9);
+            }
+            if (CreatedProductFunc()
+                    .getProducts()
+                    .isNotEmpty &&
+                isOnline) {
+              await createProductsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Products',
+              );
+              setSyncProgress(10);
+            }
+            if (DeletedProductsFunc()
+                    .getProductIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await deleteProductsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Products',
+              );
+              setSyncProgress(11);
+            }
+            if (UpdatedProductsFunc()
+                    .getProducts()
+                    .isNotEmpty &&
+                isOnline) {
+              await updateProductsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Products',
+              );
+              setSyncProgress(12);
+            }
+            if (QuantityUpdateFunc()
+                    .getQuantitiesUpdate()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnQuantityUpdateProvider()
+                  .quantityUpdateSync();
+              await mainLocalLog(
+                'Finished Syncing Quantity Updates',
+              );
+              setSyncProgress(13);
+            }
+            if (CreatedExpensesFunc()
+                    .getExpenses()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .createExpensesSync();
+              await mainLocalLog(
+                'Finished Syncing Created Expenses',
+              );
+              setSyncProgress(14);
+            }
+            if (UpdatedExpensesFunc()
+                    .getExpenses()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .updateExpensesSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Expenses',
+              );
+              setSyncProgress(15);
+            }
+            if (DeletedExpensesFunc()
+                    .getExpenseIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .deleteExpensesSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Expenses',
+              );
+              setSyncProgress(16);
+            }
+            if (CreatedCustomersFunc()
+                    .getCustomers()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCustomersSingle()
+                  .createCustomersSync();
+              await mainLocalLog(
+                'Finished Syncing Created Customer',
+              );
+              setSyncProgress(17);
+            }
+            if (UpdatedCustomersFunc()
+                    .getCustomers()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCustomersSingle()
+                  .updateCustomersSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Customers',
+              );
+              setSyncProgress(18);
+            }
+            if (DeletedCustomersFunc()
+                    .getCustomerIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCustomersSingle()
+                  .deletedCustomersSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Customers',
+              );
+              setSyncProgress(19);
+            }
+            if (CreatedSubStaffFunc()
+                    .getSubStaffs()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnSubStaffProvider()
+                  .createSubStaffSync();
+              await mainLocalLog(
+                'Finished Syncing Created Sub Staffs',
+              );
+              setSyncProgress(20);
+            }
+            if (UpdatedSubStaffFunc()
+                    .getSubStaffs()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnSubStaffProvider()
+                  .updateSubStaffSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Sub Staffs',
+              );
+              setSyncProgress(21);
+            }
+            if (DeletedSubStaffFunc()
+                    .getSubStaffIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnSubStaffProvider()
+                  .deleteSubStaffSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Sub Staffs',
+              );
+              setSyncProgress(22);
+            }
+            if (CreatedSupplierFunc()
+                    .getSuppliers()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnSuppliersProvider()
+                  .createSupplierSync();
+              await mainLocalLog(
+                'Finished Syncing Created Suppliers',
+              );
+              setSyncProgress(23);
+            }
+            if (UpdatedSupplierFunc()
+                    .getSuppliers()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnSuppliersProvider()
+                  .updateSuppliersSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Suppliers',
+              );
+              setSyncProgress(24);
+            }
+            if (DeletedSupplierFunc()
+                    .getSupplierIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnSuppliersProvider()
+                  .deletedSuppliersSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Suppliers',
+              );
+              setSyncProgress(25);
+            }
+            if (DeletedInvoicesFunc()
+                    .getInvoiceIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnInvoicesProvider()
+                  .deleteInvoicesSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Invoices',
+              );
+              setSyncProgress(26);
+            }
+            if (CreatedInvoicesFunc()
+                    .getInvoices()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnInvoicesProvider()
+                  .createInvoicesSync();
+              await mainLocalLog(
+                'Finished Syncing Created Invoices',
+              );
+              setSyncProgress(27);
+            }
+            if (UpdatedInvoicesFunc()
+                    .getInvoiceIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnInvoicesProvider()
+                  .updateInvoicesSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Invoices',
+              );
+              setSyncProgress(28);
+            }
+            if (DeletedReceiptsFunc()
+                    .getReceiptIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnReceiptProviderSingle()
+                  .deleteReceiptsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Receipts',
+              );
+              setSyncProgress(29);
+            }
+            if (CreatedReceiptsFunc()
+                    .getReceipts()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnReceiptProviderSingle()
+                  .createReceiptsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Receipts',
+              );
+              setSyncProgress(30);
+            }
+            if (UpdatedReceiptsFunc()
+                    .getReceiptIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnReceiptProviderSingle()
+                  .updateReceiptsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Receipts',
+              );
+              setSyncProgress(31);
+            }
+            // if (CreatedRecordsFunc()
+            //         .getRecords()
+            //         .isNotEmpty &&
+            //     isOnline) {
+            //   await returnReceiptProviderSingle()
+            //       .createRecordsSync();
+            //   await mainLocalLog(
+            //     'Finished Syncing Created Records Customers',
+            //   );
+            //   setSyncProgress(32);
+            // }
+            if (UpdatedShopFunc()
+                    .getUpdatedShop()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnShopProvider().updateShopSync();
+              await mainLocalLog(
+                'Finished Syncing Created Receipts',
+              );
+              setSyncProgress(33);
+            }
+            if (CreatedShopLogosFunc().getCreatedLogo() !=
+                    null &&
+                isOnline) {
+              await returnShopProvider()
+                  .uploadShopLogoSync();
+              await mainLocalLog(
+                'Finished Syncing Created Logo',
+              );
+              setSyncProgress(34);
+            }
+            if (CreatedEventsLogFunc()
+                    .getCreatedEventsLogs()
+                    .isNotEmpty &&
+                isOnline) {
+              // await returnEventsLogProvider().eventsLogSync();
+              await CreatedEventsLogFunc().clearEvents();
+              await mainLocalLog(
+                'Finished Syncing Created Events Log',
+              );
+              setSyncProgress(35);
+            }
+            if (CreatedInventoryUpdatesFunc()
+                    .getCreatedInventoryUpdatess()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnInventoryUpdatesProvider()
+                  .inventoryUpdatesSync();
+              await mainLocalLog(
+                'Finished Syncing Inventory Updates',
+              );
+              setSyncProgress(36);
+            }
+            if (CreatedPurchasesFunc()
+                    .getPurchases()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnPurchaseProvider()
+                  .createPurchasesSync();
+              await mainLocalLog(
+                'Finished Syncing Created Purchasess',
+              );
+              setSyncProgress(37);
+            }
+            if (UpdatedPurchasesFunc()
+                    .getPurchaseIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnPurchaseProvider()
+                  .updatePurchaseSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Purchasess',
+              );
+              setSyncProgress(38);
+            }
+            if (DeletedPurchasesFunc()
+                    .getPurchaseIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnPurchaseProvider()
+                  .deletePurchasesSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Purchasess',
+              );
+              setSyncProgress(39);
+            }
+            // if (CreatedItemPurchaseFunc()
+            //         .getRecords()
+            //         .isNotEmpty &&
+            //     isOnline) {
+            //   await returnPurchaseProvider()
+            //       .createRecordsSync();
+            //   await mainLocalLog(
+            //     'Finished Syncing Created Purchase Item Records',
+            //   );
+            //   setSyncProgress(40);
+            // }
+            // if (DeletedItemPurchaseFunc()
+            //         .getItemPurchaseIds()
+            //         .isNotEmpty &&
+            //     isOnline) {
+            //   await returnPurchaseProvider()
+            //       .deleteItemRecordsSync();
+            //   await mainLocalLog(
+            //     'Finished Syncing Deleted Purchase Item Records',
+            //   );
+            //   setSyncProgress(41);
+            // }
+            // if (CreatedWaybillsFunc()
+            //         .getWaybills()
+            //         .isNotEmpty &&
+            //     isOnline) {
+            //   await returnWaybillProvider()
+            //       .createWaybillsSync();
+            //   await mainLocalLog(
+            //     'Finished Syncing Created Waybills',
+            //   );
+            //   setSyncProgress(42);
+            // }
+            // if (UpdatedWaybillsFunc()
+            //         .getWaybillIds()
+            //         .isNotEmpty &&
+            //     isOnline) {
+            //   await returnWaybillProvider()
+            //       .updateWaybillSync();
+            //   await mainLocalLog(
+            //     'Finished Syncing Updated Waybills',
+            //   );
+            //   setSyncProgress(43);
+            // }
+            // if (DeletedWaybillsFunc()
+            //         .getWaybillIds()
+            //         .isNotEmpty &&
+            //     isOnline) {
+            //   await returnWaybillProvider()
+            //       .deleteWaybillsSync();
+            //   await mainLocalLog(
+            //     'Finished Syncing Deleted Waybills',
+            //   );
+            //   setSyncProgress(44);
+            // }
+            if (CreatedItemHistoriesFunc()
+                    .getCreatedItemHistoriess()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnItemHistoryProvider()
+                  .itemHistoriesSync();
+              await mainLocalLog(
+                'Finished Syncing Item Histories',
+              );
+              setSyncProgress(45);
+            }
+            if (CreatedErrorLogFunc()
+                    .getCreatedErrorLogs()
+                    .isNotEmpty &&
+                isOnline) {
+              // await returnErrorLogProvider().errorsLogSync();
+              await CreatedErrorLogFunc().clearError();
+              await mainLocalLog(
+                'Finished Syncing Created Error Logs',
+              );
+              // setSyncProgress(44);
+            }
+            if (CreatedMaterialsFunc()
+                    .getMaterials()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsProvider()
+                  .createdMaterialsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Materials',
+              );
+              setSyncProgress(46);
+            }
+            if (UpdatedMaterialsFunc()
+                    .getMaterials()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsProvider()
+                  .updatedMaterialsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Materials',
+              );
+              setSyncProgress(47);
+            }
+            if (DeletedMaterialsFunc()
+                    .getMaterialIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsProvider()
+                  .deletedMaterialsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Materials',
+              );
+              setSyncProgress(48);
+            }
+            if (MaterialsQuantityUpdateFunc()
+                    .getMaterialsQuantitiesUpdate()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsQuantityUpdateProvider()
+                  .materialsQuantityUpdateSync();
+              await mainLocalLog(
+                'Finished Syncing Materials Quantity Updates',
+              );
+              setSyncProgress(49);
+            }
+            if (CreatedMaterialsItemHistoriesFunc()
+                    .getCreatedMaterialsItemHistoriess()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsItemHistoryProvider()
+                  .materialsItemHistoriesSync();
+              await mainLocalLog(
+                'Finished Syncing Materials Item Histories',
+              );
+              setSyncProgress(50);
+            }
+            if (CreatedProductionItemsFunc()
+                    .getProductionItems()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionItemsProvider()
+                  .createdProductionItemsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Production Items',
+              );
+              setSyncProgress(51);
+            }
+            if (UpdatedProductionItemsFunc()
+                    .getProductionItems()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionItemsProvider()
+                  .updatedProductionItemsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Production Items',
+              );
+              setSyncProgress(52);
+            }
+            if (DeletedProductionItemsFunc()
+                    .getProductionItemIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionItemsProvider()
+                  .deletedProductionItemsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Production Items',
+              );
+              setSyncProgress(53);
+            }
+            if (ProductionItemsQuantityUpdateFunc()
+                    .getProductionItemsQuantitiesUpdate()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionItemsQuantityUpdateProvider()
+                  .productionItemsQuantityUpdateSync();
+              await mainLocalLog(
+                'Finished Syncing ProductionItems Quantity Updates',
+              );
+              setSyncProgress(54);
+            }
+            if (CreatedProductionItemHistoriesFunc()
+                    .getCreatedProductionItemHistoriess()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionItemHistoryProvider()
+                  .productionItemHistoriesSync();
+              await mainLocalLog(
+                'Finished Syncing Production Item Histories',
+              );
+              setSyncProgress(55);
+            }
+            if (CreatedProductionRecordsFunc()
+                    .getProductions()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionRecordsProvider()
+                  .createProductionRecordSync();
+              await mainLocalLog(
+                'Finished Syncing Created Production Records',
+              );
+              setSyncProgress(56);
+            }
+            if (UpdatedProductionRecordsFunc()
+                    .getProductionIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionRecordsProvider()
+                  .updateProductionRecordsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Production Records',
+              );
+              setSyncProgress(57);
+            }
+            if (DeletedProductionRecordsFunc()
+                    .getProductionIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnProductionRecordsProvider()
+                  .deleteProductionRecordsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Production Records',
+              );
+              setSyncProgress(58);
+            }
+
+            if (CreatedProductionMaterialsUsageFunc()
+                    .getProductionMaterialsUsage()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsUsageProvider()
+                  .createProductionMaterialsUsageSync();
+              await mainLocalLog(
+                'Finished Syncing Created Production Materials Usage',
+              );
+              setSyncProgress(59);
+            }
+            if (UpdatedProductionMaterialsUsageFunc()
+                    .getProductionMaterialsUsageIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsUsageProvider()
+                  .updateProductionMaterialsUsageSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Production Materials Usage',
+              );
+              setSyncProgress(60);
+            }
+            if (DeletedProductionMaterialsUsageFunc()
+                    .getDeletedProductionMaterialsUsageIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnMaterialsUsageProvider()
+                  .deleteProductionMaterialsUsageSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Production Materials Usage',
+              );
+              setSyncProgress(61);
+            }
+            if (CreatedCustomerAccountReceiptsFunc()
+                    .getCustomerAccountReceipts()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCustomerAccountReceiptsProvider()
+                  .createCustomerAccountReceiptsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Customer Account Receipts',
+              );
+              setSyncProgress(62);
+            }
+            if (UpdatedCustomerAccountReceiptsFunc()
+                    .getCustomerAccountReceiptsIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCustomerAccountReceiptsProvider()
+                  .updateCustomerAccountReceiptsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Customer Account Receipts',
+              );
+              setSyncProgress(63);
+            }
+            if (DeletedCustomerAccountReceiptsFunc()
+                    .getCustomerAccountReceiptsIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCustomerAccountReceiptsProvider()
+                  .deleteCustomerAccountReceiptsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Customer Account Receipts',
+              );
+              setSyncProgress(64);
+            }
+            if (CustomerAccountUpdateFunc()
+                    .getQuantitiesUpdate()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnCustomerAccountReceiptsProvider()
+                  .customerAccountUpdateSync();
+              await mainLocalLog(
+                'Finished Syncing Customer Account Updates',
+              );
+              setSyncProgress(65);
+            }
+            if (DeletedOrdersFunc()
+                    .getOrderIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnOrdersProvider()
+                  .deleteOrdersSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Orders',
+              );
+              setSyncProgress(66);
+            }
+            if (CreatedOrdersFunc()
+                    .getOrders()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnOrdersProvider()
+                  .createOrdersSync();
+              await mainLocalLog(
+                'Finished Syncing Created Orders',
+              );
+              setSyncProgress(67);
+            }
+            if (UpdatedOrdersFunc()
+                    .getOrderIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnOrdersProvider()
+                  .updateOrdersSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Orders',
+              );
+              setSyncProgress(68);
+            }
+            if (DeletedDraftsFunc()
+                    .getDraftIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnDraftsProvider()
+                  .deleteDraftsSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Drafts',
+              );
+              setSyncProgress(69);
+            }
+            if (CreatedDraftsFunc()
+                    .getDrafts()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnDraftsProvider()
+                  .createDraftsSync();
+              await mainLocalLog(
+                'Finished Syncing Created Drafts',
+              );
+              setSyncProgress(70);
+            }
+            if (UpdatedDraftsFunc()
+                    .getDraftIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnDraftsProvider()
+                  .updateDraftsSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Drafts',
+              );
+              setSyncProgress(71);
+            }
+            if (CreatedStorageItemHistoriesFunc()
+                    .getCreatedStorageItemHistoriess()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnStorageItemHistoryProvider()
+                  .storageItemHistoriesSync();
+              await mainLocalLog(
+                'Finished Syncing Storage Item Histories',
+              );
+              setSyncProgress(72);
+            }
+          } else {
+            // await ShopFunc().clearShop();
+          }
+        } else {
+          if (context != null && context.mounted) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return InfoAlert(
+                  title: 'Syncing Error',
+                  message:
+                      'You have to turn on your data to sync.',
+                  theme: returnTheme(
+                    context,
+                    listen: false,
+                  ),
+                  action: () {
+                    // Navigator.of(context).pop();
+                  },
+                );
+              },
+            );
+          }
         }
+      } catch (e) {
+        await mainLocalLog('Error during syncData: $e');
+      } finally {
+        toggleSyncing(false);
       }
-    } catch (e) {
-      await mainLocalLog('Error during syncData: $e');
-    } finally {
-      toggleSyncing(false);
-    }
     }
   }
 
@@ -2658,17 +2715,28 @@ class DataProvider extends ChangeNotifier {
         returnItemHistoryProvider().getItemHistories();
       }
 
-      final deletedUuids = DeletedProductsFunc().getProductIds().map((d) => d.productUuid).toSet();
-      productListMain.removeWhere((p) => deletedUuids.contains(p.uuid));
+      final deletedUuids =
+          DeletedProductsFunc()
+              .getProductIds()
+              .map((d) => d.productUuid)
+              .toSet();
+      productListMain.removeWhere(
+        (p) => deletedUuids.contains(p.uuid),
+      );
 
       for (final cp in CreatedProductFunc().getProducts()) {
-        if (!productListMain.any((p) => p.uuid == cp.product.uuid)) {
+        if (!productListMain.any(
+          (p) => p.uuid == cp.product.uuid,
+        )) {
           productListMain.add(cp.product);
         }
       }
 
-      for (final up in UpdatedProductsFunc().getProducts()) {
-        final idx = productListMain.indexWhere((p) => p.uuid == up.product.uuid);
+      for (final up
+          in UpdatedProductsFunc().getProducts()) {
+        final idx = productListMain.indexWhere(
+          (p) => p.uuid == up.product.uuid,
+        );
         if (idx != -1) {
           productListMain[idx] = up.product;
         }
@@ -2784,12 +2852,20 @@ class DataProvider extends ChangeNotifier {
 
         // Do not overwrite items that have pending local updates
         final pendingUuids = {
-          ...UpdatedProductsFunc().getProducts().map((u) => u.product.uuid),
-          ...CreatedProductFunc().getProducts().map((c) => c.product.uuid),
+          ...UpdatedProductsFunc().getProducts().map(
+            (u) => u.product.uuid,
+          ),
+          ...CreatedProductFunc().getProducts().map(
+            (c) => c.product.uuid,
+          ),
         };
-        final updatedItems = allUpdatedItems
-            .where((item) => !pendingUuids.contains(item.uuid))
-            .toList();
+        final updatedItems =
+            allUpdatedItems
+                .where(
+                  (item) =>
+                      !pendingUuids.contains(item.uuid),
+                )
+                .toList();
 
         if (updatedItems.isNotEmpty) {
           await ProductsFunc().patchProducts(updatedItems);
@@ -2930,8 +3006,12 @@ class DataProvider extends ChangeNotifier {
     bool? isMultipleUpdate,
   }) async {
     try {
-      if (!includeQuantity && !isQuantityUpdate && product.uuid != null) {
-        final live = ProductsFunc().getSingleProduct(uuid: product.uuid!);
+      if (!includeQuantity &&
+          !isQuantityUpdate &&
+          product.uuid != null) {
+        final live = ProductsFunc().getSingleProduct(
+          uuid: product.uuid!,
+        );
         if (live != null) {
           product.quantity = live.quantity;
         }
@@ -3086,9 +3166,10 @@ class DataProvider extends ChangeNotifier {
       );
       await mainLocalLog('Deleted Update Log');
     }
-    await QuantityUpdateFunc().deleteQuantityUpdatesByProductUuid(
-      productUuid: product.uuid!,
-    );
+    await QuantityUpdateFunc()
+        .deleteQuantityUpdatesByProductUuid(
+          productUuid: product.uuid!,
+        );
     await returnEventsLogProvider().createLog(
       returnEventsLogProvider(
         // ignore: use_build_context_synchronously
@@ -3727,20 +3808,28 @@ class DataProvider extends ChangeNotifier {
     required bool isDimensional,
     String? name,
   }) {
-    final bool isArea = isDimensional &&
-        (name != null ? ProductUnitsClass.isAreaUnitName(name) : false);
+    final bool isArea =
+        isDimensional &&
+        (name != null
+            ? ProductUnitsClass.isAreaUnitName(name)
+            : false);
     return ProductUnitsClass(
       uuid: uuidGen(),
       staffUuid: currentUser().userId,
       createdAt: DateTime.now(),
       staffName: currentUser().name,
       conversion: 1,
-      name: name ?? (isDimensional ? 'Square Meter' : 'Unit(s)'),
+      name:
+          name ??
+          (isDimensional ? 'Square Meter' : 'Unit(s)'),
       isPrimary: true,
       productUuid: productUuid,
-      dimensionType: isDimensional
-          ? (isArea ? ProductUnitsClass.areaUnit : ProductUnitsClass.sheetUnit)
-          : null,
+      dimensionType:
+          isDimensional
+              ? (isArea
+                  ? ProductUnitsClass.areaUnit
+                  : ProductUnitsClass.sheetUnit)
+              : null,
     );
   }
 
@@ -3768,11 +3857,12 @@ class DataProvider extends ChangeNotifier {
     required String productUuid,
     required bool isDimensional,
   }) {
-    final int? dimType = isDimensional
-        ? (ProductUnitsClass.isAreaUnitName(name)
-            ? ProductUnitsClass.areaUnit
-            : ProductUnitsClass.sheetUnit)
-        : null;
+    final int? dimType =
+        isDimensional
+            ? (ProductUnitsClass.isAreaUnitName(name)
+                ? ProductUnitsClass.areaUnit
+                : ProductUnitsClass.sheetUnit)
+            : null;
     var newList = ProductUnitsClass.withPrimaryName(
       units: tempUnitsList,
       name: name,
@@ -4211,14 +4301,32 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  Future<int> duplicateSelectedProducts() async {
+  Future<int> duplicateSelectedProducts({
+    DuplicationQuantityMode quantityMode =
+        DuplicationQuantityMode.existingQuantity,
+    Map<String, double>? customQuantities,
+  }) async {
     try {
       for (var pr in selectedProducts) {
         String newUuid = uuidGen();
+        double? newQty;
+        if (quantityMode ==
+            DuplicationQuantityMode.existingQuantity) {
+          newQty = pr.quantity;
+        } else if (quantityMode ==
+            DuplicationQuantityMode.zeroQuantity) {
+          newQty = 0;
+        } else if (quantityMode ==
+            DuplicationQuantityMode.customQuantity) {
+          newQty = customQuantities?[pr.uuid] ?? 0;
+        }
+
         final newProduct = pr.copyWith(
           uuid: newUuid,
           name: '${pr.name} Copy ${randomCode()}',
           createdAt: DateTime.now(),
+          quantity: newQty,
+          globalProductId: uuidGen(),
         );
 
         List<ProductUnitsClass> tempItems =
@@ -4277,17 +4385,50 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  Future<int> duplicateSelectedProductsForShops() async {
+  Future<int> duplicateSelectedProductsForShops({
+    DuplicationQuantityMode quantityMode =
+        DuplicationQuantityMode.existingQuantity,
+    Map<String, double>? customQuantities,
+  }) async {
     try {
       for (var pr in selectedProducts) {
         for (var shop
             in returnShopProvider().multipleSelectedShops) {
           String newUuid = uuidGen();
+          double? newQty;
+          if (quantityMode ==
+              DuplicationQuantityMode.existingQuantity) {
+            newQty = pr.quantity;
+          } else if (quantityMode ==
+              DuplicationQuantityMode.zeroQuantity) {
+            newQty = 0;
+          } else if (quantityMode ==
+              DuplicationQuantityMode.customQuantity) {
+            newQty = customQuantities?[pr.uuid] ?? 0;
+          }
+
+          final clusterId =
+              pr.globalProductId ?? pr.uuid ?? uuidGen();
+          if (pr.globalProductId != clusterId) {
+            pr.globalProductId = clusterId;
+            await updateProduct(
+              product: pr,
+              isQuantityUpdate: false,
+              includeQuantity: false,
+              quantityChange: null,
+              isIncrement: null,
+              itemHistory: null,
+            );
+          }
+
           final newProduct = pr.copyWith(
             uuid: newUuid,
             shopId: shop.shopId,
-            name: '${pr.name} ${randomCode()}',
+            name: pr.name,
             createdAt: DateTime.now(),
+            quantity: newQty,
+            globalProductId: clusterId,
+            globalDepartmentProductId: uuidGen(),
           );
           List<ProductUnitsClass> tempItems =
               (newProduct.unitsList ?? [])
@@ -4300,13 +4441,26 @@ class DataProvider extends ChangeNotifier {
             item.createdAt = DateTime.now();
           }
 
+          final tempPrices =
+              (newProduct.pricesList ?? [])
+                  .map((p) => p.copyWith())
+                  .toList();
+          for (final price in tempPrices) {
+            price.uuid = uuidGen();
+            price.itemUuid = newUuid;
+            price.createdAt = DateTime.now();
+          }
+
           newProduct.unitsList = tempItems;
+          newProduct.pricesList = tempPrices;
           newProduct.departmentName = null;
           newProduct.departmentUuid = null;
           newProduct.category = null;
           newProduct.categoryUuid = null;
           newProduct.categories = [];
           newProduct.storageUuid = null;
+          newProduct.totalQttyInStorage = 0;
+          newProduct.totalQttyInStorageDouble = 0.0;
 
           await supabase
               .from('products')
@@ -4328,20 +4482,55 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  Future<int>
-  duplicateSelectedProductsForDepartments() async {
+  Future<int> duplicateSelectedProductsForDepartments({
+    DuplicationQuantityMode quantityMode =
+        DuplicationQuantityMode.existingQuantity,
+    Map<String, double>? customQuantities,
+  }) async {
     try {
       for (var pr in selectedProducts) {
         for (var depart
             in returnDepartmentProvider()
                 .multipleSelectedDepartments) {
           String newUuid = uuidGen();
+          double? newQty;
+          if (quantityMode ==
+              DuplicationQuantityMode.existingQuantity) {
+            newQty = pr.quantity;
+          } else if (quantityMode ==
+              DuplicationQuantityMode.zeroQuantity) {
+            newQty = 0;
+          } else if (quantityMode ==
+              DuplicationQuantityMode.customQuantity) {
+            newQty = customQuantities?[pr.uuid] ?? 0;
+          }
+
+          final deptClusterId =
+              pr.globalDepartmentProductId ??
+              pr.uuid ??
+              uuidGen();
+          if (pr.globalDepartmentProductId !=
+              deptClusterId) {
+            pr.globalDepartmentProductId = deptClusterId;
+            await updateProduct(
+              product: pr,
+              isQuantityUpdate: false,
+              includeQuantity: false,
+              quantityChange: null,
+              isIncrement: null,
+              itemHistory: null,
+            );
+          }
+
           final newProduct = pr.copyWith(
             uuid: newUuid,
             departmentUuid: depart.uuid,
             departmentName: depart.name,
-            name: '${pr.name} ${randomCode()}',
+            name: pr.name,
             createdAt: DateTime.now(),
+            quantity: newQty,
+            globalDepartmentProductId: deptClusterId,
+            globalProductId: uuidGen(),
           );
 
           List<ProductUnitsClass> tempItems =
