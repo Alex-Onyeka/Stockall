@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/payment_entry/payment_method.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -15,13 +16,14 @@ class ShopFunc {
 
   Future<void> init() async {
     try {
-      // await Hive.deleteBoxFromDisk(shopBoxName);
-      if (!Hive.isAdapterRegistered(154)) {
-        Hive.registerAdapter(PaymentMethodAdapter());
+      safeRegisterAdapter(PaymentMethodAdapter());
+      safeRegisterAdapter(TempShopClassAdapter());
+      shopBox = await openBoxSafely<TempShopClass>(shopBoxName);
+      try {
+        await UpdatedShopFunc().init();
+      } catch (e, s) {
+        await mainLocalLog('Error initializing UpdatedShopFunc: $e', error: e, stackTrace: s);
       }
-      Hive.registerAdapter(TempShopClassAdapter());
-      shopBox = await Hive.openBox(shopBoxName);
-      await UpdatedShopFunc().init();
       await mainLocalLog('Shop Box Initialized');
     } catch (e, s) {
       await mainLocalLog(

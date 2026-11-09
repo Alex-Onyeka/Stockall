@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/deleted_departments/deleted_departments.dart';
 import 'package:stockall/main.dart';
 
@@ -24,23 +25,7 @@ class DeletedDepartmentsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedDepartmentsBoxName)) {
-      _deletedDepartmentsBox =
-          await Hive.openBox<DeletedDepartments>(
-            deletedDepartmentsBoxName,
-          );
-      await mainLocalLog(
-        'Deleted Departments Box opened ✅',
-      );
-    } else {
-      _deletedDepartmentsBox = Hive.box<DeletedDepartments>(
-        deletedDepartmentsBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Departments Box already open, reused ✅',
-      );
-    }
+_deletedDepartmentsBox = await openBoxSafely<DeletedDepartments>(deletedDepartmentsBoxName);
   }
 
   /// Safe getter for the box

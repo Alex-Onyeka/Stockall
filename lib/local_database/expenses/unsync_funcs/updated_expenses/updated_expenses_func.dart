@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/updated/updated_expenses.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class UpdatedExpensesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedExpensesBoxName)) {
-      _updatedExpensesBox =
-          await Hive.openBox<UpdatedExpenses>(
-            updatedExpensesBoxName,
-          );
-      await mainLocalLog('Updated Expenses Box opened ✅');
-    } else {
-      _updatedExpensesBox = Hive.box<UpdatedExpenses>(
-        updatedExpensesBoxName,
-      );
-      await mainLocalLog(
-        'Updated Expenses Box already open, reused ✅',
-      );
-    }
+_updatedExpensesBox = await openBoxSafely<UpdatedExpenses>(updatedExpensesBoxName);
   }
 
   /// Safe getter for the box

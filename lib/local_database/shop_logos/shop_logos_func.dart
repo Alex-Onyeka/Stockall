@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
 import 'package:stockall/main.dart';
 
@@ -12,9 +13,10 @@ class ShopLogosFunc {
   final String shopLogosBoxName = 'shopLogosBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(shopLogosBoxName);
-    Hive.registerAdapter(TempShopLogosAdapter());
-    shopLogosBox = await Hive.openBox(shopLogosBoxName);
+    if (!Hive.isAdapterRegistered(TempShopLogosAdapter().typeId)) {
+      Hive.registerAdapter(TempShopLogosAdapter());
+    }
+    shopLogosBox = await openBoxSafely<TempShopLogos>(shopLogosBoxName);
     await CreatedShopLogosFunc().init();
     await mainLocalLog('Shop Logos Box Initialized ✅');
   }

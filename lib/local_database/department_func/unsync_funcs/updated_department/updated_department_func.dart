@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/updated/updated_departments.dart';
 import 'package:stockall/main.dart';
 
@@ -24,23 +25,7 @@ class UpdatedDepartmentFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedDepartmentsBoxName)) {
-      _updatedDepartmentsBox =
-          await Hive.openBox<UpdatedDepartments>(
-            updatedDepartmentsBoxName,
-          );
-      await mainLocalLog(
-        'Updated Departments Box opened ✅',
-      );
-    } else {
-      _updatedDepartmentsBox = Hive.box<UpdatedDepartments>(
-        updatedDepartmentsBoxName,
-      );
-      await mainLocalLog(
-        'Updated Departments Box already open, reused ✅',
-      );
-    }
+_updatedDepartmentsBox = await openBoxSafely<UpdatedDepartments>(updatedDepartmentsBoxName);
   }
 
   /// Safe getter for the box

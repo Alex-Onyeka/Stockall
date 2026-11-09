@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,10 @@ class DeletedReceiptsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedReceiptsBoxName)) {
-      _deletedReceiptsBox =
-          await Hive.openBox<DeletedReceipts>(
-            deletedReceiptsBoxName,
-          );
-      await mainLocalLog('Deleted Receipts Box opened ✅');
-    } else {
-      _deletedReceiptsBox = Hive.box<DeletedReceipts>(
-        deletedReceiptsBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Receipts Box already open, reused ✅',
-      );
-    }
+    _deletedReceiptsBox =
+        await openBoxSafely<DeletedReceipts>(
+          deletedReceiptsBoxName,
+        );
   }
 
   /// Safe getter for the box

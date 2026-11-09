@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,11 @@ class QuantityUpdateFunc {
         );
       }
 
-      // Open the box only if it isn’t already open
-      if (!Hive.isBoxOpen(quantityUpdateBoxName)) {
-        _quantityUpdateBox =
-            await Hive.openBox<QuantityUpdate>(
-              quantityUpdateBoxName,
-            );
-        await mainLocalLog('Quantity Update Box opened ✅');
-      } else {
-        _quantityUpdateBox = Hive.box<QuantityUpdate>(
-          quantityUpdateBoxName,
-        );
-        await mainLocalLog(
-          'Quantity Update Box already open, reused ✅',
-        );
-      }
+      _quantityUpdateBox =
+          await openBoxSafely<QuantityUpdate>(
+            quantityUpdateBoxName,
+          );
+      await mainLocalLog('Quantity Update Box opened ✅');
     } catch (e, s) {
       await mainLocalLog(
         'Error Initializing Quantitiy Update Box: ${e.toString()}',

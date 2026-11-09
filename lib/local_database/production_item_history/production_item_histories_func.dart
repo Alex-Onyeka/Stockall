@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/production_item_history.dart';
 import 'package:stockall/local_database/production_item_history/unsync_funcs/created_production_item_histories_func.dart';
 import 'package:stockall/main.dart';
@@ -13,23 +14,41 @@ class ProductionItemHistoriesFunc {
       'productionItemHistoryBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(ProductionItemHistoryAdapter());
-    productionItemHistoryBox = await Hive.openBox(
-      productionItemHistoryBoxName,
-    );
-    await CreatedProductionItemHistoriesFunc().init();
+    safeRegisterAdapter(ProductionItemHistoryAdapter());
+    productionItemHistoryBox =
+        await openBoxSafely<ProductionItemHistory>(
+          productionItemHistoryBoxName,
+        );
+    try {
+      await CreatedProductionItemHistoriesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedProductionItemHistoriesFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog(
       'Production Item History Box Initialized',
     );
   }
 
   List<ProductionItemHistory> getProductionItemHistories() {
-    List<ProductionItemHistory> productionItemHistory =
-        productionItemHistoryBox.values.toList();
-    productionItemHistory.sort(
-      (a, b) => a.createdAt!.compareTo(b.createdAt!),
-    );
-    return productionItemHistory;
+    try {
+      List<ProductionItemHistory> productionItemHistory =
+          productionItemHistoryBox.values.toList();
+      productionItemHistory.sort(
+        (a, b) => a.createdAt!.compareTo(b.createdAt!),
+      );
+      return productionItemHistory;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading production item histories: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllProductionItemHistories(

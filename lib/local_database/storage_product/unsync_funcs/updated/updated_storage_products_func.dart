@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/updated/updated_storage_product.dart';
 import 'package:stockall/main.dart';
 
@@ -24,24 +25,7 @@ class UpdatedStorageProductsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedStorageProductBoxName)) {
-      _updatedStorageProductBox =
-          await Hive.openBox<UpdatedStorageProduct>(
-            updatedStorageProductBoxName,
-          );
-      await mainLocalLog(
-        'Updated Storage Product Box opened ✅',
-      );
-    } else {
-      _updatedStorageProductBox =
-          Hive.box<UpdatedStorageProduct>(
-            updatedStorageProductBoxName,
-          );
-      await mainLocalLog(
-        'Updated Storage Product Box already open, reused ✅',
-      );
-    }
+_updatedStorageProductBox = await openBoxSafely<UpdatedStorageProduct>(updatedStorageProductBoxName);
   }
 
   /// Safe getter for the box

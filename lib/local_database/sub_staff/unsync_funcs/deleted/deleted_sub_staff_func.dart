@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_sub_staff/unsynced/deleted_sub_staff/deleted_sub_staff.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class DeletedSubStaffFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedSubStaffBoxName)) {
-      _deletedSubStaffBox =
-          await Hive.openBox<DeletedSubStaff>(
-            deletedSubStaffBoxName,
-          );
-      await mainLocalLog('Deleted Sub Staff Box opened ✅');
-    } else {
-      _deletedSubStaffBox = Hive.box<DeletedSubStaff>(
-        deletedSubStaffBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Sub Staff Box already open, reused ✅',
-      );
-    }
+_deletedSubStaffBox = await openBoxSafely<DeletedSubStaff>(deletedSubStaffBoxName);
   }
 
   /// Safe getter for the box

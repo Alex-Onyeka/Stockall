@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/created/created_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/updated/updated_sub_staff_func.dart';
@@ -14,25 +15,58 @@ class SubStaffFunc {
   final String subStaffBoxName = 'subStaffBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempSubStaffAdapter());
-    subStaffBox = await Hive.openBox(subStaffBoxName);
-    await CreatedSubStaffFunc().init();
-    await DeletedSubStaffFunc().init();
-    await UpdatedSubStaffFunc().init();
+    safeRegisterAdapter(TempSubStaffAdapter());
+    subStaffBox = await openBoxSafely<TempSubStaff>(
+      subStaffBoxName,
+    );
+    try {
+      await CreatedSubStaffFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedSubStaffFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await DeletedSubStaffFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing DeletedSubStaffFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await UpdatedSubStaffFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing UpdatedSubStaffFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog('Sub Staff Box Initialized');
   }
 
   List<TempSubStaff> getSubStaffs() {
-    List<TempSubStaff> subStaffs =
-        subStaffBox.values.toList();
-    subStaffs.sort(
-      (a, b) => a.staffName!.toLowerCase().compareTo(
-        b.staffName!.toLowerCase(),
-      ),
-    );
-    // await mainLocalLog('Sub Staffs Gotten: ${subStaffs.length}');
-
-    return subStaffs;
+    try {
+      List<TempSubStaff> subStaffs =
+          subStaffBox.values.toList();
+      subStaffs.sort(
+        (a, b) => (a.staffName ?? '')
+            .toLowerCase()
+            .compareTo((b.staffName ?? '').toLowerCase()),
+      );
+      return subStaffs;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading sub staffs: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllSubStaffs(

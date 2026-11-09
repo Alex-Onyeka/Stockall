@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_shop_owner/shop_owner.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class ShopOwnerFunc {
@@ -11,35 +12,11 @@ class ShopOwnerFunc {
   final String shopOwnerBoxName = 'shopOwnerBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(shopOwnerBoxName);
-    try {
+    if (!Hive.isAdapterRegistered(ShopOwnerAdapter().typeId)) {
       Hive.registerAdapter(ShopOwnerAdapter());
-      shopOwnerBox = await Hive.openBox(shopOwnerBoxName);
-      await mainLocalLog('Shop Owner Box Initialized');
-    } catch (e) {
-      await mainLocalLog(
-        '❌ Error New Shop Owner: ${e.toString()}',
-      );
-      // try {
-      //   if (Hive.isBoxOpen(shopOwnerBoxName)) {
-      //     await Hive.box(shopOwnerBoxName).close();
-      //   }
-
-      //   await Hive.deleteBoxFromDisk(shopOwnerBoxName);
-      //   await mainLocalLog(
-      //     '🧹 Deleted Corrupted Current Logged In User Box',
-      //   );
-
-      //   shopOwnerBox = await Hive.openBox(
-      //     shopOwnerBoxName,
-      //   );
-      //   await mainLocalLog('✅ Reinitialized Logged In User Box');
-      // } catch (innerError) {
-      //   await mainLocalLog(
-      //     '⚠️ Failed to recover Hive box Logged In User: $innerError',
-      //   );
-      // }
     }
+    shopOwnerBox = await openBoxSafely<ShopOwner>(shopOwnerBoxName);
+    await mainLocalLog('Shop Owner Box Initialized');
   }
 
   ShopOwner? getShopOwnerUser() {

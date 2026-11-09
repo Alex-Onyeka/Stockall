@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
@@ -21,21 +22,28 @@ class ProductRecordFunc {
       'productRecordBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempProductSaleRecordAdapter());
-    productRecordBox = await Hive.openBox(
-      productRecordBoxName,
-    );
-    await CreatedRecordsFunc().init();
+    safeRegisterAdapter(TempProductSaleRecordAdapter());
+    productRecordBox = await openBoxSafely<TempProductSaleRecord>(productRecordBoxName);
+    try {
+      await CreatedRecordsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedRecordsFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog('Product Record Box Initialized');
   }
 
   List<TempProductSaleRecord> getProductRecords() {
-    List<TempProductSaleRecord> records =
-        productRecordBox.values.toList();
-    records.sort(
-      (a, b) => a.createdAt.compareTo(b.createdAt),
-    );
-    return records;
+    try {
+      List<TempProductSaleRecord> records =
+          productRecordBox.values.toList();
+      records.sort(
+        (a, b) => a.createdAt.compareTo(b.createdAt),
+      );
+      return records;
+    } catch (e, s) {
+      mainLocalLog('Error reading product records: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllProductRecords(

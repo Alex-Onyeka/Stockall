@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/production_item.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/created/created_production_items_func.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/deleted/deleted_production_items_func.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/production_items_quantity_update/production_items_quantity_update_func.dart';
@@ -17,14 +18,47 @@ class ProductionItemsFunc {
 
   Future<void> init() async {
     try {
-      Hive.registerAdapter(ProductionItemAdapter());
-      productionItemsBox = await Hive.openBox(
-        productionItemsBoxName,
-      );
-      await CreatedProductionItemsFunc().init();
-      await DeletedProductionItemsFunc().init();
-      await UpdatedProductionItemsFunc().init();
-      await ProductionItemsQuantityUpdateFunc().init();
+      safeRegisterAdapter(ProductionItemAdapter());
+      productionItemsBox =
+          await openBoxSafely<ProductionItem>(
+            productionItemsBoxName,
+          );
+      try {
+        await CreatedProductionItemsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing CreatedProductionItemsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await DeletedProductionItemsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing DeletedProductionItemsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await UpdatedProductionItemsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing UpdatedProductionItemsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await ProductionItemsQuantityUpdateFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing ProductionItemsQuantityUpdateFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
       await mainLocalLog('Production Item Box Initialized');
     } catch (e, s) {
       await mainLocalLog(
@@ -36,14 +70,23 @@ class ProductionItemsFunc {
   }
 
   List<ProductionItem> getProductionItems() {
-    List<ProductionItem> productionItems =
-        productionItemsBox.values.toList();
-    productionItems.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    return productionItems;
+    try {
+      List<ProductionItem> productionItems =
+          productionItemsBox.values.toList();
+      productionItems.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      return productionItems;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading production items: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   ProductionItem? getSingleProductionItem({

@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/created/created_orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/deleted/deleted_orders_func.dart';
 import 'package:stockall/local_database/orders_func/unsync_funcs/updated/updated_orders_func.dart';
@@ -14,21 +15,54 @@ class OrdersFunc {
   final String orderBoxName = 'mainOrderBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(OrdersAdapter());
-    Hive.registerAdapter(OrderItemsAdapter());
-    orderBox = await Hive.openBox(orderBoxName);
-    await CreatedOrdersFunc().init();
-    await DeletedOrdersFunc().init();
-    await UpdatedOrdersFunc().init();
+    safeRegisterAdapter(OrdersAdapter());
+    safeRegisterAdapter(OrderItemsAdapter());
+    orderBox = await openBoxSafely<Orders>(orderBoxName);
+    try {
+      await CreatedOrdersFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedOrdersFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await DeletedOrdersFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing DeletedOrdersFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await UpdatedOrdersFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing UpdatedOrdersFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog('Order Box Initialized');
   }
 
   List<Orders> getOrders() {
-    List<Orders> orders = orderBox.values.toList();
-    orders.sort(
-      (a, b) => b.createdAt.compareTo(a.createdAt),
-    );
-    return orders;
+    try {
+      List<Orders> orders = orderBox.values.toList();
+      orders.sort(
+        (a, b) => b.createdAt.compareTo(a.createdAt),
+      );
+      return orders;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading orders: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllOrders(List<Orders> orders) async {

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/created_materials/created_material.dart';
 import 'package:stockall/main.dart';
 
@@ -40,20 +41,7 @@ class CreatedMaterialsFunc {
   }
 
   Future<void> _openBox() async {
-    if (!Hive.isBoxOpen(createdMaterialsBoxName)) {
-      _createdMaterialsBox =
-          await Hive.openBox<CreatedMaterial>(
-            createdMaterialsBoxName,
-          );
-      await mainLocalLog('Created Materials Box opened ✅');
-    } else {
-      _createdMaterialsBox = Hive.box<CreatedMaterial>(
-        createdMaterialsBoxName,
-      );
-      await mainLocalLog(
-        'Created Materials Box already open, reused ✅',
-      );
-    }
+    _createdMaterialsBox = await openBoxSafely<CreatedMaterial>(createdMaterialsBoxName);
   }
 
   /// Safe getter for the box

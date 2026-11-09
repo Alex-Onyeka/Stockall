@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/unsynced/production_item_quantity_update/production_item_quantity_update.dart';
 import 'package:stockall/main.dart';
 
@@ -15,45 +16,18 @@ class ProductionItemsQuantityUpdateFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    try {
-      if (!Hive.isAdapterRegistered(
-        ProductionItemQuantityUpdateAdapter().typeId,
-      )) {
-        Hive.registerAdapter(
-          ProductionItemQuantityUpdateAdapter(),
-        );
-        await mainLocalLog(
-          'Production Items Quantity Update Adapter registered ✅',
-        );
-      }
-
-      // Open the box only if it isn’t already open
-      if (!Hive.isBoxOpen(
-        productionItemsQuantityUpdateBoxName,
-      )) {
-        _productionItemsQuantityUpdateBox =
-            await Hive.openBox<
-              ProductionItemQuantityUpdate
-            >(productionItemsQuantityUpdateBoxName);
-        await mainLocalLog(
-          'Production Items Quantity Update Box opened ✅',
-        );
-      } else {
-        _productionItemsQuantityUpdateBox =
-            Hive.box<ProductionItemQuantityUpdate>(
-              productionItemsQuantityUpdateBoxName,
-            );
-        await mainLocalLog(
-          'Production Items Quantity Update Box already open, reused ✅',
-        );
-      }
-    } catch (e, s) {
+    if (!Hive.isAdapterRegistered(
+      ProductionItemQuantityUpdateAdapter().typeId,
+    )) {
+      Hive.registerAdapter(
+        ProductionItemQuantityUpdateAdapter(),
+      );
       await mainLocalLog(
-        'Error Initializing Quantitiy Update Box: ${e.toString()}',
-        error: e,
-        stackTrace: s,
+        'Production Items Quantity Update Adapter registered ✅',
       );
     }
+
+    _productionItemsQuantityUpdateBox = await openBoxSafely<ProductionItemQuantityUpdate>(productionItemsQuantityUpdateBoxName);
   }
 
   /// Safe getter for the box

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/storage_item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/main.dart';
 
@@ -13,8 +14,10 @@ class StorageItemHistoriesFunc {
       'storageItemHistoryBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(StorageItemHistoryAdapter());
-    storageItemHistoryBox = await Hive.openBox(
+    if (!Hive.isAdapterRegistered(StorageItemHistoryAdapter().typeId)) {
+      Hive.registerAdapter(StorageItemHistoryAdapter());
+    }
+    storageItemHistoryBox = await openBoxSafely<StorageItemHistory>(
       storageItemHistoryBoxName,
     );
     await CreatedStorageItemHistoriesFunc().init();

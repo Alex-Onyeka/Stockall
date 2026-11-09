@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
@@ -10,16 +11,28 @@ class CustomerFunc {
       CustomerFunc._internal();
   factory CustomerFunc() => instance;
   CustomerFunc._internal();
-  late Box<TempCustomersClass> customerBox;
+  Box<TempCustomersClass>? _customerBox;
   final String customerBoxName = 'customerBoxStockall';
 
   Future<void> init() async {
     try {
-      Hive.registerAdapter(TempCustomersClassAdapter());
-      customerBox = await Hive.openBox(customerBoxName);
-      await CreatedCustomersFunc().init();
-      await DeletedCustomersFunc().init();
-      await UpdatedCustomersFunc().init();
+      safeRegisterAdapter(TempCustomersClassAdapter());
+      _customerBox = await openBoxSafely<TempCustomersClass>(customerBoxName);
+      try {
+        await CreatedCustomersFunc().init();
+      } catch (e, s) {
+        await mainLocalLog('Error Initializing CreatedCustomersFunc: $e', error: e, stackTrace: s);
+      }
+      try {
+        await DeletedCustomersFunc().init();
+      } catch (e, s) {
+        await mainLocalLog('Error Initializing DeletedCustomersFunc: $e', error: e, stackTrace: s);
+      }
+      try {
+        await UpdatedCustomersFunc().init();
+      } catch (e, s) {
+        await mainLocalLog('Error Initializing UpdatedCustomersFunc: $e', error: e, stackTrace: s);
+      }
       await mainLocalLog('Customter Box Initialized');
     } catch (e, s) {
       await mainLocalLog(
@@ -30,15 +43,26 @@ class CustomerFunc {
     }
   }
 
+  Box<TempCustomersClass> get customerBox => _customerBox!;
+
   List<TempCustomersClass> getCustomers() {
-    List<TempCustomersClass> customers =
-        customerBox.values.toList();
-    customers.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    return customers;
+    try {
+      List<TempCustomersClass> customers =
+          customerBox.values.toList();
+      customers.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      return customers;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading customers: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllCustomers(

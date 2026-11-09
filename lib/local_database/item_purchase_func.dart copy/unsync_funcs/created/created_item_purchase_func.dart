@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
 import 'package:stockall/main.dart';
 
@@ -24,26 +25,7 @@ class CreatedItemPurchaseFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(
-      createdItemPurchaseRecordsBoxName,
-    )) {
-      _createdItemPurchaseRecordsBox =
-          await Hive.openBox<CreatedItemRecords>(
-            createdItemPurchaseRecordsBoxName,
-          );
-      await mainLocalLog(
-        'Created Item Purchase Records Box opened ✅',
-      );
-    } else {
-      _createdItemPurchaseRecordsBox =
-          Hive.box<CreatedItemRecords>(
-            createdItemPurchaseRecordsBoxName,
-          );
-      await mainLocalLog(
-        'Created Item Purchase Records Box already open, reused ✅',
-      );
-    }
+_createdItemPurchaseRecordsBox = await openBoxSafely<CreatedItemRecords>(createdItemPurchaseRecordsBoxName);
   }
 
   /// Safe getter for the box

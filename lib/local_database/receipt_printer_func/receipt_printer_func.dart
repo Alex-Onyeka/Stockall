@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/receipt_printer_class/receipt_printer_class.dart';
 import 'package:stockall/main.dart';
 
@@ -13,17 +14,21 @@ class ReceiptPrinterFunc {
 
   Future<void> init() async {
     // await Hive.deleteBoxFromDisk(receiptPrinterBoxName);
-    Hive.registerAdapter(ReceiptPrinterClassAdapter());
-    receiptPrinterBox = await Hive.openBox(
+    safeRegisterAdapter(ReceiptPrinterClassAdapter());
+    receiptPrinterBox = await openBoxSafely<ReceiptPrinterClass>(
       receiptPrinterBoxName,
     );
     await mainLocalLog('✅Receipt Printer Box Initialized');
   }
 
   ReceiptPrinterClass? getReceiptPrinterClass() {
-    return receiptPrinterBox.values.isNotEmpty
-        ? receiptPrinterBox.values.first
-        : null;
+    try {
+      return receiptPrinterBox.values.isNotEmpty
+          ? receiptPrinterBox.values.first
+          : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<int> insertPrinter(

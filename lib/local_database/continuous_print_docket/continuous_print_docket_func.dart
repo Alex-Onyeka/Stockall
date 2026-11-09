@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/continuous_print_docket/continuous_print_docket.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class ContinuousPrintDocketFunc {
@@ -13,11 +14,18 @@ class ContinuousPrintDocketFunc {
 
   Future<void> init() async {
     try {
-      Hive.registerAdapter(ContinuousPrintDocketAdapter());
+      if (!Hive.isAdapterRegistered(
+        ContinuousPrintDocketAdapter().typeId,
+      )) {
+        Hive.registerAdapter(
+          ContinuousPrintDocketAdapter(),
+        );
+      }
 
-      continuousPrintDocketBox = await Hive.openBox(
-        continuousPrintDocketBoxName,
-      );
+      continuousPrintDocketBox =
+          await openBoxSafely<ContinuousPrintDocket>(
+            continuousPrintDocketBoxName,
+          );
 
       // Initialize default value
       if (continuousPrintDocketBox.isEmpty) {

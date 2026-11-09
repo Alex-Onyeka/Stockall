@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/created/created_supplier_func.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/deleted/deleted_supplier_func.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/updated/updated_supplier_func.dart';
@@ -14,25 +15,40 @@ class SuppliersFunc {
   final String suppliersBoxName = 'suppliersBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(SuppliersClassAdapter());
-    suppliersBox = await Hive.openBox(suppliersBoxName);
-    await CreatedSupplierFunc().init();
-    await DeletedSupplierFunc().init();
-    await UpdatedSupplierFunc().init();
+    safeRegisterAdapter(SuppliersClassAdapter());
+    suppliersBox = await openBoxSafely<SuppliersClass>(suppliersBoxName);
+    try {
+      await CreatedSupplierFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedSupplierFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedSupplierFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedSupplierFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedSupplierFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedSupplierFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog('Supplier Box Initialized');
   }
 
   List<SuppliersClass> getSuppliers() {
-    List<SuppliersClass> suppliers =
-        suppliersBox.values.toList();
-    suppliers.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    // await mainLocalLog('Suppliers Gotten: ${suppliers.length}');
-
-    return suppliers;
+    try {
+      List<SuppliersClass> suppliers =
+          suppliersBox.values.toList();
+      suppliers.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      return suppliers;
+    } catch (e, s) {
+      mainLocalLog('Error reading suppliers: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllSuppliers(

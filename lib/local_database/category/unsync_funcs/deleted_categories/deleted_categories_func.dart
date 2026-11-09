@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_categories/unsynced/deleted_category/deleted_category.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class DeletedCategoriesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedCategoriesBoxName)) {
-      _deletedCategoriesBox =
-          await Hive.openBox<DeletedCategory>(
-            deletedCategoriesBoxName,
-          );
-      await mainLocalLog('Deleted Categories Box opened ✅');
-    } else {
-      _deletedCategoriesBox = Hive.box<DeletedCategory>(
-        deletedCategoriesBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Categories Box already open, reused ✅',
-      );
-    }
+_deletedCategoriesBox = await openBoxSafely<DeletedCategory>(deletedCategoriesBoxName);
   }
 
   /// Safe getter for the box

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_orders/unsynced/deleted/deleted_orders.dart';
 import 'package:stockall/main.dart';
 
@@ -24,20 +25,7 @@ class DeletedOrdersFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedOrdersBoxName)) {
-      _deletedOrdersBox = await Hive.openBox<DeletedOrders>(
-        deletedOrdersBoxName,
-      );
-      await mainLocalLog('Deleted Orders Box opened ✅');
-    } else {
-      _deletedOrdersBox = Hive.box<DeletedOrders>(
-        deletedOrdersBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Orders Box already open, reused ✅',
-      );
-    }
+_deletedOrdersBox = await openBoxSafely<DeletedOrders>(deletedOrdersBoxName);
   }
 
   /// Safe getter for the box

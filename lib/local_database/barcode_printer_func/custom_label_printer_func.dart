@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_generated_prints/custom_label_printer_class/custom_label_printer_local.dart';
 import 'package:stockall/classes/temp_generated_prints/custom_label_printer_class/custom_label_printer_settings/custom_label_printer_settings.dart';
 import 'package:stockall/main.dart';
@@ -14,22 +15,27 @@ class CustomLabelPrinterFunc {
       'customLabelPrinterLocalBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(CustomLabelPrinterLocalAdapter());
-    Hive.registerAdapter(
+    safeRegisterAdapter(CustomLabelPrinterLocalAdapter());
+    safeRegisterAdapter(
       CustomLabelPrinterSettingsAdapter(),
     );
-    customLabelPrinterLocalBox = await Hive.openBox(
-      customLabelPrinterLocalBoxName,
-    );
+    customLabelPrinterLocalBox =
+        await openBoxSafely<CustomLabelPrinterLocal>(
+          customLabelPrinterLocalBoxName,
+        );
     await mainLocalLog(
       '✅ Custom Labels Printer Box Initialized',
     );
   }
 
   CustomLabelPrinterLocal? getCustomLabelPrinterLocal() {
-    return customLabelPrinterLocalBox.values.isNotEmpty
-        ? customLabelPrinterLocalBox.values.first
-        : null;
+    try {
+      return customLabelPrinterLocalBox.values.isNotEmpty
+          ? customLabelPrinterLocalBox.values.first
+          : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<int> insertCustomLabelPrinter(

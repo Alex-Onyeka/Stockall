@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_suppliers/unsynced/updated/updated_suppliers.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class UpdatedSupplierFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedSuppliersBoxName)) {
-      _updatedSuppliersBox =
-          await Hive.openBox<UpdatedSuppliers>(
-            updatedSuppliersBoxName,
-          );
-      await mainLocalLog('Updated Suppliers Box opened ✅');
-    } else {
-      _updatedSuppliersBox = Hive.box<UpdatedSuppliers>(
-        updatedSuppliersBoxName,
-      );
-      await mainLocalLog(
-        'Updated Suppliers Box already open, reused ✅',
-      );
-    }
+_updatedSuppliersBox = await openBoxSafely<UpdatedSuppliers>(updatedSuppliersBoxName);
   }
 
   /// Safe getter for the box

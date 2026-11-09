@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_drafts/unsynced/deleted/deleted_drafts.dart';
 import 'package:stockall/main.dart';
 
@@ -23,19 +24,9 @@ class DeletedDraftsFunc {
       );
     }
 
-    if (!Hive.isBoxOpen(deletedDraftsBoxName)) {
-      _deletedDraftsBox = await Hive.openBox<DeletedDrafts>(
-        deletedDraftsBoxName,
-      );
-      await mainLocalLog('Deleted Drafts Box opened ✅');
-    } else {
-      _deletedDraftsBox = Hive.box<DeletedDrafts>(
-        deletedDraftsBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Drafts Box already open, reused ✅',
-      );
-    }
+    _deletedDraftsBox = await openBoxSafely<DeletedDrafts>(
+      deletedDraftsBoxName,
+    );
   }
 
   /// Safe getter for the box

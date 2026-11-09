@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/material_quantity_update/material_quantity_update.dart';
 import 'package:stockall/main.dart';
 
@@ -14,43 +15,18 @@ class MaterialsQuantityUpdateFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    try {
-      if (!Hive.isAdapterRegistered(
-        MaterialQuantityUpdateAdapter().typeId,
-      )) {
-        Hive.registerAdapter(
-          MaterialQuantityUpdateAdapter(),
-        );
-        await mainLocalLog(
-          'Materials Quantity Update Adapter registered ✅',
-        );
-      }
-
-      // Open the box only if it isn’t already open
-      if (!Hive.isBoxOpen(materialsQuantityUpdateBoxName)) {
-        _materialsQuantityUpdateBox =
-            await Hive.openBox<MaterialQuantityUpdate>(
-              materialsQuantityUpdateBoxName,
-            );
-        await mainLocalLog(
-          'Materials Quantity Update Box opened ✅',
-        );
-      } else {
-        _materialsQuantityUpdateBox =
-            Hive.box<MaterialQuantityUpdate>(
-              materialsQuantityUpdateBoxName,
-            );
-        await mainLocalLog(
-          'Materials Quantity Update Box already open, reused ✅',
-        );
-      }
-    } catch (e, s) {
+    if (!Hive.isAdapterRegistered(
+      MaterialQuantityUpdateAdapter().typeId,
+    )) {
+      Hive.registerAdapter(
+        MaterialQuantityUpdateAdapter(),
+      );
       await mainLocalLog(
-        'Error Initializing Quantitiy Update Box: ${e.toString()}',
-        error: e,
-        stackTrace: s,
+        'Materials Quantity Update Adapter registered ✅',
       );
     }
+
+    _materialsQuantityUpdateBox = await openBoxSafely<MaterialQuantityUpdate>(materialsQuantityUpdateBoxName);
   }
 
   /// Safe getter for the box

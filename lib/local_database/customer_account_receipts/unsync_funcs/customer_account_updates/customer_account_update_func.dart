@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/unsynced/customer_account_update/customer_account_update.dart';
 import 'package:stockall/main.dart';
 
@@ -14,43 +15,19 @@ class CustomerAccountUpdateFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    try {
-      if (!Hive.isAdapterRegistered(
-        CustomerAccountUpdateAdapter().typeId,
-      )) {
-        Hive.registerAdapter(
-          CustomerAccountUpdateAdapter(),
-        );
-        await mainLocalLog(
-          'Customer Account Update Adapter registered ✅',
-        );
-      }
-
-      // Open the box only if it isn’t already open
-      if (!Hive.isBoxOpen(customerAccountUpdateBoxName)) {
-        _customerAccountUpdateBox =
-            await Hive.openBox<CustomerAccountUpdate>(
-              customerAccountUpdateBoxName,
-            );
-        await mainLocalLog(
-          'Customer Account Update Box opened ✅',
-        );
-      } else {
-        _customerAccountUpdateBox =
-            Hive.box<CustomerAccountUpdate>(
-              customerAccountUpdateBoxName,
-            );
-        await mainLocalLog(
-          'Customer Account Update Box already open, reused ✅',
-        );
-      }
-    } catch (e, s) {
+    if (!Hive.isAdapterRegistered(
+      CustomerAccountUpdateAdapter().typeId,
+    )) {
+      Hive.registerAdapter(CustomerAccountUpdateAdapter());
       await mainLocalLog(
-        'Error Initializing Quantitiy Update Box: ${e.toString()}',
-        error: e,
-        stackTrace: s,
+        'Customer Account Update Adapter registered ✅',
       );
     }
+
+    _customerAccountUpdateBox =
+        await openBoxSafely<CustomerAccountUpdate>(
+          customerAccountUpdateBoxName,
+        );
   }
 
   /// Safe getter for the box

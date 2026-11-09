@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_orders/unsynced/created/created_orders.dart';
 import 'package:stockall/main.dart';
 
@@ -24,20 +25,7 @@ class CreatedOrdersFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(createdOrdersBoxName)) {
-      _createdOrdersBox = await Hive.openBox<CreatedOrders>(
-        createdOrdersBoxName,
-      );
-      await mainLocalLog('Created Orders Box opened ✅');
-    } else {
-      _createdOrdersBox = Hive.box<CreatedOrders>(
-        createdOrdersBoxName,
-      );
-      await mainLocalLog(
-        'Created Orders Box already open, reused ✅',
-      );
-    }
+_createdOrdersBox = await openBoxSafely<CreatedOrders>(createdOrdersBoxName);
   }
 
   /// Safe getter for the box

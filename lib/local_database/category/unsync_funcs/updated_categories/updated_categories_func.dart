@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_categories/unsynced/updated/updated_category.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class UpdatedCategoriesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedCategoriesBoxName)) {
-      _updatedCategoriesBox =
-          await Hive.openBox<UpdatedCategory>(
-            updatedCategoriesBoxName,
-          );
-      await mainLocalLog('Updated Categories Box opened ✅');
-    } else {
-      _updatedCategoriesBox = Hive.box<UpdatedCategory>(
-        updatedCategoriesBoxName,
-      );
-      await mainLocalLog(
-        'Updated Categories Box already open, reused ✅',
-      );
-    }
+_updatedCategoriesBox = await openBoxSafely<UpdatedCategory>(updatedCategoriesBoxName);
   }
 
   /// Safe getter for the box

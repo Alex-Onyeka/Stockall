@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_tag_printer_class/price_tag_printer_local.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_tag_printer_class/price_tag_printer_settings/price_tag_printer_settings.dart';
 import 'package:stockall/main.dart';
@@ -13,20 +14,25 @@ class PriceTagPrinterFunc {
       'priceTagPrinterLocalBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(PriceTagPrinterLocalAdapter());
-    Hive.registerAdapter(PriceTagPrinterSettingsAdapter());
-    priceTagPrinterLocalBox = await Hive.openBox(
-      priceTagPrinterLocalBoxName,
-    );
+    safeRegisterAdapter(PriceTagPrinterLocalAdapter());
+    safeRegisterAdapter(PriceTagPrinterSettingsAdapter());
+    priceTagPrinterLocalBox =
+        await openBoxSafely<PriceTagPrinterLocal>(
+          priceTagPrinterLocalBoxName,
+        );
     await mainLocalLog(
       '✅ Price Tag Printer Box Initialized',
     );
   }
 
   PriceTagPrinterLocal? getPriceTagPrinterLocal() {
-    return priceTagPrinterLocalBox.values.isNotEmpty
-        ? priceTagPrinterLocalBox.values.first
-        : null;
+    try {
+      return priceTagPrinterLocalBox.values.isNotEmpty
+          ? priceTagPrinterLocalBox.values.first
+          : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<int> insertPriceTagPrinter(

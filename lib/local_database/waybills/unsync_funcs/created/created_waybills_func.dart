@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_waybills/unsynced/created_waybills/created_waybills.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class CreatedWaybillsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(createdWaybillsBoxName)) {
-      _createdWaybillsBox =
-          await Hive.openBox<CreatedWaybills>(
-            createdWaybillsBoxName,
-          );
-      await mainLocalLog('Created Waybills Box opened ✅');
-    } else {
-      _createdWaybillsBox = Hive.box<CreatedWaybills>(
-        createdWaybillsBoxName,
-      );
-      await mainLocalLog(
-        'Created Waybills Box already open, reused ✅',
-      );
-    }
+_createdWaybillsBox = await openBoxSafely<CreatedWaybills>(createdWaybillsBoxName);
   }
 
   /// Safe getter for the box

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/deleted/deleted_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/updated/updated_invoices_func.dart';
@@ -14,21 +15,38 @@ class InvoicesFunc {
   final String invoicesBoxName = 'TempInvoiceBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempInvoiceAdapter());
-    invoicesBox = await Hive.openBox(invoicesBoxName);
-    await CreatedInvoicesFunc().init();
-    await DeletedInvoicesFunc().init();
-    await UpdatedInvoicesFunc().init();
+    safeRegisterAdapter(TempInvoiceAdapter());
+    invoicesBox = await openBoxSafely<TempInvoice>(invoicesBoxName);
+    try {
+      await CreatedInvoicesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedInvoicesFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedInvoicesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedInvoicesFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedInvoicesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedInvoicesFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog('Invoices Box Initialized');
   }
 
   List<TempInvoice> getInvoices() {
-    List<TempInvoice> invoicess =
-        invoicesBox.values.toList();
-    invoicess.sort(
-      (a, b) => b.createdAt.compareTo(a.createdAt),
-    );
-    return invoicess;
+    try {
+      List<TempInvoice> invoicess =
+          invoicesBox.values.toList();
+      invoicess.sort(
+        (a, b) => b.createdAt.compareTo(a.createdAt),
+      );
+      return invoicess;
+    } catch (e, s) {
+      mainLocalLog('Error reading invoices: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllInvoices(

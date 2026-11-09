@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/materials_item_history.dart';
 import 'package:stockall/local_database/materials_item_history/unsync_funcs/created_materials_item_histories_func.dart';
 import 'package:stockall/main.dart';
@@ -13,23 +14,41 @@ class MaterialsItemHistoriesFunc {
       'materialsItemHistoryBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(MaterialsItemHistoryAdapter());
-    materialsItemHistoryBox = await Hive.openBox(
-      materialsItemHistoryBoxName,
-    );
-    await CreatedMaterialsItemHistoriesFunc().init();
+    safeRegisterAdapter(MaterialsItemHistoryAdapter());
+    materialsItemHistoryBox =
+        await openBoxSafely<MaterialsItemHistory>(
+          materialsItemHistoryBoxName,
+        );
+    try {
+      await CreatedMaterialsItemHistoriesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedMaterialsItemHistoriesFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog(
       'Materials Item History Box Initialized',
     );
   }
 
   List<MaterialsItemHistory> getMaterialsItemHistories() {
-    List<MaterialsItemHistory> materialsItemHistory =
-        materialsItemHistoryBox.values.toList();
-    materialsItemHistory.sort(
-      (a, b) => a.createdAt!.compareTo(b.createdAt!),
-    );
-    return materialsItemHistory;
+    try {
+      List<MaterialsItemHistory> materialsItemHistory =
+          materialsItemHistoryBox.values.toList();
+      materialsItemHistory.sort(
+        (a, b) => a.createdAt!.compareTo(b.createdAt!),
+      );
+      return materialsItemHistory;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading materials item histories: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllMaterialsItemHistories(

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_sub_staff/unsynced/updated/updated_sub_staff.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class UpdatedSubStaffFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedSubStaffBoxName)) {
-      _updatedSubStaffBox =
-          await Hive.openBox<UpdatedSubStaff>(
-            updatedSubStaffBoxName,
-          );
-      await mainLocalLog('Updated Sub Staff Box opened ✅');
-    } else {
-      _updatedSubStaffBox = Hive.box<UpdatedSubStaff>(
-        updatedSubStaffBoxName,
-      );
-      await mainLocalLog(
-        'Updated Sub Staff Box already open, reused ✅',
-      );
-    }
+_updatedSubStaffBox = await openBoxSafely<UpdatedSubStaff>(updatedSubStaffBoxName);
   }
 
   /// Safe getter for the box

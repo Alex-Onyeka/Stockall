@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_customers/unsynced/deleted_customers/deleted_customers.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,10 @@ class DeletedCustomersFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedCustomersBoxName)) {
-      _deletedCustomersBox =
-          await Hive.openBox<DeletedCustomers>(
-            deletedCustomersBoxName,
-          );
-      await mainLocalLog('Deleted Customers Box opened ✅');
-    } else {
-      _deletedCustomersBox = Hive.box<DeletedCustomers>(
-        deletedCustomersBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Customers Box already open, reused ✅',
-      );
-    }
+    _deletedCustomersBox =
+        await openBoxSafely<DeletedCustomers>(
+          deletedCustomersBoxName,
+        );
   }
 
   /// Safe getter for the box
@@ -52,7 +42,12 @@ class DeletedCustomersFunc {
   }
 
   List<DeletedCustomers> getCustomerIds() {
-    return deletedCustomersBox.values.toList();
+    try {
+      if (_deletedCustomersBox == null) return [];
+      return _deletedCustomersBox!.values.toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   Future<int> insertAllDeletedCustomers(

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class NotificationFunc {
@@ -12,8 +13,12 @@ class NotificationFunc {
       'notificationBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempNotificationAdapter());
-    notificationBox = await Hive.openBox(
+    if (!Hive.isAdapterRegistered(
+      TempNotificationAdapter().typeId,
+    )) {
+      Hive.registerAdapter(TempNotificationAdapter());
+    }
+    notificationBox = await openBoxSafely<TempNotification>(
       notificationBoxName,
     );
     await mainLocalLog('Notification Box Initialized');

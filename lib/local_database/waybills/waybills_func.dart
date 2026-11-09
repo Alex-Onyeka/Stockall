@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_waybills/temp_way_bills.dart';
 import 'package:stockall/classes/temp_waybills/waybill_items.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/created/created_waybills_func.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/deleted/deleted_waybills_func.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_waybills_func.dart';
@@ -15,22 +16,39 @@ class WaybillsFunc {
   final String waybillBoxName = 'waybillBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(WaybillItemsAdapter());
-    Hive.registerAdapter(TempWayBillsAdapter());
-    waybillBox = await Hive.openBox(waybillBoxName);
-    await CreatedWaybillsFunc().init();
-    await DeletedWaybillsFunc().init();
-    await UpdatedWaybillsFunc().init();
+    safeRegisterAdapter(WaybillItemsAdapter());
+    safeRegisterAdapter(TempWayBillsAdapter());
+    waybillBox = await openBoxSafely<TempWayBills>(waybillBoxName);
+    try {
+      await CreatedWaybillsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedWaybillsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedWaybillsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedWaybillsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedWaybillsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedWaybillsFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog('Waybill Box Initialized');
   }
 
   List<TempWayBills> getWaybills() {
-    List<TempWayBills> waybills =
-        waybillBox.values.toList();
-    waybills.sort(
-      (a, b) => b.createdAt!.compareTo(a.createdAt!),
-    );
-    return waybills;
+    try {
+      List<TempWayBills> waybills =
+          waybillBox.values.toList();
+      waybills.sort(
+        (a, b) => (b.createdAt ?? DateTime(2000)).compareTo(a.createdAt ?? DateTime(2000)),
+      );
+      return waybills;
+    } catch (e, s) {
+      mainLocalLog('Error reading waybills: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllWaybills(

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
 import 'package:stockall/main.dart';
@@ -14,12 +15,22 @@ class ItemPurchaseFunc {
       'itemPurchaseRecordsBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempItemPurchaseRecordAdapter());
-    itemPurchaseRecordsBox = await Hive.openBox(
+    if (!Hive.isAdapterRegistered(TempItemPurchaseRecordAdapter().typeId)) {
+      Hive.registerAdapter(TempItemPurchaseRecordAdapter());
+    }
+    itemPurchaseRecordsBox = await openBoxSafely<TempItemPurchaseRecord>(
       itemPurchaseRecordsBoxName,
     );
-    await CreatedItemPurchaseFunc().init();
-    await DeletedItemPurchaseFunc().init();
+    try {
+      await CreatedItemPurchaseFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedItemPurchaseFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedItemPurchaseFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedItemPurchaseFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog(
       'Item Purchase Record Box Initialized',
     );

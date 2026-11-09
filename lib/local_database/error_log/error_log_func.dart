@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_error_log/temp_error_log_class.dart';
 import 'package:stockall/local_database/error_log/unsync_funcs/created_events_log_func.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class ErrorLogFunc {
@@ -12,8 +13,14 @@ class ErrorLogFunc {
   final String errorLogBoxName = 'errorLogBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempErrorLogClassAdapter());
-    errorLogBox = await Hive.openBox(errorLogBoxName);
+    if (!Hive.isAdapterRegistered(
+      TempErrorLogClassAdapter().typeId,
+    )) {
+      Hive.registerAdapter(TempErrorLogClassAdapter());
+    }
+    errorLogBox = await openBoxSafely<TempErrorLogClass>(
+      errorLogBoxName,
+    );
     await CreatedErrorLogFunc().init();
     await mainLocalLog('Error Log Box Initialized');
   }

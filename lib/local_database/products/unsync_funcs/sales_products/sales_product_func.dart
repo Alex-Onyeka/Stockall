@@ -21,18 +21,7 @@
 //       await mainLocalLog('SalesProductsAdapter registered ✅');
 //     }
 
-//     // Open the box only if it isn’t already open
-//     if (!Hive.isBoxOpen(salesProductsBoxName)) {
-//       _salesProductsBox = await Hive.openBox<SalesProducts>(
-//         salesProductsBoxName,
-//       );
-//       await mainLocalLog('Sales Products Box opened ✅');
-//     } else {
-//       _salesProductsBox = Hive.box<SalesProducts>(
-//         salesProductsBoxName,
-//       );
-//       await mainLocalLog('Sales Products Box already open, reused ✅');
-//     }
+// _salesProductsBox = await openBoxSafely<SalesProducts>(salesProductsBoxName);
 //   }
 
 //   /// Safe getter for the box

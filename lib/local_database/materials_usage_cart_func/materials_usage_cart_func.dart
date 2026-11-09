@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_usage_cart/materials_usage_cart.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_usage_cart/temp_materials_usage_cart_item/materials_usage_cart_item.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -14,11 +15,12 @@ class MaterialsUsageCartFunc {
       'materialsUsageCartBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(MaterialsUsageCartAdapter());
-    Hive.registerAdapter(MaterialsUsageCartItemAdapter());
-    materialsUsageCartBox = await Hive.openBox(
-      materialsUsageCartBoxName,
-    );
+    safeRegisterAdapter(MaterialsUsageCartAdapter());
+    safeRegisterAdapter(MaterialsUsageCartItemAdapter());
+    materialsUsageCartBox =
+        await openBoxSafely<MaterialsUsageCart>(
+          materialsUsageCartBoxName,
+        );
     await initMaterialUsageCart();
     await mainLocalLog(
       'Main Materials Usage Cart Box Initialized',
@@ -26,11 +28,15 @@ class MaterialsUsageCartFunc {
   }
 
   MaterialsUsageCart? getMaterialsUsageCart() {
-    List<MaterialsUsageCart> materialsUsageCarts =
-        materialsUsageCartBox.values.toList();
-    return materialsUsageCarts.isEmpty
-        ? null
-        : materialsUsageCarts.first;
+    try {
+      List<MaterialsUsageCart> materialsUsageCarts =
+          materialsUsageCartBox.values.toList();
+      return materialsUsageCarts.isEmpty
+          ? null
+          : materialsUsageCarts.first;
+    } catch (e) {
+      return null;
+    }
   }
 
   List<MaterialsUsageCartItem> getMaterials() {

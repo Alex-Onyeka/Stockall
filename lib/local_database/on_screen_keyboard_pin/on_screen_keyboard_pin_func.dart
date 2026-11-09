@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/on_screen_keyboard_pin/on_screen_keyboard_pin_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class OnScreenKeyboardPinFunc {
@@ -13,13 +14,18 @@ class OnScreenKeyboardPinFunc {
 
   Future<void> init() async {
     try {
-      Hive.registerAdapter(
-        OnScreenKeyboardPinClassAdapter(),
-      );
+      if (!Hive.isAdapterRegistered(
+        OnScreenKeyboardPinClassAdapter().typeId,
+      )) {
+        Hive.registerAdapter(
+          OnScreenKeyboardPinClassAdapter(),
+        );
+      }
 
-      onScreenKeyboardPinBox = await Hive.openBox(
-        onScreenKeyboardPinBoxName,
-      );
+      onScreenKeyboardPinBox =
+          await openBoxSafely<OnScreenKeyboardPinClass>(
+            onScreenKeyboardPinBoxName,
+          );
 
       // Initialize default value
       if (onScreenKeyboardPinBox.isEmpty) {

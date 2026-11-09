@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_inventory_updates/unsynced/created_inventory_updates_class.dart';
 import 'package:stockall/main.dart';
 
@@ -25,23 +26,7 @@ class CreatedInventoryUpdatesFunc {
       );
     }
 
-    if (!Hive.isBoxOpen(createdInventoryUpdatesBoxName)) {
-      _createdInventoryUpdatesBox =
-          await Hive.openBox<CreatedInventoryUpdatesClass>(
-            createdInventoryUpdatesBoxName,
-          );
-      await mainLocalLog(
-        'Created Inventory Update Box opened ✅',
-      );
-    } else {
-      _createdInventoryUpdatesBox =
-          Hive.box<CreatedInventoryUpdatesClass>(
-            createdInventoryUpdatesBoxName,
-          );
-      await mainLocalLog(
-        'Created Inventory Update Box already open, reused ✅',
-      );
-    }
+    _createdInventoryUpdatesBox = await openBoxSafely<CreatedInventoryUpdatesClass>(createdInventoryUpdatesBoxName);
   }
 
   /// Safe getter for the box

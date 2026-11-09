@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class ExpensesFunc {
@@ -15,11 +16,37 @@ class ExpensesFunc {
 
   Future<void> init() async {
     try {
-      Hive.registerAdapter(TempExpensesClassAdapter());
-      expensesBox = await Hive.openBox(expensesBoxName);
-      await CreatedExpensesFunc().init();
-      await DeletedExpensesFunc().init();
-      await UpdatedExpensesFunc().init();
+      safeRegisterAdapter(TempExpensesClassAdapter());
+      expensesBox = await openBoxSafely<TempExpensesClass>(
+        expensesBoxName,
+      );
+      try {
+        await CreatedExpensesFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing CreatedExpensesFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await DeletedExpensesFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing DeletedExpensesFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await UpdatedExpensesFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing UpdatedExpensesFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
       await mainLocalLog('Expenses Box Initialized');
     } catch (e, s) {
       await mainLocalLog(
@@ -31,12 +58,22 @@ class ExpensesFunc {
   }
 
   List<TempExpensesClass> getExpenses() {
-    List<TempExpensesClass> exps =
-        expensesBox.values.toList();
-    exps.sort(
-      (a, b) => b.createdDate!.compareTo(a.createdDate!),
-    );
-    return exps;
+    try {
+      List<TempExpensesClass> exps =
+          expensesBox.values.toList();
+      exps.sort(
+        (a, b) => (b.createdDate ?? DateTime(2000))
+            .compareTo(a.createdDate ?? DateTime(2000)),
+      );
+      return exps;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading expenses: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllExpenses(

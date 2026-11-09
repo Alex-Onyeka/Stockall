@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_customers/unsynced/updated/updated_customers.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class UpdatedCustomersFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedCustomersBoxName)) {
-      _updatedCustomersBox =
-          await Hive.openBox<UpdatedCustomers>(
-            updatedCustomersBoxName,
-          );
-      await mainLocalLog('Updated Customers Box opened ✅');
-    } else {
-      _updatedCustomersBox = Hive.box<UpdatedCustomers>(
-        updatedCustomersBoxName,
-      );
-      await mainLocalLog(
-        'Updated Customers Box already open, reused ✅',
-      );
-    }
+_updatedCustomersBox = await openBoxSafely<UpdatedCustomers>(updatedCustomersBoxName);
   }
 
   /// Safe getter for the box
@@ -52,7 +39,12 @@ class UpdatedCustomersFunc {
   }
 
   List<UpdatedCustomers> getCustomers() {
-    return updatedCustomersBox.values.toList();
+    try {
+      if (_updatedCustomersBox == null) return [];
+      return _updatedCustomersBox!.values.toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   Future<int> createUpdatedCustomer(

@@ -554,14 +554,19 @@ class _AddProductDesktopState
                 updatedBranchClusterId = uuidGen();
               } else if (stagedBranchLinks.isNotEmpty) {
                 for (final link in stagedBranchLinks) {
-                  if (link.product.globalProductId != null &&
-                      link.product.globalProductId!.trim().isNotEmpty) {
-                    updatedBranchClusterId = link.product.globalProductId;
+                  if (link.product.globalProductId !=
+                          null &&
+                      link.product.globalProductId!
+                          .trim()
+                          .isNotEmpty) {
+                    updatedBranchClusterId =
+                        link.product.globalProductId;
                     break;
                   }
                 }
                 updatedBranchClusterId ??=
-                    widget.product?.globalProductId ?? uuidGen();
+                    widget.product?.globalProductId ??
+                    uuidGen();
               } else {
                 updatedBranchClusterId ??= uuidGen();
               }
@@ -572,15 +577,27 @@ class _AddProductDesktopState
                 updatedDeptClusterId = uuidGen();
               } else if (stagedDeptLinks.isNotEmpty) {
                 for (final link in stagedDeptLinks) {
-                  if (link.product.globalDepartmentProductId != null &&
-                      link.product.globalDepartmentProductId!.trim().isNotEmpty) {
+                  if (link
+                              .product
+                              .globalDepartmentProductId !=
+                          null &&
+                      link
+                          .product
+                          .globalDepartmentProductId!
+                          .trim()
+                          .isNotEmpty) {
                     updatedDeptClusterId =
-                        link.product.globalDepartmentProductId;
+                        link
+                            .product
+                            .globalDepartmentProductId;
                     break;
                   }
                 }
                 updatedDeptClusterId ??=
-                    widget.product?.globalDepartmentProductId ?? uuidGen();
+                    widget
+                        .product
+                        ?.globalDepartmentProductId ??
+                    uuidGen();
               } else {
                 updatedDeptClusterId ??= uuidGen();
               }
@@ -2568,10 +2585,12 @@ class _AddProductDesktopState
                                         SizedBox(
                                           height: 10,
                                         ),
-                                        if (returnShopProvider()
-                                                .userShops
-                                                .length >
-                                            1) ...[
+                                        if (widget.product !=
+                                                null &&
+                                            returnShopProvider()
+                                                    .userShops
+                                                    .length >
+                                                1) ...[
                                           BranchProductLinkWidget(
                                             currentProduct:
                                                 widget
@@ -2596,10 +2615,12 @@ class _AddProductDesktopState
                                             height: 10,
                                           ),
                                         ],
-                                        if (returnShopProvider()
-                                                .userShop()
-                                                ?.manageDepartments ==
-                                            true) ...[
+                                        if (widget.product !=
+                                                null &&
+                                            returnShopProvider()
+                                                    .userShop()
+                                                    ?.manageDepartments ==
+                                                true) ...[
                                           DepartmentProductLinkWidget(
                                             currentProduct:
                                                 widget

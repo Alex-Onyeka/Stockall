@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class UserFunc {
@@ -10,57 +11,76 @@ class UserFunc {
   final String userBoxName = 'userBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(userBoxName);
-    try {
-      Hive.registerAdapter(TempUserClassAdapter());
-      userBox = await Hive.openBox(userBoxName);
-      await mainLocalLog('User Box Initialized');
-    } catch (e) {
-      await mainLocalLog(
-        'Error Initializing Users Box: ${e.toString()}',
-      );
-    }
+    safeRegisterAdapter(TempUserClassAdapter());
+    userBox = await openBoxSafely<TempUserClass>(
+      userBoxName,
+    );
+    await mainLocalLog('User Box Initialized');
   }
 
   List<TempUserClass> getUsers() {
-    List<TempUserClass> users = userBox.values.toList();
-    // await mainLocalLog(users.first.name);
-    // await mainLocalLog(users.last.name);
-    return users;
+    try {
+      List<TempUserClass> users = userBox.values.toList();
+      return users;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading users: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   TempUserClass? getUser(String userId) {
-    return userBox.values.isNotEmpty
-        ? userBox.values.firstWhere(
-          (user) => user.userId == userId,
-        )
-        : null;
+    try {
+      return userBox.values.isNotEmpty
+          ? userBox.values.firstWhere(
+            (user) => user.userId == userId,
+          )
+          : null;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading single user: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return null;
+    }
   }
 
   TempUserClass? getUserByEmailandPassword(
     String userId,
     String email,
   ) {
-    if (userBox.values.isNotEmpty) {
-      // await mainLocalLog(userBox.values.length);
-      if (userBox.values
-          .where(
-            (user) =>
-                user.userId == userId &&
-                user.email == email,
-          )
-          .isNotEmpty) {
-        return userBox.values
+    try {
+      if (userBox.values.isNotEmpty) {
+        if (userBox.values
             .where(
               (user) =>
                   user.userId == userId &&
                   user.email == email,
             )
-            .first;
+            .isNotEmpty) {
+          return userBox.values
+              .where(
+                (user) =>
+                    user.userId == userId &&
+                    user.email == email,
+              )
+              .first;
+        } else {
+          return null;
+        }
       } else {
         return null;
       }
-    } else {
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading user by email/password: $e',
+        error: e,
+        stackTrace: s,
+      );
       return null;
     }
   }

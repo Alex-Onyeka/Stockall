@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/unsynced/deleted_productions/deleted_production_record.dart';
 import 'package:stockall/main.dart';
 
@@ -26,24 +27,7 @@ class DeletedProductionRecordsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedProductionRecordBoxName)) {
-      _deletedProductionRecordBox =
-          await Hive.openBox<DeletedProductionRecord>(
-            deletedProductionRecordBoxName,
-          );
-      await mainLocalLog(
-        'Deleted Production Records Box opened ✅',
-      );
-    } else {
-      _deletedProductionRecordBox =
-          Hive.box<DeletedProductionRecord>(
-            deletedProductionRecordBoxName,
-          );
-      await mainLocalLog(
-        'Deleted Production Records Box already open, reused ✅',
-      );
-    }
+_deletedProductionRecordBox = await openBoxSafely<DeletedProductionRecord>(deletedProductionRecordBoxName);
   }
 
   /// Safe getter for the box
