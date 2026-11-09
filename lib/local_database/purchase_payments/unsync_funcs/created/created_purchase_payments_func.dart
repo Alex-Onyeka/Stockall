@@ -25,22 +25,7 @@
 //       );
 //     }
 
-//     // Open the box only if it isn’t already open
-//     if (!Hive.isBoxOpen(createdPurchasePaymentsBoxName)) {
-//       _createdPurchasePaymentsBox =
-//           await Hive.openBox<CreatedPurchasePayments>(
-//             createdPurchasePaymentsBoxName,
-//           );
-//       await mainLocalLog('Created Purchase Payments Box opened ✅');
-//     } else {
-//       _createdPurchasePaymentsBox =
-//           Hive.box<CreatedPurchasePayments>(
-//             createdPurchasePaymentsBoxName,
-//           );
-//       await mainLocalLog(
-//         'Created Purchase Payments Box already open, reused ✅',
-//       );
-//     }
+// _createdPurchasePaymentsBox = await openBoxSafely<CreatedPurchasePayments>(createdPurchasePaymentsBoxName);
 //   }
 
 //   /// Safe getter for the box

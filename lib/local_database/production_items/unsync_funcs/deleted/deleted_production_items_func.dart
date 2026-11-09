@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/unsynced/deleted/deleted_production_item.dart';
 import 'package:stockall/main.dart';
 
@@ -14,43 +15,19 @@ class DeletedProductionItemsFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    try {
-      if (!Hive.isAdapterRegistered(
-        DeletedProductionItemAdapter().typeId,
-      )) {
-        Hive.registerAdapter(
-          DeletedProductionItemAdapter(),
-        );
-        await mainLocalLog(
-          'deletedProductionItemsAdapter registered ✅',
-        );
-      }
-
-      // Open the box only if it isn’t already open
-      if (!Hive.isBoxOpen(deletedProductionItemsBoxName)) {
-        _deletedProductionItemsBox =
-            await Hive.openBox<DeletedProductionItem>(
-              deletedProductionItemsBoxName,
-            );
-        await mainLocalLog(
-          'Deleted Production Items Box opened ✅',
-        );
-      } else {
-        _deletedProductionItemsBox =
-            Hive.box<DeletedProductionItem>(
-              deletedProductionItemsBoxName,
-            );
-        await mainLocalLog(
-          'Deleted Production Items Box already open, reused ✅',
-        );
-      }
-    } catch (e, s) {
+    if (!Hive.isAdapterRegistered(
+      DeletedProductionItemAdapter().typeId,
+    )) {
+      Hive.registerAdapter(DeletedProductionItemAdapter());
       await mainLocalLog(
-        'Error Initializing Deleted Production Items Func: ${e.toString()}',
-        error: e,
-        stackTrace: s,
+        'deletedProductionItemsAdapter registered ✅',
       );
     }
+
+    _deletedProductionItemsBox =
+        await openBoxSafely<DeletedProductionItem>(
+          deletedProductionItemsBoxName,
+        );
   }
 
   /// Safe getter for the box

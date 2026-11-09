@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/deleted_materials/deleted_material.dart';
 import 'package:stockall/main.dart';
 
@@ -14,40 +15,19 @@ class DeletedMaterialsFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    try {
-      if (!Hive.isAdapterRegistered(
-        DeletedMaterialAdapter().typeId,
-      )) {
-        Hive.registerAdapter(DeletedMaterialAdapter());
-        await mainLocalLog(
-          'deletedMaterialsAdapter registered ✅',
-        );
-      }
-
-      // Open the box only if it isn’t already open
-      if (!Hive.isBoxOpen(deletedMaterialsBoxName)) {
-        _deletedMaterialsBox =
-            await Hive.openBox<DeletedMaterial>(
-              deletedMaterialsBoxName,
-            );
-        await mainLocalLog(
-          'Deleted Materials Box opened ✅',
-        );
-      } else {
-        _deletedMaterialsBox = Hive.box<DeletedMaterial>(
-          deletedMaterialsBoxName,
-        );
-        await mainLocalLog(
-          'Deleted Materials Box already open, reused ✅',
-        );
-      }
-    } catch (e, s) {
+    if (!Hive.isAdapterRegistered(
+      DeletedMaterialAdapter().typeId,
+    )) {
+      Hive.registerAdapter(DeletedMaterialAdapter());
       await mainLocalLog(
-        'Error Initializing Deleted Materials Func: ${e.toString()}',
-        error: e,
-        stackTrace: s,
+        'deletedMaterialsAdapter registered ✅',
       );
     }
+
+    _deletedMaterialsBox =
+        await openBoxSafely<DeletedMaterial>(
+          deletedMaterialsBoxName,
+        );
   }
 
   /// Safe getter for the box

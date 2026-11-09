@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/app_version/app_version.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class AppVersionFunc {
@@ -12,9 +13,10 @@ class AppVersionFunc {
 
   Future<void> init() async {
     try {
-      // await Hive.deleteBoxFromDisk(appVersionBoxName);
-      Hive.registerAdapter(AppVersionAdapter());
-      appVersionBox = await Hive.openBox(appVersionBoxName);
+      if (!Hive.isAdapterRegistered(AppVersionAdapter().typeId)) {
+        Hive.registerAdapter(AppVersionAdapter());
+      }
+      appVersionBox = await openBoxSafely<AppVersion>(appVersionBoxName);
       await mainLocalLog('✅App Version Box Initialized');
     } catch (e, s) {
       await mainLocalLog(

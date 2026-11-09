@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
 import 'package:stockall/main.dart';
 
@@ -14,7 +15,6 @@ class DeletedProductsFunc {
 
   /// Initialize Hive box + adapter safely
   Future<void> init() async {
-    try {
       if (!Hive.isAdapterRegistered(
         DeletedProductsAdapter().typeId,
       )) {
@@ -24,28 +24,7 @@ class DeletedProductsFunc {
         );
       }
 
-      // Open the box only if it isn’t already open
-      if (!Hive.isBoxOpen(deletedProductsBoxName)) {
-        _deletedProductsBox =
-            await Hive.openBox<DeletedProducts>(
-              deletedProductsBoxName,
-            );
-        await mainLocalLog('Deleted Products Box opened ✅');
-      } else {
-        _deletedProductsBox = Hive.box<DeletedProducts>(
-          deletedProductsBoxName,
-        );
-        await mainLocalLog(
-          'Deleted Products Box already open, reused ✅',
-        );
-      }
-    } catch (e, s) {
-      await mainLocalLog(
-        'Error Initializing Deleted Products Func: ${e.toString()}',
-        error: e,
-        stackTrace: s,
-      );
-    }
+_deletedProductsBox = await openBoxSafely<DeletedProducts>(deletedProductsBoxName);
   }
 
   /// Safe getter for the box

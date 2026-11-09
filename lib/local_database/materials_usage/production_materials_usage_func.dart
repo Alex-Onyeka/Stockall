@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
 import 'package:stockall/local_database/materials_usage/unsync_funcs/created/created_production_materials_usage_func.dart';
 import 'package:stockall/local_database/materials_usage/unsync_funcs/deleted/deleted_production_materials_usage_func.dart';
@@ -16,16 +17,25 @@ class ProductionMaterialsUsageFunc {
       'productionMaterialsUsageBoxStockall';
 
   Future<void> init() async {
-    await Hive.deleteBoxFromDisk(
+    safeRegisterAdapter(ProductionMaterialsUsageAdapter());
+    productionMaterialsUsageBox = await openBoxSafely<ProductionMaterialsUsage>(
       productionMaterialsUsageBoxName,
     );
-    Hive.registerAdapter(ProductionMaterialsUsageAdapter());
-    productionMaterialsUsageBox = await Hive.openBox(
-      productionMaterialsUsageBoxName,
-    );
-    await CreatedProductionMaterialsUsageFunc().init();
-    await DeletedProductionMaterialsUsageFunc().init();
-    await UpdatedProductionMaterialsUsageFunc().init();
+    try {
+      await CreatedProductionMaterialsUsageFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedProductionMaterialsUsageFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedProductionMaterialsUsageFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedProductionMaterialsUsageFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedProductionMaterialsUsageFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedProductionMaterialsUsageFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog(
       'Production Materials Usage Box Initialized',
     );
@@ -33,13 +43,18 @@ class ProductionMaterialsUsageFunc {
 
   List<ProductionMaterialsUsage>
   getProductionMaterialsUsages() {
-    List<ProductionMaterialsUsage>
-    productionMaterialsUsage =
-        productionMaterialsUsageBox.values.toList();
-    productionMaterialsUsage.sort(
-      (a, b) => b.createdAt!.compareTo(a.createdAt!),
-    );
-    return productionMaterialsUsage;
+    try {
+      List<ProductionMaterialsUsage>
+      productionMaterialsUsage =
+          productionMaterialsUsageBox.values.toList();
+      productionMaterialsUsage.sort(
+        (a, b) => b.createdAt!.compareTo(a.createdAt!),
+      );
+      return productionMaterialsUsage;
+    } catch (e, s) {
+      mainLocalLog('Error reading production materials usages: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllProductionMaterialsUsages(

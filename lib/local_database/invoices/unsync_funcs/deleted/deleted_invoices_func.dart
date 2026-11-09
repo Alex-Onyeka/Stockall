@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_invoices/unsynced/deleted_invoices/deleted_invoices.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,10 @@ class DeletedInvoicesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedInvoicesBoxName)) {
-      _deletedInvoicesBox =
-          await Hive.openBox<DeletedInvoices>(
-            deletedInvoicesBoxName,
-          );
-      await mainLocalLog('Deleted Invoices Box opened ✅');
-    } else {
-      _deletedInvoicesBox = Hive.box<DeletedInvoices>(
-        deletedInvoicesBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Invoices Box already open, reused ✅',
-      );
-    }
+    _deletedInvoicesBox =
+        await openBoxSafely<DeletedInvoices>(
+          deletedInvoicesBoxName,
+        );
   }
 
   /// Safe getter for the box
@@ -60,7 +50,10 @@ class DeletedInvoicesFunc {
   ) async {
     try {
       for (var invoice in deletedInvoices) {
-        await deletedInvoicesBox.put(invoice.invoiceUuid, invoice);
+        await deletedInvoicesBox.put(
+          invoice.invoiceUuid,
+          invoice,
+        );
       }
       await mainLocalLog(
         "Offline Deleted Invoices inserted ✅",

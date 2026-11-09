@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
@@ -14,27 +15,71 @@ class MainReceiptFunc {
   final String receiptBoxName = 'mainReceiptBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempMainReceiptAdapter());
-    receiptBox = await Hive.openBox(receiptBoxName);
-    await CreatedReceiptsFunc().init();
-    await DeletedReceiptsFunc().init();
-    await UpdatedReceiptsFunc().init();
+    safeRegisterAdapter(TempMainReceiptAdapter());
+    receiptBox = await openBoxSafely<TempMainReceipt>(
+      receiptBoxName,
+    );
+    try {
+      await CreatedReceiptsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedReceiptsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await DeletedReceiptsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing DeletedReceiptsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await UpdatedReceiptsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing UpdatedReceiptsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog('Receipt Box Initialized');
   }
 
   List<TempMainReceipt> getReceipts() {
-    List<TempMainReceipt> receipts =
-        receiptBox.values.toList();
-    receipts.sort(
-      (a, b) => b.createdAt.compareTo(a.createdAt),
-    );
-    return receipts;
+    try {
+      List<TempMainReceipt> receipts =
+          receiptBox.values.toList();
+      receipts.sort(
+        (a, b) => b.createdAt.compareTo(a.createdAt),
+      );
+      return receipts;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading receipts: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   TempMainReceipt? getSingleReceipt({
     required String uuid,
   }) {
-    return receiptBox.get(uuid);
+    try {
+      return receiptBox.get(uuid);
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading single receipt $uuid: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return null;
+    }
   }
 
   Future<int> insertAllReceipts(

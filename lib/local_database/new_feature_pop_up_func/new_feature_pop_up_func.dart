@@ -4,6 +4,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/new_feature_pop_action.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/new_feature_pop_up_func/new_feature_pop_up_class.dart';
 import 'package:stockall/main.dart';
 
@@ -18,11 +19,15 @@ class NewFeaturePopUpFunc {
 
   Future<void> init() async {
     try {
-      // await Hive.deleteBoxFromDisk(newFeaturePopUpBoxName);
-      Hive.registerAdapter(NewFeaturePopUpClassAdapter());
-      newFeaturePopUpBox = await Hive.openBox(
-        newFeaturePopUpBoxName,
-      );
+      if (!Hive.isAdapterRegistered(
+        NewFeaturePopUpClassAdapter().typeId,
+      )) {
+        Hive.registerAdapter(NewFeaturePopUpClassAdapter());
+      }
+      newFeaturePopUpBox =
+          await openBoxSafely<NewFeaturePopUpClass>(
+            newFeaturePopUpBoxName,
+          );
       await mainLocalLog(
         '✅New Feature Pop Up Box Initialized',
       );

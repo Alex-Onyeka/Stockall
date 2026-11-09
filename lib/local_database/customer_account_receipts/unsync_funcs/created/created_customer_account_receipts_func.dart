@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/unsynced/created/created_customer_account_receipts.dart';
 import 'package:stockall/main.dart';
 
@@ -27,26 +28,7 @@ class CreatedCustomerAccountReceiptsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(
-      createdCustomerAccountReceiptsBoxName,
-    )) {
-      _createdCustomerAccountReceiptsBox =
-          await Hive.openBox<
-            CreatedCustomerAccountReceipts
-          >(createdCustomerAccountReceiptsBoxName);
-      await mainLocalLog(
-        'Created Customer Account Receipts Box opened ✅',
-      );
-    } else {
-      _createdCustomerAccountReceiptsBox =
-          Hive.box<CreatedCustomerAccountReceipts>(
-            createdCustomerAccountReceiptsBoxName,
-          );
-      await mainLocalLog(
-        'Created Customer Account Receipts Box already open, reused ✅',
-      );
-    }
+_createdCustomerAccountReceiptsBox = await openBoxSafely<CreatedCustomerAccountReceipts>(createdCustomerAccountReceiptsBoxName);
   }
 
   /// Safe getter for the box

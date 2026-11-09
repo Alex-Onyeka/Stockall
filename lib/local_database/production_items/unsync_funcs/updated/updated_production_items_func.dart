@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_items/unsynced/updated/updated_production_item.dart';
 import 'package:stockall/main.dart';
 
@@ -42,23 +43,7 @@ class UpdatedProductionItemsFunc {
   }
 
   Future<void> _openBox() async {
-    if (!Hive.isBoxOpen(updatedProductionItemsBoxName)) {
-      _updatedProductionItemsBox =
-          await Hive.openBox<UpdatedProductionItem>(
-            updatedProductionItemsBoxName,
-          );
-      await mainLocalLog(
-        'Updated Production Item  Box opened ✅',
-      );
-    } else {
-      _updatedProductionItemsBox =
-          Hive.box<UpdatedProductionItem>(
-            updatedProductionItemsBoxName,
-          );
-      await mainLocalLog(
-        'Updated Production Item  Box already open, reused ✅',
-      );
-    }
+    _updatedProductionItemsBox = await openBoxSafely<UpdatedProductionItem>(updatedProductionItemsBoxName);
   }
 
   /// Safe getter for the box

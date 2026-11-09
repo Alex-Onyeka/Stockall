@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_event_log/unsynced/created_events_log_class.dart';
 import 'package:stockall/main.dart';
 
@@ -22,21 +23,7 @@ class CreatedEventsLogFunc {
       );
     }
 
-    if (!Hive.isBoxOpen(createdEventsLogBoxName)) {
-      _createdEventsLogBox =
-          await Hive.openBox<CreatedEventsLogClass>(
-            createdEventsLogBoxName,
-          );
-      await mainLocalLog('Created Events Log Box opened ✅');
-    } else {
-      _createdEventsLogBox =
-          Hive.box<CreatedEventsLogClass>(
-            createdEventsLogBoxName,
-          );
-      await mainLocalLog(
-        'Created Events Log Box already open, reused ✅',
-      );
-    }
+    _createdEventsLogBox = await openBoxSafely<CreatedEventsLogClass>(createdEventsLogBoxName);
   }
 
   /// Safe getter for the box

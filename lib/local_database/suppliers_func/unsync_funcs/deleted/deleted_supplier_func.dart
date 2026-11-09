@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_suppliers/unsynced/deleted_suppliers/deleted_supplier.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class DeletedSupplierFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedSuppliersBoxName)) {
-      _deletedSuppliersBox =
-          await Hive.openBox<DeletedSupplier>(
-            deletedSuppliersBoxName,
-          );
-      await mainLocalLog('Deleted Suppliers Box opened ✅');
-    } else {
-      _deletedSuppliersBox = Hive.box<DeletedSupplier>(
-        deletedSuppliersBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Suppliers Box already open, reused ✅',
-      );
-    }
+_deletedSuppliersBox = await openBoxSafely<DeletedSupplier>(deletedSuppliersBoxName);
   }
 
   /// Safe getter for the box

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/created/created_storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/deleted_storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
@@ -15,25 +16,42 @@ class StorageProductsFunc {
       'StorageProductsStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempStorageProductsAdapter());
-    storageProductsBox = await Hive.openBox(
+    safeRegisterAdapter(TempStorageProductsAdapter());
+    storageProductsBox = await openBoxSafely<TempStorageProducts>(
       storageProductsBoxName,
     );
-    await CreatedStorageProductsFunc().init();
-    await DeletedStorageProductsFunc().init();
-    await UpdatedStorageProductsFunc().init();
+    try {
+      await CreatedStorageProductsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedStorageProductsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedStorageProductsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedStorageProductsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedStorageProductsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedStorageProductsFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog('Storage Products Box Initialized');
   }
 
   List<TempStorageProducts> getStorageProducts() {
-    List<TempStorageProducts> storageProducts =
-        storageProductsBox.values.toList();
-    storageProducts.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    return storageProducts;
+    try {
+      List<TempStorageProducts> storageProducts =
+          storageProductsBox.values.toList();
+      storageProducts.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      return storageProducts;
+    } catch (e, s) {
+      mainLocalLog('Error reading storage products: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllStorageProducts(

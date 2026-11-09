@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class LoggedInUserFunc {
@@ -12,37 +13,15 @@ class LoggedInUserFunc {
       'loggedInUserBoxStockall';
 
   Future<void> init() async {
-    // await Hive.deleteBoxFromDisk(loggedInUserBoxName);
-    try {
+    if (!Hive.isAdapterRegistered(
+      LoggedInUserAdapter().typeId,
+    )) {
       Hive.registerAdapter(LoggedInUserAdapter());
-      loggedInUserBox = await Hive.openBox(
-        loggedInUserBoxName,
-      );
-      await mainLocalLog('Logged In User Box Initialized');
-    } catch (e) {
-      await mainLocalLog(
-        '❌ Error New Logged In User: ${e.toString()}',
-      );
-      // try {
-      //   if (Hive.isBoxOpen(loggedInUserBoxName)) {
-      //     await Hive.box(loggedInUserBoxName).close();
-      //   }
-
-      //   await Hive.deleteBoxFromDisk(loggedInUserBoxName);
-      //   await mainLocalLog(
-      //     '🧹 Deleted Corrupted Current Logged In User Box',
-      //   );
-
-      //   loggedInUserBox = await Hive.openBox(
-      //     loggedInUserBoxName,
-      //   );
-      //   await mainLocalLog('✅ Reinitialized Logged In User Box');
-      // } catch (innerError) {
-      //   await mainLocalLog(
-      //     '⚠️ Failed to recover Hive box Logged In User: $innerError',
-      //   );
-      // }
     }
+    loggedInUserBox = await openBoxSafely<LoggedInUser>(
+      loggedInUserBoxName,
+    );
+    await mainLocalLog('Logged In User Box Initialized');
   }
 
   LoggedInUser? getLoggedInUser() {

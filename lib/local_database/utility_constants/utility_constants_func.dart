@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/utility_constants/utility_constants.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class UtilityConstantsFunc {
@@ -13,9 +14,10 @@ class UtilityConstantsFunc {
 
   Future<void> init() async {
     try {
-      // await Hive.deleteBoxFromDisk(utilityConstantsBoxName);
-      Hive.registerAdapter(UtilityConstantsAdapter());
-      utilityConstantsBox = await Hive.openBox(
+      if (!Hive.isAdapterRegistered(UtilityConstantsAdapter().typeId)) {
+        Hive.registerAdapter(UtilityConstantsAdapter());
+      }
+      utilityConstantsBox = await openBoxSafely<UtilityConstants>(
         utilityConstantsBoxName,
       );
       await mainLocalLog(

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_current_department/temp_current_department.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class CurrentDepartmentFunc {
@@ -12,41 +13,18 @@ class CurrentDepartmentFunc {
       'currentDepartmentBoxStockall';
 
   Future<void> init() async {
-    try {
+    if (!Hive.isAdapterRegistered(
+      TempCurrentDepartmentAdapter().typeId,
+    )) {
       Hive.registerAdapter(TempCurrentDepartmentAdapter());
-
-      currentDepartmentBox = await Hive.openBox(
-        currentDepartmentBoxName,
-      );
-      await mainLocalLog(
-        '✅ Current Department Box Initialized',
-      );
-    } catch (e) {
-      await mainLocalLog('❌ Error New: ${e.toString()}');
-      try {
-        if (Hive.isBoxOpen(currentDepartmentBoxName)) {
-          await Hive.box(currentDepartmentBoxName).close();
-        }
-
-        await Hive.deleteBoxFromDisk(
-          currentDepartmentBoxName,
-        );
-        await mainLocalLog(
-          '🧹 Deleted Corrupted Current Department Box',
-        );
-
-        currentDepartmentBox = await Hive.openBox(
-          currentDepartmentBoxName,
-        );
-        await mainLocalLog(
-          '✅ Reinitialized Current Department Box',
-        );
-      } catch (innerError) {
-        await mainLocalLog(
-          '⚠️ Failed to recover Hive box: $innerError',
-        );
-      }
     }
+    currentDepartmentBox =
+        await openBoxSafely<TempCurrentDepartment>(
+          currentDepartmentBoxName,
+        );
+    await mainLocalLog(
+      '✅ Current Department Box Initialized',
+    );
   }
 
   TempCurrentDepartment? getCurrentDepartment() {

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/customer_account_receipts.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/customer_account_updates/customer_account_update_func.dart';
 import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/created/created_customer_account_receipts_func.dart';
 import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/deleted/deleted_customer_account_receipts_func.dart';
@@ -17,14 +18,47 @@ class CustomerAccountReceiptsFunc {
       'customerAccountReceiptsBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(CustomerAccountReceiptsAdapter());
-    customerAccountReceiptsBox = await Hive.openBox(
-      customerAccountReceiptsBoxName,
-    );
-    await CreatedCustomerAccountReceiptsFunc().init();
-    await DeletedCustomerAccountReceiptsFunc().init();
-    await UpdatedCustomerAccountReceiptsFunc().init();
-    await CustomerAccountUpdateFunc().init();
+    safeRegisterAdapter(CustomerAccountReceiptsAdapter());
+    customerAccountReceiptsBox =
+        await openBoxSafely<CustomerAccountReceipts>(
+          customerAccountReceiptsBoxName,
+        );
+    try {
+      await CreatedCustomerAccountReceiptsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedCustomerAccountReceiptsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await DeletedCustomerAccountReceiptsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing DeletedCustomerAccountReceiptsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await UpdatedCustomerAccountReceiptsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing UpdatedCustomerAccountReceiptsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await CustomerAccountUpdateFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CustomerAccountUpdateFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog(
       'Customer Account Receipts Box Initialized',
     );
@@ -32,12 +66,24 @@ class CustomerAccountReceiptsFunc {
 
   List<CustomerAccountReceipts>
   getCustomerAccountReceipts() {
-    List<CustomerAccountReceipts> customerAccountReceipts =
-        customerAccountReceiptsBox.values.toList();
-    customerAccountReceipts.sort(
-      (a, b) => b.createdAt!.compareTo(a.createdAt!),
-    );
-    return customerAccountReceipts;
+    try {
+      List<CustomerAccountReceipts>
+      customerAccountReceipts =
+          customerAccountReceiptsBox.values.toList();
+      customerAccountReceipts.sort(
+        (a, b) => (b.createdAt ?? DateTime(2000)).compareTo(
+          a.createdAt ?? DateTime(2000),
+        ),
+      );
+      return customerAccountReceipts;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading customer account receipts: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllCustomerAccountReceipts(

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_customers/unsynced/created_customers/created_customers.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class CreatedCustomersFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(createdCustomersBoxName)) {
-      _createdCustomersBox =
-          await Hive.openBox<CreatedCustomers>(
-            createdCustomersBoxName,
-          );
-      await mainLocalLog('Created Customers Box opened ✅');
-    } else {
-      _createdCustomersBox = Hive.box<CreatedCustomers>(
-        createdCustomersBoxName,
-      );
-      await mainLocalLog(
-        'Created Customers Box already open, reused ✅',
-      );
-    }
+_createdCustomersBox = await openBoxSafely<CreatedCustomers>(createdCustomersBoxName);
   }
 
   /// Safe getter for the box
@@ -52,12 +39,22 @@ class CreatedCustomersFunc {
   }
 
   List<CreatedCustomers> getCustomers() {
-    List<CreatedCustomers> customers =
-        createdCustomersBox.values.toList();
-    customers.sort(
-      (a, b) => a.customer.name.compareTo(b.customer.name),
-    );
-    return customers;
+    try {
+      if (_createdCustomersBox == null) return [];
+      List<CreatedCustomers> customers =
+          _createdCustomersBox!.values.toList();
+      customers.sort(
+        (a, b) => a.customer.name.compareTo(b.customer.name),
+      );
+      return customers;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading created customers: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllCustomers(

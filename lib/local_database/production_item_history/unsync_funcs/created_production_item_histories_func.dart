@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_item_history/unsynced/created_production_item_history.dart';
 import 'package:stockall/main.dart';
 
@@ -25,25 +26,7 @@ class CreatedProductionItemHistoriesFunc {
       );
     }
 
-    if (!Hive.isBoxOpen(
-      createdProductionItemHistoriesBoxName,
-    )) {
-      _createdProductionItemHistoriesBox =
-          await Hive.openBox<CreatedProductionItemHistory>(
-            createdProductionItemHistoriesBoxName,
-          );
-      await mainLocalLog(
-        'Created Production Item Histories Box opened ✅',
-      );
-    } else {
-      _createdProductionItemHistoriesBox =
-          Hive.box<CreatedProductionItemHistory>(
-            createdProductionItemHistoriesBoxName,
-          );
-      await mainLocalLog(
-        'Created Production Item Histories Box already open, reused ✅',
-      );
-    }
+    _createdProductionItemHistoriesBox = await openBoxSafely<CreatedProductionItemHistory>(createdProductionItemHistoriesBoxName);
   }
 
   /// Safe getter for the box

@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 // import 'package:stockall/local_database/products/unsync_funcs/sales_products/sales_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
@@ -22,15 +23,49 @@ class ProductsFunc {
 
   Future<void> init() async {
     try {
-      Hive.registerAdapter(TempProductClassAdapter());
-      Hive.registerAdapter(ProductUnitsClassAdapter());
-      Hive.registerAdapter(ProductPricesClassAdapter());
-      productBox = await Hive.openBox(productBoxName);
-      syncMetaBox = await Hive.openBox(syncMetaBoxName);
-      await CreatedProductFunc().init();
-      await DeletedProductsFunc().init();
-      await UpdatedProductsFunc().init();
-      await QuantityUpdateFunc().init();
+      safeRegisterAdapter(TempProductClassAdapter());
+      safeRegisterAdapter(ProductUnitsClassAdapter());
+      safeRegisterAdapter(ProductPricesClassAdapter());
+      productBox = await openBoxSafely<TempProductClass>(
+        productBoxName,
+      );
+      syncMetaBox = await openBoxSafely(syncMetaBoxName);
+      try {
+        await CreatedProductFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing CreatedProductFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await DeletedProductsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing DeletedProductsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await UpdatedProductsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing UpdatedProductsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await QuantityUpdateFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing QuantityUpdateFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
       await mainLocalLog('Product Box Initialized');
     } catch (e, s) {
       await mainLocalLog(
@@ -58,7 +93,7 @@ class ProductsFunc {
   Future<void> setLastSyncTime(DateTime time) async {
     try {
       if (syncMetaBox == null) {
-        syncMetaBox = await Hive.openBox(syncMetaBoxName);
+        syncMetaBox = await openBoxSafely(syncMetaBoxName);
       }
       await syncMetaBox?.put(
         'last_product_sync_time',
@@ -111,26 +146,44 @@ class ProductsFunc {
   }
 
   List<TempProductClass> getProducts() {
-    List<TempProductClass> products =
-        productBox.values.toList();
-    products.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    return products;
+    try {
+      List<TempProductClass> products =
+          productBox.values.toList();
+      products.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      return products;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading products: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   TempProductClass? getSingleProduct({
     required String uuid,
   }) {
-    List<TempProductClass> products =
-        productBox.values
-            .where((pro) => pro.uuid == uuid)
-            .toList();
-    if (products.isNotEmpty) {
-      return products.first;
-    } else {
+    try {
+      List<TempProductClass> products =
+          productBox.values
+              .where((pro) => pro.uuid == uuid)
+              .toList();
+      if (products.isNotEmpty) {
+        return products.first;
+      } else {
+        return null;
+      }
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading single product $uuid: $e',
+        error: e,
+        stackTrace: s,
+      );
       return null;
     }
   }
@@ -143,14 +196,22 @@ class ProductsFunc {
       for (var product in products) {
         await productBox.put(product.uuid, product);
       }
-      for (var created in CreatedProductFunc().getProducts()) {
+      for (var created
+          in CreatedProductFunc().getProducts()) {
         if (created.product.uuid != null) {
-          await productBox.put(created.product.uuid, created.product);
+          await productBox.put(
+            created.product.uuid,
+            created.product,
+          );
         }
       }
-      for (var updated in UpdatedProductsFunc().getProducts()) {
+      for (var updated
+          in UpdatedProductsFunc().getProducts()) {
         if (updated.product.uuid != null) {
-          await productBox.put(updated.product.uuid, updated.product);
+          await productBox.put(
+            updated.product.uuid,
+            updated.product,
+          );
         }
       }
       await mainLocalLog(

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_drafts/unsynced/created/created_drafts.dart';
 import 'package:stockall/main.dart';
 
@@ -23,19 +24,7 @@ class CreatedDraftsFunc {
       );
     }
 
-    if (!Hive.isBoxOpen(createdDraftsBoxName)) {
-      _createdDraftsBox = await Hive.openBox<CreatedDrafts>(
-        createdDraftsBoxName,
-      );
-      await mainLocalLog('Created Drafts Box opened ✅');
-    } else {
-      _createdDraftsBox = Hive.box<CreatedDrafts>(
-        createdDraftsBoxName,
-      );
-      await mainLocalLog(
-        'Created Drafts Box already open, reused ✅',
-      );
-    }
+    _createdDraftsBox = await openBoxSafely<CreatedDrafts>(createdDraftsBoxName);
   }
 
   /// Safe getter for the box

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_production_material_cart_item/production_material_cart_item.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/productions_cart.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions_cart/temp_productions_cart_item/productions_cart_item.dart';
@@ -15,14 +16,15 @@ class ProductionsCartFunc {
       'productionsCartBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(ProductionsCartAdapter());
-    Hive.registerAdapter(ProductionsCartItemAdapter());
-    Hive.registerAdapter(
+    safeRegisterAdapter(ProductionsCartAdapter());
+    safeRegisterAdapter(ProductionsCartItemAdapter());
+    safeRegisterAdapter(
       ProductionMaterialCartItemAdapter(),
     );
-    productionsCartBox = await Hive.openBox(
-      productionsCartBoxName,
-    );
+    productionsCartBox =
+        await openBoxSafely<ProductionsCart>(
+          productionsCartBoxName,
+        );
     await initProductionCart();
     await mainLocalLog(
       'Main Productions Cart Box Initialized',
@@ -30,11 +32,15 @@ class ProductionsCartFunc {
   }
 
   ProductionsCart? getProductionsCart() {
-    List<ProductionsCart> productionsCarts =
-        productionsCartBox.values.toList();
-    return productionsCarts.isEmpty
-        ? null
-        : productionsCarts.first;
+    try {
+      List<ProductionsCart> productionsCarts =
+          productionsCartBox.values.toList();
+      return productionsCarts.isEmpty
+          ? null
+          : productionsCarts.first;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> initProductionCart() async {

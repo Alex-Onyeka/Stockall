@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_invoices/unsynced/created_invoices/created_invoices.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,10 @@ class CreatedInvoicesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(createdInvoicesBoxName)) {
-      _createdInvoicesBox =
-          await Hive.openBox<CreatedInvoices>(
-            createdInvoicesBoxName,
-          );
-      await mainLocalLog('Created Invoices Box opened ✅');
-    } else {
-      _createdInvoicesBox = Hive.box<CreatedInvoices>(
-        createdInvoicesBoxName,
-      );
-      await mainLocalLog(
-        'Created Invoices Box already open, reused ✅',
-      );
-    }
+    _createdInvoicesBox =
+        await openBoxSafely<CreatedInvoices>(
+          createdInvoicesBoxName,
+        );
   }
 
   /// Safe getter for the box

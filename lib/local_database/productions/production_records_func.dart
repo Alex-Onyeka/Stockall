@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record_materials.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/productions/unsync_funcs/created/created_production_record_func.dart';
 import 'package:stockall/local_database/productions/unsync_funcs/deleted/deleted_production_records_func.dart';
 import 'package:stockall/local_database/productions/unsync_funcs/updated/updated_production_records_func.dart';
@@ -16,28 +17,45 @@ class ProductionRecordsFunc {
       'productionRecordsBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(
+    safeRegisterAdapter(
       ProductionRecordMaterialsAdapter(),
     );
-    Hive.registerAdapter(ProductionRecordAdapter());
-    productionRecordsBox = await Hive.openBox(
+    safeRegisterAdapter(ProductionRecordAdapter());
+    productionRecordsBox = await openBoxSafely<ProductionRecord>(
       productionRecordsBoxName,
     );
-    await CreatedProductionRecordsFunc().init();
-    await DeletedProductionRecordsFunc().init();
-    await UpdatedProductionRecordsFunc().init();
+    try {
+      await CreatedProductionRecordsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedProductionRecordsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedProductionRecordsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedProductionRecordsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedProductionRecordsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedProductionRecordsFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog(
       'Production Records Box Initialized',
     );
   }
 
   List<ProductionRecord> getProductionRecords() {
-    List<ProductionRecord> productionRecords =
-        productionRecordsBox.values.toList();
-    productionRecords.sort(
-      (a, b) => b.createdAt!.compareTo(a.createdAt!),
-    );
-    return productionRecords;
+    try {
+      List<ProductionRecord> productionRecords =
+          productionRecordsBox.values.toList();
+      productionRecords.sort(
+        (a, b) => (b.createdAt ?? DateTime(2000)).compareTo(a.createdAt ?? DateTime(2000)),
+      );
+      return productionRecords;
+    } catch (e, s) {
+      mainLocalLog('Error reading production records: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllProductionRecords(

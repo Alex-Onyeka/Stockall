@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/deleted_storage_products/deleted_storage_product.dart';
 import 'package:stockall/main.dart';
 
@@ -24,24 +25,7 @@ class DeletedStorageProductsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedStorageProductBoxName)) {
-      _deletedStorageProductBox =
-          await Hive.openBox<DeletedStorageProduct>(
-            deletedStorageProductBoxName,
-          );
-      await mainLocalLog(
-        'Deleted Storage Products Box opened ✅',
-      );
-    } else {
-      _deletedStorageProductBox =
-          Hive.box<DeletedStorageProduct>(
-            deletedStorageProductBoxName,
-          );
-      await mainLocalLog(
-        'Deleted Storage Products Box already open, reused ✅',
-      );
-    }
+_deletedStorageProductBox = await openBoxSafely<DeletedStorageProduct>(deletedStorageProductBoxName);
   }
 
   /// Safe getter for the box

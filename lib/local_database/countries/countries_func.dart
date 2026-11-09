@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/locations/country_model.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class CountriesFunc {
@@ -17,8 +18,14 @@ class CountriesFunc {
     // } catch (e) {
     //   await mainLocalLog('Error Deleting Location Box: ${e.toString()}');
     // }
-    Hive.registerAdapter(CountryModelAdapter());
-    countrysBox = await Hive.openBox(countrysBoxName);
+    if (!Hive.isAdapterRegistered(
+      CountryModelAdapter().typeId,
+    )) {
+      Hive.registerAdapter(CountryModelAdapter());
+    }
+    countrysBox = await openBoxSafely<CountryModel>(
+      countrysBoxName,
+    );
     await mainLocalLog('✅Countries Box Initialized');
   }
 

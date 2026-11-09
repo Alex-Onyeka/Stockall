@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_drafts/draft_items.dart';
 import 'package:stockall/classes/temp_drafts/drafts.dart';
 import 'package:stockall/local_database/drafts_func/unsync_funcs/created/created_drafts_func.dart';
@@ -14,23 +15,40 @@ class DraftsFunc {
   final String draftBoxName = 'mainDraftsBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(DraftsAdapter());
-    Hive.registerAdapter(DraftItemsAdapter());
-    draftBox = await Hive.openBox(draftBoxName);
-    await CreatedDraftsFunc().init();
-    await DeletedDraftsFunc().init();
-    await UpdatedDraftsFunc().init();
+    safeRegisterAdapter(DraftsAdapter());
+    safeRegisterAdapter(DraftItemsAdapter());
+    draftBox = await openBoxSafely<Drafts>(draftBoxName);
+    try {
+      await CreatedDraftsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedDraftsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedDraftsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedDraftsFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedDraftsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedDraftsFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog('Draft Box Initialized');
   }
 
   List<Drafts> getDrafts() {
-    List<Drafts> drafts = draftBox.values.toList();
-    drafts.sort(
-      (a, b) => (b.updatedAt ?? b.createdAt).compareTo(
-        a.updatedAt ?? a.createdAt,
-      ),
-    );
-    return drafts;
+    try {
+      List<Drafts> drafts = draftBox.values.toList();
+      drafts.sort(
+        (a, b) => (b.updatedAt ?? b.createdAt).compareTo(
+          a.updatedAt ?? a.createdAt,
+        ),
+      );
+      return drafts;
+    } catch (e, s) {
+      mainLocalLog('Error reading drafts: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   Future<int> insertAllDrafts(List<Drafts> drafts) async {

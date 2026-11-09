@@ -4,6 +4,7 @@ import 'package:stockall/local_database/department_current/current_department_fu
 import 'package:stockall/local_database/department_func/unsync_funcs/created_departments/created_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/deleted_department/deleted_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/updated_department/updated_department_func.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class DepartmentsFunc {
@@ -15,19 +16,54 @@ class DepartmentsFunc {
   final String departmentBoxName = 'departmentBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(DepartmentClassAdapter());
-    departmentBox = await Hive.openBox(departmentBoxName);
-    await CreatedDepartmentsFunc().init();
-    await DeletedDepartmentsFunc().init();
-    await UpdatedDepartmentFunc().init();
+    safeRegisterAdapter(DepartmentClassAdapter());
+    departmentBox = await openBoxSafely<DepartmentClass>(
+      departmentBoxName,
+    );
+    try {
+      await CreatedDepartmentsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedDepartmentsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await DeletedDepartmentsFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing DeletedDepartmentsFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await UpdatedDepartmentFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing UpdatedDepartmentFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog('Department Box Initialized');
   }
 
   List<DepartmentClass> getDepartment() {
-    List<DepartmentClass> depts =
-        departmentBox.values.toList();
-    depts.sort((a, b) => a.name.compareTo(b.name));
-    return depts;
+    try {
+      List<DepartmentClass> depts =
+          departmentBox.values.toList();
+      depts.sort((a, b) => a.name.compareTo(b.name));
+      return depts;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading departments: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllDepartment(

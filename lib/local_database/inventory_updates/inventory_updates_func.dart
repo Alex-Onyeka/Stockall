@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_inventory_updates_func.dart';
 import 'package:stockall/main.dart';
 
@@ -13,23 +14,43 @@ class InventoryUpdatesFunc {
       'inventoryUpdatesBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempInventoryUpdateClassAdapter());
-    inventoryUpdatesBox = await Hive.openBox(
-      inventoryUpdatesBoxName,
-    );
-    await CreatedInventoryUpdatesFunc().init();
+    safeRegisterAdapter(TempInventoryUpdateClassAdapter());
+    inventoryUpdatesBox =
+        await openBoxSafely<TempInventoryUpdateClass>(
+          inventoryUpdatesBoxName,
+        );
+    try {
+      await CreatedInventoryUpdatesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedInventoryUpdatesFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog(
       'Inventory Updates  Box Initialized',
     );
   }
 
   List<TempInventoryUpdateClass> getInventoryUpdatess() {
-    List<TempInventoryUpdateClass> inventoryUpdates =
-        inventoryUpdatesBox.values.toList();
-    inventoryUpdates.sort(
-      (a, b) => a.createdAt!.compareTo(b.createdAt!),
-    );
-    return inventoryUpdates;
+    try {
+      List<TempInventoryUpdateClass> inventoryUpdates =
+          inventoryUpdatesBox.values.toList();
+      inventoryUpdates.sort(
+        (a, b) => (a.createdAt ?? DateTime(2000)).compareTo(
+          b.createdAt ?? DateTime(2000),
+        ),
+      );
+      return inventoryUpdates;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading inventory updates: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllInventoryUpdates(

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/updated/updated_purchases.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class UpdatedPurchasesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedPurchasesBoxName)) {
-      _updatedPurchasesBox =
-          await Hive.openBox<UpdatedPurchases>(
-            updatedPurchasesBoxName,
-          );
-      await mainLocalLog('Updated Purchases Box opened ✅');
-    } else {
-      _updatedPurchasesBox = Hive.box<UpdatedPurchases>(
-        updatedPurchasesBoxName,
-      );
-      await mainLocalLog(
-        'Updated Purchases Box already open, reused ✅',
-      );
-    }
+_updatedPurchasesBox = await openBoxSafely<UpdatedPurchases>(updatedPurchasesBoxName);
   }
 
   /// Safe getter for the box

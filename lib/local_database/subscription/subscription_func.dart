@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/subscription/subscription_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class SubscriptionFunc {
@@ -12,8 +13,10 @@ class SubscriptionFunc {
       'subscriptionBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(SubscriptionClassAdapter());
-    subscriptionBox = await Hive.openBox(
+    if (!Hive.isAdapterRegistered(SubscriptionClassAdapter().typeId)) {
+      Hive.registerAdapter(SubscriptionClassAdapter());
+    }
+    subscriptionBox = await openBoxSafely<SubscriptionClass>(
       subscriptionBoxName,
     );
     await mainLocalLog('Subscription Box Initialized ✅');

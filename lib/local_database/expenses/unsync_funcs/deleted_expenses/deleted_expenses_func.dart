@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/deleted_expenses/deleted_expenses.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class DeletedExpensesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedExpensesBoxName)) {
-      _deletedExpensesBox =
-          await Hive.openBox<DeletedExpenses>(
-            deletedExpensesBoxName,
-          );
-      await mainLocalLog('Deleted Expenses Box opened ✅');
-    } else {
-      _deletedExpensesBox = Hive.box<DeletedExpenses>(
-        deletedExpensesBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Expenses Box already open, reused ✅',
-      );
-    }
+_deletedExpensesBox = await openBoxSafely<DeletedExpenses>(deletedExpensesBoxName);
   }
 
   /// Safe getter for the box

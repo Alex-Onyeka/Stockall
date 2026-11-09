@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
@@ -15,26 +16,48 @@ class PurchaseFunc {
   final String purchasesBoxName = 'purchasesBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(PurchasePaymentsAdapter());
-    Hive.registerAdapter(TempPurchaseAdapter());
-    purchasesBox = await Hive.openBox(purchasesBoxName);
-    await CreatedPurchasesFunc().init();
-    await DeletedPurchasesFunc().init();
-    await UpdatedPurchasesFunc().init();
+    safeRegisterAdapter(PurchasePaymentsAdapter());
+    safeRegisterAdapter(TempPurchaseAdapter());
+    purchasesBox = await openBoxSafely<TempPurchase>(purchasesBoxName);
+    try {
+      await CreatedPurchasesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing CreatedPurchasesFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await DeletedPurchasesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing DeletedPurchasesFunc: $e', error: e, stackTrace: s);
+    }
+    try {
+      await UpdatedPurchasesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog('Error initializing UpdatedPurchasesFunc: $e', error: e, stackTrace: s);
+    }
     await mainLocalLog('Purchase Box Initialized');
   }
 
   List<TempPurchase> getPurchases() {
-    List<TempPurchase> purchases =
-        purchasesBox.values.toList();
-    purchases.sort(
-      (a, b) => b.createdAt.compareTo(a.createdAt),
-    );
-    return purchases;
+    try {
+      List<TempPurchase> purchases =
+          purchasesBox.values.toList();
+      purchases.sort(
+        (a, b) => b.createdAt.compareTo(a.createdAt),
+      );
+      return purchases;
+    } catch (e, s) {
+      mainLocalLog('Error reading purchases: $e', error: e, stackTrace: s);
+      return [];
+    }
   }
 
   TempPurchase? getSinglePurchase({required String uuid}) {
-    return purchasesBox.get(uuid);
+    try {
+      return purchasesBox.get(uuid);
+    } catch (e, s) {
+      mainLocalLog('Error reading single purchase: $e', error: e, stackTrace: s);
+      return null;
+    }
   }
 
   Future<int> insertAllPurchases(

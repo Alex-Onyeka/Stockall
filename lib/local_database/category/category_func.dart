@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class CategoryFunc {
@@ -14,19 +15,54 @@ class CategoryFunc {
   final String categoryBoxName = 'categoryBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(CategoryClassAdapter());
-    categoryBox = await Hive.openBox(categoryBoxName);
-    await CreatedCategoriesFunc().init();
-    await DeletedCategoriesFunc().init();
-    await UpdatedCategoriesFunc().init();
+    safeRegisterAdapter(CategoryClassAdapter());
+    categoryBox = await openBoxSafely<CategoryClass>(
+      categoryBoxName,
+    );
+    try {
+      await CreatedCategoriesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedCategoriesFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await DeletedCategoriesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing DeletedCategoriesFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
+    try {
+      await UpdatedCategoriesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing UpdatedCategoriesFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog('Category Box Initialized');
   }
 
   List<CategoryClass> getCategories() {
-    List<CategoryClass> categories =
-        categoryBox.values.toList();
-    categories.sort((a, b) => a.name.compareTo(b.name));
-    return categories;
+    try {
+      List<CategoryClass> categories =
+          categoryBox.values.toList();
+      categories.sort((a, b) => a.name.compareTo(b.name));
+      return categories;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading categories: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllCategories(

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_materials_item_history/unsynced/created_materials_item_history.dart';
 import 'package:stockall/main.dart';
 
@@ -25,25 +26,7 @@ class CreatedMaterialsItemHistoriesFunc {
       );
     }
 
-    if (!Hive.isBoxOpen(
-      createdMaterialsItemHistoriesBoxName,
-    )) {
-      _createdMaterialsItemHistoriesBox =
-          await Hive.openBox<CreatedMaterialsItemHistory>(
-            createdMaterialsItemHistoriesBoxName,
-          );
-      await mainLocalLog(
-        'Created Created Materials Item Histories Box opened ✅',
-      );
-    } else {
-      _createdMaterialsItemHistoriesBox =
-          Hive.box<CreatedMaterialsItemHistory>(
-            createdMaterialsItemHistoriesBoxName,
-          );
-      await mainLocalLog(
-        'Created Created Materials Item Histories Box already open, reused ✅',
-      );
-    }
+    _createdMaterialsItemHistoriesBox = await openBoxSafely<CreatedMaterialsItemHistory>(createdMaterialsItemHistoriesBoxName);
   }
 
   /// Safe getter for the box

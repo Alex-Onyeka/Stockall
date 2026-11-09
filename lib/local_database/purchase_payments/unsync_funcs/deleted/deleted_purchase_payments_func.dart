@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/purchase_payments/unsynced/deleted_purchase_payments/deleted_purchase_payments.dart';
 import 'package:stockall/main.dart';
 
@@ -26,24 +27,7 @@ class DeletedPurchasePaymentsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedPurchasePaymentsBoxName)) {
-      _deletedPurchasePaymentsBox =
-          await Hive.openBox<DeletedPurchasePayments>(
-            deletedPurchasePaymentsBoxName,
-          );
-      await mainLocalLog(
-        'Deleted PurchasePayments Box opened ✅',
-      );
-    } else {
-      _deletedPurchasePaymentsBox =
-          Hive.box<DeletedPurchasePayments>(
-            deletedPurchasePaymentsBoxName,
-          );
-      await mainLocalLog(
-        'Deleted PurchasePayments Box already open, reused ✅',
-      );
-    }
+_deletedPurchasePaymentsBox = await openBoxSafely<DeletedPurchasePayments>(deletedPurchasePaymentsBoxName);
   }
 
   /// Safe getter for the box

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class FloatingButtonVisibilityBox extends ChangeNotifier {
@@ -19,8 +20,8 @@ class FloatingButtonVisibilityBox extends ChangeNotifier {
   /// Initialize Hive and open visibility boxes
   Future<void> init() async {
     try {
-      _floatingButtonVisibilityBox ??=
-          await Hive.openBox<bool>(
+      _floatingButtonVisibilityBox =
+          await openBoxSafely<bool>(
             _floatingButtonVisibilityBoxName,
           );
 

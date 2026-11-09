@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/deleted_item_records/deleted_item_records.dart';
 import 'package:stockall/main.dart';
 
@@ -24,24 +25,7 @@ class DeletedItemPurchaseFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedItemPurchaseBoxName)) {
-      _deletedItemPurchaseBox =
-          await Hive.openBox<DeletedItemRecords>(
-            deletedItemPurchaseBoxName,
-          );
-      await mainLocalLog(
-        'Deleted Item Purchase Box opened ✅',
-      );
-    } else {
-      _deletedItemPurchaseBox =
-          Hive.box<DeletedItemRecords>(
-            deletedItemPurchaseBoxName,
-          );
-      await mainLocalLog(
-        'Deleted Item Purchase Box already open, reused ✅',
-      );
-    }
+_deletedItemPurchaseBox = await openBoxSafely<DeletedItemRecords>(deletedItemPurchaseBoxName);
   }
 
   /// Safe getter for the box

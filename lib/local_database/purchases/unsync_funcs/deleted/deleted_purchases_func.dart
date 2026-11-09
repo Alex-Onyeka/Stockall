@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class DeletedPurchasesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedPurchasesBoxName)) {
-      _deletedPurchasesBox =
-          await Hive.openBox<DeletedPurchases>(
-            deletedPurchasesBoxName,
-          );
-      await mainLocalLog('Deleted Purchases Box opened ✅');
-    } else {
-      _deletedPurchasesBox = Hive.box<DeletedPurchases>(
-        deletedPurchasesBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Purchases Box already open, reused ✅',
-      );
-    }
+_deletedPurchasesBox = await openBoxSafely<DeletedPurchases>(deletedPurchasesBoxName);
   }
 
   /// Safe getter for the box

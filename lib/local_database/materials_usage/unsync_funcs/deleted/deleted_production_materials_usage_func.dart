@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/unsynced/deleted/deleted_production_materials_usage.dart';
 import 'package:stockall/main.dart';
 
@@ -28,26 +29,7 @@ class DeletedProductionMaterialsUsageFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(
-      deletedProductionMaterialsUsageBoxName,
-    )) {
-      _deletedProductionMaterialsUsageBox =
-          await Hive.openBox<
-            DeletedProductionMaterialsUsage
-          >(deletedProductionMaterialsUsageBoxName);
-      await mainLocalLog(
-        'Deleted ProductionMaterialsUsage Box opened ✅',
-      );
-    } else {
-      _deletedProductionMaterialsUsageBox =
-          Hive.box<DeletedProductionMaterialsUsage>(
-            deletedProductionMaterialsUsageBoxName,
-          );
-      await mainLocalLog(
-        'Deleted ProductionMaterialsUsage Box already open, reused ✅',
-      );
-    }
+_deletedProductionMaterialsUsageBox = await openBoxSafely<DeletedProductionMaterialsUsage>(deletedProductionMaterialsUsageBoxName);
   }
 
   /// Safe getter for the box

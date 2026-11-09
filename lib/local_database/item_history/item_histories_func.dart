@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/main.dart';
 
@@ -13,19 +14,40 @@ class ItemHistoriesFunc {
       'itemHistoryBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(ItemHistoryAdapter());
-    itemHistoryBox = await Hive.openBox(itemHistoryBoxName);
-    await CreatedItemHistoriesFunc().init();
+    safeRegisterAdapter(ItemHistoryAdapter());
+    itemHistoryBox = await openBoxSafely<ItemHistory>(
+      itemHistoryBoxName,
+    );
+    try {
+      await CreatedItemHistoriesFunc().init();
+    } catch (e, s) {
+      await mainLocalLog(
+        'Error initializing CreatedItemHistoriesFunc: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
     await mainLocalLog('Item History Box Initialized');
   }
 
   List<ItemHistory> getItemHistories() {
-    List<ItemHistory> itemHistory =
-        itemHistoryBox.values.toList();
-    itemHistory.sort(
-      (a, b) => a.createdAt!.compareTo(b.createdAt!),
-    );
-    return itemHistory;
+    try {
+      List<ItemHistory> itemHistory =
+          itemHistoryBox.values.toList();
+      itemHistory.sort(
+        (a, b) => (a.createdAt ?? DateTime(2000)).compareTo(
+          b.createdAt ?? DateTime(2000),
+        ),
+      );
+      return itemHistory;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading item histories: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   Future<int> insertAllItemHistories(

@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_permission/temp_permission_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class PermissionFunc {
@@ -13,9 +14,10 @@ class PermissionFunc {
 
   Future<void> init() async {
     try {
-      // await Hive.deleteBoxFromDisk(permissionModelBoxName);
-      Hive.registerAdapter(PermissionModelAdapter());
-      permissionModelBox = await Hive.openBox(
+      if (!Hive.isAdapterRegistered(PermissionModelAdapter().typeId)) {
+        Hive.registerAdapter(PermissionModelAdapter());
+      }
+      permissionModelBox = await openBoxSafely<PermissionModel>(
         permissionModelBoxName,
       );
       await mainLocalLog(

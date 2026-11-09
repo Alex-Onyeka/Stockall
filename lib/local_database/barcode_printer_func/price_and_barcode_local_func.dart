@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_and_barcode_printer_class%20copy/price_and_barcode_printer_local.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_price_and_barcode_printer_class%20copy/price_and_barcode_printer_settings/price_and_barcode_printer_settings.dart';
 import 'package:stockall/main.dart';
@@ -14,23 +15,30 @@ class PriceAndBarcodePrinterLocalFunc {
       'priceAndBarcodePrinterLocalBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(
+    safeRegisterAdapter(
       PriceAndBarcodePrinterLocalAdapter(),
     );
-    Hive.registerAdapter(
+    safeRegisterAdapter(
       PriceAndBarcodePrinterSettingsAdapter(),
     );
-    priceAndBarcodePrinterLocalBox = await Hive.openBox(
-      priceAndBarcodePrinterLocalBoxName,
-    );
+    priceAndBarcodePrinterLocalBox =
+        await openBoxSafely<PriceAndBarcodePrinterLocal>(
+          priceAndBarcodePrinterLocalBoxName,
+        );
     await mainLocalLog('✅ Barcode Printer Box Initialized');
   }
 
   PriceAndBarcodePrinterLocal?
   getpriceAndBarcodePrinterLocal() {
-    return priceAndBarcodePrinterLocalBox.values.isNotEmpty
-        ? priceAndBarcodePrinterLocalBox.values.first
-        : null;
+    try {
+      return priceAndBarcodePrinterLocalBox
+              .values
+              .isNotEmpty
+          ? priceAndBarcodePrinterLocalBox.values.first
+          : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<int> insertpriceBarcodeAndPrinter(

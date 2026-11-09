@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/unsynced/updated/updated_production_record.dart';
 import 'package:stockall/main.dart';
 
@@ -27,24 +28,7 @@ class UpdatedProductionRecordsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(updatedProductionRecordsBoxName)) {
-      _updatedProductionRecordsBox =
-          await Hive.openBox<UpdatedProductionRecord>(
-            updatedProductionRecordsBoxName,
-          );
-      await mainLocalLog(
-        'Updated Production Records Records Box opened ✅',
-      );
-    } else {
-      _updatedProductionRecordsBox =
-          Hive.box<UpdatedProductionRecord>(
-            updatedProductionRecordsBoxName,
-          );
-      await mainLocalLog(
-        'Updated Production Records Records Box already open, reused ✅',
-      );
-    }
+_updatedProductionRecordsBox = await openBoxSafely<UpdatedProductionRecord>(updatedProductionRecordsBoxName);
   }
 
   /// Safe getter for the box

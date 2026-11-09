@@ -3,6 +3,7 @@ import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class CartFunc {
@@ -13,17 +14,28 @@ class CartFunc {
   final String cartBoxName = 'cartBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(TempMainCartAdapter());
-    Hive.registerAdapter(TempCartAdapter());
-    Hive.registerAdapter(TempCartItemAdapter());
-    Hive.registerAdapter(PaymentEntryAdapter());
-    cartBox = await Hive.openBox(cartBoxName);
+    safeRegisterAdapter(TempMainCartAdapter());
+    safeRegisterAdapter(TempCartAdapter());
+    safeRegisterAdapter(TempCartItemAdapter());
+    safeRegisterAdapter(PaymentEntryAdapter());
+    cartBox = await openBoxSafely<TempMainCart>(
+      cartBoxName,
+    );
     await mainLocalLog('MainCart Box Initialized');
   }
 
   List<TempMainCart> getMainCart() {
-    List<TempMainCart> carts = cartBox.values.toList();
-    return carts;
+    try {
+      List<TempMainCart> carts = cartBox.values.toList();
+      return carts;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading main cart: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   // Future<int> insertAllMainCart(

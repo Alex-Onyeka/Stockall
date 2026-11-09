@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/material_class.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/local_database/materials/unsync_funcs/created_materials/created_materials_func.dart';
 import 'package:stockall/local_database/materials/unsync_funcs/materials_quantity_update/materials_quantity_update_func.dart';
 import 'package:stockall/local_database/materials/unsync_funcs/deleted_materials/deleted_materials_func.dart';
@@ -16,13 +17,46 @@ class MaterialsFunc {
 
   Future<void> init() async {
     try {
-      // await Hive.deleteBoxFromDisk(materialBoxName);
-      Hive.registerAdapter(MaterialClassAdapter());
-      materialBox = await Hive.openBox(materialBoxName);
-      await CreatedMaterialsFunc().init();
-      await DeletedMaterialsFunc().init();
-      await UpdatedMaterialsFunc().init();
-      await MaterialsQuantityUpdateFunc().init();
+      safeRegisterAdapter(MaterialClassAdapter());
+      materialBox = await openBoxSafely<MaterialClass>(
+        materialBoxName,
+      );
+      try {
+        await CreatedMaterialsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing CreatedMaterialsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await DeletedMaterialsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing DeletedMaterialsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await UpdatedMaterialsFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing UpdatedMaterialsFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      try {
+        await MaterialsQuantityUpdateFunc().init();
+      } catch (e, s) {
+        await mainLocalLog(
+          'Error initializing MaterialsQuantityUpdateFunc: $e',
+          error: e,
+          stackTrace: s,
+        );
+      }
       await mainLocalLog('Material Box Initialized');
     } catch (e, s) {
       await mainLocalLog(
@@ -34,14 +68,23 @@ class MaterialsFunc {
   }
 
   List<MaterialClass> getMaterials() {
-    List<MaterialClass> materials =
-        materialBox.values.toList();
-    materials.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    return materials;
+    try {
+      List<MaterialClass> materials =
+          materialBox.values.toList();
+      materials.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
+      return materials;
+    } catch (e, s) {
+      mainLocalLog(
+        'Error reading materials: $e',
+        error: e,
+        stackTrace: s,
+      );
+      return [];
+    }
   }
 
   MaterialClass? getSingleMaterial({required String uuid}) {

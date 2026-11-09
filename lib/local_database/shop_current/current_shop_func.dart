@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/main.dart';
 
 class CurrentShopFunc {
@@ -12,37 +13,15 @@ class CurrentShopFunc {
       'currentShopBoxStockall';
 
   Future<void> init() async {
-    try {
+    if (!Hive.isAdapterRegistered(
+      TempCurrentShopAdapter().typeId,
+    )) {
       Hive.registerAdapter(TempCurrentShopAdapter());
-
-      currentShopBox = await Hive.openBox(
-        currentShopBoxName,
-      );
-      await mainLocalLog('✅ Current Shop Box Initialized');
-    } catch (e) {
-      await mainLocalLog('❌ Error New: ${e.toString()}');
-      try {
-        if (Hive.isBoxOpen(currentShopBoxName)) {
-          await Hive.box(currentShopBoxName).close();
-        }
-
-        await Hive.deleteBoxFromDisk(currentShopBoxName);
-        await mainLocalLog(
-          '🧹 Deleted Corrupted Current Shop Box',
-        );
-
-        currentShopBox = await Hive.openBox(
-          currentShopBoxName,
-        );
-        await mainLocalLog(
-          '✅ Reinitialized Current Shop Box',
-        );
-      } catch (innerError) {
-        await mainLocalLog(
-          '⚠️ Failed to recover Hive box: $innerError',
-        );
-      }
     }
+    currentShopBox = await openBoxSafely<TempCurrentShop>(
+      currentShopBoxName,
+    );
+    await mainLocalLog('✅ Current Shop Box Initialized');
   }
 
   TempCurrentShop? getCurrentShop() {

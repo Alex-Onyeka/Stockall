@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,10 @@ class CreatedRecordsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(createdRecordsBoxName)) {
-      _createdRecordsBox =
-          await Hive.openBox<CreatedRecords>(
-            createdRecordsBoxName,
-          );
-      await mainLocalLog('Created Records Box opened ✅');
-    } else {
-      _createdRecordsBox = Hive.box<CreatedRecords>(
-        createdRecordsBoxName,
-      );
-      await mainLocalLog(
-        'Created Records Box already open, reused ✅',
-      );
-    }
+    _createdRecordsBox =
+        await openBoxSafely<CreatedRecords>(
+          createdRecordsBoxName,
+        );
   }
 
   /// Safe getter for the box

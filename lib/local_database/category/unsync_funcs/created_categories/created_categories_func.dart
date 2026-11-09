@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_categories/unsynced/created_category/created_category.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class CreatedCategoriesFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(createdCategoriesBoxName)) {
-      _createdCategoriesBox =
-          await Hive.openBox<CreatedCategory>(
-            createdCategoriesBoxName,
-          );
-      await mainLocalLog('Created Categories Box opened ✅');
-    } else {
-      _createdCategoriesBox = Hive.box<CreatedCategory>(
-        createdCategoriesBoxName,
-      );
-      await mainLocalLog(
-        'Created Categories Box already open, reused ✅',
-      );
-    }
+_createdCategoriesBox = await openBoxSafely<CreatedCategory>(createdCategoriesBoxName);
   }
 
   /// Safe getter for the box

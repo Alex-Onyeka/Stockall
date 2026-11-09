@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_waybills/unsynced/deleted_waybills/deleted_waybills.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class DeletedWaybillsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(deletedWaybillsBoxName)) {
-      _deletedWaybillsBox =
-          await Hive.openBox<DeletedWaybills>(
-            deletedWaybillsBoxName,
-          );
-      await mainLocalLog('Deleted Waybills Box opened ✅');
-    } else {
-      _deletedWaybillsBox = Hive.box<DeletedWaybills>(
-        deletedWaybillsBoxName,
-      );
-      await mainLocalLog(
-        'Deleted Waybills Box already open, reused ✅',
-      );
-    }
+_deletedWaybillsBox = await openBoxSafely<DeletedWaybills>(deletedWaybillsBoxName);
   }
 
   /// Safe getter for the box

@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/created_departments/created_departments.dart';
 import 'package:stockall/main.dart';
 
@@ -24,21 +25,7 @@ class CreatedDepartmentsFunc {
       );
     }
 
-    // Open the box only if it isn’t already open
-    if (!Hive.isBoxOpen(createdDepartmentsBoxName)) {
-      _createdDepartmentsBox =
-          await Hive.openBox<CreatedDepartments>(
-            createdDepartmentsBoxName,
-          );
-      await mainLocalLog('Created Department Box opened ✅');
-    } else {
-      _createdDepartmentsBox = Hive.box<CreatedDepartments>(
-        createdDepartmentsBoxName,
-      );
-      await mainLocalLog(
-        'Created Department Box already open, reused ✅',
-      );
-    }
+_createdDepartmentsBox = await openBoxSafely<CreatedDepartments>(createdDepartmentsBoxName);
   }
 
   /// Safe getter for the box
