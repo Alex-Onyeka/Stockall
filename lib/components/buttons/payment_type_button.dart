@@ -7,6 +7,7 @@ import 'package:stockall/components/alert_dialogues/manage_payment_methods_dialo
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_account_details_section_widget.dart';
@@ -88,8 +89,7 @@ class _PaymentTypeButtonState
           widget.index,
         )['method'];
     if (widget.index == 1 && selectedBank != null) {
-      displayMethodTitle =
-          'Pay with Transfer / Atm ($selectedBank)';
+      displayMethodTitle = selectedBank;
     }
 
     return Column(
@@ -122,60 +122,66 @@ class _PaymentTypeButtonState
                     mainAxisAlignment:
                         MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  returnSalesProviderContext(
-                                                    context,
-                                                  )
-                                                  .currentCart()
-                                                  .cartItemTypeIndex ==
-                                              2 &&
-                                          widget.index == 2
-                                      ? Colors.grey
-                                      : null,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    returnSalesProviderContext(
+                                                      context,
+                                                    )
+                                                    .currentCart()
+                                                    .cartItemTypeIndex ==
+                                                2 &&
+                                            widget.index ==
+                                                2
+                                        ? Colors.grey
+                                        : null,
+                              ),
+                              "$displayMethodTitle${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                             ),
-                            "$displayMethodTitle${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                              fontWeight: FontWeight.normal,
-                              color:
-                                  returnSalesProviderContext(
-                                                    context,
-                                                  )
-                                                  .currentCart()
-                                                  .cartItemTypeIndex ==
-                                              2 &&
-                                          widget.index == 2
-                                      ? Colors.grey
-                                      : theme
-                                          .lightModeColor
-                                          .secColor200,
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b5
+                                        .fontSize,
+                                fontWeight:
+                                    FontWeight.normal,
+                                color:
+                                    returnSalesProviderContext(
+                                                      context,
+                                                    )
+                                                    .currentCart()
+                                                    .cartItemTypeIndex ==
+                                                2 &&
+                                            widget.index ==
+                                                2
+                                        ? Colors.grey
+                                        : theme
+                                            .lightModeColor
+                                            .secColor200,
+                              ),
+                              returnSalesProviderContext(
+                                context,
+                              ).returnPaymentMethodSalesPage(
+                                widget.index,
+                              )['subText'],
                             ),
-                            returnSalesProviderContext(
-                              context,
-                            ).returnPaymentMethodSalesPage(
-                              widget.index,
-                            )['subText'],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Checkbox(
                         activeColor:
                             returnSalesProviderContext(
@@ -279,6 +285,16 @@ class _PaymentTypeButtonState
                                 .selectedBankName ==
                             bMethod.displayName;
                         return ChoiceChip(
+                          avatar: Icon(
+                            bMethod.icon,
+                            size: 16,
+                            color:
+                                isSelected
+                                    ? Colors.white
+                                    : theme
+                                        .lightModeColor
+                                        .prColor250,
+                          ),
                           label: Text(
                             bMethod.displayName,
                             style: TextStyle(
@@ -317,6 +333,8 @@ class _PaymentTypeButtonState
                                           .shade300,
                             ),
                           ),
+                          mouseCursor:
+                              SystemMouseCursors.click,
                           onSelected: (val) {
                             returnSalesProvider()
                                 .setSelectedBankName(
@@ -346,8 +364,8 @@ class _PaymentTypeButtonState
                         returnShopProvider(context: context)
                                 .getCustomPaymentMethods()
                                 .isEmpty
-                            ? '+ Add Bank Account'
-                            : 'Manage Accounts',
+                            ? '+ Add Channel'
+                            : 'Manage Channels',
                         style: TextStyle(
                           fontSize:
                               theme.mobileTexts.b4.fontSize,
@@ -717,8 +735,7 @@ class _PaymentTypeDropdownState
             ).currentCart().paymentMethod ==
             1 &&
         selectedBank != null) {
-      displayMethodTitle =
-          'Pay with Transfer / Atm ($selectedBank)';
+      displayMethodTitle = selectedBank;
     }
 
     return Padding(
@@ -749,38 +766,42 @@ class _PaymentTypeDropdownState
                     mainAxisAlignment:
                         MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              "$displayMethodTitle${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
                             ),
-                            "$displayMethodTitle${customersClass != null ? " (${formatMoneyBig(amount: customersClass.getBalance(), context: context)})" : ''}",
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                              fontWeight: FontWeight.normal,
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b5
+                                        .fontSize,
+                                fontWeight:
+                                    FontWeight.normal,
+                              ),
+                              returnSalesProviderContext(
+                                context,
+                              ).selectedPaymentMethod()['subText'],
                             ),
-                            returnSalesProviderContext(
-                              context,
-                            ).selectedPaymentMethod()['subText'],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Icon(
-                        size: 30,
+                        size: 26,
                         isOpen
                             ? Icons
                                 .keyboard_arrow_up_rounded
@@ -824,9 +845,24 @@ class PaymentMethodSection extends StatefulWidget {
       _PaymentMethodSectionState();
 }
 
+class _AvailableMethod {
+  final String name;
+  final IconData icon;
+  final String label;
+  final String? typeLabel;
+
+  const _AvailableMethod({
+    required this.name,
+    required this.icon,
+    required this.label,
+    this.typeLabel,
+  });
+}
+
 class _PaymentMethodSectionState
     extends State<PaymentMethodSection> {
   bool isUpdating = false;
+  final List<String> _activeMethods = [];
   final Map<String, TextEditingController>
   _customBankControllers = {};
 
@@ -837,13 +873,12 @@ class _PaymentMethodSectionState
     // section that was collapsed) if it still matches the cart total.
     var saved =
         returnSalesProvider().currentCart().splitPayments;
-    if (returnSalesProvider().currentCart().paymentMethod ==
-            2 &&
-        saved != null &&
-        (PaymentBreakdown(saved).total -
-                    returnSalesProvider().calcFinalTotal())
-                .abs() <=
-            PaymentBreakdown.tolerance) {
+    if (saved != null && saved.isNotEmpty) {
+      for (final entry in saved) {
+        if (!_activeMethods.contains(entry.method)) {
+          _activeMethods.add(entry.method);
+        }
+      }
       _writeControllers(PaymentBreakdown(saved));
     }
   }
@@ -864,9 +899,13 @@ class _PaymentMethodSectionState
         0;
   }
 
-  TextEditingController _getCustomBankController(
-    String method,
-  ) {
+  TextEditingController _getControllerFor(String method) {
+    if (method == PaymentMethods.cash)
+      return widget.cashController;
+    if (method == PaymentMethods.bank)
+      return widget.bankController;
+    if (method == PaymentMethods.account)
+      return widget.accountController;
     if (!_customBankControllers.containsKey(method)) {
       _customBankControllers[method] =
           TextEditingController(text: '0');
@@ -875,37 +914,14 @@ class _PaymentMethodSectionState
   }
 
   PaymentBreakdown _currentBreakdown() {
-    final customBanks =
-        returnShopProvider().getCustomPaymentMethods();
-    if (customBanks.isNotEmpty) {
-      final entries = <PaymentEntry>[
+    final entries = <PaymentEntry>[
+      for (final method in _activeMethods)
         PaymentEntry(
-          method: PaymentMethods.cash,
-          amount: _amount(widget.cashController),
+          method: method,
+          amount: _amount(_getControllerFor(method)),
         ),
-        for (final PaymentMethod b in customBanks)
-          PaymentEntry(
-            method: b.displayName,
-            amount: _amount(
-              _getCustomBankController(b.displayName),
-            ),
-          ),
-        if (returnSalesProvider().canUseAccount())
-          PaymentEntry(
-            method: PaymentMethods.account,
-            amount: _amount(widget.accountController),
-          ),
-      ];
-      return PaymentBreakdown(entries);
-    }
-    return PaymentBreakdown.fromAmounts(
-      cash: _amount(widget.cashController),
-      bank: _amount(widget.bankController),
-      account:
-          returnSalesProvider().canUseAccount()
-              ? _amount(widget.accountController)
-              : 0,
-    );
+    ];
+    return PaymentBreakdown(entries);
   }
 
   void _writeControllers(PaymentBreakdown breakdown) {
@@ -918,15 +934,20 @@ class _PaymentMethodSectionState
 
     for (final entry in breakdown.entries) {
       if (entry.method != PaymentMethods.cash &&
-          entry.method != PaymentMethods.account) {
-        _getCustomBankController(entry.method).text = entry
-            .amount
+          entry.method != PaymentMethods.account &&
+          entry.method != PaymentMethods.bank) {
+        _getControllerFor(entry.method).text = entry.amount
             .toStringAsFixed(2);
       }
     }
   }
 
   void _applyPayments(List<PaymentEntry> payments) {
+    for (final p in payments) {
+      if (!_activeMethods.contains(p.method)) {
+        _activeMethods.add(p.method);
+      }
+    }
     _writeControllers(PaymentBreakdown(payments));
     setState(() {});
   }
@@ -945,17 +966,11 @@ class _PaymentMethodSectionState
     );
   }
 
-  // Handles dynamic changes across any payment method field in split mode
-  void _onDynamicFieldChanged(String method, String value) {
+  void _onFieldChanged(String method, String value) {
     if (isUpdating) return;
     isUpdating = true;
 
     final total = returnSalesProvider().calcFinalTotal();
-    final customBanks =
-        returnShopProvider().getCustomPaymentMethods();
-    final useAccount =
-        returnSalesProvider().canUseAccount();
-
     double editedAmount =
         double.tryParse(value.replaceAll(',', '')) ?? 0;
     if (editedAmount < 0) editedAmount = 0;
@@ -966,6 +981,8 @@ class _PaymentMethodSectionState
         '$method cannot exceed total amount.',
       );
       editedAmount = total;
+      _getControllerFor(method).text = editedAmount
+          .toStringAsFixed(2);
     }
 
     if (method == PaymentMethods.account) {
@@ -979,41 +996,32 @@ class _PaymentMethodSectionState
           'Customer Account cannot exceed the customer\'s balance of ${formatMoneyMid(amount: balance, context: context)}.',
         );
         editedAmount = balance;
+        _getControllerFor(method).text = editedAmount
+            .toStringAsFixed(2);
       }
     }
 
+    // Update aggregate bankController if any custom bank was edited
+    final customBanks =
+        returnShopProvider().getCustomPaymentMethods();
     if (customBanks.isNotEmpty) {
       double totalBank = 0;
       for (final PaymentMethod b in customBanks) {
-        totalBank +=
-            _amount(_getCustomBankController(b.displayName));
+        if (_activeMethods.contains(b.displayName)) {
+          totalBank += _amount(
+            _getControllerFor(b.displayName),
+          );
+        }
       }
       widget.bankController.text = totalBank
           .toStringAsFixed(2);
     }
 
     final entries = <PaymentEntry>[
-      PaymentEntry(
-        method: PaymentMethods.cash,
-        amount: _amount(widget.cashController),
-      ),
-      if (customBanks.isNotEmpty)
-        for (final PaymentMethod b in customBanks)
-          PaymentEntry(
-            method: b.displayName,
-            amount: _amount(
-              _getCustomBankController(b.displayName),
-            ),
-          )
-      else
+      for (final m in _activeMethods)
         PaymentEntry(
-          method: PaymentMethods.bank,
-          amount: _amount(widget.bankController),
-        ),
-      if (useAccount)
-        PaymentEntry(
-          method: PaymentMethods.account,
-          amount: _amount(widget.accountController),
+          method: m,
+          amount: _amount(_getControllerFor(m)),
         ),
     ];
 
@@ -1025,107 +1033,113 @@ class _PaymentMethodSectionState
     setState(() {});
   }
 
-  // Keeps the three fields adding up to the total when no custom banks are set.
-  void _rebalance(String edited, String value) {
+  void _addMethod(String method) {
+    if (_activeMethods.contains(method)) return;
+    setState(() {
+      _activeMethods.add(method);
+      final total = returnSalesProvider().calcFinalTotal();
+      double currentSum = 0;
+      for (final m in _activeMethods) {
+        if (m != method) {
+          currentSum += _amount(_getControllerFor(m));
+        }
+      }
+      double rem = total - currentSum;
+      if (rem < 0) rem = 0;
+
+      if (method == PaymentMethods.account) {
+        double balance =
+            returnSalesProvider()
+                .availableAccountBalance() ??
+            0;
+        if (balance < 0) balance = 0;
+        if (rem > balance) rem = balance;
+      }
+
+      _getControllerFor(method).text =
+          rem > 0 ? rem.toStringAsFixed(2) : '';
+    });
+    _onFieldChanged(method, _getControllerFor(method).text);
+  }
+
+  void _removeMethod(String method) {
+    setState(() {
+      _activeMethods.remove(method);
+      _getControllerFor(method).text = '0';
+    });
+    _onFieldChanged(method, '0');
+  }
+
+  List<_AvailableMethod> _getAvailableMethods() {
+    final list = <_AvailableMethod>[];
     final customBanks =
         returnShopProvider().getCustomPaymentMethods();
-    if (customBanks.isNotEmpty) {
-      _onDynamicFieldChanged(edited, value);
-      return;
-    }
+    final canUseAccount =
+        returnSalesProvider().canUseAccount();
 
-    if (isUpdating) return;
-    isUpdating = true;
-
-    double total = returnSalesProvider().calcFinalTotal();
-    bool useAccount = returnSalesProvider().canUseAccount();
-    Map<String, double> amounts = {
-      PaymentMethods.cash: _amount(widget.cashController),
-      PaymentMethods.bank: _amount(widget.bankController),
-      PaymentMethods.account:
-          useAccount
-              ? _amount(widget.accountController)
-              : 0,
-    };
-    double editedAmount =
-        double.tryParse(value.replaceAll(',', '')) ?? 0;
-    if (editedAmount < 0) {
-      editedAmount = 0;
-    }
-
-    bool clamped = false;
-    if (editedAmount > total) {
-      _showAlert(
-        'Overpayment',
-        '$edited cannot exceed total amount.',
+    if (!_activeMethods.contains(PaymentMethods.cash)) {
+      list.add(
+        const _AvailableMethod(
+          name: PaymentMethods.cash,
+          icon: Icons.payments_outlined,
+          label: 'Cash',
+        ),
       );
-      editedAmount = total;
-      clamped = true;
     }
-    if (edited == PaymentMethods.account) {
-      double balance =
+
+    if (customBanks.isNotEmpty) {
+      for (final b in customBanks) {
+        if (!_activeMethods.contains(b.displayName)) {
+          list.add(
+            _AvailableMethod(
+              name: b.displayName,
+              icon: b.icon,
+              label: b.displayName,
+              typeLabel: b.typeLabel,
+            ),
+          );
+        }
+      }
+    } else {
+      if (!_activeMethods.contains(PaymentMethods.bank)) {
+        list.add(
+          const _AvailableMethod(
+            name: PaymentMethods.bank,
+            icon: Icons.account_balance_outlined,
+            label: 'Bank',
+          ),
+        );
+      }
+    }
+
+    if (canUseAccount &&
+        !_activeMethods.contains(PaymentMethods.account)) {
+      final balance =
           returnSalesProvider().availableAccountBalance() ??
           0;
-      if (balance < 0) {
-        balance = 0;
-      }
-      if (editedAmount > balance) {
-        _showAlert(
-          'Insufficient Balance',
-          'Customer Account cannot exceed the customer\'s balance of ${formatMoneyMid(amount: balance, context: context)}.',
-        );
-        editedAmount = balance;
-        clamped = true;
-      }
+      list.add(
+        _AvailableMethod(
+          name: PaymentMethods.account,
+          icon: Icons.person_outline_rounded,
+          label:
+              'Customer Account (${formatMoneyMid(amount: balance, context: context)})',
+        ),
+      );
     }
-    amounts[edited] = editedAmount;
 
-    String target =
-        edited == PaymentMethods.cash
-            ? PaymentMethods.bank
-            : PaymentMethods.cash;
-    String other =
-        PaymentMethods.all
-            .where((m) => m != edited && m != target)
-            .first;
-    double rest = total - editedAmount - amounts[other]!;
-    if (rest < 0) {
-      amounts[other] =
-          (amounts[other]! + rest) < 0
-              ? 0
-              : amounts[other]! + rest;
-      rest = 0;
+    return list;
+  }
+
+  String _getFieldTitle(String method) {
+    if (method == PaymentMethods.cash) return 'Cash';
+    if (method == PaymentMethods.bank) return 'Bank';
+    if (method == PaymentMethods.account) {
+      final balance =
+          returnSalesProvider().availableAccountBalance() ??
+          0;
+      return 'Customer Account (${formatMoneyMid(amount: balance, context: context)})';
     }
-    amounts[target] = rest;
-
-    var breakdown = PaymentBreakdown.fromAmounts(
-      cash: amounts[PaymentMethods.cash]!,
-      bank: amounts[PaymentMethods.bank]!,
-      account: amounts[PaymentMethods.account]!,
-    );
-    if (clamped) {
-      _writeControllers(breakdown);
-    } else {
-      // Leave the field being typed in untouched.
-      if (edited != PaymentMethods.cash) {
-        widget.cashController.text = breakdown.cash
-            .toStringAsFixed(2);
-      }
-      if (edited != PaymentMethods.bank) {
-        widget.bankController.text = breakdown.bank
-            .toStringAsFixed(2);
-      }
-      if (edited != PaymentMethods.account) {
-        widget.accountController.text = breakdown.account
-            .toStringAsFixed(2);
-      }
-    }
-    returnSalesProvider().setSplitPayments(
-      breakdown.compact,
-    );
-
-    isUpdating = false;
-    setState(() {});
+    return method;
   }
 
   @override
@@ -1133,10 +1147,6 @@ class _PaymentMethodSectionState
     var theme = returnTheme(context, listen: false);
     bool showAccount =
         returnSalesProviderContext(context).canUseAccount();
-    final customBanks =
-        returnShopProvider(
-          context: context,
-        ).getCustomPaymentMethods();
     double remaining =
         returnSalesProviderContext(
           context,
@@ -1145,21 +1155,26 @@ class _PaymentMethodSectionState
 
     return Column(
       children: [
-        Divider(color: Colors.grey.shade300),
+        if (screenWidth(context) > mobileScreen) ...[
+          Divider(color: Colors.grey.shade300),
+        ],
         Column(
           children: [
-            Row(
-              children: [
-                Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b2.fontSize,
-                    fontWeight: FontWeight.bold,
+            if (screenWidth(context) > mobileScreen) ...[
+              Row(
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'Select Payment Method',
                   ),
-                  'Select Payment Method',
-                ),
-              ],
-            ),
-            SizedBox(height: 5),
+                ],
+              ),
+              const SizedBox(height: 5),
+            ],
             PaymentTypeButton(index: 0),
             PaymentTypeButton(index: 1),
             Visibility(
@@ -1175,183 +1190,420 @@ class _PaymentMethodSectionState
             PaymentTypeButton(index: 2),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 5),
         Visibility(
           visible:
               returnSalesProviderContext(
                 context,
               ).currentCart().paymentMethod ==
               2,
-          child: Column(
-            spacing: 10,
-            children: [
-              if (customBanks.isEmpty)
-                Row(
-                  spacing: 10,
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: EditCartTextField(
-                        title: 'Cash',
-                        hint: 'Cash Amount',
-                        controller: widget.cashController,
-                        theme: theme,
-                        onChanged: (value) {
-                          _rebalance(
-                            PaymentMethods.cash,
-                            value,
-                          );
-                        },
-                      ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(5),
+                bottomRight: Radius.circular(5),
+              ),
+              color: Colors.grey.shade50,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                left: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+                right: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.stretch,
+              children: [
+                if (_activeMethods.isEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 20,
                     ),
-                    Expanded(
-                      child: EditCartTextField(
-                        title: 'Bank',
-                        hint: 'Bank Amount',
-                        controller: widget.bankController,
-                        theme: theme,
-                        onChanged: (value) {
-                          _rebalance(
-                            PaymentMethods.bank,
-                            value,
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                )
-              else
-                Column(
-                  spacing: 10,
-                  children: [
-                    Row(
+                    // decoration: BoxDecoration(
+                    //   borderRadius: BorderRadius.circular(6),
+                    //   border: Border.all(
+                    //     color: Colors.grey.shade200,
+                    //   ),
+                    //   color: Colors.grey.shade50,
+                    // ),
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: EditCartTextField(
-                            title: 'Cash',
-                            hint: 'Cash Amount',
-                            controller:
-                                widget.cashController,
-                            theme: theme,
-                            onChanged: (value) {
-                              _onDynamicFieldChanged(
-                                PaymentMethods.cash,
-                                value,
-                              );
-                            },
+                        Icon(
+                          Icons.call_split_rounded,
+                          size: 28,
+                          color: Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'No payment methods selected yet.',
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Click "+ Add Payment Method" below to select which channels to split between.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            color: Colors.grey.shade500,
                           ),
                         ),
                       ],
                     ),
-                    ...customBanks.map((bMethod) {
-                      final name = bMethod.displayName;
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: EditCartTextField(
-                              title: name,
-                              hint: '$name Amount',
-                              controller:
-                                  _getCustomBankController(
-                                    name,
-                                  ),
-                              theme: theme,
-                              onChanged: (value) {
-                                _onDynamicFieldChanged(
-                                  name,
-                                  value,
-                                );
-                              },
-                            ),
+                  )
+                else
+                  Column(
+                    children: [
+                      for (final method
+                          in _activeMethods) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: 10,
                           ),
-                        ],
+                          child: Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: EditCartTextField(
+                                  title: _getFieldTitle(
+                                    method,
+                                  ),
+                                  hint: 'Amount',
+                                  controller:
+                                      _getControllerFor(
+                                        method,
+                                      ),
+                                  theme: theme,
+                                  onChanged:
+                                      (value) =>
+                                          _onFieldChanged(
+                                            method,
+                                            value,
+                                          ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(
+                                      top: 18,
+                                    ),
+                                child: IconButton(
+                                  mouseCursor:
+                                      SystemMouseCursors
+                                          .click,
+                                  visualDensity:
+                                      VisualDensity.compact,
+                                  padding: EdgeInsets.zero,
+                                  constraints:
+                                      const BoxConstraints(
+                                        minWidth: 40,
+                                        minHeight: 40,
+                                      ),
+                                  icon: const Icon(
+                                    Icons.clear,
+                                    color: Colors.redAccent,
+                                    size: 20,
+                                  ),
+                                  tooltip: 'Remove $method',
+                                  onPressed:
+                                      () => _removeMethod(
+                                        method,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                const SizedBox(height: 10),
+                Builder(
+                  builder: (context) {
+                    final available =
+                        _getAvailableMethods();
+                    if (available.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                          ),
+                          color: Colors.grey.shade100,
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              size: 16,
+                              color: Colors.grey.shade600,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'All available payment methods added',
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
-                    }),
-                  ],
-                ),
-              Visibility(
-                visible: showAccount,
-                child: EditCartTextField(
-                  title:
-                      'Customer Account (${formatMoneyMid(amount: returnSalesProviderContext(context).availableAccountBalance() ?? 0, context: context)})',
-                  hint: 'Account Amount',
-                  controller: widget.accountController,
-                  theme: theme,
-                  onChanged: (value) {
-                    _rebalance(
-                      PaymentMethods.account,
-                      value,
+                    }
+                    return PopupMenuButton<String>(
+                      tooltip:
+                          'Add payment method to split',
+                      onSelected:
+                          (method) => _addMethod(method),
+                      itemBuilder: (context) {
+                        return available.map((m) {
+                          return PopupMenuItem<String>(
+                            value: m.name,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  m.icon,
+                                  size: 18,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .prColor250,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    m.label,
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.w600,
+                                    ),
+                                    overflow:
+                                        TextOverflow
+                                            .ellipsis,
+                                  ),
+                                ),
+                                if (m.typeLabel !=
+                                    null) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade200,
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            4,
+                                          ),
+                                    ),
+                                    child: Text(
+                                      m.typeLabel!,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          );
+                        }).toList();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .prColor250,
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          color: theme
+                              .lightModeColor
+                              .prColor250
+                              .withValues(alpha: 0.05),
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_circle_outline,
+                              size: 16,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor250,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '+ Add Payment Method',
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor250,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     );
                   },
                 ),
-              ),
-              Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
+                const SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  spacing: 5,
+                  children: [
+                    Row(
+                      spacing: 5,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                          ),
+                          'Remaining:',
+                        ),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                remaining.abs() >
+                                        PaymentBreakdown
+                                            .tolerance
+                                    ? Colors.red
+                                    : Colors.green.shade700,
+                          ),
+                          formatMoneyMid(
+                            amount:
+                                remaining.abs() >
+                                        PaymentBreakdown
+                                            .tolerance
+                                    ? remaining
+                                    : 0,
+                            context: context,
+                          ),
+                        ),
+                      ],
                     ),
-                    'Remaining:',
-                  ),
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          remaining.abs() >
-                                  PaymentBreakdown.tolerance
-                              ? Colors.red
-                              : null,
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.end,
+                      children: [
+                        TextButton.icon(
+                          icon: Icon(
+                            Icons.settings_outlined,
+                            size: 15,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .prColor250,
+                          ),
+                          label: Text(
+                            'Manage Channels',
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor250,
+                            ),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (context) =>
+                                      const ManagePaymentMethodsDialog(),
+                            ).then((_) {
+                              setState(() {});
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                    formatMoneyMid(
-                      amount:
-                          remaining.abs() >
-                                  PaymentBreakdown.tolerance
-                              ? remaining
-                              : 0,
-                      context: context,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    icon: Icon(
-                      Icons.settings_outlined,
-                      size: 15,
-                      color:
-                          theme.lightModeColor.prColor250,
-                    ),
-                    label: Text(
-                      'Manage Bank Accounts',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color:
-                            theme.lightModeColor.prColor250,
-                      ),
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) =>
-                                const ManagePaymentMethodsDialog(),
-                      ).then((_) {
-                        setState(() {});
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],

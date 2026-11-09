@@ -3135,10 +3135,22 @@ class ShopProvider extends ChangeNotifier {
       (item) =>
           item.bankName.toLowerCase() ==
               method.bankName.toLowerCase() &&
+          item.type == method.type &&
           (item.accountNumber ?? '') ==
               (method.accountNumber ?? ''),
     )) {
       list.add(method);
+      await updateCustomPaymentMethods(list);
+    }
+  }
+
+  Future<void> updateCustomPaymentMethod(
+    PaymentMethod method,
+  ) async {
+    final list = getCustomPaymentMethods();
+    final index = list.indexWhere((item) => item.uuid == method.uuid);
+    if (index != -1) {
+      list[index] = method;
       await updateCustomPaymentMethods(list);
     }
   }

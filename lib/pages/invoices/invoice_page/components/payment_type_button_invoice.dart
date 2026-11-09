@@ -234,6 +234,13 @@ class _PaymentTypeButtonInvoiceState
                           ).selectedBankName ==
                           bMethod.displayName;
                       return ChoiceChip(
+                        avatar: Icon(
+                          bMethod.icon,
+                          size: 16,
+                          color: isSelected
+                              ? Colors.white
+                              : theme.lightModeColor.prColor250,
+                        ),
                         label: Text(
                           bMethod.displayName,
                           style: TextStyle(
