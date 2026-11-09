@@ -2294,7 +2294,8 @@ class _AddProductMobileState
                                           SizedBox(
                                             height: 10,
                                           ),
-                                          if (returnShopProvider()
+                                          if (widget.product != null &&
+                                              returnShopProvider()
                                                   .userShops
                                                   .length >
                                               1) ...[
@@ -2322,7 +2323,8 @@ class _AddProductMobileState
                                               height: 10,
                                             ),
                                           ],
-                                          if (returnShopProvider()
+                                          if (widget.product != null &&
+                                              returnShopProvider()
                                                   .userShop()
                                                   ?.manageDepartments ==
                                               true) ...[

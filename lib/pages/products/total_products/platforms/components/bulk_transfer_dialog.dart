@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
@@ -514,8 +515,9 @@ class _BulkTransferWizardDialogState
                 searchCtrl.text.toLowerCase().trim();
             final filtered =
                 _destinationPool.where((p) {
-                  if (p.uuid == item.sourceProduct.uuid)
+                  if (p.uuid == item.sourceProduct.uuid) {
                     return false;
+                  }
                   if (query.isEmpty) return true;
                   return p.name.toLowerCase().contains(
                         query,
@@ -556,6 +558,7 @@ class _BulkTransferWizardDialogState
                           item.destinationProduct = item
                               .sourceProduct
                               .copyWith(
+                                uuid: uuidGen(),
                                 name:
                                     item.sourceProduct.name,
                                 shopId:
@@ -678,7 +681,7 @@ class _BulkTransferWizardDialogState
                                             ),
                                           ),
                                           subtitle: Text(
-                                            'Available: ${p.getActualQuantity() ?? 0} ${p.getProductUnit().name}',
+                                            'Available: ${formatLargeNumberDouble(p.getPrimaryUnitQuantity(index: 1))} ${p.getPrimaryUnit().name}',
                                             style:
                                                 const TextStyle(
                                                   fontSize:
@@ -767,7 +770,11 @@ class _BulkTransferWizardDialogState
         continue;
       }
 
-      if (dest.uuid != null && dest.uuid == src.uuid) {
+      if (!item.isCreateInDestination &&
+          dest.uuid != null &&
+          dest.uuid == src.uuid &&
+          (!widget.isBranchTransfer ||
+              dest.shopId == src.shopId)) {
         item.error =
             'Source and destination cannot be the same product';
         hasError = true;
@@ -861,7 +868,10 @@ class _BulkTransferWizardDialogState
           final newDestActual =
               currentDestActual + equivQty;
           updatedDest = dest.copyWith(
-            quantity: newDestActual / destArea,
+            quantity:
+                dest.quantityType == 2
+                    ? newDestActual / destArea
+                    : newDestActual,
           );
 
           final destHistory = ItemHistory(
@@ -924,7 +934,10 @@ class _BulkTransferWizardDialogState
               product: updatedDest,
               isQuantityUpdate: true,
               includeQuantity: true,
-              quantityChange: equivQty,
+              quantityChange:
+                  updatedDest.quantityType == 2
+                      ? equivQty / destArea
+                      : equivQty,
               isIncrement: true,
               itemHistory: destHistory,
               isMultipleUpdate: true,
@@ -946,7 +959,10 @@ class _BulkTransferWizardDialogState
         final newSourceActual =
             currentSourceActual - equivQty;
         final updatedSource = src.copyWith(
-          quantity: newSourceActual / sourceArea,
+          quantity:
+              src.quantityType == 2
+                  ? newSourceActual / sourceArea
+                  : newSourceActual,
         );
 
         final sourceHistory = ItemHistory(
@@ -999,7 +1015,10 @@ class _BulkTransferWizardDialogState
           product: updatedSource,
           isQuantityUpdate: true,
           includeQuantity: true,
-          quantityChange: equivQty,
+          quantityChange:
+              updatedSource.quantityType == 2
+                  ? equivQty / sourceArea
+                  : equivQty,
           isIncrement: false,
           itemHistory: sourceHistory,
           isMultipleUpdate: true,
@@ -1125,7 +1144,7 @@ class _BulkTransferWizardDialogState
             setState(() => _currentStep = 1);
           }
         },
-        actionButtonText: 'Next: Quantities',
+        actionButtonText: 'Proceed',
         cancelAction: () => Navigator.of(context).pop(),
         widget: SizedBox(
           width: 500,
@@ -1167,7 +1186,7 @@ class _BulkTransferWizardDialogState
                           unlinkedCount == 0
                               ? Colors.green.shade700
                               : Colors.orange.shade800,
-                      size: 18,
+                      size: 17,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -1176,7 +1195,8 @@ class _BulkTransferWizardDialogState
                             ? 'All ${_transferItems.length} products resolved!'
                             : '$unlinkedCount product(s) need manual destination matching.',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                           color:
                               unlinkedCount == 0
@@ -1246,7 +1266,11 @@ class _BulkTransferWizardDialogState
                                             Colors
                                                 .grey
                                                 .shade600,
-                                        fontSize: 11,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
                                       ),
                                     ),
                                   ],
@@ -1257,7 +1281,7 @@ class _BulkTransferWizardDialogState
                                     const Icon(
                                       Icons
                                           .subdirectory_arrow_right_rounded,
-                                      size: 18,
+                                      size: 16,
                                       color: Colors.grey,
                                     ),
                                     const SizedBox(
@@ -1295,7 +1319,7 @@ class _BulkTransferWizardDialogState
                                                               : 'Selected'),
                                                       style: TextStyle(
                                                         fontSize:
-                                                            10,
+                                                            theme.mobileTexts.b5.fontSize,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color:
@@ -1496,7 +1520,7 @@ class _BulkTransferWizardDialogState
             setState(() => _currentStep = 2);
           }
         },
-        actionButtonText: 'Review Transfer',
+        actionButtonText: 'Review',
         cancelAction:
             () => setState(() => _currentStep = 0),
         cancelText: 'Back',
@@ -1518,6 +1542,10 @@ class _BulkTransferWizardDialogState
                     final dest = item.destinationProduct!;
                     final totalBaseActual =
                         src.getActualQuantity() ?? 0.0;
+                    final primaryQty = src
+                        .getPrimaryUnitQuantity(index: 1);
+                    final primaryUnit =
+                        src.getPrimaryUnit();
                     final selectedUnit = src.getProductUnit(
                       unitUuid: item.unitUuid,
                     );
@@ -1526,7 +1554,6 @@ class _BulkTransferWizardDialogState
                             .getQuantityEquivDivided(
                               index: 1,
                               product: src,
-                              newQuantity: totalBaseActual,
                             );
 
                     final units =
@@ -1569,7 +1596,7 @@ class _BulkTransferWizardDialogState
                                 ),
                               ),
                               Text(
-                                'Available: ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}${!selectedUnit.isPrimary ? ' (${formatLargeNumberDouble(totalBaseActual)} ${src.getPrimaryUnit().name})' : ''}',
+                                'Available: ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}${!selectedUnit.isPrimary ? ' (${formatLargeNumberDouble(primaryQty)} ${primaryUnit.name})' : ''}',
                                 style: TextStyle(
                                   color:
                                       Colors.grey.shade700,
@@ -1601,53 +1628,111 @@ class _BulkTransferWizardDialogState
                             children: [
                               Expanded(
                                 flex: 3,
-                                child: GeneralTextfieldOnly(
-                                  hint: 'Transfer Qty',
-                                  controller:
-                                      item.quantityController,
-                                  lines: 1,
-                                  theme: theme,
-                                  onChanged: (text) {
-                                    final clean = text
-                                        .trim()
-                                        .replaceAll(
-                                          ',',
-                                          '',
-                                        );
-                                    final val =
-                                        double.tryParse(
-                                          clean,
-                                        );
-                                    if (val != null &&
-                                        val > 0) {
-                                      final inBase =
-                                          selectedUnit
-                                              .getQuantityEquivMultiplied(
-                                                index: 1,
-                                                newQuantity:
-                                                    val,
-                                                product:
-                                                    src,
-                                              );
-                                      if (inBase >
-                                          totalBaseActual +
-                                              0.00001) {
-                                        setState(() {
-                                          item.error =
-                                              'Exceeds available stock: Max is ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}';
-                                        });
-                                        return;
-                                      }
-                                    }
-                                    if (item.error !=
-                                        null) {
-                                      setState(
-                                        () =>
+                                child: Container(
+                                  height: 34,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          6,
+                                        ),
+                                    border: Border.all(
+                                      color:
+                                          item.error != null
+                                              ? Colors
+                                                  .red
+                                                  .shade400
+                                              : Colors
+                                                  .grey
+                                                  .shade300,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: TextField(
+                                    controller:
+                                        item.quantityController,
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                          decimal: true,
+                                        ),
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          'Transfer Qty',
+                                      hintStyle: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight
+                                                .normal,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 8,
+                                          ),
+                                      border:
+                                          InputBorder.none,
+                                      isDense: true,
+                                    ),
+                                    onChanged: (text) {
+                                      final clean = text
+                                          .trim()
+                                          .replaceAll(
+                                            ',',
+                                            '',
+                                          );
+                                      final val =
+                                          double.tryParse(
+                                            clean,
+                                          );
+                                      if (val != null &&
+                                          val > 0) {
+                                        final inBase =
+                                            selectedUnit
+                                                .getQuantityEquivMultiplied(
+                                                  index: 1,
+                                                  newQuantity:
+                                                      val,
+                                                  product:
+                                                      src,
+                                                );
+                                        if (inBase >
+                                            totalBaseActual +
+                                                0.00001) {
+                                          setState(() {
                                             item.error =
-                                                null,
-                                      );
-                                    }
-                                  },
+                                                'Exceeds available stock: Max is ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}';
+                                          });
+                                          return;
+                                        }
+                                      }
+                                      if (item.error !=
+                                          null) {
+                                        setState(
+                                          () =>
+                                              item.error =
+                                                  null,
+                                        );
+                                      }
+                                    },
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -1656,19 +1741,23 @@ class _BulkTransferWizardDialogState
                                   flex: 2,
                                   child: Container(
                                     padding:
-                                        EdgeInsets.fromLTRB(
-                                          10,
-                                          0,
-                                          5,
-                                          0,
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 8,
                                         ),
-                                    height: 30,
+                                    height: 34,
                                     decoration: BoxDecoration(
                                       borderRadius:
                                           BorderRadius.circular(
-                                            2,
+                                            6,
                                           ),
                                       color: Colors.white,
+                                      border: Border.all(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade300,
+                                        width: 1,
+                                      ),
                                     ),
                                     child: DropdownButtonHideUnderline(
                                       child: DropdownButton<
@@ -1705,8 +1794,9 @@ class _BulkTransferWizardDialogState
                                           if (newUuid ==
                                                   null ||
                                               newUuid ==
-                                                  item.unitUuid)
+                                                  item.unitUuid) {
                                             return;
+                                          }
                                           final oldUnit = src
                                               .getProductUnit(
                                                 unitUuid:
@@ -1806,32 +1896,57 @@ class _BulkTransferWizardDialogState
                                   ),
                                 ),
                               const SizedBox(width: 8),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    item
-                                            .quantityController
-                                            .text =
-                                        formatLargeNumberDouble(
-                                          availableInSelectedUnit,
-                                        );
-                                    item.error = null;
-                                  });
-                                },
-                                style: TextButton.styleFrom(
-                                  visualDensity:
-                                      VisualDensity.compact,
-                                ),
-                                child: Text(
-                                  'MAX',
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
+                              SizedBox(
+                                height: 34,
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      item
+                                          .quantityController
+                                          .text = formatLargeNumberDouble(
+                                        availableInSelectedUnit,
+                                      );
+                                      item.error = null;
+                                    });
+                                  },
+
+                                  style: OutlinedButton.styleFrom(
+                                    visualDensity:
+                                        VisualDensity
+                                            .compact,
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                        ),
+                                    side: BorderSide(
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor250,
+                                      width: 1.2,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            6,
+                                          ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'MAX',
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b5
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor250,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1872,8 +1987,21 @@ class _BulkTransferWizardDialogState
       title: 'Confirm Bulk Transfer',
       message:
           'Review the stock transfer of ${_transferItems.length} products to $destTitle. This action will deduct stock from the source and add to the destination.',
-      action: _executeBulkTransfer,
-      actionButtonText: 'Confirm & Transfer',
+      action: () {
+        showDialog(
+          context: context,
+          builder: (confirmContext) {
+            return ConfirmationAlert(
+              theme: theme,
+              message:
+                  'You are about to Perform Item Transfer. Are you sure You want to Proceed?',
+              title: 'Proceed with Transfer?',
+              action: _executeBulkTransfer,
+            );
+          },
+        );
+      },
+      actionButtonText: 'Confirm',
       cancelAction: () => setState(() => _currentStep = 1),
       cancelText: 'Back',
       widget: SizedBox(
@@ -1921,10 +2049,14 @@ class _BulkTransferWizardDialogState
                             children: [
                               Text(
                                 src.name,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontWeight:
                                       FontWeight.bold,
-                                  fontSize: 13,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -1933,7 +2065,11 @@ class _BulkTransferWizardDialogState
                                 style: TextStyle(
                                   color:
                                       Colors.grey.shade600,
-                                  fontSize: 11,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
                                 ),
                               ),
                             ],
@@ -1961,7 +2097,11 @@ class _BulkTransferWizardDialogState
                                   theme
                                       .lightModeColor
                                       .prColor250,
-                              fontSize: 12,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
                             ),
                           ),
                         ),

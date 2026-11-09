@@ -903,15 +903,11 @@ void selectItemInADepartmentProducts({
                                   product: newProduct,
                                   isQuantityUpdate: true,
                                   includeQuantity: true,
-                                  quantityChange: newProduct
-                                      .getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
-                                      .getQuantityEquivMultiplied(
-                                        index: 1,
-                                        newQuantity:
-                                            enteredValue,
-                                      ),
+                                  quantityChange:
+                                      newProduct.quantityType == 2
+                                          ? transferArea /
+                                              newProduct.dimensionArea()
+                                          : transferArea,
                                   isIncrement: true,
                                   itemHistory: itemHistory,
                                 );
@@ -1002,15 +998,29 @@ void selectItemInADepartmentProducts({
                                   product: newProduct2,
                                   isQuantityUpdate: true,
                                   includeQuantity: true,
-                                  quantityChange: newProduct2
-                                      .getProductUnit(
-                                        unitUuid: unitUuid,
-                                      )
-                                      .getQuantityEquivMultiplied(
-                                        index: 1,
-                                        newQuantity:
-                                            enteredValue,
-                                      ),
+                                  quantityChange:
+                                      newProduct2.quantityType == 2
+                                          ? (newProduct2
+                                                  .getProductUnit(
+                                                    unitUuid: unitUuid,
+                                                  )
+                                                  .getQuantityEquivMultiplied(
+                                                    index: 1,
+                                                    newQuantity:
+                                                        enteredValue,
+                                                    product: newProduct2,
+                                                  ) /
+                                              newProduct2.dimensionArea())
+                                          : newProduct2
+                                              .getProductUnit(
+                                                unitUuid: unitUuid,
+                                              )
+                                              .getQuantityEquivMultiplied(
+                                                index: 1,
+                                                newQuantity:
+                                                    enteredValue,
+                                                product: newProduct2,
+                                              ),
                                   isIncrement: false,
                                   itemHistory: itemHistory2,
                                 );
@@ -1253,7 +1263,11 @@ void selectItemInADepartmentProducts({
                                         includeQuantity:
                                             true,
                                         quantityChange:
-                                            equivQty,
+                                            updatedSource.quantityType == 2
+                                                ? equivQty /
+                                                    updatedSource
+                                                        .dimensionArea()
+                                                : equivQty,
                                         isIncrement: false,
                                         itemHistory:
                                             sourceHistory,
@@ -1944,15 +1958,29 @@ void selectItemInAShop({
                               product: newProduct2,
                               isQuantityUpdate: true,
                               includeQuantity: true,
-                              quantityChange: newProduct2
-                                  .getProductUnit(
-                                    unitUuid: unitUuid,
-                                  )
-                                  .getQuantityEquivDivided(
-                                    index: 1,
-                                    newQuantity:
-                                        enteredValue,
-                                  ),
+                              quantityChange:
+                                  newProduct2.quantityType == 2
+                                      ? (newProduct2
+                                              .getProductUnit(
+                                                unitUuid: unitUuid,
+                                              )
+                                              .getQuantityEquivMultiplied(
+                                                index: 1,
+                                                newQuantity:
+                                                    enteredValue,
+                                                product: newProduct2,
+                                              ) /
+                                          newProduct2.dimensionArea())
+                                      : newProduct2
+                                          .getProductUnit(
+                                            unitUuid: unitUuid,
+                                          )
+                                          .getQuantityEquivMultiplied(
+                                            index: 1,
+                                            newQuantity:
+                                                enteredValue,
+                                            product: newProduct2,
+                                          ),
                               isIncrement: false,
                               itemHistory: itemHistory2,
                             );
@@ -2275,7 +2303,11 @@ void selectItemInAShop({
                                             includeQuantity:
                                                 true,
                                             quantityChange:
-                                                equivQty,
+                                                updatedSource.quantityType == 2
+                                                    ? equivQty /
+                                                        updatedSource
+                                                            .dimensionArea()
+                                                    : equivQty,
                                             isIncrement:
                                                 false,
                                             itemHistory:
