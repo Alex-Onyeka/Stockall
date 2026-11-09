@@ -816,6 +816,7 @@ class _BulkTransferWizardDialogState
   }
 
   Future<void> _executeBulkTransfer() async {
+    Navigator.of(context).pop();
     Navigator.of(context).pop(); // Close wizard dialog
     widget.loadingAction(true);
 
