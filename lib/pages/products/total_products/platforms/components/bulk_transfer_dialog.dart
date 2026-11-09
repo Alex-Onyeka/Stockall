@@ -752,11 +752,21 @@ class _BulkTransferWizardDialogState
       final text = item.quantityController.text
           .trim()
           .replaceAll(',', '');
-      final val = double.tryParse(text);
+      final val =
+          text.isEmpty && item.isCreateInDestination
+              ? 0.0
+              : double.tryParse(text);
 
-      if (val == null || val <= 0) {
+      if (val == null ||
+          (val <= 0 && !item.isCreateInDestination)) {
         item.error =
             'Enter a valid transfer quantity (> 0)';
+        hasError = true;
+        continue;
+      }
+
+      if (val < 0) {
+        item.error = 'Transfer quantity cannot be negative';
         hasError = true;
         continue;
       }
@@ -777,27 +787,30 @@ class _BulkTransferWizardDialogState
       final selectedUnit = src.getProductUnit(
         unitUuid: item.unitUuid,
       );
-      // Check available quantity in base unit
-      final primaryUnitEquiv = selectedUnit
-          .getQuantityEquivMultiplied(
-            index: 1,
-            newQuantity: val,
-            product: src,
-          );
 
-      final availableActual =
-          src.getActualQuantity() ?? 0.0;
-      if (primaryUnitEquiv > availableActual + 0.00001) {
-        final availableInSelected = selectedUnit
-            .getQuantityEquivDivided(
+      if (val > 0) {
+        // Check available quantity in base unit
+        final primaryUnitEquiv = selectedUnit
+            .getQuantityEquivMultiplied(
               index: 1,
+              newQuantity: val,
               product: src,
-              newQuantity: availableActual,
             );
-        item.error =
-            'Exceeds available stock (Max ${formatLargeNumberDouble(availableInSelected)} ${selectedUnit.name})';
-        hasError = true;
-        continue;
+
+        final availableActual =
+            src.getActualQuantity() ?? 0.0;
+        if (primaryUnitEquiv > availableActual + 0.00001) {
+          final availableInSelected = selectedUnit
+              .getQuantityEquivDivided(
+                index: 1,
+                product: src,
+                newQuantity: availableActual,
+              );
+          item.error =
+              'Exceeds available stock (Max ${formatLargeNumberDouble(availableInSelected)} ${selectedUnit.name})';
+          hasError = true;
+          continue;
+        }
       }
 
       item.transferQuantity = val;
@@ -825,7 +838,9 @@ class _BulkTransferWizardDialogState
       final enteredVal = item.transferQuantity;
       final unitUuid = item.unitUuid;
 
-      if (dest == null || enteredVal <= 0) continue;
+      if (dest == null ||
+          (enteredVal <= 0 && !item.isCreateInDestination))
+        continue;
 
       try {
         final equivQty = src
@@ -939,77 +954,81 @@ class _BulkTransferWizardDialogState
           }
         }
 
-        // 2. Source deduction
-        final sourceArea = src.dimensionArea();
-        final currentSourceActual =
-            src.getActualQuantity() ?? 0.0;
-        final newSourceActual =
-            currentSourceActual - equivQty;
-        final updatedSource = src.copyWith(
-          quantity: newSourceActual / sourceArea,
-        );
-
-        final sourceHistory = ItemHistory(
-          event: ItemHistoryEventClass.transferedOut,
-          isManaged: src.isManaged,
-          source: ItemHistoryEventClass.productSource,
-          destination:
-              isBranch
-                  ? ItemHistoryEventClass
-                      .branchStoreDestination
-                  : ItemHistoryEventClass
-                      .departmentDestination,
-          shopId: shopId(),
-          isIncreased: false,
-          title: 'Transfered Out',
-          desc:
-              isBranch
-                  ? 'Item Quantity Transfered To - Item Name: ${dest.name}, Shop Name: ${targetShop!.name}.'
-                  : 'Item Quantity Transfered To - Item Name: ${dest.name}, Department Name: ${targetDept?.name ?? 'Not Set'}.',
-          createdAt: DateTime.now(),
-          itemUuid: updatedSource.uuid,
-          itemName: updatedSource.name,
-          newValue: formatLargeNumberDouble(
-            updatedSource
-                .getProductUnit()
-                .getQuantityEquivDivided(
-                  index: 1,
-                  newQuantity: newSourceActual,
-                  product: updatedSource,
-                ),
-          ),
-          oldValue: formatLargeNumberDouble(
-            src.getProductUnit().getQuantityEquivDivided(
-              index: 1,
-              newQuantity: currentSourceActual,
-              product: src,
-            ),
-          ),
-          quantityChange: -enteredVal,
-          staffId: currentUser().userId,
-          staffName: currentUser().name,
-          unit:
-              updatedSource
-                  .getProductUnit(unitUuid: unitUuid)
-                  .name,
-          primaryUnit: src.getProductUnit().name,
-        );
-
-        final resSource = await returnData().updateProduct(
-          product: updatedSource,
-          isQuantityUpdate: true,
-          includeQuantity: true,
-          quantityChange: equivQty,
-          isIncrement: false,
-          itemHistory: sourceHistory,
-          isMultipleUpdate: true,
-        );
-
-        if (resSource == null) {
-          failedItems.add(
-            '${src.name}: Source deduction failed',
+        TempProductClass updatedSource = src;
+        if (enteredVal > 0) {
+          // 2. Source deduction
+          final sourceArea = src.dimensionArea();
+          final currentSourceActual =
+              src.getActualQuantity() ?? 0.0;
+          final newSourceActual =
+              currentSourceActual - equivQty;
+          updatedSource = src.copyWith(
+            quantity: newSourceActual / sourceArea,
           );
-          continue;
+
+          final sourceHistory = ItemHistory(
+            event: ItemHistoryEventClass.transferedOut,
+            isManaged: src.isManaged,
+            source: ItemHistoryEventClass.productSource,
+            destination:
+                isBranch
+                    ? ItemHistoryEventClass
+                        .branchStoreDestination
+                    : ItemHistoryEventClass
+                        .departmentDestination,
+            shopId: shopId(),
+            isIncreased: false,
+            title: 'Transfered Out',
+            desc:
+                isBranch
+                    ? 'Item Quantity Transfered To - Item Name: ${dest.name}, Shop Name: ${targetShop!.name}.'
+                    : 'Item Quantity Transfered To - Item Name: ${dest.name}, Department Name: ${targetDept?.name ?? 'Not Set'}.',
+            createdAt: DateTime.now(),
+            itemUuid: updatedSource.uuid,
+            itemName: updatedSource.name,
+            newValue: formatLargeNumberDouble(
+              updatedSource
+                  .getProductUnit()
+                  .getQuantityEquivDivided(
+                    index: 1,
+                    newQuantity: newSourceActual,
+                    product: updatedSource,
+                  ),
+            ),
+            oldValue: formatLargeNumberDouble(
+              src.getProductUnit().getQuantityEquivDivided(
+                index: 1,
+                newQuantity: currentSourceActual,
+                product: src,
+              ),
+            ),
+            quantityChange: -enteredVal,
+            staffId: currentUser().userId,
+            staffName: currentUser().name,
+            unit:
+                updatedSource
+                    .getProductUnit(unitUuid: unitUuid)
+                    .name,
+            primaryUnit: src.getProductUnit().name,
+          );
+
+          final resSource = await returnData()
+              .updateProduct(
+                product: updatedSource,
+                isQuantityUpdate: true,
+                includeQuantity: true,
+                quantityChange: equivQty,
+                isIncrement: false,
+                itemHistory: sourceHistory,
+                isMultipleUpdate: true,
+              );
+
+          if (resSource == null) {
+            failedItems.add(
+              '${src.name}: Source deduction failed',
+            );
+            continue;
+          }
         }
 
         // 3. Save relationship if newly linked manually (and not already linked by creation)
@@ -1602,7 +1621,10 @@ class _BulkTransferWizardDialogState
                               Expanded(
                                 flex: 3,
                                 child: GeneralTextfieldOnly(
-                                  hint: 'Transfer Qty',
+                                  hint:
+                                      item.isCreateInDestination
+                                          ? 'Transfer Qty (0 to create)'
+                                          : 'Transfer Qty',
                                   controller:
                                       item.quantityController,
                                   lines: 1,
@@ -1954,7 +1976,11 @@ class _BulkTransferWizardDialogState
                                 BorderRadius.circular(6),
                           ),
                           child: Text(
-                            '${formatLargeNumberDouble(item.transferQuantity)} $unitName',
+                            item.transferQuantity > 0
+                                ? '${formatLargeNumberDouble(item.transferQuantity)} $unitName'
+                                : (item.isCreateInDestination
+                                    ? 'Create Only (0 $unitName)'
+                                    : '0 $unitName'),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color:
