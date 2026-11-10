@@ -1101,11 +1101,10 @@ Future<Uint8List> _buildPdfRoll(
                                     .spaceEvenly,
                             children: [
                               pw.Expanded(
+                                flex: 3,
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw
-                                          .CrossAxisAlignment
-                                          .start,
+                                      pw.CrossAxisAlignment.start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -1121,21 +1120,18 @@ Future<Uint8List> _buildPdfRoll(
                                       ) {
                                         return pw.Column(
                                           crossAxisAlignment:
-                                              pw
-                                                  .CrossAxisAlignment
-                                                  .start,
+                                              pw.CrossAxisAlignment.start,
                                           children: [
                                             ...receipt.displayPayments().map(
                                               (
                                                 payment,
                                               ) => pw.Text(
                                                 style: pw.TextStyle(
-                                                  font:
-                                                      fontRegular,
-                                                  fontSize:
-                                                      parTextAlt,
+                                                  font: fontRegular,
+                                                  fontSize: parTextAlt,
                                                 ),
                                                 '${payment.method}: ${formatMoneyMid(amount: payment.amount, context: context)}',
+                                                softWrap: true,
                                               ),
                                             ),
                                           ],
@@ -1146,6 +1142,7 @@ Future<Uint8List> _buildPdfRoll(
                                 ),
                               ),
                               pw.Expanded(
+                                flex: 2,
                                 child: pw.Column(
                                   crossAxisAlignment:
                                       pw

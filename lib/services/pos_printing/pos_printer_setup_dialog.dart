@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart'
     show BluetoothDevice, BluetoothPrintPlus;
 import 'package:flutter/material.dart';
-import 'package:stockall/main.dart' show returnShopProvider;
+import 'package:stockall/main.dart'
+    show returnShopProvider, returnTheme;
 import 'package:stockall/services/barcode_generation/barcode_import_helper.dart'
     show listPrinters;
 import 'package:stockall/services/pos_printing/pos_print_rules.dart';
@@ -43,19 +44,24 @@ class _PosPrinterSetupDialog extends StatefulWidget {
   });
 
   @override
-  State<_PosPrinterSetupDialog> createState() => _PosPrinterSetupDialogState();
+  State<_PosPrinterSetupDialog> createState() =>
+      _PosPrinterSetupDialogState();
 }
 
-class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
+class _PosPrinterSetupDialogState
+    extends State<_PosPrinterSetupDialog> {
   late PosPaper _paper = widget.paper;
   late bool _cut =
       widget.current?.cut ??
       defaultCut(transportsFor(widget.platform).first);
 
-  late final List<PosTransport> _transports = transportsFor(widget.platform);
+  late final List<PosTransport> _transports = transportsFor(
+    widget.platform,
+  );
 
   // Bluetooth
-  StreamSubscription<List<BluetoothDevice>>? _scanSubscription;
+  StreamSubscription<List<BluetoothDevice>>?
+  _scanSubscription;
   List<BluetoothDevice> _bluetoothDevices = [];
   bool _scanning = false;
 
@@ -63,24 +69,30 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
   Future<List<String>>? _installed;
 
   // Network
-  late final TextEditingController _host = TextEditingController(
-    text:
-        widget.current?.transport == PosTransport.network
-            ? widget.current!.address
-            : '',
-  );
-  late final TextEditingController _port = TextEditingController(
-    text: '${widget.current?.port ?? defaultNetworkPort}',
-  );
+  late final TextEditingController _host =
+      TextEditingController(
+        text:
+            widget.current?.transport ==
+                    PosTransport.network
+                ? widget.current!.address
+                : '',
+      );
+  late final TextEditingController _port =
+      TextEditingController(
+        text:
+            '${widget.current?.port ?? defaultNetworkPort}',
+      );
   String? _networkError;
 
   @override
   void initState() {
     super.initState();
     if (_transports.contains(PosTransport.bluetooth)) {
-      _scanSubscription = BluetoothPrintPlus.scanResults.listen((devices) {
-        if (mounted) setState(() => _bluetoothDevices = devices);
-      });
+      _scanSubscription = BluetoothPrintPlus.scanResults
+          .listen((devices) {
+            if (mounted)
+              setState(() => _bluetoothDevices = devices);
+          });
       _scan();
     }
     if (_transports.contains(PosTransport.windowsSpooler)) {
@@ -107,7 +119,9 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
     }
     setState(() => _scanning = true);
     try {
-      await BluetoothPrintPlus.startScan(timeout: const Duration(seconds: 8));
+      await BluetoothPrintPlus.startScan(
+        timeout: const Duration(seconds: 8),
+      );
     } catch (_) {
       // The list stays as it is; the user can scan again.
     }
@@ -120,10 +134,18 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
     } catch (_) {
       return const [];
     }
-    return [for (final printer in returnShopProvider().printers) printer.name];
+    return [
+      for (final printer in returnShopProvider().printers)
+        printer.name,
+    ];
   }
 
-  void _pick(PosTransport transport, String address, String name, {int? port}) {
+  void _pick(
+    PosTransport transport,
+    String address,
+    String name, {
+    int? port,
+  }) {
     Navigator.of(context).pop(
       PosPrinterConfig(
         transport: transport,
@@ -142,12 +164,16 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = returnTheme(context, listen: false);
     final width = MediaQuery.of(context).size.width;
     return AlertDialog(
       backgroundColor: Colors.white,
       title: const Text(
         'Choose your POS printer',
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       content: SizedBox(
         width: width < 480 ? width - 40 : 440,
@@ -160,20 +186,31 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
               children: [
                 for (final paper in PosPaper.values)
                   ChoiceChip(
-                    label: Text(paper.label),
+                    label: Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                      ),
+                      paper.label,
+                    ),
                     selected: _paper == paper,
-                    onSelected: (_) => setState(() => _paper = paper),
+                    onSelected:
+                        (_) =>
+                            setState(() => _paper = paper),
                   ),
               ],
             ),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text(
+              title: Text(
                 'Cut the paper after printing',
-                style: TextStyle(fontSize: 13),
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                ),
               ),
               value: _cut,
-              onChanged: (value) => setState(() => _cut = value),
+              onChanged:
+                  (value) => setState(() => _cut = value),
             ),
             const Divider(),
             // Keep the saved printer with the paper and cut above (it may
@@ -182,18 +219,32 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
               _sectionTitle('Current printer'),
               ListTile(
                 dense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                ),
                 tileColor: Colors.grey.shade200,
-                leading: const Icon(Icons.check_circle_outline, size: 20),
+                leading: const Icon(
+                  Icons.check_circle_outline,
+                  size: 20,
+                ),
                 title: Text(
                   widget.current!.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 subtitle: const Text('Keep this printer'),
-                trailing: const Icon(Icons.chevron_right, size: 18),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                ),
                 onTap:
                     () => Navigator.of(context).pop(
-                      keepPrinter(widget.current!, paper: _paper, cut: _cut),
+                      keepPrinter(
+                        widget.current!,
+                        paper: _paper,
+                        cut: _cut,
+                      ),
                     ),
               ),
               const Divider(),
@@ -214,20 +265,24 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
     );
   }
 
-  Widget _sectionTitle(String text, {Widget? trailing}) => Padding(
-    padding: const EdgeInsets.only(top: 8, bottom: 6),
-    child: Row(
-      children: [
-        Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-          ),
+  Widget _sectionTitle(String text, {Widget? trailing}) =>
+      Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 6),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            if (trailing != null) trailing,
+          ],
         ),
-        if (trailing != null) trailing,
-      ],
-    ),
-  );
+      );
 
   Widget _printerTile(
     PosTransport transport,
@@ -239,19 +294,54 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
     final current = _isCurrent(transport, address);
     return ListTile(
       dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-      tileColor: current ? Colors.grey.shade200 : Colors.grey.shade50,
-      leading: Icon(icon, size: 20),
-      title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: subtitle == null ? null : Text(subtitle),
-      trailing: current ? const Icon(Icons.check, size: 18) : null,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
+      tileColor:
+          current
+              ? Colors.grey.shade200
+              : Colors.grey.shade50,
+      leading: Icon(icon, size: 18),
+      title: Text(
+        name,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize:
+              returnTheme(
+                context,
+                listen: false,
+              ).mobileTexts.b3.fontSize,
+        ),
+      ),
+      subtitle:
+          subtitle == null
+              ? null
+              : Text(
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize:
+                      returnTheme(
+                        context,
+                        listen: false,
+                      ).mobileTexts.b4.fontSize,
+                  color: Colors.grey,
+                ),
+                subtitle,
+              ),
+      trailing:
+          current
+              ? const Icon(Icons.check, size: 16)
+              : null,
       onTap: () => _pick(transport, address, name),
     );
   }
 
   Widget _hint(String text) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Text(text, style: TextStyle(color: Colors.grey.shade700)),
+    child: Text(
+      text,
+      style: TextStyle(color: Colors.grey.shade700),
+    ),
   );
 
   Widget _section(PosTransport transport) {
@@ -267,16 +357,23 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
                       ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
                       )
                       : IconButton(
                         tooltip: 'Search again',
-                        icon: const Icon(Icons.refresh, size: 20),
+                        icon: const Icon(
+                          Icons.refresh,
+                          size: 20,
+                        ),
                         onPressed: _scan,
                       ),
             ),
             if (!BluetoothPrintPlus.isBlueOn)
-              _hint('Bluetooth is off. Turn it on, then search again.')
+              _hint(
+                'Bluetooth is off. Turn it on, then search again.',
+              )
             else if (_bluetoothDevices.isEmpty)
               _hint(
                 _scanning
@@ -287,7 +384,9 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
               _printerTile(
                 PosTransport.bluetooth,
                 device.address,
-                device.name.isEmpty ? device.address : device.name,
+                device.name.isEmpty
+                    ? device.address
+                    : device.name,
                 subtitle: device.address,
                 icon: Icons.bluetooth,
               ),
@@ -302,7 +401,8 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
             FutureBuilder<List<String>>(
               future: _installed,
               builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
+                if (snapshot.connectionState !=
+                    ConnectionState.done) {
                   return _hint('Looking for printers…');
                 }
                 final names = snapshot.data ?? const [];
@@ -316,8 +416,14 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
                   children: [
                     for (final name in names)
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: _printerTile(transport, name, name),
+                        padding: const EdgeInsets.only(
+                          bottom: 4,
+                        ),
+                        child: _printerTile(
+                          transport,
+                          name,
+                          name,
+                        ),
                       ),
                   ],
                 );
@@ -362,7 +468,10 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   _networkError!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             const SizedBox(height: 8),
@@ -370,7 +479,10 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
               alignment: Alignment.centerRight,
               child: FilledButton(
                 onPressed: () {
-                  final error = networkPrinterError(_host.text, _port.text);
+                  final error = networkPrinterError(
+                    _host.text,
+                    _port.text,
+                  );
                   if (error != null) {
                     setState(() => _networkError = error);
                     return;
@@ -384,7 +496,17 @@ class _PosPrinterSetupDialogState extends State<_PosPrinterSetupDialog> {
                     port: port,
                   );
                 },
-                child: const Text('Use this printer'),
+                child: Text(
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize:
+                        returnTheme(
+                          context,
+                          listen: false,
+                        ).mobileTexts.b3.fontSize,
+                  ),
+                  'Use this printer',
+                ),
               ),
             ),
           ],
