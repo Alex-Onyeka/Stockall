@@ -3,11 +3,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
+import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/providers/theme_provider.dart';
 
 class MainPurchaseTile extends StatelessWidget {
   final TempPurchase purchase;
@@ -112,13 +112,16 @@ class _MainPurchaseTileMobileState
                           MainAxisAlignment.start,
                       spacing: 5,
                       children: [
-                        SvgPicture.asset(receiptIconSvg),
+                        SvgPicture.asset(
+                          height: 15,
+                          receiptIconSvg,
+                        ),
                         Text(
                           style: TextStyle(
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b3
+                                    .b4
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -126,44 +129,55 @@ class _MainPurchaseTileMobileState
                             widget.purchase.createdAt,
                           ),
                         ),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          " |  ${formatTime(widget.purchase.createdAt)}",
+                        ),
                       ],
                     ),
                     Icon(
                       color: Colors.grey,
-                      size: 20,
+                      size: 15,
                       Icons.arrow_forward_ios_rounded,
                     ),
                   ],
                 ),
                 SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Text(
-                    //   style: TextStyle(
-                    //     fontSize:
-                    //         theme.mobileTexts.b3.fontSize,
-                    //     fontWeight: FontWeight.bold,
-                    //     color:
-                    //         theme
-                    //             .lightModeColor
-                    //             .secColor200,
-                    //   ),
-                    //   '${widget.purchase.paymentMethod} Payment',
-                    // ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                      '${getProductRecord().length} Item(s) Purchased',
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
+                // Row(
+                //   mainAxisAlignment:
+                //       MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     // Text(
+                //     //   style: TextStyle(
+                //     //     fontSize:
+                //     //         theme.mobileTexts.b3.fontSize,
+                //     //     fontWeight: FontWeight.bold,
+                //     //     color:
+                //     //         theme
+                //     //             .lightModeColor
+                //     //             .secColor200,
+                //     //   ),
+                //     //   '${widget.purchase.paymentMethod} Payment',
+                //     // ),
+                //     Text(
+                //       style: TextStyle(
+                //         fontSize:
+                //             theme.mobileTexts.b3.fontSize,
+                //         fontWeight: FontWeight.bold,
+                //         color: Colors.grey,
+                //       ),
+                //       '${getProductRecord().length} Item(s) Purchased',
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 10),
                 Container(
                   padding: EdgeInsets.all(13),
                   decoration: BoxDecoration(
@@ -393,7 +407,7 @@ class _MainPurchaseTileDesktopState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b3
+                                    .b4
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -493,47 +507,6 @@ class _MainPurchaseTileDesktopState
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ReceicptTileSectionDesktop extends StatelessWidget {
-  final String title;
-  final String subTitle;
-  final int flex;
-  const ReceicptTileSectionDesktop({
-    super.key,
-    required this.theme,
-    required this.title,
-    required this.subTitle,
-    required this.flex,
-  });
-
-  final ThemeProvider theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Column(
-        spacing: 3,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b4.fontSize,
-            ),
-            subTitle,
-          ),
-          Text(
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b3.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-            title,
-          ),
-        ],
       ),
     );
   }

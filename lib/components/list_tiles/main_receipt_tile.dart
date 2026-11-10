@@ -129,13 +129,16 @@ class _MainReceiptTileMobileState
                           MainAxisAlignment.start,
                       spacing: 5,
                       children: [
-                        SvgPicture.asset(receiptIconSvg),
+                        SvgPicture.asset(
+                          height: 15,
+                          receiptIconSvg,
+                        ),
                         Text(
                           style: TextStyle(
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b3
+                                    .b4
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -143,44 +146,55 @@ class _MainReceiptTileMobileState
                             widget.mainReceipt.createdAt,
                           ),
                         ),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          " |  ${formatTime(widget.mainReceipt.createdAt)}",
+                        ),
                       ],
                     ),
                     Icon(
                       color: Colors.grey,
-                      size: 20,
+                      size: 15,
                       Icons.arrow_forward_ios_rounded,
                     ),
                   ],
                 ),
                 SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor200,
-                      ),
-                      '${widget.mainReceipt.selectedBank?.displayName ?? widget.mainReceipt.paymentMethod} Payment',
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                      '${getProductRecord().length} Item(s) Sold',
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
+                // Row(
+                //   mainAxisAlignment:
+                //       MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     Text(
+                //       style: TextStyle(
+                //         fontSize:
+                //             theme.mobileTexts.b3.fontSize,
+                //         fontWeight: FontWeight.bold,
+                //         color:
+                //             theme
+                //                 .lightModeColor
+                //                 .secColor200,
+                //       ),
+                //       '${widget.mainReceipt.selectedBank?.displayName ?? widget.mainReceipt.paymentMethod} Payment',
+                //     ),
+                //     Text(
+                //       style: TextStyle(
+                //         fontSize:
+                //             theme.mobileTexts.b3.fontSize,
+                //         fontWeight: FontWeight.bold,
+                //         color: Colors.grey,
+                //       ),
+                //       '${getProductRecord().length} Item(s) Sold',
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 10),
                 Container(
                   padding: EdgeInsets.all(13),
                   decoration: BoxDecoration(
@@ -422,7 +436,7 @@ class _MainReceiptTileDesktopState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b3
+                                    .b4
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -430,11 +444,22 @@ class _MainReceiptTileDesktopState
                             widget.mainReceipt.createdAt,
                           ),
                         ),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          ' |  ${formatTime(widget.mainReceipt.createdAt)}',
+                        ),
                       ],
                     ),
                     Icon(
                       color: Colors.grey,
-                      size: 15,
+                      size: 13,
                       Icons.arrow_forward_ios_rounded,
                     ),
                   ],
@@ -569,7 +594,7 @@ class ReceicptTileSectionDesktop extends StatelessWidget {
           ),
           Text(
             style: TextStyle(
-              fontSize: theme.mobileTexts.b3.fontSize,
+              fontSize: theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
             title,

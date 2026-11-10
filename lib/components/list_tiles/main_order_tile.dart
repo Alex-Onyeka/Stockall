@@ -3,11 +3,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
+import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/providers/theme_provider.dart';
 
 class MainOrderTile extends StatelessWidget {
   final Orders order;
@@ -124,13 +124,16 @@ class _MainOrderTileMobileState
                           MainAxisAlignment.start,
                       spacing: 5,
                       children: [
-                        SvgPicture.asset(receiptIconSvg),
+                        SvgPicture.asset(
+                          height: 15,
+                          receiptIconSvg,
+                        ),
                         Text(
                           style: TextStyle(
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b3
+                                    .b4
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
@@ -138,32 +141,43 @@ class _MainOrderTileMobileState
                             widget.order.createdAt,
                           ),
                         ),
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          " |  ${formatTime(widget.order.createdAt)}",
+                        ),
                       ],
                     ),
                     Icon(
                       color: Colors.grey,
-                      size: 20,
+                      size: 15,
                       Icons.arrow_forward_ios_rounded,
                     ),
                   ],
                 ),
                 SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
-                      '${getProductRecord().length} Item(s) Sold',
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
+                // Row(
+                //   mainAxisAlignment:
+                //       MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     Text(
+                //       style: TextStyle(
+                //         fontSize:
+                //             theme.mobileTexts.b3.fontSize,
+                //         fontWeight: FontWeight.bold,
+                //         color: Colors.grey,
+                //       ),
+                //       '${getProductRecord().length} Item(s) Sold',
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 10),
                 Container(
                   padding: EdgeInsets.all(13),
                   decoration: BoxDecoration(
@@ -392,22 +406,45 @@ class _MainOrderTileDesktopState
                           MainAxisAlignment.start,
                       spacing: 5,
                       children: [
-                        SvgPicture.asset(
-                          height: 18,
-                          receiptIconSvg,
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.start,
+                          spacing: 5,
+                          children: [
+                            SvgPicture.asset(
+                              height: 18,
+                              receiptIconSvg,
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              formatDateWithDay(
+                                widget.order.createdAt,
+                              ),
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              ' |  ${formatTime(widget.order.createdAt)}',
+                            ),
+                          ],
                         ),
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          formatDateWithDay(
-                            widget.order.createdAt,
-                          ),
+                        Icon(
+                          color: Colors.grey,
+                          size: 13,
+                          Icons.arrow_forward_ios_rounded,
                         ),
                       ],
                     ),
@@ -493,47 +530,6 @@ class _MainOrderTileDesktopState
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class ReceicptTileSectionDesktop extends StatelessWidget {
-  final String title;
-  final String subTitle;
-  final int flex;
-  const ReceicptTileSectionDesktop({
-    super.key,
-    required this.theme,
-    required this.title,
-    required this.subTitle,
-    required this.flex,
-  });
-
-  final ThemeProvider theme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Column(
-        spacing: 3,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b4.fontSize,
-            ),
-            subTitle,
-          ),
-          Text(
-            style: TextStyle(
-              fontSize: theme.mobileTexts.b3.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-            title,
-          ),
-        ],
       ),
     );
   }
