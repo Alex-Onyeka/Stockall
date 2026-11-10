@@ -669,11 +669,10 @@ Future<Uint8List> _buildPdfRollInvoice({
                                     .spaceEvenly,
                             children: [
                               pw.Expanded(
+                                flex: 3,
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw
-                                          .CrossAxisAlignment
-                                          .start,
+                                      pw.CrossAxisAlignment.start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -688,12 +687,15 @@ Future<Uint8List> _buildPdfRollInvoice({
                                         font: fontBold,
                                         fontSize: parText,
                                       ),
-                                      invoice.paymentMethod,
+                                      invoice.selectedBank?.displayName ??
+                                          invoice.paymentMethod,
+                                      softWrap: true,
                                     ),
                                   ],
                                 ),
                               ),
                               pw.Expanded(
+                                flex: 2,
                                 child: pw.Column(
                                   crossAxisAlignment:
                                       pw

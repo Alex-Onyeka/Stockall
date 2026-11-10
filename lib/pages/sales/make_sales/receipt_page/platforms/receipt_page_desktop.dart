@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/checkout_response.dart';
-import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
@@ -899,7 +898,7 @@ class _ReceiptDetailsContainerState
                                     spacing: 10,
                                     children: [
                                       Expanded(
-                                        flex: 5,
+                                        flex: 6,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -1004,7 +1003,7 @@ class _ReceiptDetailsContainerState
                                     spacing: 10,
                                     children: [
                                       Expanded(
-                                        flex: 5,
+                                        flex: 6,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -1025,114 +1024,48 @@ class _ReceiptDetailsContainerState
                                               'Payment Method',
                                             ),
                                             Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
                                               children: [
-                                                Visibility(
-                                                  visible: widget
-                                                      .mainReceipt
-                                                      .showsPaymentMethod(
-                                                        PaymentMethods.cash,
+                                                ...widget.mainReceipt.displayPayments().map(
+                                                  (
+                                                    payment,
+                                                  ) => Padding(
+                                                    padding: const EdgeInsets.only(
+                                                      bottom:
+                                                          2,
+                                                    ),
+                                                    child: Text.rich(
+                                                      TextSpan(
+                                                        children: [
+                                                          TextSpan(
+                                                            text:
+                                                                '${payment.method}: ',
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  widget.theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.normal,
+                                                            ),
+                                                          ),
+                                                          TextSpan(
+                                                            text: formatMoneyMid(
+                                                              amount:
+                                                                  payment.amount,
+                                                              context:
+                                                                  context,
+                                                            ),
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  widget.theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                  child: Row(
-                                                    spacing:
-                                                        5,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                        'Cash:',
-                                                      ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        formatMoneyMid(
-                                                          amount:
-                                                              widget.mainReceipt.cashAlt,
-                                                          context:
-                                                              context,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Visibility(
-                                                  visible: widget
-                                                      .mainReceipt
-                                                      .showsPaymentMethod(
-                                                        PaymentMethods.bank,
-                                                      ),
-                                                  child: Row(
-                                                    spacing:
-                                                        5,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                        '${widget.mainReceipt.selectedBank?.displayName ?? (PaymentMethods.isBankMethod(widget.mainReceipt.paymentMethod) ? widget.mainReceipt.paymentMethod : 'Bank')}:',
-                                                      ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        formatMoneyMid(
-                                                          amount:
-                                                              widget.mainReceipt.bank,
-                                                          context:
-                                                              context,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Visibility(
-                                                  visible: widget
-                                                      .mainReceipt
-                                                      .showsPaymentMethod(
-                                                        PaymentMethods.account,
-                                                      ),
-                                                  child: Row(
-                                                    spacing:
-                                                        5,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.normal,
-                                                        ),
-                                                        'Account:',
-                                                      ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        formatMoneyMid(
-                                                          amount:
-                                                              widget.mainReceipt.customerAccount ??
-                                                              0,
-                                                          context:
-                                                              context,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                    ),
                                                   ),
                                                 ),
                                               ],
@@ -1199,7 +1132,7 @@ class _ReceiptDetailsContainerState
                                     spacing: 10,
                                     children: [
                                       Expanded(
-                                        flex: 5,
+                                        flex: 6,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment
@@ -1305,7 +1238,7 @@ class _ReceiptDetailsContainerState
                                     spacing: 10,
                                     children: [
                                       Expanded(
-                                        flex: 5,
+                                        flex: 6,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment

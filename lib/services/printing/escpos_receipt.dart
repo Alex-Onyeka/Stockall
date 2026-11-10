@@ -79,36 +79,18 @@ EscPosBuilder buildReceiptEscPos({
       ]);
     }
   }
-  if (shop.showSecond!) {
-    final String payment;
-    final bankName =
-        receipt.selectedBank?.displayName ??
-        (PaymentMethods.isBankMethod(receipt.paymentMethod)
-            ? receipt.paymentMethod
-            : 'Bank');
-    if (receipt.paymentEntries != null &&
-        receipt.paymentEntries!.isNotEmpty) {
-      payment = receipt.paymentEntries!
-          .map((p) => '${p.method}: ${money(p.amount)}')
-          .join('\n');
-    } else if (receipt.bank == 0) {
-      payment = 'Cash: ${money(receipt.cashAlt)}';
-    } else if (receipt.cashAlt == 0) {
-      payment = '$bankName: ${money(receipt.bank)}';
-    } else if (receipt.customerAccount != 0) {
-      payment =
-          'Account: ${money(receipt.customerAccount ?? 0)}';
-    } else {
-      payment =
-          'Cash: ${money(receipt.cashAlt)}\n$bankName: ${money(receipt.bank)}';
-    }
+    if (shop.showSecond!) {
+    final String payment = receipt
+        .displayPayments()
+        .map((p) => '${p.method}: ${money(p.amount)}')
+        .join('\n');
     b.columns([
-      EscCol('Payment Method:'),
-      EscCol('#Ticket ID'),
+      EscCol('Payment Method:', flex: 2),
+      EscCol('#Ticket ID', flex: 1, align: EscAlign.right),
     ]);
     b.columns([
-      EscCol(payment),
-      EscCol(ticketId, bold: true),
+      EscCol(payment, flex: 2),
+      EscCol(ticketId, bold: true, flex: 1, align: EscAlign.right),
     ]);
   }
   if (shop.showThird!) {
@@ -227,24 +209,32 @@ EscPosBuilder buildInvoiceEscPos({
       ('Customer Name:', invoice.customerName ?? 'Not Set'),
     ]);
   }
-  if (shop.showSecond!) {
+    if (shop.showSecond!) {
     b.columns([
-      EscCol('Payment Method:'),
-      EscCol('Amount(s):'),
+      EscCol('Payment Method:', flex: 2),
+      EscCol('Amount(s):', flex: 1, align: EscAlign.right),
     ]);
     final invBankName =
         invoice.selectedBank?.displayName ??
         (PaymentMethods.isBankMethod(invoice.paymentMethod)
             ? invoice.paymentMethod
             : 'Bank');
+    final amounts = invoice.cashAlt == 0
+        ? '$invBankName: ${money(invoice.bank)}'
+        : invoice.bank == 0
+            ? 'Cash: ${money(invoice.cashAlt)}'
+            : 'Cash: ${money(invoice.cashAlt)}\n$invBankName: ${money(invoice.bank)}';
     b.columns([
       EscCol(
         invoice.selectedBank?.displayName ??
             invoice.paymentMethod,
         bold: true,
+        flex: 2,
       ),
       EscCol(
-        'Cash: ${money(invoice.cashAlt)}\n$invBankName: ${money(invoice.bank)}',
+        amounts,
+        flex: 1,
+        align: EscAlign.right,
       ),
     ]);
     if (invoice.subStaffName != null) {
