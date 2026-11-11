@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_item_history/item_history.dart';
-import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -12,6 +10,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/item_comment_widget.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
+import 'package:stockall/services/stock_adjustment_helper.dart';
 
 Future<Object?> updateItemQuantity(
   BuildContext context,
@@ -57,38 +56,6 @@ class _UpdateItemQuantityWidgetState
 
   bool get itemHasDimensions =>
       widget.product.hasDimensions;
-
-  double quantityInArea(double quantity) {
-    final isDimensionalSheet =
-        widget.product.quantityType == 2 && !isAreaUnit();
-    final useCustomDimensions =
-        quantityTypeTemp == 2 || !itemHasDimensions;
-    return selectedUnit().getQuantityEquivMultiplied(
-      index: 1,
-      product: widget.product,
-      newQuantity: quantity,
-      customWidth:
-          isDimensionalSheet
-              ? useCustomDimensions
-                  ? double.tryParse(
-                    widthController.text
-                        .replaceAll(',', '')
-                        .trim(),
-                  )
-                  : widget.product.widthDimension
-              : null,
-      customHeight:
-          isDimensionalSheet
-              ? useCustomDimensions
-                  ? double.tryParse(
-                    heightController.text
-                        .replaceAll(',', '')
-                        .trim(),
-                  )
-                  : widget.product.heightDimension
-              : null,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -809,38 +776,40 @@ class _UpdateItemQuantityWidgetState
                                           isEditQuantityLoading =
                                               true;
                                         });
-                                        double
-                                        setQuantity() {
-                                          if (isAddToQuantity) {
-                                            return (widget
-                                                        .product
-                                                        .getActualQuantity() ??
-                                                    0) +
-                                                quantityInArea(
-                                                  enteredQuantity ??
-                                                      0,
-                                                );
-                                          } else {
-                                            return quantityInArea(
+                                        final adjustment = computeQuantityAdjustment(
+                                          product:
+                                              widget.product,
+                                          unitUuid: unitUuid,
+                                          enteredQuantity:
                                               enteredQuantity ??
-                                                  0,
-                                            );
-                                          }
-                                        }
+                                              0,
+                                          isAddToQuantity:
+                                              isAddToQuantity,
+                                          useCustomDimensions:
+                                              quantityTypeTemp ==
+                                                  2 ||
+                                              !itemHasDimensions,
+                                          customWidth: double.tryParse(
+                                            widthController.text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )
+                                                .trim(),
+                                          ),
+                                          customHeight: double.tryParse(
+                                            heightController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )
+                                                .trim(),
+                                          ),
+                                        );
 
-                                        final oldStockArea =
-                                            widget.product
-                                                .getActualQuantity() ??
-                                            0;
-                                        final newStockArea =
-                                            setQuantity();
-                                        final deltaArea =
-                                            (newStockArea -
-                                                    oldStockArea)
-                                                .abs();
-
-                                        if (deltaArea <
-                                            1e-9) {
+                                        if (adjustment
+                                            .isNoChange) {
                                           setState(() {
                                             isEditQuantityLoading =
                                                 false;
@@ -854,114 +823,15 @@ class _UpdateItemQuantityWidgetState
                                           return;
                                         }
 
-                                        final bool
-                                        isIncrement =
-                                            newStockArea >=
-                                            oldStockArea;
-                                        final double
-                                        areaPerSheet =
-                                            widget.product
-                                                .dimensionArea();
-                                        final double
-                                        rpcQuantityChange =
-                                            (widget.product.quantityType ==
-                                                        2 &&
-                                                    widget
-                                                        .product
-                                                        .hasDimensions &&
-                                                    areaPerSheet >
-                                                        0)
-                                                ? (deltaArea /
-                                                    areaPerSheet)
-                                                : deltaArea;
-
-                                        ItemHistory
-                                        itemHistory = ItemHistory(
-                                          primaryUnit:
-                                              widget.product
-                                                  .getProductUnit()
-                                                  .name,
-                                          unit:
-                                              widget.product
-                                                  .getProductUnit(
-                                                    unitUuid:
-                                                        unitUuid,
-                                                  )
-                                                  .name,
-                                          shopId: shopId(),
-                                          title:
-                                              'Item Quantity ${isIncrement ? "Increased" : 'Reduced'}',
-                                          quantityChange: widget
-                                              .product
-                                              .getProductUnit(
-                                                unitUuid:
-                                                    unitUuid,
-                                              )
-                                              .getQuantityEquivDivided(
-                                                index: 1,
-                                                newQuantity:
-                                                    (newStockArea -
-                                                        oldStockArea),
-                                                product:
-                                                    widget
-                                                        .product,
-                                              ),
-                                          event:
-                                              isIncrement
-                                                  ? ItemHistoryEventClass
-                                                      .quantityUpdatedIncrease
-                                                  : ItemHistoryEventClass
-                                                      .quantityUpdatedDecrease,
-                                          isManaged:
-                                              widget
-                                                  .product
-                                                  .isManaged,
-                                          source:
-                                              isIncrement
-                                                  ? ItemHistoryEventClass
-                                                      .manualSource
-                                                  : ItemHistoryEventClass
-                                                      .productSource,
-                                          destination:
-                                              isIncrement
-                                                  ? ItemHistoryEventClass
-                                                      .productDestination
-                                                  : ItemHistoryEventClass
-                                                      .manualDestination,
-                                          newValue: formatLargeNumberDouble(
-                                            widget.product
-                                                .getProductUnit()
-                                                .getQuantityEquivDivided(
-                                                  index: 1,
-                                                  newQuantity:
-                                                      newStockArea,
-                                                  product:
-                                                      widget
-                                                          .product,
-                                                ),
-                                          ),
-                                          desc:
-                                              commentController
-                                                      .text
-                                                      .isNotEmpty
-                                                  ? commentController
-                                                      .text
-                                                  : 'This Item Quantity Was Updated.',
-                                          isIncreased:
-                                              isIncrement,
-                                          oldValue: formatLargeNumberDouble(
-                                            widget.product
-                                                .getProductUnit()
-                                                .getQuantityEquivDivided(
-                                                  index: 1,
-                                                  newQuantity:
-                                                      oldStockArea,
-                                                  product:
-                                                      widget
-                                                          .product,
-                                                ),
-                                          ),
-                                        );
+                                        final itemHistory =
+                                            buildQuantityAdjustmentHistory(
+                                              product: widget.product,
+                                              unitUuid: unitUuid,
+                                              adjustment: adjustment,
+                                              comment:
+                                                  commentController.text,
+                                              shopId: shopId(),
+                                            );
 
                                         await dataProvider.updateProduct(
                                           itemHistory:
@@ -969,11 +839,13 @@ class _UpdateItemQuantityWidgetState
                                           includeQuantity:
                                               false,
                                           isIncrement:
-                                              isIncrement,
+                                              adjustment
+                                                  .isIncrement,
                                           isQuantityUpdate:
                                               true,
                                           quantityChange:
-                                              rpcQuantityChange,
+                                              adjustment
+                                                  .rpcQuantityChange,
                                           product: TempProductClass(
                                             manageSalesWastage:
                                                 widget
@@ -1078,15 +950,8 @@ class _UpdateItemQuantityWidgetState
                                                     .product
                                                     .wholeSalePrice,
                                             quantity:
-                                                widget.product.quantityType ==
-                                                        2
-                                                    ? (widget.product.hasDimensions &&
-                                                            areaPerSheet >
-                                                                0
-                                                        ? newStockArea /
-                                                            areaPerSheet
-                                                        : newStockArea)
-                                                    : newStockArea,
+                                                adjustment
+                                                    .newStoredQuantity,
                                             shopId:
                                                 widget
                                                     .product

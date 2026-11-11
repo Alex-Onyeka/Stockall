@@ -78,6 +78,7 @@ import 'package:stockall/local_database/products/unsync_funcs/created_products/c
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/services/product_linking_helper.dart';
+import 'package:stockall/services/stock_adjustment_helper.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
@@ -4686,6 +4687,71 @@ class DataProvider extends ChangeNotifier {
       );
       return 0;
     }
+  }
+
+  /// Bulk stock adjustment from the All Items selection. Each line
+  /// is written exactly like one "Edit Unit Qtty" edit (same
+  /// QuantityUpdate and item history), after being rechecked
+  /// against the live item. A failed item does not stop the others.
+  Future<StockAdjustmentResult> adjustProductsQuantity(
+    List<StockAdjustmentLine> lines, {
+    String? comment,
+  }) async {
+    final plan = planStockAdjustments(
+      lines: lines,
+      findLive:
+          (uuid) => ProductsFunc().getSingleProduct(uuid: uuid),
+      isLinkedToStorage: (product) => product.isPartOfStorage(),
+    );
+    final adjusted = <String>[];
+    final failed = <String>[...plan.failed];
+
+    for (final planned in plan.toApply) {
+      final live = planned.product;
+      final adjustment = planned.adjustment;
+      try {
+        final itemHistory = buildQuantityAdjustmentHistory(
+          product: live,
+          unitUuid: planned.line.unitUuid,
+          adjustment: adjustment,
+          comment: comment,
+          shopId: shopId(),
+        );
+        final res = await updateProduct(
+          product: live.copyWith(
+            quantity: adjustment.newStoredQuantity,
+          ),
+          isQuantityUpdate: true,
+          includeQuantity: false,
+          quantityChange: adjustment.rpcQuantityChange,
+          isIncrement: adjustment.isIncrement,
+          itemHistory: itemHistory,
+          isMultipleUpdate: true,
+        );
+        if (res == null) {
+          failed.add(
+            '${live.name}: could not save the new quantity',
+          );
+        } else {
+          adjusted.add(live.name);
+        }
+      } catch (e) {
+        await mainLocalLog(
+          "Error Adjusting Stock For ${live.name}: ${e.toString()}",
+        );
+        failed.add('${live.name}: ${e.toString()}');
+      }
+    }
+
+    await getProductsOffline(shopId());
+    toggleIsSelectProduct(false);
+    syncData();
+
+    return StockAdjustmentResult(
+      adjusted: adjusted,
+      skipped: plan.skipped,
+      failed: failed,
+    );
   }
 }
 
