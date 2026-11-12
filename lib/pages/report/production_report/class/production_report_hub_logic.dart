@@ -26,6 +26,27 @@ enum ProductionReportGroupId {
   productionRecords,
 }
 
+/// Top-level report categories shown in the Production Report hub.
+enum ProductionReportCategoryId {
+  materials,
+  productionRecords,
+  productionItems,
+}
+
+class ProductionReportCategory {
+  final ProductionReportCategoryId id;
+  final String title;
+  final String subText;
+  final List<ProductionReportGroupId> groupIds;
+
+  const ProductionReportCategory({
+    required this.id,
+    required this.title,
+    required this.subText,
+    required this.groupIds,
+  });
+}
+
 class ProductionReportEntry {
   final ProductionReportPageId id;
   final String title;
@@ -192,6 +213,56 @@ class ProductionReportHub {
       );
     }
     return result;
+  }
+
+  static const List<ProductionReportCategory> allCategories = [
+    ProductionReportCategory(
+      id: ProductionReportCategoryId.materials,
+      title: 'Material Report',
+      subText:
+          'Raw materials, stock value, usage records and material history',
+      groupIds: [
+        ProductionReportGroupId.materials,
+        ProductionReportGroupId.materialUsage,
+      ],
+    ),
+    ProductionReportCategory(
+      id: ProductionReportCategoryId.productionRecords,
+      title: 'Production Record Report',
+      subText: 'Each production run, cost per unit, yields and trends',
+      groupIds: [ProductionReportGroupId.productionRecords],
+    ),
+    ProductionReportCategory(
+      id: ProductionReportCategoryId.productionItems,
+      title: 'Production Items Report',
+      subText: 'Items made in production, stock value, transfers and history',
+      groupIds: [ProductionReportGroupId.producedItems],
+    ),
+  ];
+
+  /// The top-level category tiles shown on the Production Report hub.
+  static List<ProductionReportCategory> categories({
+    required bool producedItemsEnabled,
+  }) =>
+      allCategories
+          .where(
+            (c) =>
+                producedItemsEnabled ||
+                c.id != ProductionReportCategoryId.productionItems,
+          )
+          .toList();
+
+  /// The groups and pages inside [category] that this user sees.
+  static List<ProductionReportGroup> groupsForCategory({
+    required ProductionReportCategory category,
+    required bool historyAllowed,
+    required bool producedItemsEnabled,
+  }) {
+    final allowedGroupIds = category.groupIds.toSet();
+    return groups(
+      historyAllowed: historyAllowed,
+      producedItemsEnabled: producedItemsEnabled,
+    ).where((g) => allowedGroupIds.contains(g.id)).toList();
   }
 
   /// Whether the Reports page shows the Production Report tile: the

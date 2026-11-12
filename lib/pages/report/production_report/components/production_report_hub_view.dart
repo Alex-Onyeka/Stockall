@@ -26,12 +26,20 @@ import 'package:stockall/providers/theme_provider.dart';
 class ProductionReportHubView extends StatelessWidget {
   final bool isDesktop;
 
-  const ProductionReportHubView({super.key, required this.isDesktop});
+  const ProductionReportHubView({
+    super.key,
+    required this.isDesktop,
+  });
 
   /// The built pages. A page that isn't here yet shows as
   /// "Coming Soon".
-  static final Map<ProductionReportPageId, Widget Function()> _pages = {
-    ProductionReportPageId.materialsTable: () => const MaterialsTablePage(),
+  static final Map<
+    ProductionReportPageId,
+    Widget Function()
+  >
+  _pages = {
+    ProductionReportPageId.materialsTable:
+        () => const MaterialsTablePage(),
     ProductionReportPageId.materialsAnalysis:
         () => const MaterialsAnalysisPage(),
     ProductionReportPageId.materialHistoryTable:
@@ -44,7 +52,8 @@ class ProductionReportHubView extends StatelessWidget {
         () => const ProductionSummaryPage(),
     ProductionReportPageId.usageRecordsTable:
         () => const UsageRecordsTablePage(),
-    ProductionReportPageId.usageSummary: () => const UsageSummaryPage(),
+    ProductionReportPageId.usageSummary:
+        () => const UsageSummaryPage(),
     ProductionReportPageId.producedItemsTable:
         () => const ProducedItemsTablePage(),
     ProductionReportPageId.producedItemsAnalysis:
@@ -55,17 +64,16 @@ class ProductionReportHubView extends StatelessWidget {
         () => const ProducedItemHistorySummaryPage(),
   };
 
-  static Widget Function()? pageFor(ProductionReportPageId id) =>
-      _pages[id];
+  static Widget Function()? pageFor(
+    ProductionReportPageId id,
+  ) => _pages[id];
 
   @override
   Widget build(BuildContext context) {
     final theme = returnTheme(context);
-    final groups = ProductionReportHub.groups(
-      historyAllowed:
-          authorization(authorized: Authorizations().viewItemsHistory) &&
-          ItemsAuthAction().trackItemHistoryAction(context: null),
-      producedItemsEnabled: shop(context)?.manageProductionItems == true,
+    final categories = ProductionReportHub.categories(
+      producedItemsEnabled:
+          shop(context)?.manageProductionItems == true,
     );
 
     final body = Scaffold(
@@ -85,10 +93,100 @@ class ProductionReportHubView extends StatelessWidget {
           const SizedBox(height: 20),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+              ),
               child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.stretch,
+                  children: [
+                    for (final category in categories)
+                      ReportListTile(
+                        isActive: true,
+                        theme: theme,
+                        action: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      ProductionReportCategoryView(
+                                        category: category,
+                                      ),
+                            ),
+                          );
+                        },
+                        subText: category.subText,
+                        title: category.title,
+                      ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (!isDesktop) return body;
+    return DesktopCenterContainer(
+      width: 800,
+      mainWidget: body,
+    );
+  }
+}
+
+/// Detail page for a single [ProductionReportCategory], listing its
+/// report groups and tiles.
+class ProductionReportCategoryView extends StatelessWidget {
+  final ProductionReportCategory category;
+
+  const ProductionReportCategoryView({
+    super.key,
+    required this.category,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = returnTheme(context);
+    final groups = ProductionReportHub.groupsForCategory(
+      category: category,
+      historyAllowed:
+          authorization(
+            authorized: Authorizations().viewItemsHistory,
+          ) &&
+          ItemsAuthAction().trackItemHistoryAction(
+            context: null,
+          ),
+      producedItemsEnabled:
+          shop(context)?.manageProductionItems == true,
+    );
+
+    final body = Scaffold(
+      body: Column(
+        children: [
+          TopBanner(
+            turnOnBackNavButton: true,
+            subTitle: category.subText,
+            title: category.title,
+            theme: theme,
+            bottomSpace: 40,
+            topSpace: 30,
+            isMain: true,
+            iconSvg: reportIconSvg,
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.stretch,
                   children: [
                     for (final group in groups)
                       _GroupSection(
@@ -105,8 +203,17 @@ class ProductionReportHubView extends StatelessWidget {
       ),
     );
 
-    if (!isDesktop) return body;
-    return DesktopCenterContainer(width: 800, mainWidget: body);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < mobileScreen) {
+          return body;
+        }
+        return DesktopCenterContainer(
+          width: 800,
+          mainWidget: body,
+        );
+      },
+    );
   }
 }
 
@@ -114,7 +221,10 @@ class _GroupSection extends StatelessWidget {
   final ProductionReportGroup group;
   final ThemeProvider theme;
 
-  const _GroupSection({required this.group, required this.theme});
+  const _GroupSection({
+    required this.group,
+    required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -139,13 +249,17 @@ class _GroupSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          for (final entry in group.entries) _entryTile(context, entry),
+          for (final entry in group.entries)
+            _entryTile(context, entry),
         ],
       ),
     );
   }
 
-  Widget _entryTile(BuildContext context, ProductionReportEntry entry) {
+  Widget _entryTile(
+    BuildContext context,
+    ProductionReportEntry entry,
+  ) {
     final page = ProductionReportHubView.pageFor(entry.id);
     return ReportListTile(
       isActive: page != null,
@@ -158,7 +272,10 @@ class _GroupSection extends StatelessWidget {
         );
       },
       subText: entry.subText,
-      title: page == null ? '${entry.title} (Coming Soon)' : entry.title,
+      title:
+          page == null
+              ? '${entry.title} (Coming Soon)'
+              : entry.title,
     );
   }
 }

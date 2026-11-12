@@ -10,7 +10,8 @@ import 'package:stockall/pages/report/components/export/report_export_backend.da
 import 'package:stockall/pages/report/components/export/report_export_button.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-String _count(int n, String noun) => '$n $noun${n == 1 ? '' : 's'}';
+String _count(int n, String noun) =>
+    '$n $noun${n == 1 ? '' : 's'}';
 
 class StaffTodaySummaryCard extends StatelessWidget {
   final StaffPageData data;
@@ -67,11 +68,17 @@ class StaffTodaySummaryCard extends StatelessWidget {
     return Container(
       key: const ValueKey('staff-summary-card'),
       margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+      padding: const EdgeInsets.symmetric(
+        vertical: 25,
+        horizontal: 15,
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         boxShadow: const [
-          BoxShadow(color: Color.fromARGB(26, 0, 0, 0), blurRadius: 10),
+          BoxShadow(
+            color: Color.fromARGB(26, 0, 0, 0),
+            blurRadius: 10,
+          ),
         ],
         gradient: theme.lightModeColor.prGradient,
       ),
@@ -86,24 +93,32 @@ class StaffTodaySummaryCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: Colors.grey.shade100,
                 ),
-                child: const Icon(size: 16, Icons.insights_outlined),
+                child: const Icon(
+                  size: 16,
+                  Icons.insights_outlined,
+                ),
               ),
               const SizedBox(width: 5),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
                     Text(
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade200,
                       ),
                       'Today\'s Activity'.toUpperCase(),
                     ),
                     Text(
-                      key: const ValueKey('staff-summary-date'),
+                      key: const ValueKey(
+                        'staff-summary-date',
+                      ),
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b5.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b5.fontSize,
                         color: Colors.grey.shade300,
                       ),
                       formatDateTime(data.period.start!),
@@ -114,13 +129,17 @@ class StaffTodaySummaryCard extends StatelessWidget {
               ReportExportButton(
                 label: 'Print Report',
                 backend: exportBackend,
-                buildSpec: () => data.printSpec(currency: currency),
+                buildSpec:
+                    () =>
+                        data.printSpec(currency: currency),
               ),
             ],
           ),
           Divider(color: Colors.grey.shade500, height: 25),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+            ),
             child: Column(
               key: const ValueKey('staff-figure-sales'),
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,13 +171,16 @@ class StaffTodaySummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+            ),
             child: Column(
               spacing: 12,
               children: [
                 for (var i = 0; i < figures.length; i += 2)
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
                     children: [
                       Expanded(child: figures[i]),
                       Expanded(

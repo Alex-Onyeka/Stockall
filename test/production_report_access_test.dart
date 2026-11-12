@@ -514,5 +514,57 @@ void main() {
         }
       }
     });
+
+    test('categories show Production Items Report only when enabled', () {
+      final enabled = ProductionReportHub.categories(
+        producedItemsEnabled: true,
+      );
+      expect(enabled.map((c) => c.id).toList(), [
+        ProductionReportCategoryId.materials,
+        ProductionReportCategoryId.productionRecords,
+        ProductionReportCategoryId.productionItems,
+      ]);
+
+      final disabled = ProductionReportHub.categories(
+        producedItemsEnabled: false,
+      );
+      expect(disabled.map((c) => c.id).toList(), [
+        ProductionReportCategoryId.materials,
+        ProductionReportCategoryId.productionRecords,
+      ]);
+    });
+
+    test('groupsForCategory splits materials, production records and items', () {
+      final cats = ProductionReportHub.categories(
+        producedItemsEnabled: true,
+      );
+      final materialsGroups = ProductionReportHub.groupsForCategory(
+        category: cats[0],
+        historyAllowed: true,
+        producedItemsEnabled: true,
+      );
+      expect(materialsGroups.map((g) => g.id).toList(), [
+        ProductionReportGroupId.materials,
+        ProductionReportGroupId.materialUsage,
+      ]);
+
+      final recordsGroups = ProductionReportHub.groupsForCategory(
+        category: cats[1],
+        historyAllowed: true,
+        producedItemsEnabled: true,
+      );
+      expect(recordsGroups.map((g) => g.id).toList(), [
+        ProductionReportGroupId.productionRecords,
+      ]);
+
+      final itemsGroups = ProductionReportHub.groupsForCategory(
+        category: cats[2],
+        historyAllowed: true,
+        producedItemsEnabled: true,
+      );
+      expect(itemsGroups.map((g) => g.id).toList(), [
+        ProductionReportGroupId.producedItems,
+      ]);
+    });
   });
 }
