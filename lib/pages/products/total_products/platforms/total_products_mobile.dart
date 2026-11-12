@@ -22,6 +22,8 @@ import 'package:stockall/pages/products/item_history_page/item_history_page.dart
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/total_products/platforms/total_products_desktop.dart';
 import 'package:stockall/pages/products/total_products/platforms/components/bulk_transfer_dialog.dart';
+import 'package:stockall/pages/products/total_products/platforms/components/bulk_stock_adjustment_dialog.dart';
+import 'package:stockall/pages/products/total_products/platforms/components/selection_back_scope.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class TotalProductsMobile extends StatefulWidget {
@@ -83,6 +85,14 @@ class _TotalProductsMobileState extends State<TotalProductsMobile> {
   Future<void> getProductList() async {
     await RefreshFunctions(context).refreshProducts(context);
     setState(() {});
+  }
+
+  // Same as the Cancel action: used by Back while selecting.
+  void _cancelSelection() {
+    returnData().toggleIsSelectProduct(false);
+    setState(() {
+      filterIndex = 0;
+    });
   }
 
   @override
@@ -152,12 +162,15 @@ class _TotalProductsMobileState extends State<TotalProductsMobile> {
       return products;
     }
 
-    return Stack(
+    return SelectionBackScope(
+      onCancelSelection: _cancelSelection,
+      child: Stack(
       children: [
         Scaffold(
           appBar: appBar(
             context: context,
             title: 'All Items',
+            backAction: () => Navigator.of(context).maybePop(),
             widget:
                 widget.categoryUuid != null
                     ? null
@@ -678,6 +691,41 @@ class _TotalProductsMobileState extends State<TotalProductsMobile> {
                                                          ),
                                                         Visibility(
                                                           visible:
+                                                              authorization(
+                                                                authorized:
+                                                                    Authorizations()
+                                                                        .updateProduct,
+                                                              ) &&
+                                                              authorization(
+                                                                authorized:
+                                                                    Authorizations()
+                                                                        .updateItemQuantity,
+                                                              ),
+                                                          child: ProductSelectionActionButton(
+                                                            title:
+                                                                'Stock Adjustment',
+                                                            action: () {
+                                                              launchBulkStockAdjustment(
+                                                                context:
+                                                                    context,
+                                                                loadingAction: (
+                                                                  value,
+                                                                ) {
+                                                                  setState(() {
+                                                                    isDeleteLoading =
+                                                                        value;
+                                                                  });
+                                                                },
+                                                              );
+                                                            },
+                                                            icon:
+                                                                Icons
+                                                                    .tune_rounded,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                        Visibility(
+                                                          visible:
                                                               shop(
                                                                 context,
                                                               )?.manageInventoryStorage ==
@@ -1145,6 +1193,7 @@ class _TotalProductsMobileState extends State<TotalProductsMobile> {
           child: returnCompProvider(context).showLoader(message: 'Loading'),
         ),
       ],
+    ),
     );
   }
 }

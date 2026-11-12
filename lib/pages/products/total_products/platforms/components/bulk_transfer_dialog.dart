@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -15,6 +16,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/product_linking_helper.dart';
+import 'package:stockall/services/stock_adjustment_helper.dart';
 
 /// Entry point to launch the Bulk Transfer workflow from total_products page.
 Future<void> launchBulkTransferWorkflow({
@@ -382,6 +384,13 @@ class _TransferLineItem {
   double transferQuantity = 0.0;
   String? unitUuid;
   final TextEditingController quantityController;
+  final TextEditingController widthController =
+      TextEditingController();
+  final TextEditingController heightController =
+      TextEditingController();
+
+  /// 1 = "Enter Whole", 2 = "Enter Dimensions" (2D items).
+  int quantityTypeTemp = 1;
   String? error;
 
   _TransferLineItem({
@@ -394,6 +403,48 @@ class _TransferLineItem {
     TextEditingController? controller,
   }) : quantityController =
            controller ?? TextEditingController(text: '0');
+
+  ProductUnitsClass get selectedUnit =>
+      sourceProduct.getProductUnit(unitUuid: unitUuid);
+
+  bool get isAreaUnit =>
+      sourceProduct.quantityType == 2 &&
+      selectedUnit.isAreaUnit;
+
+  /// Same condition as bulk stock adjustment / item details edit dialog.
+  bool get showWholeOrDimensions =>
+      sourceProduct.quantityType == 2 &&
+      !isAreaUnit &&
+      sourceProduct.hasDimensions;
+
+  /// Same condition as bulk stock adjustment / item details edit dialog.
+  bool get showDimensionFields =>
+      sourceProduct.quantityType == 2 &&
+      !isAreaUnit &&
+      (quantityTypeTemp == 2 ||
+          !sourceProduct.hasDimensions);
+
+  double? get customWidth =>
+      showDimensionFields
+          ? double.tryParse(
+            widthController.text.replaceAll(',', '').trim(),
+          )
+          : null;
+
+  double? get customHeight =>
+      showDimensionFields
+          ? double.tryParse(
+            heightController.text
+                .replaceAll(',', '')
+                .trim(),
+          )
+          : null;
+
+  void dispose() {
+    quantityController.dispose();
+    widthController.dispose();
+    heightController.dispose();
+  }
 }
 
 class BulkTransferWizardDialog extends StatefulWidget {
@@ -434,7 +485,7 @@ class _BulkTransferWizardDialogState
   @override
   void dispose() {
     for (final item in _transferItems) {
-      item.quantityController.dispose();
+      item.dispose();
     }
     super.dispose();
   }
@@ -795,6 +846,29 @@ class _BulkTransferWizardDialogState
         unitUuid: item.unitUuid,
       );
 
+      double? customWidth;
+      double? customHeight;
+      if (val > 0 &&
+          stockAdjustmentNeedsDimensions(
+            product: src,
+            unitUuid: item.unitUuid,
+            useCustomDimensions: item.quantityTypeTemp == 2,
+          )) {
+        customWidth = item.customWidth;
+        customHeight = item.customHeight;
+        final dimensionError =
+            stockAdjustmentDimensionError(
+              product: src,
+              width: customWidth,
+              height: customHeight,
+            );
+        if (dimensionError != null) {
+          item.error = dimensionError;
+          hasError = true;
+          continue;
+        }
+      }
+
       if (val > 0) {
         // Check available quantity in base unit
         final primaryUnitEquiv = selectedUnit
@@ -802,19 +876,39 @@ class _BulkTransferWizardDialogState
               index: 1,
               newQuantity: val,
               product: src,
+              customWidth:
+                  item.showDimensionFields
+                      ? customWidth
+                      : null,
+              customHeight:
+                  item.showDimensionFields
+                      ? customHeight
+                      : null,
             );
 
         final availableActual =
             src.getActualQuantity() ?? 0.0;
         if (primaryUnitEquiv > availableActual + 0.00001) {
-          final availableInSelected = selectedUnit
-              .getQuantityEquivDivided(
-                index: 1,
-                product: src,
-                newQuantity: availableActual,
-              );
-          item.error =
-              'Exceeds available stock (Max ${formatLargeNumberDouble(availableInSelected)} ${selectedUnit.name})';
+          if (item.showDimensionFields &&
+              customWidth != null &&
+              customHeight != null &&
+              customWidth > 0 &&
+              customHeight > 0) {
+            final maxForDims =
+                availableActual /
+                (customWidth * customHeight);
+            item.error =
+                'Exceeds available stock (Max ${formatLargeNumberDouble(maxForDims)} with these dimensions)';
+          } else {
+            final availableInSelected = selectedUnit
+                .getQuantityEquivDivided(
+                  index: 1,
+                  product: src,
+                  newQuantity: availableActual,
+                );
+            item.error =
+                'Exceeds available stock (Max ${formatLargeNumberDouble(availableInSelected)} ${selectedUnit.name})';
+          }
           hasError = true;
           continue;
         }
@@ -845,6 +939,14 @@ class _BulkTransferWizardDialogState
       final dest = item.destinationProduct;
       final enteredVal = item.transferQuantity;
       final unitUuid = item.unitUuid;
+      final customWidth =
+          item.showDimensionFields
+              ? item.customWidth
+              : null;
+      final customHeight =
+          item.showDimensionFields
+              ? item.customHeight
+              : null;
 
       if (dest == null ||
           (enteredVal <= 0 && !item.isCreateInDestination))
@@ -857,6 +959,8 @@ class _BulkTransferWizardDialogState
               index: 1,
               newQuantity: enteredVal,
               product: src,
+              customWidth: customWidth,
+              customHeight: customHeight,
             );
 
         TempProductClass? updatedDest;
@@ -869,6 +973,8 @@ class _BulkTransferWizardDialogState
                 isBranchTransfer: isBranch,
                 targetShop: targetShop,
                 targetDepartment: targetDept,
+                customWidth: customWidth,
+                customHeight: customHeight,
               );
           if (updatedDest == null) {
             failedItems.add(
@@ -1029,18 +1135,19 @@ class _BulkTransferWizardDialogState
             primaryUnit: src.getProductUnit().name,
           );
 
-          final resSource = await returnData().updateProduct(
-            product: updatedSource,
-            isQuantityUpdate: true,
-            includeQuantity: true,
-            quantityChange:
-                updatedSource.quantityType == 2
-                    ? equivQty / sourceArea
-                    : equivQty,
-            isIncrement: false,
-            itemHistory: sourceHistory,
-            isMultipleUpdate: true,
-          );
+          final resSource = await returnData()
+              .updateProduct(
+                product: updatedSource,
+                isQuantityUpdate: true,
+                includeQuantity: true,
+                quantityChange:
+                    updatedSource.quantityType == 2
+                        ? equivQty / sourceArea
+                        : equivQty,
+                isIncrement: false,
+                itemHistory: sourceHistory,
+                isMultipleUpdate: true,
+              );
 
           if (resSource == null) {
             failedItems.add(
@@ -1647,7 +1754,7 @@ class _BulkTransferWizardDialogState
                             children: [
                               Expanded(
                                 flex: 3,
-child: Container(
+                                child: Container(
                                   height: 34,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -1686,7 +1793,9 @@ child: Container(
                                     ),
                                     decoration: InputDecoration(
                                       hintText:
-                                          item.isCreateInDestination ? 'Transfer Qty (0 to create)' : 'Transfer Qty',
+                                          item.isCreateInDestination
+                                              ? 'Transfer Qty (0 to create)'
+                                              : 'Transfer Qty',
                                       hintStyle: TextStyle(
                                         fontSize:
                                             theme
@@ -1723,22 +1832,40 @@ child: Container(
                                           );
                                       if (val != null &&
                                           val > 0) {
-                                        final inBase =
-                                            selectedUnit
-                                                .getQuantityEquivMultiplied(
-                                                  index: 1,
-                                                  newQuantity:
-                                                      val,
-                                                  product:
-                                                      src,
-                                                );
+                                        final w =
+                                            item.customWidth;
+                                        final h =
+                                            item.customHeight;
+                                        final inBase = selectedUnit
+                                            .getQuantityEquivMultiplied(
+                                              index: 1,
+                                              newQuantity:
+                                                  val,
+                                              product: src,
+                                              customWidth:
+                                                  item.showDimensionFields
+                                                      ? w
+                                                      : null,
+                                              customHeight:
+                                                  item.showDimensionFields
+                                                      ? h
+                                                      : null,
+                                            );
                                         if (inBase >
                                             totalBaseActual +
                                                 0.00001) {
                                           setState(() {
-
-                                            item.error =
-                                                'Exceeds available stock: Max is ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}';
+                                            if (item.showDimensionFields &&
+                                                w != null &&
+                                                h != null &&
+                                                w > 0 &&
+                                                h > 0) {
+                                              item.error =
+                                                  'Exceeds available stock: Max is ${formatLargeNumberDouble(totalBaseActual / (w * h))} with these dimensions';
+                                            } else {
+                                              item.error =
+                                                  'Exceeds available stock: Max is ${formatLargeNumberDouble(availableInSelectedUnit)} ${selectedUnit.name}';
+                                            }
                                           });
                                           return;
                                         }
@@ -1920,12 +2047,26 @@ child: Container(
                                 height: 34,
                                 child: OutlinedButton(
                                   onPressed: () {
+                                    final w =
+                                        item.customWidth;
+                                    final h =
+                                        item.customHeight;
+                                    final maxQty =
+                                        (item.showDimensionFields &&
+                                                w != null &&
+                                                h != null &&
+                                                w > 0 &&
+                                                h > 0)
+                                            ? totalBaseActual /
+                                                (w * h)
+                                            : availableInSelectedUnit;
                                     setState(() {
                                       item
-                                          .quantityController
-                                          .text = formatLargeNumberDouble(
-                                        availableInSelectedUnit,
-                                      );
+                                              .quantityController
+                                              .text =
+                                          formatLargeNumberDouble(
+                                            maxQty,
+                                          );
                                       item.error = null;
                                     });
                                   },
@@ -1972,6 +2113,104 @@ child: Container(
                               ),
                             ],
                           ),
+                          if (item
+                              .showWholeOrDimensions) ...[
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 5,
+                              runSpacing: 5,
+                              children: [
+                                _TransferChoiceOption(
+                                  theme: theme,
+                                  text: 'Enter Whole',
+                                  isSelected:
+                                      item.quantityTypeTemp ==
+                                      1,
+                                  onTap: () {
+                                    setState(() {
+                                      item.quantityTypeTemp =
+                                          1;
+                                      item.widthController
+                                          .clear();
+                                      item.heightController
+                                          .clear();
+                                      item.error = null;
+                                    });
+                                  },
+                                ),
+                                _TransferChoiceOption(
+                                  theme: theme,
+                                  text: 'Enter Dimensions',
+                                  isSelected:
+                                      item.quantityTypeTemp ==
+                                      2,
+                                  onTap: () {
+                                    setState(() {
+                                      item.quantityTypeTemp =
+                                          2;
+                                      item.error = null;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                          if (item.showDimensionFields) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: _TransferDimensionField(
+                                    theme: theme,
+                                    controller:
+                                        item.widthController,
+                                    hint:
+                                        src.widthDimension !=
+                                                null
+                                            ? '${src.dimensionUnit ?? selectedUnit.name} Width (max ${formatDimension(src.widthDimension!)})'
+                                            : '${src.dimensionUnit ?? selectedUnit.name} Width',
+                                    hasError:
+                                        item.error != null,
+                                    onChanged: () {
+                                      if (item.error !=
+                                          null) {
+                                        setState(
+                                          () =>
+                                              item.error =
+                                                  null,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Expanded(
+                                  child: _TransferDimensionField(
+                                    theme: theme,
+                                    controller:
+                                        item.heightController,
+                                    hint:
+                                        src.heightDimension !=
+                                                null
+                                            ? '${src.dimensionUnit ?? selectedUnit.name} Height (max ${formatDimension(src.heightDimension!)})'
+                                            : '${src.dimensionUnit ?? selectedUnit.name} Height',
+                                    hasError:
+                                        item.error != null,
+                                    onChanged: () {
+                                      if (item.error !=
+                                          null) {
+                                        setState(
+                                          () =>
+                                              item.error =
+                                                  null,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                           if (item.error != null)
                             Padding(
                               padding:
@@ -2111,7 +2350,13 @@ child: Container(
                           ),
                           child: Text(
                             item.transferQuantity > 0
-                                ? '${formatLargeNumberDouble(item.transferQuantity)} $unitName'
+                                ? (item.showDimensionFields &&
+                                        item.customWidth !=
+                                            null &&
+                                        item.customHeight !=
+                                            null
+                                    ? '${formatLargeNumberDouble(item.transferQuantity)} $unitName (${formatDimension(item.customWidth!)} x ${formatDimension(item.customHeight!)} ${item.sourceProduct.dimensionUnit ?? ''})'
+                                    : '${formatLargeNumberDouble(item.transferQuantity)} $unitName')
                                 : (item.isCreateInDestination
                                     ? 'Create Only (0 $unitName)'
                                     : '0 $unitName'),
@@ -2135,6 +2380,118 @@ child: Container(
                 }).toList(),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _TransferChoiceOption extends StatelessWidget {
+  final dynamic theme;
+  final String text;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _TransferChoiceOption({
+    required this.theme,
+    required this.text,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(5),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 6,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color:
+              isSelected
+                  ? theme.lightModeColor.secColor200
+                  : Colors.grey.shade100,
+          border: Border.all(
+            color:
+                isSelected
+                    ? theme.lightModeColor.secColor200
+                    : Colors.grey.shade300,
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: theme.mobileTexts.b4.fontSize,
+            fontWeight: FontWeight.bold,
+            color:
+                isSelected
+                    ? Colors.white
+                    : Colors.grey.shade800,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TransferDimensionField extends StatelessWidget {
+  final dynamic theme;
+  final TextEditingController controller;
+  final String hint;
+  final bool hasError;
+  final VoidCallback onChanged;
+
+  const _TransferDimensionField({
+    required this.theme,
+    required this.controller,
+    required this.hint,
+    required this.hasError,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 34,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color:
+              hasError
+                  ? Colors.red.shade400
+                  : Colors.grey.shade300,
+          width: 1,
+        ),
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: const TextInputType.numberWithOptions(
+          decimal: true,
+        ),
+        style: TextStyle(
+          fontSize: theme.mobileTexts.b4.fontSize,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(
+            fontSize: theme.mobileTexts.b4.fontSize,
+            fontWeight: FontWeight.normal,
+            color: Colors.grey.shade400,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 8,
+          ),
+          border: InputBorder.none,
+          isDense: true,
+        ),
+        onChanged: (_) => onChanged(),
       ),
     );
   }

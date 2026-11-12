@@ -23,7 +23,9 @@ import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/total_products/platforms/components/bulk_transfer_dialog.dart';
+import 'package:stockall/pages/products/total_products/platforms/components/bulk_stock_adjustment_dialog.dart';
 import 'package:stockall/pages/products/total_products/platforms/components/product_duplication_dialog.dart';
+import 'package:stockall/pages/products/total_products/platforms/components/selection_back_scope.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class TotalProductsDesktop extends StatefulWidget {
@@ -90,6 +92,14 @@ class _TotalProductsDesktopState
       context,
     ).refreshProducts(context);
     setState(() {});
+  }
+
+  // Same as the Cancel action: used by Back while selecting.
+  void _cancelSelection() {
+    returnData().toggleIsSelectProduct(false);
+    setState(() {
+      filterIndex = 0;
+    });
   }
 
   @override
@@ -185,7 +195,9 @@ class _TotalProductsDesktopState
       return products;
     }
 
-    return Scaffold(
+    return SelectionBackScope(
+      onCancelSelection: _cancelSelection,
+      child: Scaffold(
       key: _scaffoldKey,
       body: Stack(
         children: [
@@ -232,6 +244,11 @@ class _TotalProductsDesktopState
                         appBar: appBar(
                           context: context,
                           title: 'All Items',
+                          backAction:
+                              () =>
+                                  Navigator.of(
+                                    context,
+                                  ).maybePop(),
                           widget: Row(
                             spacing: 5,
                             children: [
@@ -875,6 +892,41 @@ class _TotalProductsDesktopState
                                                                         Icons.swap_horiz_rounded,
                                                                     color:
                                                                         Colors.blue.shade600,
+                                                                  ),
+                                                                ),
+                                                                Visibility(
+                                                                  visible:
+                                                                      authorization(
+                                                                        authorized:
+                                                                            Authorizations().updateProduct,
+                                                                      ) &&
+                                                                      authorization(
+                                                                        authorized:
+                                                                            Authorizations().updateItemQuantity,
+                                                                      ),
+                                                                  child: ProductSelectionActionButton(
+                                                                    title:
+                                                                        'Stock Adjustment',
+                                                                    action: () {
+                                                                      launchBulkStockAdjustment(
+                                                                        context:
+                                                                            context,
+                                                                        loadingAction: (
+                                                                          value,
+                                                                        ) {
+                                                                          setState(
+                                                                            () {
+                                                                              isDeleteLoading =
+                                                                                  value;
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    icon:
+                                                                        Icons.tune_rounded,
+                                                                    color:
+                                                                        Colors.grey,
                                                                   ),
                                                                 ),
                                                                 Visibility(
@@ -1665,6 +1717,7 @@ class _TotalProductsDesktopState
           ),
         ],
       ),
+    ),
     );
   }
 }

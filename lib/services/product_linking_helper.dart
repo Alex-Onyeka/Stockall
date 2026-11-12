@@ -368,6 +368,8 @@ class ProductLinkingHelper {
     required bool isBranchTransfer,
     TempShopClass? targetShop,
     DepartmentClass? targetDepartment,
+    double? customWidth,
+    double? customHeight,
   }) async {
     try {
       final newUuid = uuidGen();
@@ -379,6 +381,8 @@ class ProductLinkingHelper {
             index: 1,
             newQuantity: enteredTransferQuantity,
             product: sourceProduct,
+            customWidth: customWidth,
+            customHeight: customHeight,
           );
       final destArea = sourceProduct.dimensionArea();
       final calculatedQty = baseQuantity / destArea;
