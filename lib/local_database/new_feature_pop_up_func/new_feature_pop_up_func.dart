@@ -16,6 +16,11 @@ class NewFeaturePopUpFunc {
   late Box<NewFeaturePopUpClass> newFeaturePopUpBox;
   final String newFeaturePopUpBoxName =
       'newFeaturePopUpBoxStockall';
+  bool _isDialogOpen = false;
+
+  void markDialogClosed() {
+    _isDialogOpen = false;
+  }
 
   Future<void> init() async {
     try {
@@ -85,10 +90,12 @@ class NewFeaturePopUpFunc {
   Future<void> checkIfIsNew({
     required BuildContext context,
   }) async {
+    if (_isDialogOpen || !context.mounted) return;
     if (getNewFeaturePopUp() != null) {
       if (screenWidth(context) > mobileScreen) {
         if (appVersionDesktop !=
             getNewFeaturePopUp()!.oldNewFeatureDesktop) {
+          _isDialogOpen = true;
           newFeaturesUpdatePopUpAction(
             context: context,
             isFromSettingPage: false,
@@ -97,6 +104,7 @@ class NewFeaturePopUpFunc {
       } else {
         if (appVersionMobile !=
             getNewFeaturePopUp()!.oldNewFeatureMobile) {
+          _isDialogOpen = true;
           newFeaturesUpdatePopUpAction(
             context: context,
             isFromSettingPage: false,

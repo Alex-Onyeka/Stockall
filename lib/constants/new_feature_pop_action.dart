@@ -40,6 +40,7 @@ void newFeaturesUpdatePopUpAction({
     },
   ).then((_) {
     if (!isFromSettingPage) {
+      NewFeaturePopUpFunc().markDialogClosed();
       NewFeaturePopUpFunc().viewPopUpAction();
     }
   });
@@ -312,45 +313,99 @@ class UpdateInfoClass {
 
 List<UpdateInfoClass> updates = [
   UpdateInfoClass(
-    name: 'Customer Account Balance Management',
+    name: 'Order Management',
     desc:
-        'Customers can now deposit money, withdraw, and make purchases using their Stockall account balance. Let your customers deposit money with you and come back anytime to shop using their available balance. Simple, flexible, and convenient for both you and your customers.',
+        'Manage customer orders from placement through partial or full delivery. Track remaining item quantities per order, record payments against orders, convert deliveries into receipts, and monitor order statuses (Unpaid, Partial, and Paid) with dedicated order reports and thermal/A4 receipts.',
     index: 0,
   ),
   UpdateInfoClass(
-    name: 'Customer Reward Cashback',
+    name: 'Draft Sale Management',
     desc:
-        'Customers can now earn rewards from every purchase they make. These rewards are displayed as cash value on the customer\'s page. Whenever you want, you can use their accumulated rewards to gift, reward, or appreciate your loyal customers.',
+        'Save in-progress carts as drafts and resume them anytime without losing selected items, quantities, custom dimensions, prices, discounts, or customer details. Keep your checkout counter moving smoothly when a customer needs time before completing payment.',
     index: 1,
   ),
   UpdateInfoClass(
-    name: 'Full Production/Manufacturing Management',
+    name: 'Derive Quantity From Price',
     desc:
-        'You can now fully manage your productions, production items, and raw materials in Stockall. Track what goes into every production, with detailed reports and notifications to help you monitor material usage and stay in control.',
+        'Enter the exact amount a customer wants to spend during a sale and let Stockall automatically calculate the corresponding item quantity based on the selected unit price. Ideal for weighed, measured, or flexible-quantity sales where customers buy by amount.',
     index: 2,
   ),
   UpdateInfoClass(
-    name: 'Full Item Quantity Changes Update',
+    name: 'Custom Payment Channels',
     desc:
-        'Stockall Now Creates a notification for every item quantity changes in your app. Ranging from sales of items, returns, manual updates, items transfers, and more. Stay updated on every movement in your inventory, so you always know what changed, when it changed, and why.',
+        'Create and manage your own payment channels—including Bank Accounts, POS Machines, and Other channels—complete with account numbers, account names, and notes. Select specific channels during single or split payments, and see the exact channel reflected on receipts, invoices, PDF downloads, and thermal printouts.',
     index: 3,
   ),
   UpdateInfoClass(
-    name: 'Bulk Sales Management',
+    name: 'Customer Page Redesign',
     desc:
-        'You can now select and add multiple items to your cart at once instead of adding them one after another. Save time, speed up your sales, and get your cart ready faster than ever.',
+        'Enjoy a cleaner, more organized Customer page with clearer summaries of customer account balances, reward cashback, purchase history, and outstanding invoices. Quickly review customer activity and take action from one unified view.',
     index: 4,
   ),
   UpdateInfoClass(
-    name: 'Manage Cart Operations',
+    name: 'Pay Up All Customer Invoices',
     desc:
-        'Stockall now lets you track and secure sensitive cart operations — like removing items, deducting quantities, deleting an entire cart, or clearing a cart. Set a General PIN to authorize or restrict these actions, and get notified whenever they\'re performed. More control, better accountability, and greater security for your business.',
+        'Settle multiple unpaid or partially paid invoices for a customer in a single flow instead of paying them off one by one. Apply a payment across outstanding invoices automatically, saving time and keeping customer balances accurate.',
     index: 5,
   ),
   UpdateInfoClass(
-    name: 'Multiple Categories for Single Item',
+    name: 'Multiple Units Management',
     desc:
-        'You can now add an item to multiple categories for more flexible and organized inventory management. Categorize your products in different ways, making it easier to organize, find, and manage your inventory.',
+        'Configure multiple selling and stocking units for a single item (such as Pieces, Packs, Cartons, or Slabs) with conversion equivalents to your primary unit. Sell, restock, adjust, and transfer items in any configured unit while Stockall keeps total inventory automatically synchronized.',
     index: 6,
+  ),
+  UpdateInfoClass(
+    name: 'Multiple Price Management',
+    desc:
+        'Set up multiple price tiers for each item—such as Retail, Wholesale, or custom unit-based prices—and switch between them effortlessly during sales and invoicing. Ensure the right price is always applied for every customer and selling unit.',
+    index: 7,
+  ),
+  UpdateInfoClass(
+    name: '2Dimensional Items Management',
+    desc:
+        'Manage 2D sheet and slab items (such as glass, wood, boards, fabric, or tiles) using Width and Height dimensions. Sell, adjust, or transfer either whole slabs or custom cut dimensions, with Stockall automatically calculating area equivalents and tracking remaining stock accurately.',
+    index: 8,
+  ),
+  UpdateInfoClass(
+    name: 'Products Markup and Margin Calculation',
+    desc:
+        'Automatically see your profit markup and margin percentages as you set cost and selling prices on products. Make informed pricing decisions faster with real-time profitability feedback right inside your item setup and editing screens.',
+    index: 9,
+  ),
+  UpdateInfoClass(
+    name: 'Full Products History Management',
+    desc:
+        'Track a complete audit trail of every product movement—including sales, restocks, manual adjustments, returns, transfers in/out, and production usage. Filter and inspect detailed item history tables and aggregated summaries to see what changed, when, and by whom.',
+    index: 10,
+  ),
+  UpdateInfoClass(
+    name: 'Bulk Products Upload',
+    desc:
+        'Import multiple products into your inventory at once using downloadable CSV or Excel (XLSX) templates. Stockall validates rows upfront and highlights any issues before saving, making large catalog setup and onboarding fast and error-free.',
+    index: 11,
+  ),
+  UpdateInfoClass(
+    name: 'Bulk Stock Adjustment',
+    desc:
+        'Select multiple items from your products list and add to or replace their stock quantities in one batch. Supports multiple units as well as whole slabs or custom dimensions for 2D items, with automatic item history logging for every adjustment.',
+    index: 12,
+  ),
+  UpdateInfoClass(
+    name: 'Bulk Items Transfer',
+    desc:
+        'Transfer multiple selected items at once between branches or departments. Link destination products or auto-create missing ones, specify quantities in any unit—including whole slabs or custom dimensions for 2D items—and review a clear confirmation summary before executing.',
+    index: 13,
+  ),
+  UpdateInfoClass(
+    name: 'Full Reports Redesign Breakdown',
+    desc:
+        'Explore a completely redesigned Reports hub broken down into focused, easy-to-navigate sections across Sales, Orders, Invoices, Purchases, Customers, Suppliers, Staff, Storage, and Production (split into Material Report, Production Record Report, and Production Items Report).',
+    index: 14,
+  ),
+  UpdateInfoClass(
+    name: 'Reports Export, Download and Print',
+    desc:
+        'Export, download, and print your reports in multiple formats—including A4 PDF, thermal roll PDF, CSV/Excel spreadsheets, and direct Bluetooth ESC/POS thermal printing—so you can share, archive, or print summaries wherever you work.',
+    index: 15,
   ),
 ];

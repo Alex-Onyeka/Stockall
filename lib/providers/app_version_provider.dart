@@ -21,6 +21,17 @@ class AppVersionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// True when the latest fetched/cached version differs from the
+  /// running app version for this screen size.
+  bool hasAvailableUpdate(BuildContext context) {
+    if (appVersion == null) return false;
+    if (screenWidth(context) <= mobileScreen) {
+      return appVersion!.mobileVersion != appVersionMobile;
+    } else {
+      return appVersion!.desktopVersion != appVersionDesktop;
+    }
+  }
+
   Future<AppVersion?> getAppVersion(BuildContext context) async {
     bool isOnline = await ConnectivityProvider().isOnline();
     await returnPermissionProvider().getPermissions();

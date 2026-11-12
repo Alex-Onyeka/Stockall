@@ -14,7 +14,6 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
-import 'package:stockall/constants/new_feature_pop_action.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
@@ -26,6 +25,7 @@ import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
+import 'package:stockall/pages/settings/components/view_update_info.dart';
 import 'package:stockall/pages/settings/components/manage_access_pin.dart';
 import 'package:stockall/pages/settings/components/manage_departments_toggle_switch.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
@@ -163,19 +163,24 @@ class _SettingsPageMobileState
                         ),
                         Visibility(
                           visible: authorization(
-                            authorized: Authorizations().manageShop,
+                            authorized:
+                                Authorizations().manageShop,
                           ),
                           child: NavListTileDesktopAlt(
                             height: 18,
                             action: () {
                               showDialog(
                                 context: context,
-                                builder: (context) =>
-                                    const ManagePaymentMethodsDialog(),
+                                builder:
+                                    (context) =>
+                                        const ManagePaymentMethodsDialog(),
                               );
                             },
-                            title: 'Payment Methods & Bank Accounts',
-                            icon: Icons.account_balance_outlined,
+                            title:
+                                'Payment Methods & Bank Accounts',
+                            icon:
+                                Icons
+                                    .account_balance_outlined,
                           ),
                         ),
                         Visibility(
@@ -1562,18 +1567,7 @@ class _SettingsPageMobileState
                           title: 'Go to Website.',
                           icon: Icons.language_rounded,
                         ),
-                        NavListTileDesktopAlt(
-                          height: 18,
-                          action: () async {
-                            newFeaturesUpdatePopUpAction(
-                              context: context,
-                              isFromSettingPage: true,
-                            );
-                          },
-                          title:
-                              'View Update Features Info',
-                          icon: Icons.lightbulb_outlined,
-                        ),
+                        const ViewUpdateInfoWidget(),
                         ClearTotalCacheWidget(),
                       ],
                     ),
