@@ -191,50 +191,64 @@ class CustomerInvoicesList extends StatelessWidget {
             mainAxisAlignment:
                 MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                spacing: 8,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey.shade400,
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey.shade400,
+                      ),
                     ),
-                  ),
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
-                      fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        formatMoneyBig(
+                          amount:
+                              invoice
+                                  .getTotalMainRevenueInvoice(),
+                          context: context,
+                        ),
+                      ),
                     ),
-                    formatMoneyBig(
-                      amount:
-                          invoice
-                              .getTotalMainRevenueInvoice(),
-                      context: context,
+                    InvoicePaymentStatusWidget(
+                      invoice: invoice,
                     ),
-                  ),
-                  InvoicePaymentStatusWidget(
-                    invoice: invoice,
-                  ),
-                ],
+                  ],
+                ),
               ),
-              Row(
-                spacing: 5,
-                children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b4.fontSize,
-                      fontWeight: FontWeight.normal,
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 5,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          fontWeight: FontWeight.normal,
+                        ),
+                        "${formatDateTime(invoice.createdAt)} - ${formatTime(invoice.createdAt)}",
+                      ),
                     ),
-                    "${formatDateTime(invoice.createdAt)} - ${formatTime(invoice.createdAt)}",
-                  ),
-                  Icon(
-                    size: 12,
-                    Icons.arrow_forward_ios_rounded,
-                  ),
-                ],
+                    Icon(
+                      size: 12,
+                      Icons.arrow_forward_ios_rounded,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

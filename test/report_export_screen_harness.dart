@@ -12,7 +12,6 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_current_department/temp_current_department.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/customer_account_receipts.dart';
-import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
@@ -107,9 +106,9 @@ Future<void> setUpScreenEnvironment() async {
   ProductRecordFunc().productRecordBox =
       await Hive.openBox<TempProductSaleRecord>('salesReportExportTest');
   // Empty customer boxes, so the invoice pages' customer load succeeds.
-  CustomerFunc().customerBox = await Hive.openBox<TempCustomersClass>(
-    'customerReportExportTest',
-  );
+  // CustomerFunc's box is private (72e171c4): init() is how it opens
+  // it now, in Hive's test directory, so it starts empty.
+  await CustomerFunc().init();
   CustomerAccountReceiptsFunc().customerAccountReceiptsBox =
       await Hive.openBox<CustomerAccountReceipts>(
         'customerAccountReceiptsReportExportTest',
