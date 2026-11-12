@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart'
     show BluetoothDevice, BluetoothPrintPlus;
 import 'package:flutter/material.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/main.dart'
     show returnShopProvider, returnTheme;
 import 'package:stockall/services/barcode_generation/barcode_import_helper.dart'
@@ -50,14 +51,16 @@ class _PosPrinterSetupDialog extends StatefulWidget {
 
 class _PosPrinterSetupDialogState
     extends State<_PosPrinterSetupDialog> {
-  late PosPaper _paper = widget.paper;
-  late bool _cut =
-      widget.current?.cut ??
-      defaultCut(transportsFor(widget.platform).first);
-
   late final List<PosTransport> _transports = transportsFor(
     widget.platform,
   );
+
+  late PosPaper _paper = widget.paper;
+  late bool _cut =
+      widget.current?.cut ??
+      (_transports.isNotEmpty
+          ? defaultCut(_transports.first)
+          : false);
 
   // Bluetooth
   StreamSubscription<List<BluetoothDevice>>?
@@ -106,19 +109,21 @@ class _PosPrinterSetupDialogState
   @override
   void dispose() {
     _scanSubscription?.cancel();
-    if (_scanning) BluetoothPrintPlus.stopScan();
+    try {
+      if (_scanning) BluetoothPrintPlus.stopScan();
+    } catch (_) {}
     _host.dispose();
     _port.dispose();
     super.dispose();
   }
 
   Future<void> _scan() async {
-    if (!BluetoothPrintPlus.isBlueOn) {
-      setState(() {});
-      return;
-    }
-    setState(() => _scanning = true);
     try {
+      if (!BluetoothPrintPlus.isBlueOn) {
+        if (mounted) setState(() {});
+        return;
+      }
+      if (mounted) setState(() => _scanning = true);
       await BluetoothPrintPlus.startScan(
         timeout: const Duration(seconds: 8),
       );
@@ -165,103 +170,95 @@ class _PosPrinterSetupDialogState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
-    final width = MediaQuery.of(context).size.width;
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      title: const Text(
-        'Choose your POS printer',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: SizedBox(
-        width: width < 480 ? width - 40 : 440,
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            _sectionTitle('Paper size'),
-            Wrap(
-              spacing: 8,
-              children: [
-                for (final paper in PosPaper.values)
-                  ChoiceChip(
-                    label: Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
+    return DialogTemplate(
+      theme: theme,
+      message: 'Set the Printer below',
+      title: 'Choose your POS Printer',
+      action: () {},
+      showMainBottomActionButton: false,
+      widget: SizedBox(
+        width: 500,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _sectionTitle('Paper size'),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final paper in PosPaper.values)
+                    ChoiceChip(
+                      label: Text(
+                        paper.label,
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                        ),
                       ),
-                      paper.label,
+                      selected: _paper == paper,
+                      onSelected:
+                          (_) => setState(() => _paper = paper),
                     ),
-                    selected: _paper == paper,
-                    onSelected:
-                        (_) =>
-                            setState(() => _paper = paper),
-                  ),
-              ],
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                'Cut the paper after printing',
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
-                ),
+                ],
               ),
-              value: _cut,
-              onChanged:
-                  (value) => setState(() => _cut = value),
-            ),
-            const Divider(),
-            // Keep the saved printer with the paper and cut above (it may
-            // not show up in a Bluetooth search right now).
-            if (widget.current != null) ...[
-              _sectionTitle('Current printer'),
-              ListTile(
-                dense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                ),
-                tileColor: Colors.grey.shade200,
-                leading: const Icon(
-                  Icons.check_circle_outline,
-                  size: 20,
-                ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
                 title: Text(
-                  widget.current!.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                  'Cut the paper after printing',
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
                   ),
                 ),
-                subtitle: const Text('Keep this printer'),
-                trailing: const Icon(
-                  Icons.chevron_right,
-                  size: 18,
-                ),
-                onTap:
-                    () => Navigator.of(context).pop(
-                      keepPrinter(
-                        widget.current!,
-                        paper: _paper,
-                        cut: _cut,
-                      ),
-                    ),
+                value: _cut,
+                onChanged:
+                    (value) => setState(() => _cut = value),
               ),
               const Divider(),
+              // Keep the saved printer with the paper and cut above (it may
+              // not show up in a Bluetooth search right now).
+              if (widget.current != null) ...[
+                _sectionTitle('Current printer'),
+                ListTile(
+                  dense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                  ),
+                  tileColor: Colors.grey.shade200,
+                  leading: const Icon(
+                    Icons.check_circle_outline,
+                    size: 20,
+                  ),
+                  title: Text(
+                    widget.current!.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: const Text('Keep this printer'),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    size: 18,
+                  ),
+                  onTap:
+                      () => Navigator.of(context).pop(
+                        keepPrinter(
+                          widget.current!,
+                          paper: _paper,
+                          cut: _cut,
+                        ),
+                      ),
+                ),
+                const Divider(),
+              ],
+              for (final transport in _transports) ...[
+                _section(transport),
+                const Divider(),
+              ],
             ],
-            for (final transport in _transports) ...[
-              _section(transport),
-              const Divider(),
-            ],
-          ],
+          ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-      ],
     );
   }
 
@@ -488,7 +485,8 @@ class _PosPrinterSetupDialogState
                     return;
                   }
                   final host = _host.text.trim();
-                  final port = int.parse(_port.text.trim());
+                  final port =
+                      int.tryParse(_port.text.trim()) ?? defaultNetworkPort;
                   _pick(
                     PosTransport.network,
                     host,

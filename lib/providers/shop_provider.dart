@@ -32,6 +32,7 @@ import 'package:stockall/local_database/barcode_printer_func/custom_label_printe
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboard_pin_func.dart';
+import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/receipt_printer_func/receipt_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
@@ -865,6 +866,8 @@ class ShopProvider extends ChangeNotifier {
       context,
       listen: false,
     ).load(false);
+    returnPurchaseProvider().clearPurchases();
+    PurchaseFunc().clearPurchases();
     returnSalesProvider().clearCart();
     returnShopProvider().clearShop();
     returnUserProvider(context, listen: false).clearUsers();

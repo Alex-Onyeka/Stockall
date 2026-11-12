@@ -25,7 +25,10 @@ class UpdatedPurchasesFunc {
       );
     }
 
-_updatedPurchasesBox = await openBoxSafely<UpdatedPurchases>(updatedPurchasesBoxName);
+    _updatedPurchasesBox =
+        await openBoxSafely<UpdatedPurchases>(
+          updatedPurchasesBoxName,
+        );
   }
 
   /// Safe getter for the box
@@ -84,11 +87,23 @@ _updatedPurchasesBox = await openBoxSafely<UpdatedPurchases>(updatedPurchasesBox
 
   /// Removes [entry] once synced, unless a newer update of the
   /// same purchase replaced it in the meantime.
-  Future<void> deleteIfUnchanged(UpdatedPurchases entry) async {
-    final key = entry.key;
-    if (key != null &&
-        identical(updatedPurchasesBox.get(key), entry)) {
-      await updatedPurchasesBox.delete(key);
+  Future<void> deleteIfUnchanged(
+    UpdatedPurchases entry,
+  ) async {
+    final key = entry.key ?? entry.purchase.uuid;
+    if (key != null) {
+      final existing = updatedPurchasesBox.get(key);
+      if (existing != null) {
+        final existingUpdated = existing.purchase.updatedAt;
+        final entryUpdated = entry.purchase.updatedAt;
+        if (existingUpdated == null ||
+            entryUpdated == null ||
+            !existingUpdated.isAfter(entryUpdated)) {
+          await updatedPurchasesBox.delete(key);
+        }
+      } else {
+        await updatedPurchasesBox.delete(key);
+      }
     }
   }
 

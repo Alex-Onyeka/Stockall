@@ -6,6 +6,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
+import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
@@ -380,6 +381,8 @@ class AuthService extends ChangeNotifier {
         ).clearNotifications();
         returnReceiptProviderSingle().clearReceipts();
         returnReceiptProviderSingle().load(false);
+        returnPurchaseProvider().clearPurchases();
+        await PurchaseFunc().clearPurchases();
         await CurrentShopFunc().clearCurrentShop();
         returnSalesProvider().clearCart();
         await CartFunc().clearMainCart();

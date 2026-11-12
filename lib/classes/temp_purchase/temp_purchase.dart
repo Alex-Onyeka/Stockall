@@ -73,8 +73,12 @@ class TempPurchase extends HiveObject {
   factory TempPurchase.fromJson(Map<String, dynamic> json) {
     return TempPurchase(
       createdAt:
-          DateTime.parse(json['created_at']).toLocal(),
-      shopId: json['shop_id'],
+          json['created_at'] != null
+              ? DateTime.parse(
+                json['created_at'].toString(),
+              ).toLocal()
+              : DateTime.now(),
+      shopId: (json['shop_id'] as num?)?.toInt() ?? 0,
       staffId: json['staff_id'] as String?,
       staffName: json['staff_name'] as String?,
       departmentUuid: json['department_id'] as String?,
@@ -83,7 +87,7 @@ class TempPurchase extends HiveObject {
       total: (json['total'] as num?)?.toDouble(),
       supplierId: json['supplier_id'] as String?,
       supplierName: json['supplier_name'] as String?,
-      isCustomPriceSet: json['is_custom_price_set'] as bool,
+      isCustomPriceSet: json['is_custom_price_set'] == true,
       purchasePayments:
           (json['payments'] as List<dynamic>? ?? [])
               .map(
@@ -94,7 +98,9 @@ class TempPurchase extends HiveObject {
               .toList(),
       updatedAt:
           json['updated_at'] != null
-              ? DateTime.parse(json['updated_at'] as String)
+              ? DateTime.parse(
+                json['updated_at'] as String,
+              ).toLocal()
               : null,
       items: TempItemPurchaseRecord.itemsFromJson(
         json['items'],
@@ -146,7 +152,9 @@ class TempPurchase extends HiveObject {
       isCustomPriceSet:
           isCustomPriceSet ?? this.isCustomPriceSet,
       purchasePayments:
-          purchasePayments ?? this.purchasePayments,
+          purchasePayments != null
+              ? [...purchasePayments]
+              : [...this.purchasePayments],
       shopId: shopId ?? this.shopId,
       supplierName: supplierName ?? this.supplierName,
       departmentName: departmentName ?? this.departmentName,
@@ -157,7 +165,12 @@ class TempPurchase extends HiveObject {
       total: total ?? this.total,
       uuid: uuid ?? this.uuid,
       updatedAt: updatedAt ?? this.updatedAt,
-      items: items ?? this.items,
+      items:
+          items != null
+              ? [...items]
+              : this.items != null
+              ? [...this.items!]
+              : null,
     );
   }
 

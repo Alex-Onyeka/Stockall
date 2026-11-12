@@ -1088,28 +1088,18 @@ class DataProvider extends ChangeNotifier {
               );
               setSyncProgress(39);
             }
-            // if (CreatedItemPurchaseFunc()
-            //         .getRecords()
-            //         .isNotEmpty &&
-            //     isOnline) {
-            //   await returnPurchaseProvider()
-            //       .createRecordsSync();
-            //   await mainLocalLog(
-            //     'Finished Syncing Created Purchase Item Records',
-            //   );
-            //   setSyncProgress(40);
-            // }
-            // if (DeletedItemPurchaseFunc()
-            //         .getItemPurchaseIds()
-            //         .isNotEmpty &&
-            //     isOnline) {
-            //   await returnPurchaseProvider()
-            //       .deleteItemRecordsSync();
-            //   await mainLocalLog(
-            //     'Finished Syncing Deleted Purchase Item Records',
-            //   );
-            //   setSyncProgress(41);
-            // }
+            if (CreatedItemPurchaseFunc()
+                .getRecords()
+                .isNotEmpty) {
+              await CreatedItemPurchaseFunc()
+                  .clearRecords();
+            }
+            if (DeletedItemPurchaseFunc()
+                .getItemPurchaseIds()
+                .isNotEmpty) {
+              await DeletedItemPurchaseFunc()
+                  .clearDeletedItemRecords();
+            }
             // if (CreatedWaybillsFunc()
             //         .getWaybills()
             //         .isNotEmpty &&
@@ -1585,10 +1575,6 @@ class DataProvider extends ChangeNotifier {
           CreatedPurchasesFunc().getPurchases().isEmpty &&
           DeletedPurchasesFunc().getPurchaseIds().isEmpty &&
           UpdatedPurchasesFunc().getPurchaseIds().isEmpty &&
-          CreatedItemPurchaseFunc().getRecords().isEmpty &&
-          DeletedItemPurchaseFunc()
-              .getItemPurchaseIds()
-              .isEmpty &&
           CreatedStorageProductsFunc()
               .getStorageProducts()
               .isEmpty &&
@@ -2115,29 +2101,6 @@ class DataProvider extends ChangeNotifier {
         UnsyncedItems(
           name: 'Updated Purchases',
           quantity: updatedPurchases.length.toDouble(),
-        ),
-      );
-    }
-
-    // Item Purchases
-    final createdItemPurchases =
-        CreatedItemPurchaseFunc().getRecords();
-    if (createdItemPurchases.isNotEmpty) {
-      tempItems.add(
-        UnsyncedItems(
-          name: 'Created Item Purchases',
-          quantity: createdItemPurchases.length.toDouble(),
-        ),
-      );
-    }
-
-    final deletedItemPurchases =
-        DeletedItemPurchaseFunc().getItemPurchaseIds();
-    if (deletedItemPurchases.isNotEmpty) {
-      tempItems.add(
-        UnsyncedItems(
-          name: 'Deleted Item Purchases',
-          quantity: deletedItemPurchases.length.toDouble(),
         ),
       );
     }
@@ -4700,8 +4663,10 @@ class DataProvider extends ChangeNotifier {
     final plan = planStockAdjustments(
       lines: lines,
       findLive:
-          (uuid) => ProductsFunc().getSingleProduct(uuid: uuid),
-      isLinkedToStorage: (product) => product.isPartOfStorage(),
+          (uuid) =>
+              ProductsFunc().getSingleProduct(uuid: uuid),
+      isLinkedToStorage:
+          (product) => product.isPartOfStorage(),
     );
     final adjusted = <String>[];
     final failed = <String>[...plan.failed];

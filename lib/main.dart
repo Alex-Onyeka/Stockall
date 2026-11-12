@@ -180,18 +180,125 @@ Future<void> initMainLog() async {
         Platform.isMacOS ||
         Platform.isWindows) {
       final dir = await getApplicationSupportDirectory();
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
       final file = File('${dir.path}/mainLog.log');
 
-      await file.writeAsString('');
+      // Check file size to avoid unbounded growth (5 MB limit)
+      if (await file.exists()) {
+        try {
+          final length = await file.length();
+          if (length > 5 * 1024 * 1024) {
+            final prevFile = File('${dir.path}/mainLog_previous.log');
+            if (await prevFile.exists()) {
+              await prevFile.delete();
+            }
+            await file.rename(prevFile.path);
+          }
+        } catch (_) {}
+      }
+
+      final sessionHeader =
+          '\n\n========== STOCKALL LOCAL LOG ==========\n'
+          'SESSION START: ${DateTime.now().toString().split('.').first}\n'
+          'VERSION: $appVersionDesktop\n'
+          'PLATFORM: ${Platform.operatingSystem} (${Platform.operatingSystemVersion})\n'
+          'STORAGE PATH: ${dir.path}\n'
+          '========================================\n\n';
+
       await file.writeAsString(
-        '========== STOCKALL LOCAL LOG ==========\n'
-        'TIME: ${DateTime.now().toString().split('.').first}\n'
-        'VERSION: 1.8.74.0\n'
-        'PLATFORM: Windows\n'
-        '======================================\n\n',
+        sessionHeader,
+        mode: FileMode.append,
       );
     }
   }
+}
+
+Future<String?> getMainLogFilePath() async {
+  if (kIsWeb) return null;
+  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    final dir = await getApplicationSupportDirectory();
+    return '${dir.path}/mainLog.log';
+  }
+  return null;
+}
+
+Future<String?> getMainLogDirectoryPath() async {
+  if (kIsWeb) return null;
+  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    final dir = await getApplicationSupportDirectory();
+    return dir.path;
+  }
+  return null;
+}
+
+Future<String> readMainLogContent({int maxLines = 500}) async {
+  if (kIsWeb) return 'Logs are not stored on web.';
+  try {
+    final path = await getMainLogFilePath();
+    if (path == null) {
+      return 'Local logs are only available on desktop platforms.';
+    }
+    final file = File(path);
+    if (!await file.exists()) {
+      return 'No logs recorded yet.\nStorage path: ${file.parent.path}';
+    }
+    final content = await file.readAsString();
+    if (content.trim().isEmpty) {
+      return 'Log file is currently empty.\nStorage path: $path';
+    }
+    final lines = content.split('\n');
+    if (lines.length > maxLines) {
+      return '... [Older ${lines.length - maxLines} lines omitted] ...\n\n${lines.sublist(lines.length - maxLines).join('\n')}';
+    }
+    return content;
+  } catch (e) {
+    return 'Failed to read logs: $e';
+  }
+}
+
+Future<void> clearMainLog() async {
+  if (kIsWeb) return;
+  try {
+    final path = await getMainLogFilePath();
+    if (path != null) {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.writeAsString(
+          '========== STOCKALL LOCAL LOG CLEARED ==========\n'
+          'TIME: ${DateTime.now().toString().split('.').first}\n'
+          'VERSION: $appVersionDesktop\n'
+          '===============================================\n\n',
+        );
+      }
+    }
+  } catch (_) {}
+}
+
+Future<bool> openLogDirectory() async {
+  if (kIsWeb) return false;
+  try {
+    final dirPath = await getMainLogDirectoryPath();
+    if (dirPath == null) return false;
+    final dir = Directory(dirPath);
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    if (Platform.isWindows) {
+      await Process.run('explorer.exe', [dirPath]);
+      return true;
+    } else if (Platform.isMacOS) {
+      await Process.run('open', [dirPath]);
+      return true;
+    } else if (Platform.isLinux) {
+      await Process.run('xdg-open', [dirPath]);
+      return true;
+    }
+  } catch (e) {
+    await mainLocalLog('Failed to open log directory: $e');
+  }
+  return false;
 }
 
 Future<void> mainLocalLog(
@@ -207,6 +314,9 @@ Future<void> mainLocalLog(
         Platform.isMacOS ||
         Platform.isWindows) {
       final dir = await getApplicationSupportDirectory();
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
 
       // startup.log goes directly inside the app support directory
       final file = File('${dir.path}/mainLog.log');

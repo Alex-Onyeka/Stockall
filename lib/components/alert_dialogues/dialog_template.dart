@@ -45,8 +45,8 @@ class DialogTemplate extends StatelessWidget {
         mediaQuery.viewInsets.bottom;
     final maxContentHeight =
         isMobile
-            ? (safeHeight - 210).clamp(120.0, 520.0)
-            : (safeHeight - 160).clamp(180.0, 750.0);
+            ? (safeHeight - 240).clamp(120.0, 520.0)
+            : (safeHeight - 230).clamp(180.0, 750.0);
 
     return SafeArea(
       child: AlertDialog(
@@ -145,12 +145,14 @@ class DialogTemplate extends StatelessWidget {
                 ),
               ),
               // SizedBox(height: 5),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: 500,
-                  maxHeight: maxContentHeight,
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 500,
+                    maxHeight: maxContentHeight,
+                  ),
+                  child: widget,
                 ),
-                child: widget,
               ),
               const SizedBox(height: 5),
               Visibility(

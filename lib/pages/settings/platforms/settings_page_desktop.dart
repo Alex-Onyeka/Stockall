@@ -28,6 +28,7 @@ import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
+import 'package:stockall/pages/settings/components/view_app_logs_widget.dart';
 import 'package:stockall/pages/settings/components/view_update_info.dart';
 import 'package:stockall/pages/settings/components/manage_access_pin.dart';
 import 'package:stockall/pages/settings/components/manage_departments_toggle_switch.dart';
@@ -1529,6 +1530,7 @@ class _SettingsPageDesktopState
                                     Icons.language_rounded,
                               ),
                               const ViewUpdateInfoWidget(),
+                              const ViewAppLogsWidget(),
                               ClearTotalCacheWidget(),
                             ],
                           ),

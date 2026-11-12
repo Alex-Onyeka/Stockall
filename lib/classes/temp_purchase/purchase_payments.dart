@@ -39,13 +39,39 @@ class PurchasePayments extends HiveObject {
     Map<String, dynamic> json,
   ) {
     return PurchasePayments(
-      uuid: json['uuid'],
-      purchaseId: json['purchase_id'],
-      createdAt: DateTime.parse(json['created_at']),
-      amount: (json['amount'] as num).toDouble(),
-      userId: json['user_id'],
-      paymentMethod: json['payment_method'],
-      staffName: json['staff_name'],
+      uuid: json['uuid'] as String? ?? '',
+      purchaseId: json['purchase_id'] as String? ?? '',
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(
+                json['created_at'].toString(),
+              ).toLocal()
+              : DateTime.now(),
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      userId: json['user_id'] as String? ?? '',
+      paymentMethod:
+          json['payment_method'] as String? ?? 'Cash',
+      staffName: json['staff_name'] as String? ?? '',
+    );
+  }
+
+  PurchasePayments copyWith({
+    String? uuid,
+    String? purchaseId,
+    DateTime? createdAt,
+    double? amount,
+    String? userId,
+    String? paymentMethod,
+    String? staffName,
+  }) {
+    return PurchasePayments(
+      uuid: uuid ?? this.uuid,
+      purchaseId: purchaseId ?? this.purchaseId,
+      createdAt: createdAt ?? this.createdAt,
+      amount: amount ?? this.amount,
+      userId: userId ?? this.userId,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      staffName: staffName ?? this.staffName,
     );
   }
 

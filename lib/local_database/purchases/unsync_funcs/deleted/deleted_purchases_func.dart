@@ -25,7 +25,10 @@ class DeletedPurchasesFunc {
       );
     }
 
-_deletedPurchasesBox = await openBoxSafely<DeletedPurchases>(deletedPurchasesBoxName);
+    _deletedPurchasesBox =
+        await openBoxSafely<DeletedPurchases>(
+          deletedPurchasesBoxName,
+        );
   }
 
   /// Safe getter for the box
@@ -80,7 +83,16 @@ _deletedPurchasesBox = await openBoxSafely<DeletedPurchases>(deletedPurchasesBox
 
   Future<int> deletedDeletedPurchases(String uuid) async {
     try {
-      await deletedPurchasesBox.delete(uuid);
+      final toDelete =
+          deletedPurchasesBox.values
+              .where((e) => e.purchaseUuid == uuid)
+              .toList();
+      for (var item in toDelete) {
+        await item.delete();
+      }
+      if (deletedPurchasesBox.containsKey(uuid)) {
+        await deletedPurchasesBox.delete(uuid);
+      }
       await mainLocalLog('Delete Purchase cleared ✅');
       return 1;
     } catch (e) {

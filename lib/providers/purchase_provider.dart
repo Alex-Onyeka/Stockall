@@ -72,9 +72,7 @@ class PurchaseProvider extends ChangeNotifier {
     }
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      purchase.createdAt = DateTime.now().subtract(
-        Duration(hours: 1),
-      );
+      purchase.createdAt = DateTime.now();
       try {
         final res =
             await supabase
@@ -87,14 +85,32 @@ class PurchaseProvider extends ChangeNotifier {
                 .single();
         final newPurchase = TempPurchase.fromJson(res);
         await PurchaseFunc().createPurchase(newPurchase);
+        if (purchase.uuid != null) {
+          await CreatedPurchasesFunc().deletePurchase(
+            purchase.uuid!,
+          );
+        }
         notifyListeners();
-        // await loadPurchases(shopId());
         return newPurchase;
       } catch (e) {
         await mainLocalLog(
-          '❌❌ Create Purchase Error Online: ${e.toString()}',
+          '❌❌ Create Purchase Error Online: ${e.toString()} - falling back to offline',
         );
-        return null;
+        // Fall back to offline storage so user purchase is never dropped
+        try {
+          purchase.createdAt = DateTime.now();
+          await PurchaseFunc().createPurchase(purchase);
+          await CreatedPurchasesFunc().createPurchases(
+            CreatedPurchases(purchase: purchase),
+          );
+          notifyListeners();
+          return purchase;
+        } catch (e2) {
+          await mainLocalLog(
+            '❌❌ Create Purchase Offline Fallback Error: $e2',
+          );
+          return null;
+        }
       }
     } else {
       try {
@@ -138,14 +154,54 @@ class PurchaseProvider extends ChangeNotifier {
                 .single();
         final newPurchase = TempPurchase.fromJson(res);
         await PurchaseFunc().createPurchase(newPurchase);
+        if (purchase.uuid != null) {
+          await CreatedPurchasesFunc().deletePurchase(
+            purchase.uuid!,
+          );
+          await UpdatedPurchasesFunc()
+              .deleteUpdatedPurchase(purchase.uuid!);
+        }
         notifyListeners();
         await loadPurchases(shopId());
         return newPurchase;
       } catch (e) {
         await mainLocalLog(
-          '❌❌ Update Purchase Error Online: ${e.toString()}',
+          '❌❌ Update Purchase Error Online: ${e.toString()} - falling back to offline',
         );
-        return null;
+        // Fallback to offline update
+        try {
+          var res = await PurchaseFunc().createPurchase(
+            purchase,
+          );
+          if (res == 1) {
+            var containsCreated =
+                CreatedPurchasesFunc()
+                    .getPurchases()
+                    .where(
+                      (p) =>
+                          p.purchase.uuid == purchase.uuid,
+                    )
+                    .toList();
+            if (containsCreated.isEmpty) {
+              await UpdatedPurchasesFunc()
+                  .createUpdatedPurchase(
+                    UpdatedPurchases(purchase: purchase),
+                  );
+            } else {
+              await CreatedPurchasesFunc().createPurchases(
+                CreatedPurchases(purchase: purchase),
+              );
+            }
+          }
+          await loadPurchases(shopId());
+          syncData();
+          return purchase;
+        } catch (e2) {
+          await mainLocalLog(
+            '❌❌ Offline Update Fallback Failed: $e2',
+          );
+          return null;
+        }
       }
     } else {
       try {
@@ -276,7 +332,6 @@ class PurchaseProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline && PurchaseFunc().isSynced()) {
-      await PurchaseFunc().clearPurchases();
       try {
         final data = await supabase
             .from(tableName)
@@ -289,10 +344,11 @@ class PurchaseProvider extends ChangeNotifier {
           );
         }
 
-        _purchases =
+        final remotePurchases =
             (data as List)
                 .map((json) => TempPurchase.fromJson(json))
                 .toList();
+        _purchases = remotePurchases;
         await PurchaseFunc().insertAllPurchases(_purchases);
         await mainLocalLog('Loaded');
         notifyListeners();
@@ -300,7 +356,9 @@ class PurchaseProvider extends ChangeNotifier {
         await mainLocalLog(
           '❌ Error Getting Purchases: ${e.toString()}',
         );
-        return [];
+        _purchases = PurchaseFunc().getPurchases();
+        notifyListeners();
+        return _purchases;
       }
     } else {
       _purchases = PurchaseFunc().getPurchases();
@@ -633,11 +691,13 @@ class PurchaseProvider extends ChangeNotifier {
           true;
 
       final purchaseSupplierUuid = purchase.supplierId;
-      final purchaseSupplierName = purchase.supplierName ??
+      final purchaseSupplierName =
+          purchase.supplierName ??
           (purchase.supplierId != null
-              ? returnSuppliersProvider()
-                  .suppliers
-                  .where((s) => s.uuid == purchase.supplierId)
+              ? returnSuppliersProvider().suppliers
+                  .where(
+                    (s) => s.uuid == purchase.supplierId,
+                  )
                   .firstOrNull
                   ?.name
               : null);
@@ -911,45 +971,58 @@ class PurchaseProvider extends ChangeNotifier {
   Future<void> createPurchasesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
       if (CreatedPurchasesFunc()
               .getPurchases()
               .isNotEmpty &&
           isOnline) {
         final tempPurchases =
             CreatedPurchasesFunc().getPurchases().toList();
-        // createdAt is serialized to UTC in toJson(); don't mutate the
-        // shared in-memory purchase.
-        var newPurchases = tempPurchases;
-        final payload =
-            newPurchases
-                .map((p) => p.purchase.toJson())
-                .toList();
-
-        // Insert all at once
-        final data =
+        int count = 0;
+        for (var item in tempPurchases) {
+          final uuid = item.purchase.uuid;
+          if (uuid == null || uuid.isEmpty) {
+            continue;
+          }
+          try {
             await supabase
                 .from(tableName)
-                .insert(payload)
+                .upsert(
+                  item.purchase.toJson(),
+                  onConflict: 'uuid',
+                )
                 .select();
+            count++;
+            await CreatedPurchasesFunc().deletePurchase(
+              uuid,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              // Row already exists on server, dequeue safely
+              await CreatedPurchasesFunc().deletePurchase(
+                uuid,
+              );
+            }
+            await mainLocalLog(
+              'Error Synchronizing Purchase $uuid: $e',
+            );
+          } catch (e) {
+            await mainLocalLog(
+              'Error Synchronizing Purchase $uuid: $e',
+            );
+          }
+        }
 
         await mainLocalLog(
-          '${data.length} items added successfully ✅',
+          '$count purchases added successfully ✅',
         );
-        await CreatedPurchasesFunc().clearPurchases();
-        await mainLocalLog('Unsynced Purchases Cleared');
 
-        await mainLocalLog(
-          'Mounted, refreshing Purchases ✅',
-        );
-        await loadPurchases(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        final sId = shopId();
+        if (sId != 0) {
+          await loadPurchases(sId);
+        }
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Purchases insert failed ❌: $e',
-      );
+      await mainLocalLog('Purchases sync failed ❌: $e');
     }
   }
 
@@ -968,7 +1041,6 @@ class PurchaseProvider extends ChangeNotifier {
   Future<void> deletePurchasesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      // Prepare batch payload
       if (DeletedPurchasesFunc()
               .getPurchaseIds()
               .isNotEmpty &&
@@ -978,34 +1050,35 @@ class PurchaseProvider extends ChangeNotifier {
                 .getPurchaseIds()
                 .toList();
 
+        int count = 0;
         for (var rec in tempPurchases) {
-          await supabase
-              .from(tableName)
-              .delete()
-              .eq('uuid', rec.purchaseUuid);
-          // await DeletedPurchasesFunc()
-          //     .deletedDeletedPurchases(rec.purchaseUuid);
+          try {
+            await supabase
+                .from(tableName)
+                .delete()
+                .eq('uuid', rec.purchaseUuid);
+            count++;
+            await DeletedPurchasesFunc()
+                .deletedDeletedPurchases(rec.purchaseUuid);
+          } catch (e) {
+            await mainLocalLog(
+              'Error deleting purchase ${rec.purchaseUuid}: $e',
+            );
+          }
         }
 
         await mainLocalLog(
-          '${tempPurchases.length} Purchases Created successfully ✅',
-        );
-        await DeletedPurchasesFunc()
-            .clearDeletedPurchases();
-        await mainLocalLog(
-          'Unsynced Deleted Purchases Cleared',
+          '$count Purchases deleted successfully ✅',
         );
 
-        await mainLocalLog(
-          'Mounted, refreshing Purchases ✅',
-        );
-        await loadPurchases(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        final sId = shopId();
+        if (sId != 0) {
+          await loadPurchases(sId);
+        }
       }
     } catch (e) {
       await mainLocalLog(
-        'Batch Purchases Deleted failed ❌: $e',
+        'Purchases Delete sync failed ❌: $e',
       );
     }
   }
@@ -1039,110 +1112,114 @@ class PurchaseProvider extends ChangeNotifier {
                 .toSet();
 
         for (final updated in updatedPurchases) {
-          final uuid = updated.purchase.uuid;
-          final localCopy =
-              uuid == null
-                  ? null
-                  : PurchaseFunc().getSinglePurchase(
-                    uuid: uuid,
-                  );
-          // Deleted locally and waiting to sync: don't send it
-          // back to the server.
-          if (localCopy == null &&
-              pendingDeleted.contains(uuid)) {
-            await UpdatedPurchasesFunc().deleteIfUnchanged(
-              updated,
-            );
-            continue;
-          }
-          // The current local copy holds every later local
-          // change, so the newest edit is what gets sent.
-          final localPurchases = purchaseToPush(
-            updated.purchase,
-            localCopy,
-          );
-
-          localPurchases.updatedAt ??=
-              DateTime.now().toLocal();
-
-          if (localPurchases.uuid == null) {
-            await mainLocalLog(
-              'Local Purchases Uuid is Null',
-            );
-          }
-          final remoteData =
-              await supabase
-                  .from(tableName)
-                  .select('uuid, updated_at')
-                  .eq('uuid', localPurchases.uuid!)
-                  .maybeSingle();
-
-          if (remoteData == null) {
-            await supabase
-                .from(tableName)
-                .insert(localPurchases.toJson());
-            await mainLocalLog(
-              'Inserted product with uuid ${localPurchases.uuid}',
-            );
-            await UpdatedPurchasesFunc().deleteIfUnchanged(
-              updated,
-            );
-          } else {
-            final remoteUpdatedAtRaw =
-                remoteData['updated_at'];
-            final remoteUpdatedAt =
-                remoteUpdatedAtRaw == null
+          try {
+            final uuid = updated.purchase.uuid;
+            final localCopy =
+                uuid == null
                     ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
-
-            localPurchases.updatedAt =
-                (localPurchases.updatedAt ?? DateTime.now())
-                    .toUtc(); // ✅ keep both UTC
-            await mainLocalLog(
-              "Local updatedAt: ${localPurchases.updatedAt}",
+                    : PurchaseFunc().getSinglePurchase(
+                      uuid: uuid,
+                    );
+            // Deleted locally and waiting to sync: don't send it
+            // back to the server.
+            if (localCopy == null &&
+                pendingDeleted.contains(uuid)) {
+              await UpdatedPurchasesFunc()
+                  .deleteIfUnchanged(updated);
+              continue;
+            }
+            // The current local copy holds every later local
+            // change, so the newest edit is what gets sent.
+            final localPurchases = purchaseToPush(
+              updated.purchase,
+              localCopy,
             );
-            await mainLocalLog(
-              "Remote updatedAt: $remoteUpdatedAt",
-            );
 
-            if (shouldPushPurchaseUpdate(
-              localUpdatedAt: localPurchases.updatedAt!,
-              remoteUpdatedAt: remoteUpdatedAt,
-            )) {
+            localPurchases.updatedAt ??=
+                DateTime.now().toLocal();
+
+            if (localPurchases.uuid == null) {
+              await mainLocalLog(
+                'Local Purchases Uuid is Null',
+              );
+              continue;
+            }
+            final remoteData =
+                await supabase
+                    .from(tableName)
+                    .select('uuid, updated_at')
+                    .eq('uuid', localPurchases.uuid!)
+                    .maybeSingle();
+
+            if (remoteData == null) {
               await supabase
                   .from(tableName)
-                  .update(localPurchases.toJson())
-                  .eq('uuid', localPurchases.uuid!);
+                  .upsert(
+                    localPurchases.toJson(),
+                    onConflict: 'uuid',
+                  );
               await mainLocalLog(
-                'Updated Purchase with uuid ${localPurchases.uuid}',
+                'Inserted purchase with uuid ${localPurchases.uuid}',
               );
+              await UpdatedPurchasesFunc()
+                  .deleteIfUnchanged(updated);
             } else {
+              final remoteUpdatedAtRaw =
+                  remoteData['updated_at'];
+              final remoteUpdatedAt =
+                  remoteUpdatedAtRaw == null
+                      ? null
+                      : DateTime.parse(
+                        remoteUpdatedAtRaw,
+                      ).toUtc();
+
+              localPurchases.updatedAt =
+                  (localPurchases.updatedAt ??
+                          DateTime.now())
+                      .toUtc(); // ✅ keep both UTC
               await mainLocalLog(
-                'Skipped Purchase ${localPurchases.uuid}, remote is newer ✅',
+                "Local updatedAt: ${localPurchases.updatedAt}",
               );
+              await mainLocalLog(
+                "Remote updatedAt: $remoteUpdatedAt",
+              );
+
+              if (shouldPushPurchaseUpdate(
+                localUpdatedAt: localPurchases.updatedAt!,
+                remoteUpdatedAt: remoteUpdatedAt,
+              )) {
+                await supabase
+                    .from(tableName)
+                    .update(localPurchases.toJson())
+                    .eq('uuid', localPurchases.uuid!);
+                await mainLocalLog(
+                  'Updated Purchase with uuid ${localPurchases.uuid}',
+                );
+              } else {
+                await mainLocalLog(
+                  'Skipped Purchase ${localPurchases.uuid}, remote is newer ✅',
+                );
+              }
+              await UpdatedPurchasesFunc()
+                  .deleteIfUnchanged(updated);
             }
-            await UpdatedPurchasesFunc().deleteIfUnchanged(
-              updated,
+          } catch (e) {
+            await mainLocalLog(
+              'Error syncing purchase update ${updated.purchase.uuid}: $e',
             );
           }
         }
 
         await mainLocalLog(
-          'Unsynced Purchase products cleared',
+          'Unsynced Purchase products processed',
         );
-        await mainLocalLog(
-          'Mounted, refreshing products ✅',
-        );
-        await loadPurchases(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        final sId = shopId();
+        if (sId != 0) {
+          await loadPurchases(sId);
+        }
       }
     } catch (e) {
-      await mainLocalLog(
-        'Batch Purchases update failed ❌: $e',
-      );
+      await mainLocalLog('Purchases update failed ❌: $e');
     }
   }
   //
@@ -1173,15 +1250,18 @@ class PurchaseProvider extends ChangeNotifier {
           true;
       for (var item in records) {
         final itemSupplierUuid = item.supplierId;
-        final itemSupplierName = (item.supplierId != null
-            ? returnSuppliersProvider()
-                .suppliers
-                .where((s) => s.uuid == item.supplierId)
-                .firstOrNull
-                ?.name
-            : null) ??
+        final itemSupplierName =
+            (item.supplierId != null
+                ? returnSuppliersProvider().suppliers
+                    .where((s) => s.uuid == item.supplierId)
+                    .firstOrNull
+                    ?.name
+                : null) ??
             (item.purchaseId != null
-                ? purchases.where((p) => p.uuid == item.purchaseId).firstOrNull?.supplierName
+                ? purchases
+                    .where((p) => p.uuid == item.purchaseId)
+                    .firstOrNull
+                    ?.supplierName
                 : null);
 
         if (isManageStorage) {
@@ -1516,18 +1596,44 @@ class PurchaseProvider extends ChangeNotifier {
       for (final entry in deltas.entries) {
         final delta = entry.value;
         final isIncrease = delta > 0;
-        final matchedItem = newItems.where((i) => (isManageStorage ? (i.storageItemId ?? i.itemId) : (i.itemId ?? i.storageItemId)) == entry.key).firstOrNull ??
-            oldItems.where((i) => (isManageStorage ? (i.storageItemId ?? i.itemId) : (i.itemId ?? i.storageItemId)) == entry.key).firstOrNull;
-        final editTrackingNumber = matchedItem?.trackingNumber;
+        final matchedItem =
+            newItems
+                .where(
+                  (i) =>
+                      (isManageStorage
+                          ? (i.storageItemId ?? i.itemId)
+                          : (i.itemId ??
+                              i.storageItemId)) ==
+                      entry.key,
+                )
+                .firstOrNull ??
+            oldItems
+                .where(
+                  (i) =>
+                      (isManageStorage
+                          ? (i.storageItemId ?? i.itemId)
+                          : (i.itemId ??
+                              i.storageItemId)) ==
+                      entry.key,
+                )
+                .firstOrNull;
+        final editTrackingNumber =
+            matchedItem?.trackingNumber;
         final editSupplierUuid = matchedItem?.supplierId;
-        final editSupplierName = (matchedItem?.supplierId != null
-            ? returnSuppliersProvider()
-                .suppliers
-                .where((s) => s.uuid == matchedItem!.supplierId)
+        final editSupplierName =
+            (matchedItem?.supplierId != null
+                ? returnSuppliersProvider().suppliers
+                    .where(
+                      (s) =>
+                          s.uuid == matchedItem!.supplierId,
+                    )
+                    .firstOrNull
+                    ?.name
+                : null) ??
+            purchases
+                .where((p) => p.uuid == purchaseUuid)
                 .firstOrNull
-                ?.name
-            : null) ??
-            purchases.where((p) => p.uuid == purchaseUuid).firstOrNull?.supplierName;
+                ?.supplierName;
 
         if (isManageStorage) {
           final storageProduct = _findStorageProduct(
