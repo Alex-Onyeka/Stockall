@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -14,6 +15,8 @@ import 'package:stockall/pages/report/general_report/general_report_page.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
 import 'package:stockall/pages/report/order_report/order_report_page.dart';
+import 'package:stockall/pages/report/production_report/class/production_report_hub_logic.dart';
+import 'package:stockall/pages/report/production_report/production_report_page.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_page.dart';
 import 'package:stockall/pages/report/sales_report_/sales_report/sales_report_page.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/staff_report_table_page.dart';
@@ -125,6 +128,34 @@ class ReportMobile extends StatelessWidget {
                             subText:
                                 'View your Storage stock summary, items main report, analysis and history',
                             title: 'Storage Report',
+                          ),
+                        ),
+                        Visibility(
+                          visible: ProductionReportHub.tileVisible(
+                            manageProductions:
+                                shop(context)?.manageProductions == true,
+                            planAllowsProductions: GeneralSettingsAuthAction()
+                                .manageProductions(context: null),
+                            canViewProductions: authorization(
+                              authorized: Authorizations().viewProductions,
+                            ),
+                          ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const ProductionReportPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'View your materials, material usage, produced items and production records',
+                            title: 'Production Report',
                           ),
                         ),
                         Visibility(
