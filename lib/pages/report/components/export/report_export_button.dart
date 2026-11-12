@@ -26,7 +26,8 @@ import 'package:stockall/providers/theme_provider.dart';
 /// Above this many records a roll print warns about paper use.
 const int reportExportLongRollRows = 500;
 
-const String reportExportNotOnPlan = 'Not available on your plan';
+const String reportExportNotOnPlan =
+    'Not available on your plan';
 
 /// Added to the print entry whose width matches the saved printer.
 const String reportExportYourPrinter = ' · your printer';
@@ -45,10 +46,12 @@ class ReportExportButton extends StatefulWidget {
   });
 
   @override
-  State<ReportExportButton> createState() => _ReportExportButtonState();
+  State<ReportExportButton> createState() =>
+      _ReportExportButtonState();
 }
 
-class _ReportExportButtonState extends State<ReportExportButton> {
+class _ReportExportButtonState
+    extends State<ReportExportButton> {
   final MenuController _menu = MenuController();
   ReportExportSpec? _spec;
   bool _printAllowed = false;
@@ -57,7 +60,8 @@ class _ReportExportButtonState extends State<ReportExportButton> {
 
   ReportExportBackend get _backend => widget.backend;
 
-  String _paperLabel(RollPaper p) => p == RollPaper.mm58 ? '58mm' : '80mm';
+  String _paperLabel(RollPaper p) =>
+      p == RollPaper.mm58 ? '58mm' : '80mm';
 
   void _open() {
     if (_menu.isOpen) {
@@ -67,7 +71,10 @@ class _ReportExportButtonState extends State<ReportExportButton> {
     final spec = widget.buildSpec();
     setState(() {
       _spec = spec;
-      _printAllowed = _backend.isAllowed(context, spec.gate);
+      _printAllowed = _backend.isAllowed(
+        context,
+        spec.gate,
+      );
       _downloadAllowed =
           spec.downloadGate == null ||
           _backend.isAllowed(context, spec.downloadGate!);
@@ -81,31 +88,64 @@ class _ReportExportButtonState extends State<ReportExportButton> {
   // ------------------------------------------------------------------
 
   Widget _title(String text, {bool disabled = false}) {
-    if (!disabled) return Text(text);
+    if (!disabled) {
+      return Text(
+        style: TextStyle(
+          fontSize:
+              returnTheme(
+                context,
+                listen: false,
+              ).mobileTexts.b3.fontSize,
+        ),
+        text,
+      );
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(text),
+        Text(
+          style: TextStyle(
+            fontSize:
+                returnTheme(
+                  context,
+                  listen: false,
+                ).mobileTexts.b3.fontSize,
+          ),
+          text,
+        ),
         Text(
           reportExportNotOnPlan,
-          style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+          style: TextStyle(
+            fontSize:
+                returnTheme(
+                  context,
+                  listen: false,
+                ).mobileTexts.b4.fontSize,
+            color: Colors.grey.shade600,
+          ),
         ),
       ],
     );
   }
 
-  Widget _printEntry(ReportExportSpec spec, RollPaper paper) {
+  Widget _printEntry(
+    ReportExportSpec spec,
+    RollPaper paper,
+  ) {
     final title =
         'Print ${_paperLabel(paper)}'
         '${paper == _savedPaper ? reportExportYourPrinter : ''}';
-    const icon = Icon(Icons.print_outlined, size: 18);
+    const icon = Icon(Icons.print_outlined, size: 16);
     final splits = spec.splitOptions;
 
     if (!_printAllowed || splits.isEmpty) {
       return MenuItemButton(
         leadingIcon: icon,
-        onPressed: _printAllowed ? () => _print(paper, const [null]) : null,
+        onPressed:
+            _printAllowed
+                ? () => _print(paper, const [null])
+                : null,
         child: _title(title, disabled: !_printAllowed),
       );
     }
@@ -123,7 +163,11 @@ class _ReportExportButtonState extends State<ReportExportButton> {
           ),
         if (splits.length > 1)
           MenuItemButton(
-            onPressed: () => _print(paper, [null, for (final s in splits) s.id]),
+            onPressed:
+                () => _print(paper, [
+                  null,
+                  for (final s in splits) s.id,
+                ]),
             child: const Text('All groupings'),
           ),
       ],
@@ -133,13 +177,14 @@ class _ReportExportButtonState extends State<ReportExportButton> {
 
   Widget _excelEntry(ReportExportSpec spec) {
     const title = 'Export Excel';
-    const icon = Icon(Icons.table_chart_outlined, size: 18);
+    const icon = Icon(Icons.table_chart_outlined, size: 16);
     final splits = spec.splitOptions;
 
     if (!_downloadAllowed || splits.isEmpty) {
       return MenuItemButton(
         leadingIcon: icon,
-        onPressed: _downloadAllowed ? () => _excel(null) : null,
+        onPressed:
+            _downloadAllowed ? () => _excel(null) : null,
         child: _title(title, disabled: !_downloadAllowed),
       );
     }
@@ -167,9 +212,15 @@ class _ReportExportButtonState extends State<ReportExportButton> {
       _printEntry(spec, RollPaper.mm80),
       _printEntry(spec, RollPaper.mm58),
       MenuItemButton(
-        leadingIcon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+        leadingIcon: const Icon(
+          Icons.picture_as_pdf_outlined,
+          size: 16,
+        ),
         onPressed: _downloadAllowed ? _pdf : null,
-        child: _title('Download PDF', disabled: !_downloadAllowed),
+        child: _title(
+          'Download PDF',
+          disabled: !_downloadAllowed,
+        ),
       ),
       _excelEntry(spec),
     ];
@@ -181,12 +232,13 @@ class _ReportExportButtonState extends State<ReportExportButton> {
     return MenuAnchor(
       controller: _menu,
       menuChildren: _menuChildren(),
-      builder: (context, controller, child) => ReportPill(
-        theme: theme,
-        icon: Icons.ios_share_rounded,
-        label: widget.label,
-        onTap: _open,
-      ),
+      builder:
+          (context, controller, child) => ReportPill(
+            theme: theme,
+            icon: Icons.ios_share_rounded,
+            label: widget.label,
+            onTap: _open,
+          ),
     );
   }
 
@@ -194,7 +246,8 @@ class _ReportExportButtonState extends State<ReportExportButton> {
   // Actions
   // ------------------------------------------------------------------
 
-  ThemeProvider get _theme => returnTheme(context, listen: false);
+  ThemeProvider get _theme =>
+      returnTheme(context, listen: false);
 
   String _records(int n) {
     final count = ExportFormatter(currency: '').integer(n);
@@ -210,57 +263,62 @@ class _ReportExportButtonState extends State<ReportExportButton> {
     if (count == 0) {
       showDialog<void>(
         context: context,
-        builder: (dialog) => AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Text('No Matching Records'),
-          content: const Text(
-            'There are no records to print for the current period and '
-            'filters.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialog).pop(),
-              child: const Text('OK'),
+        builder:
+            (dialog) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('No Matching Records'),
+              content: const Text(
+                'There are no records to print for the current period and '
+                'filters.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed:
+                      () => Navigator.of(dialog).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
       );
       return;
     }
 
-    final long = count > reportExportLongRollRows
-        ? ' This is a long print and will use a lot of paper.'
-        : '';
+    final long =
+        count > reportExportLongRollRows
+            ? ' This is a long print and will use a lot of paper.'
+            : '';
     showDialog<void>(
       context: context,
-      builder: (dialog) => ConfirmationAlert(
-        theme: _theme,
-        title: 'Print Report',
-        actionButtonText: 'Print',
-        message:
-            'You are about to print ${_records(count)} on '
-            '${_paperLabel(paper)} roll paper.$long '
-            'Are you sure you want to proceed?',
-        action: () {
-          Navigator.of(dialog).pop();
-          _run(
-            action: 'print ${_paperLabel(paper)}',
-            loading: 'Preparing print…',
-            failure: "Couldn't print the report. Please try again.",
-            task: (ctx, beforeUi) async {
-              await _backend.printRoll(
-                context,
-                spec,
-                ctx,
-                paper: paper,
-                groupings: groupings,
-                beforeUi: beforeUi,
+      builder:
+          (dialog) => ConfirmationAlert(
+            theme: _theme,
+            title: 'Print Report',
+            actionButtonText: 'Print',
+            message:
+                'You are about to print ${_records(count)} on '
+                '${_paperLabel(paper)} roll paper.$long '
+                'Are you sure you want to proceed?',
+            action: () {
+              Navigator.of(dialog).pop();
+              _run(
+                action: 'print ${_paperLabel(paper)}',
+                loading: 'Preparing print…',
+                failure:
+                    "Couldn't print the report. Please try again.",
+                task: (ctx, beforeUi) async {
+                  await _backend.printRoll(
+                    context,
+                    spec,
+                    ctx,
+                    paper: paper,
+                    groupings: groupings,
+                    beforeUi: beforeUi,
+                  );
+                  return null;
+                },
               );
-              return null;
             },
-          );
-        },
-      ),
+          ),
     );
   }
 
@@ -272,8 +330,13 @@ class _ReportExportButtonState extends State<ReportExportButton> {
       action: 'pdf',
       loading: 'Preparing PDF…',
       failure: "Couldn't create the PDF. Please try again.",
-      task: (ctx, beforeUi) =>
-          _backend.downloadPdf(context, spec, ctx, beforeUi: beforeUi),
+      task:
+          (ctx, beforeUi) => _backend.downloadPdf(
+            context,
+            spec,
+            ctx,
+            beforeUi: beforeUi,
+          ),
     );
   }
 
@@ -285,24 +348,26 @@ class _ReportExportButtonState extends State<ReportExportButton> {
     if (splitId != null) {
       final groups = splitGroupCount(spec, splitId);
       if (groups > reportExportMaxSplitSheets) {
-        final label = spec.splitOptions
-            .firstWhere((s) => s.id == splitId)
-            .label;
+        final label =
+            spec.splitOptions
+                .firstWhere((s) => s.id == splitId)
+                .label;
         showDialog<void>(
           context: context,
-          builder: (dialog) => ConfirmationAlert(
-            theme: _theme,
-            title: 'Too Many Sheets',
-            actionButtonText: 'Export One Sheet',
-            message:
-                'One sheet per $label would create $groups sheets (the '
-                'limit is $reportExportMaxSplitSheets). Export everything '
-                'on one sheet instead?',
-            action: () {
-              Navigator.of(dialog).pop();
-              _runExcel(spec, null);
-            },
-          ),
+          builder:
+              (dialog) => ConfirmationAlert(
+                theme: _theme,
+                title: 'Too Many Sheets',
+                actionButtonText: 'Export One Sheet',
+                message:
+                    'One sheet per $label would create $groups sheets (the '
+                    'limit is $reportExportMaxSplitSheets). Export everything '
+                    'on one sheet instead?',
+                action: () {
+                  Navigator.of(dialog).pop();
+                  _runExcel(spec, null);
+                },
+              ),
         );
         return;
       }
@@ -314,14 +379,16 @@ class _ReportExportButtonState extends State<ReportExportButton> {
     _run(
       action: 'excel',
       loading: 'Preparing Excel file…',
-      failure: "Couldn't create the Excel file. Please try again.",
-      task: (ctx, beforeUi) => _backend.exportExcel(
-        context,
-        spec,
-        ctx,
-        splitId: splitId,
-        beforeUi: beforeUi,
-      ),
+      failure:
+          "Couldn't create the Excel file. Please try again.",
+      task:
+          (ctx, beforeUi) => _backend.exportExcel(
+            context,
+            spec,
+            ctx,
+            splitId: splitId,
+            beforeUi: beforeUi,
+          ),
     );
   }
 
@@ -339,7 +406,10 @@ class _ReportExportButtonState extends State<ReportExportButton> {
   }) async {
     final close = _showLoading(loading);
     try {
-      final result = await task(_backend.exportContext(), close);
+      final result = await task(
+        _backend.exportContext(),
+        close,
+      );
       close();
       if (result != null && result.showSaved) {
         _snack('Saved ${result.fileName}');
@@ -347,43 +417,51 @@ class _ReportExportButtonState extends State<ReportExportButton> {
     } catch (e, st) {
       close();
       _backend.logError(action, e, st);
-      _snack(e is ReportExportException ? e.message : failure);
+      _snack(
+        e is ReportExportException ? e.message : failure,
+      );
     }
   }
 
   /// Pushes the overlay and returns a callback that removes it (safe to
   /// call more than once, and removes only the overlay's own route).
   VoidCallback _showLoading(String message) {
-    final navigator = Navigator.of(context, rootNavigator: true);
+    final navigator = Navigator.of(
+      context,
+      rootNavigator: true,
+    );
     final route = DialogRoute<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => PopScope(
-        canPop: false,
-        child: Center(
-          child: Card(
-            color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 18,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 14,
-                children: [
-                  const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.4),
+      builder:
+          (_) => PopScope(
+            canPop: false,
+            child: Center(
+              child: Card(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 18,
                   ),
-                  Text(message),
-                ],
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 14,
+                    children: [
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.4,
+                        ),
+                      ),
+                      Text(message),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
     );
     navigator.push(route);
     var closed = false;
