@@ -32,12 +32,18 @@ class StaffDetailsSectionWidget extends StatelessWidget {
   });
 
   static String _orNotSet(String? v) =>
-      (v == null || v.trim().isEmpty) ? 'Not Set' : v.trim();
+      (v == null || v.trim().isEmpty)
+          ? 'Not Set'
+          : v.trim();
 
   @override
   Widget build(BuildContext context) {
     final theme = returnTheme(context);
-    Widget field(String title, String text, {int flex = 3}) => Expanded(
+    Widget field(
+      String title,
+      String text, {
+      int flex = 3,
+    }) => Expanded(
       flex: flex,
       child: CustomerDetailsColumnSection(
         theme: theme,
@@ -50,17 +56,24 @@ class StaffDetailsSectionWidget extends StatelessWidget {
     return Container(
       key: const ValueKey('staff-details-card'),
       margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+      padding: const EdgeInsets.symmetric(
+        vertical: 25,
+        horizontal: 15,
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         boxShadow: const [
-          BoxShadow(color: Color.fromARGB(26, 0, 0, 0), blurRadius: 10),
+          BoxShadow(
+            color: Color.fromARGB(26, 0, 0, 0),
+            blurRadius: 10,
+          ),
         ],
         color: Colors.white,
       ),
       child: Column(
         children: [
           Row(
+            spacing: 5,
             children: [
               Container(
                 padding: const EdgeInsets.all(7),
@@ -68,7 +81,10 @@ class StaffDetailsSectionWidget extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: Colors.grey.shade100,
                 ),
-                child: const Icon(size: 16, Icons.badge_outlined),
+                child: const Icon(
+                  size: 16,
+                  Icons.badge_outlined,
+                ),
               ),
               const SizedBox(width: 5),
               Expanded(
@@ -87,7 +103,11 @@ class StaffDetailsSectionWidget extends StatelessWidget {
                   action: busy ? null : onEdit,
                   text: 'Edit',
                   textColor: Colors.grey.shade500,
-                  icon: Icon(size: 16, color: Colors.grey.shade500, Icons.edit),
+                  icon: Icon(
+                    size: 16,
+                    color: Colors.grey.shade500,
+                    Icons.edit,
+                  ),
                 ),
               if (onDelete != null)
                 ActionButtonSmall(
@@ -111,7 +131,10 @@ class StaffDetailsSectionWidget extends StatelessWidget {
               Row(
                 spacing: 5,
                 children: [
-                  field('Name', StaffReportRow.nameOf(staff)),
+                  field(
+                    'Name',
+                    StaffReportRow.nameOf(staff),
+                  ),
                   field(
                     'Date Added',
                     staff.createdAt == null
@@ -125,7 +148,11 @@ class StaffDetailsSectionWidget extends StatelessWidget {
                 spacing: 5,
                 children: [
                   field('Email', _orNotSet(staff.email)),
-                  field('Phone', _orNotSet(staff.phone), flex: 2),
+                  field(
+                    'Phone',
+                    _orNotSet(staff.phone),
+                    flex: 2,
+                  ),
                 ],
               ),
               Row(
@@ -135,7 +162,9 @@ class StaffDetailsSectionWidget extends StatelessWidget {
                   if (depts != null)
                     field(
                       'Departments',
-                      depts.isEmpty ? 'None' : depts.join(', '),
+                      depts.isEmpty
+                          ? 'None'
+                          : depts.join(', '),
                       flex: 2,
                     )
                   else

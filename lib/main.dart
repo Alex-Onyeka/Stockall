@@ -367,7 +367,10 @@ InvoicesProvider returnInvoicesProvider({
   if (context == null) {
     return InvoicesProvider();
   } else {
-    return Provider.of<InvoicesProvider>(context, listen: listen);
+    return Provider.of<InvoicesProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -378,7 +381,10 @@ StorageProductProvider returnStorageProductProvider({
   if (context == null) {
     return StorageProductProvider();
   } else {
-    return Provider.of<StorageProductProvider>(context, listen: listen);
+    return Provider.of<StorageProductProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -389,7 +395,10 @@ ShopDashboardProvider returnShopDashboardProvider({
   if (context == null) {
     return ShopDashboardProvider();
   } else {
-    return Provider.of<ShopDashboardProvider>(context, listen: listen);
+    return Provider.of<ShopDashboardProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -415,7 +424,10 @@ CategoriesProvider returnCategoriesProvider({
   if (context == null) {
     return CategoriesProvider();
   } else {
-    return Provider.of<CategoriesProvider>(context, listen: listen);
+    return Provider.of<CategoriesProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -426,7 +438,10 @@ SubStaffProvider returnSubStaffProvider({
   if (context == null) {
     return SubStaffProvider();
   } else {
-    return Provider.of<SubStaffProvider>(context, listen: listen);
+    return Provider.of<SubStaffProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -437,12 +452,21 @@ InventoryUpdatesProvider returnInventoryUpdatesProvider({
   if (context == null) {
     return InventoryUpdatesProvider();
   } else {
-    return Provider.of<InventoryUpdatesProvider>(context, listen: listen);
+    return Provider.of<InventoryUpdatesProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
-TempShopClass? shop(BuildContext context, {bool listen = true}) {
-  return returnShopProvider(context: context, listen: listen).userShop();
+TempShopClass? shop(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return returnShopProvider(
+    context: context,
+    listen: listen,
+  ).userShop();
 }
 
 TempShopClass? shopSingle() {
@@ -467,7 +491,10 @@ ShopProvider returnShopProvider({
   if (context == null) {
     return ShopProvider();
   } else {
-    return Provider.of<ShopProvider>(context, listen: listen);
+    return Provider.of<ShopProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -512,7 +539,10 @@ PermissionProvider returnPermissionProvider({
   if (context == null) {
     return PermissionProvider();
   } else {
-    return Provider.of<PermissionProvider>(context, listen: listen);
+    return Provider.of<PermissionProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -566,7 +596,10 @@ SalesProvider returnSalesProviderContext(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<SalesProvider>(context, listen: listen);
+  return Provider.of<SalesProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 TranslationProvider returnTranslationProvider(
@@ -586,7 +619,10 @@ ConnectivityProvider returnConnectivityProvider({
   if (context == null) {
     return ConnectivityProvider();
   } else {
-    return Provider.of<ConnectivityProvider>(context, listen: listen);
+    return Provider.of<ConnectivityProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -597,7 +633,10 @@ SubPaymentProvider returnSubPaymentProvider({
   if (context == null) {
     return SubPaymentProvider();
   } else {
-    return Provider.of<SubPaymentProvider>(context, listen: listen);
+    return Provider.of<SubPaymentProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -619,7 +658,10 @@ MultiDisplayProvider returnMultiDisplayProviderContext(
   BuildContext context, {
   bool listen = true,
 }) {
-  return Provider.of<MultiDisplayProvider>(context, listen: listen);
+  return Provider.of<MultiDisplayProvider>(
+    context,
+    listen: listen,
+  );
 }
 
 EventsLogProvider returnEventsLogProvider({
@@ -629,7 +671,10 @@ EventsLogProvider returnEventsLogProvider({
   if (context == null) {
     return EventsLogProvider();
   } else {
-    return Provider.of<EventsLogProvider>(context, listen: listen);
+    return Provider.of<EventsLogProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -640,7 +685,10 @@ ErrorLogProvider returnErrorLogProvider({
   if (context == null) {
     return ErrorLogProvider();
   } else {
-    return Provider.of<ErrorLogProvider>(context, listen: listen);
+    return Provider.of<ErrorLogProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -651,7 +699,10 @@ DepartmentProvider returnDepartmentProvider({
   if (context == null) {
     return DepartmentProvider();
   } else {
-    return Provider.of<DepartmentProvider>(context, listen: listen);
+    return Provider.of<DepartmentProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -662,7 +713,10 @@ PurchaseProvider returnPurchaseProvider({
   if (context == null) {
     return PurchaseProvider();
   } else {
-    return Provider.of<PurchaseProvider>(context, listen: listen);
+    return Provider.of<PurchaseProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -673,7 +727,10 @@ SuppliersProvider returnSuppliersProvider({
   if (context == null) {
     return SuppliersProvider();
   } else {
-    return Provider.of<SuppliersProvider>(context, listen: listen);
+    return Provider.of<SuppliersProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -684,7 +741,10 @@ PurchaseActionProvider returnPurchaseActionProvider({
   if (context == null) {
     return PurchaseActionProvider();
   } else {
-    return Provider.of<PurchaseActionProvider>(context, listen: listen);
+    return Provider.of<PurchaseActionProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -705,7 +765,10 @@ UtilityWidgetProvider returnUtilityWidgetProvider({
   if (context == null) {
     return UtilityWidgetProvider();
   } else {
-    return Provider.of<UtilityWidgetProvider>(context, listen: listen);
+    return Provider.of<UtilityWidgetProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -716,7 +779,10 @@ UtilityConstantProvider returnUtilityConstantProvider({
   if (context == null) {
     return UtilityConstantProvider();
   } else {
-    return Provider.of<UtilityConstantProvider>(context, listen: listen);
+    return Provider.of<UtilityConstantProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -727,7 +793,10 @@ CountryProvider returnCountryProvider({
   if (context == null) {
     return CountryProvider();
   } else {
-    return Provider.of<CountryProvider>(context, listen: listen);
+    return Provider.of<CountryProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -738,7 +807,10 @@ QuantityUpdateProvider returnQuantityUpdateProvider({
   if (context == null) {
     return QuantityUpdateProvider();
   } else {
-    return Provider.of<QuantityUpdateProvider>(context, listen: listen);
+    return Provider.of<QuantityUpdateProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -749,7 +821,10 @@ ItemHistoryProvider returnItemHistoryProvider({
   if (context == null) {
     return ItemHistoryProvider();
   } else {
-    return Provider.of<ItemHistoryProvider>(context, listen: listen);
+    return Provider.of<ItemHistoryProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -790,7 +865,10 @@ MaterialsProvider returnMaterialsProvider({
   if (context == null) {
     return MaterialsProvider();
   } else {
-    return Provider.of<MaterialsProvider>(context, listen: listen);
+    return Provider.of<MaterialsProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -816,7 +894,10 @@ ProductionItemsProvider returnProductionItemsProvider({
   if (context == null) {
     return ProductionItemsProvider();
   } else {
-    return Provider.of<ProductionItemsProvider>(context, listen: listen);
+    return Provider.of<ProductionItemsProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -841,7 +922,10 @@ ProductionRecordsProvider returnProductionRecordsProvider({
   if (context == null) {
     return ProductionRecordsProvider();
   } else {
-    return Provider.of<ProductionRecordsProvider>(context, listen: listen);
+    return Provider.of<ProductionRecordsProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -852,7 +936,10 @@ ProductionsActionProvider returnProductionsActionProvider({
   if (context == null) {
     return ProductionsActionProvider();
   } else {
-    return Provider.of<ProductionsActionProvider>(context, listen: listen);
+    return Provider.of<ProductionsActionProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -863,7 +950,10 @@ MaterialsUsageProvider returnMaterialsUsageProvider({
   if (context == null) {
     return MaterialsUsageProvider();
   } else {
-    return Provider.of<MaterialsUsageProvider>(context, listen: listen);
+    return Provider.of<MaterialsUsageProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -904,7 +994,10 @@ OrdersProvider returnOrdersProvider({
   if (context == null) {
     return OrdersProvider();
   } else {
-    return Provider.of<OrdersProvider>(context, listen: listen);
+    return Provider.of<OrdersProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -915,7 +1008,10 @@ DraftsProvider returnDraftsProvider({
   if (context == null) {
     return DraftsProvider();
   } else {
-    return Provider.of<DraftsProvider>(context, listen: listen);
+    return Provider.of<DraftsProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -926,7 +1022,10 @@ OrdersActionProvider returnOrdersActionProvider({
   if (context == null) {
     return OrdersActionProvider();
   } else {
-    return Provider.of<OrdersActionProvider>(context, listen: listen);
+    return Provider.of<OrdersActionProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -938,7 +1037,10 @@ returnStorageItemHistoryProvider({
   if (context == null) {
     return StorageItemHistoryProvider();
   } else {
-    return Provider.of<StorageItemHistoryProvider>(context, listen: listen);
+    return Provider.of<StorageItemHistoryProvider>(
+      context,
+      listen: listen,
+    );
   }
 }
 
@@ -981,7 +1083,8 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class _MyAppState extends State<MyApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
