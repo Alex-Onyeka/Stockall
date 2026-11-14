@@ -87,7 +87,7 @@ class _DashboardDesktopState
         context,
         listen: false,
       ).isLoaded) {
-        await RefreshFunctions(context).refreshAll(context);
+        await RefreshFunctions(context).refreshDashboard(context);
         returnReceiptProvider(
           context,
           listen: false,
@@ -270,7 +270,7 @@ class _DashboardDesktopState
                                       onRefresh: () async {
                                         return await RefreshFunctions(
                                           context,
-                                        ).refreshAll(
+                                        ).refreshDashboard(
                                           context,
                                         );
                                       },

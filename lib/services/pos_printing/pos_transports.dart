@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:stockall/services/pos_printing/bluetooth_permission_helper.dart'
+    show ensureBluetoothPermissions;
 import 'package:stockall/services/pos_printing/pos_print_rules.dart';
 import 'package:stockall/services/receipt_print_service/receipt_import_helper.dart'
     show sendReceiptToPrinter;
@@ -56,7 +58,15 @@ Future<void> _sendBluetooth(
   List<Uint8List> chunks,
 ) async {
   if (!BluetoothPrintPlus.isBlueOn) {
-    throw const PosSendException('Bluetooth is off. Turn it on and try again.');
+    throw const PosSendException(
+      'Bluetooth is off. Turn it on and try again.',
+    );
+  }
+  final hasPermission = await ensureBluetoothPermissions();
+  if (!hasPermission) {
+    throw const PosSendException(
+      'Bluetooth permission was not granted. Please enable it in Settings.',
+    );
   }
   await _ensureBluetoothConnected(printer);
   for (final chunk in chunks) {
@@ -64,7 +74,9 @@ Future<void> _sendBluetooth(
   }
 }
 
-Future<void> _ensureBluetoothConnected(PosPrinterConfig printer) async {
+Future<void> _ensureBluetoothConnected(
+  PosPrinterConfig printer,
+) async {
   if (BluetoothPrintPlus.isConnected &&
       _connectedAddress == printer.address) {
     return;
@@ -87,27 +99,50 @@ Future<void> _ensureBluetoothConnected(PosPrinterConfig printer) async {
   final found = BluetoothPrintPlus.scanResults
       .map(
         (devices) =>
-            devices.where((d) => d.address == printer.address).firstOrNull,
+            devices
+                .where((d) => d.address == printer.address)
+                .firstOrNull,
       )
       .firstWhere((device) => device != null)
-      .timeout(const Duration(seconds: 10), onTimeout: () => null);
-  unawaited(BluetoothPrintPlus.startScan(timeout: const Duration(seconds: 10)));
+      .timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => null,
+      );
+  try {
+    unawaited(
+      BluetoothPrintPlus.startScan(
+        timeout: const Duration(seconds: 10),
+      ),
+    );
+  } catch (_) {}
   final device = await found;
-  await BluetoothPrintPlus.stopScan();
+  try {
+    await BluetoothPrintPlus.stopScan();
+  } catch (_) {}
   if (device == null) {
     throw PosSendException(
       '${printer.name} was not found. Check it is on and nearby.',
     );
   }
-  if (!await _connectAndWait(device, const Duration(seconds: 8))) {
-    throw PosSendException('Could not connect to ${printer.name}.');
+  if (!await _connectAndWait(
+    device,
+    const Duration(seconds: 8),
+  )) {
+    throw PosSendException(
+      'Could not connect to ${printer.name}.',
+    );
   }
   _connectedAddress = printer.address;
 }
 
-Future<bool> _connectAndWait(BluetoothDevice device, Duration timeout) async {
+Future<bool> _connectAndWait(
+  BluetoothDevice device,
+  Duration timeout,
+) async {
   final connected = BluetoothPrintPlus.connectState
-      .firstWhere((state) => state == ConnectState.connected)
+      .firstWhere(
+        (state) => state == ConnectState.connected,
+      )
       .timeout(timeout)
       .then((_) => true, onError: (_) => false);
   try {
@@ -157,10 +192,17 @@ Future<void> _sendWindows(
   PosPrinterConfig printer,
   List<Uint8List> chunks,
 ) async {
-  final bytes = Uint8List.fromList([for (final c in chunks) ...c]);
-  final sent = await sendReceiptToPrinter(bytes, printerName: printer.address);
+  final bytes = Uint8List.fromList([
+    for (final c in chunks) ...c,
+  ]);
+  final sent = await sendReceiptToPrinter(
+    bytes,
+    printerName: printer.address,
+  );
   if (!sent) {
-    throw PosSendException('Windows could not print to ${printer.name}.');
+    throw PosSendException(
+      'Windows could not print to ${printer.name}.',
+    );
   }
 }
 
@@ -170,7 +212,8 @@ Future<void> _sendWindows(
 Future<List<String>> listCupsQueues() async {
   try {
     var result = await Process.run('lpstat', ['-e']);
-    if (result.exitCode != 0 || '${result.stdout}'.trim().isEmpty) {
+    if (result.exitCode != 0 ||
+        '${result.stdout}'.trim().isEmpty) {
       result = await Process.run('lpstat', ['-a']);
     }
     if (result.exitCode != 0) return const [];
@@ -184,10 +227,14 @@ Future<void> _sendCups(
   PosPrinterConfig printer,
   List<Uint8List> chunks,
 ) async {
-  final dir = await Directory.systemTemp.createTemp('stockall_print');
+  final dir = await Directory.systemTemp.createTemp(
+    'stockall_print',
+  );
   try {
     final file = File('${dir.path}/receipt.bin');
-    await file.writeAsBytes([for (final c in chunks) ...c], flush: true);
+    await file.writeAsBytes([
+      for (final c in chunks) ...c,
+    ], flush: true);
     final ProcessResult result;
     try {
       result = await Process.run('lp', [
@@ -198,7 +245,9 @@ Future<void> _sendCups(
         file.path,
       ]);
     } on ProcessException catch (e) {
-      throw PosSendException('Could not run lp: ${e.message}');
+      throw PosSendException(
+        'Could not run lp: ${e.message}',
+      );
     }
     if (result.exitCode != 0) {
       throw PosSendException(

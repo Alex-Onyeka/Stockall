@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/services/pos_printing/bluetooth_permission_helper.dart'
+    show ensureBluetoothPermissions;
 
 class PrinterPage extends StatefulWidget {
   const PrinterPage({super.key});
@@ -231,6 +233,8 @@ class _PrinterPageState extends State<PrinterPage> {
 
   Future onScanPressed() async {
     try {
+      final hasPermission = await ensureBluetoothPermissions();
+      if (!hasPermission) return;
       await BluetoothPrintPlus.startScan(
         timeout: Duration(seconds: 10),
       );

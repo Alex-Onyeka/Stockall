@@ -140,7 +140,7 @@ void main(List<String> args) async {
     }
   } catch (e, s) {
     await mainLocalLog(
-      'Error Occoured While Initialzing Main Dart File: ${e.toString()}',
+      'Error Occoured While Initializing Main Dart File: ${e.toString()}',
       error: e,
       stackTrace: s,
     );
@@ -190,7 +190,9 @@ Future<void> initMainLog() async {
         try {
           final length = await file.length();
           if (length > 5 * 1024 * 1024) {
-            final prevFile = File('${dir.path}/mainLog_previous.log');
+            final prevFile = File(
+              '${dir.path}/mainLog_previous.log',
+            );
             if (await prevFile.exists()) {
               await prevFile.delete();
             }
@@ -217,7 +219,9 @@ Future<void> initMainLog() async {
 
 Future<String?> getMainLogFilePath() async {
   if (kIsWeb) return null;
-  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+  if (Platform.isLinux ||
+      Platform.isMacOS ||
+      Platform.isWindows) {
     final dir = await getApplicationSupportDirectory();
     return '${dir.path}/mainLog.log';
   }
@@ -226,14 +230,18 @@ Future<String?> getMainLogFilePath() async {
 
 Future<String?> getMainLogDirectoryPath() async {
   if (kIsWeb) return null;
-  if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+  if (Platform.isLinux ||
+      Platform.isMacOS ||
+      Platform.isWindows) {
     final dir = await getApplicationSupportDirectory();
     return dir.path;
   }
   return null;
 }
 
-Future<String> readMainLogContent({int maxLines = 500}) async {
+Future<String> readMainLogContent({
+  int maxLines = 500,
+}) async {
   if (kIsWeb) return 'Logs are not stored on web.';
   try {
     final path = await getMainLogFilePath();

@@ -545,6 +545,108 @@ class RefreshFunctions {
   //
   //
 
+  Future<void> refreshDashboard(BuildContext context) async {
+    if (!isSyncing()) {
+      var safeContext = context;
+      var navPro = returnNavProvider(
+        context,
+        listen: false,
+      );
+
+      dataProvider.toggleRefreshing(true);
+
+      List<TempShopClass> shop = await getUserShop();
+      if (shop.isEmpty) {
+        navPro.nullShop(
+          logoutAction: () {
+            navPro.navPush(context);
+          },
+        );
+      } else {
+        bool isOnline =
+            returnConnectivityProvider().isConnected;
+        if (isSynced() == 0 &&
+            context.mounted &&
+            isOnline) {
+          showDialog(
+            context: context,
+            builder: (confirmDialog) {
+              return ConfirmationAlert(
+                theme: returnTheme(context, listen: false),
+                message:
+                    'You have unsynced Records, are you sure you want to proceed?',
+                title: 'Unsynced Records Detected',
+                action: () async {
+                  Navigator.of(confirmDialog).pop();
+                  if (safeContext.mounted) {
+                    await returnData().syncData(
+                      context: safeContext,
+                    );
+                  }
+                  await loadDashboardDataOffline();
+                  if (context.mounted) {
+                    await returnUserProviderSingle()
+                        .fetchCurrentUser(safeContext);
+                  }
+                  await utilityConstantProvider
+                      .getUtilityConstants();
+
+                  var subs = await loadSubscription();
+                  await mainLocalLog(
+                    "Subscription Plan RefreshDashboard: ${subs?.plan}",
+                  );
+                  if (safeContext.mounted) {
+                    dataProvider.setAllowedRange(
+                      plan: subs?.plan,
+                    );
+                  }
+
+                  await returnDepartmentProvider()
+                      .getDepartments();
+                  if (safeContext.mounted) {
+                    await getMainReceipts();
+                  }
+                  await getExpenses();
+                  await fetchNotifications();
+                },
+              );
+            },
+          );
+        } else {
+          await loadDashboardDataOffline();
+          await getUserShop();
+          await utilityConstantProvider
+              .getUtilityConstants();
+          var subs = await loadSubscription();
+          await mainLocalLog(
+            "Subscription Plan RefreshDashboard: ${subs?.plan}",
+          );
+          if (safeContext.mounted) {
+            dataProvider.setAllowedRange(plan: subs?.plan);
+          }
+          await returnDepartmentProvider().getDepartments();
+          if (safeContext.mounted) {
+            await getMainReceipts();
+          }
+          await getExpenses();
+          if (context.mounted) {
+            await returnUserProvider(
+              context,
+              listen: false,
+            ).fetchCurrentUser(safeContext);
+          }
+          await fetchNotifications();
+        }
+      }
+
+      dataProvider.toggleRefreshing(false);
+    }
+  }
+
+  //
+  //
+  //
+
   Future<void> refreshAll(BuildContext context) async {
     if (!isSyncing()) {
       var safeContext = context;
@@ -752,4 +854,28 @@ Future<void> loadAllDataOffline({
       .getProductionRecordsOffline();
   await returnOrdersProvider().loadOrdersOffline(shopId());
   await returnDraftsProvider().loadDraftsOffline(shopId());
+}
+
+Future<void> loadDashboardDataOffline() async {
+  returnUserProviderSingle().fetchCurrentUserOffline();
+  await returnUtilityConstantProvider()
+      .getUtilityConstantsOffline();
+  var subss =
+      await SubscriptionProvider().getSubscriptionOffline();
+  returnData().setAllowedRange(plan: subss?.plan);
+  await returnDepartmentProvider().getDepartmentsOffline();
+  await returnReceiptProviderSingle().loadReceiptsOffline(
+    shopId(),
+  );
+  await returnExpensesProviderSingle().getExpensesOffline(
+    shopId(),
+  );
+  await NotificationProvider()
+      .fetchRecentNotificationsOffline();
+  await returnInvoicesProvider().loadInvoicesOffline(
+    shopId(),
+  );
+  await returnData().getProductsOffline(
+    shopId(),
+  );
 }

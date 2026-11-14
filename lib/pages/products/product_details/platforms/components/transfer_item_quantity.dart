@@ -1066,13 +1066,15 @@ void selectItemInADepartmentProducts({
                               ).pop();
                               if (mainItem.globalDepartmentProductId == null ||
                                   mainItem.globalDepartmentProductId !=
-                                      oldProduct.globalDepartmentProductId) {
+                                      newProduct.globalDepartmentProductId) {
                                 await ProductLinkingHelper
                                     .linkProductsDepartment(
-                                      sourceProduct: mainItem,
-                                      targetProduct: oldProduct,
+                                      sourceProduct: newProduct2,
+                                      targetProduct: newProduct,
                                     );
                               }
+                              await returnData().getProductsOffline(shopId());
+                              returnData().syncData();
                               loadingAction(false);
                             }
                           },
@@ -1273,6 +1275,8 @@ void selectItemInADepartmentProducts({
                                             sourceHistory,
                                       );
 
+                                  await returnData().getProductsOffline(shopId());
+                                  returnData().syncData();
                                   loadingAction(false);
                                   Navigator.of(
                                     createConfirmContext,
@@ -2025,13 +2029,15 @@ void selectItemInAShop({
                           if (mainItem.globalProductId ==
                                   null ||
                               mainItem.globalProductId !=
-                                  oldProduct
+                                  newProduct
                                       .globalProductId) {
                             await ProductLinkingHelper.linkProducts(
-                              sourceProduct: mainItem,
-                              targetProduct: oldProduct,
+                              sourceProduct: newProduct2,
+                              targetProduct: newProduct,
                             );
                           }
+                          await returnData().getProductsOffline(shopId());
+                          returnData().syncData();
                           loadingAction(false);
                         }
                       },
@@ -2314,6 +2320,8 @@ void selectItemInAShop({
                                                 sourceHistory,
                                           );
 
+                                          await returnData().getProductsOffline(shopId());
+                                          returnData().syncData();
                                           loadingAction(
                                             false,
                                           );

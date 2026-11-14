@@ -8,6 +8,8 @@ import 'package:stockall/main.dart'
     show returnShopProvider, returnTheme;
 import 'package:stockall/services/barcode_generation/barcode_import_helper.dart'
     show listPrinters;
+import 'package:stockall/services/pos_printing/bluetooth_permission_helper.dart'
+    show ensureBluetoothPermissions;
 import 'package:stockall/services/pos_printing/pos_print_rules.dart';
 import 'package:stockall/services/pos_printing/pos_transports.dart'
     show listCupsQueues;
@@ -121,6 +123,11 @@ class _PosPrinterSetupDialogState
     try {
       if (!BluetoothPrintPlus.isBlueOn) {
         if (mounted) setState(() {});
+        return;
+      }
+      final hasPermission = await ensureBluetoothPermissions();
+      if (!hasPermission) {
+        if (mounted) setState(() => _scanning = false);
         return;
       }
       if (mounted) setState(() => _scanning = true);

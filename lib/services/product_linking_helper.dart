@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:stockall/local_database/products/products_func.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
@@ -279,7 +280,16 @@ class ProductLinkingHelper {
 
       if (resSource == null) return false;
 
-      final updatedTarget = targetProduct.copyWith(
+      // Always use the latest target from local storage if available so we don't stomp newly updated quantity
+      final latestTarget =
+          targetProduct.uuid != null
+              ? (ProductsFunc().getSingleProduct(
+                    uuid: targetProduct.uuid!,
+                  ) ??
+                  targetProduct)
+              : targetProduct;
+
+      final updatedTarget = latestTarget.copyWith(
         globalDepartmentProductId: clusterId,
       );
       final resTarget = await returnData().updateProduct(
@@ -458,8 +468,8 @@ class ProductLinkingHelper {
             isBranchTransfer
                 ? targetShop!.shopId
                 : shopId(),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: DateTime.now().toUtc(),
+        updatedAt: DateTime.now().toUtc(),
         quantity: calculatedQty,
         unitsList: clonedUnits,
         pricesList: clonedPrices,

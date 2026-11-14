@@ -2572,8 +2572,9 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<List<TempProductClass>> getProducts(
-    int shopId,
-  ) async {
+    int shopId, {
+    bool fetchItemHistory = false,
+  }) async {
     bool isOnline = await connectivity.isOnline();
     await getProductsOffline(shopId);
     if (isOnline && !isSyncing) {
@@ -2673,9 +2674,10 @@ class DataProvider extends ChangeNotifier {
         await returnStorageProductProvider()
             .getStorageProducts(shopId);
       }
-      if (ItemsAuthAction().trackItemHistoryAction(
-        context: null,
-      )) {
+      if (fetchItemHistory &&
+          ItemsAuthAction().trackItemHistoryAction(
+            context: null,
+          )) {
         returnItemHistoryProvider().getItemHistories();
       }
 
@@ -3063,7 +3065,7 @@ class DataProvider extends ChangeNotifier {
     TempProductClass? oldProduct,
   }) async {
     try {
-      product.updatedAt = DateTime.now();
+      product.updatedAt = DateTime.now().toUtc();
       var res =
           await supabase
               .from('products')

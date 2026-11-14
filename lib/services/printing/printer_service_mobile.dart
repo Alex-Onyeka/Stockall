@@ -22,6 +22,8 @@ import 'package:stockall/constants/order_print_and_download.dart'
 import 'package:stockall/constants/subscription/branding_watermark.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
+import 'package:stockall/services/pos_printing/bluetooth_permission_helper.dart'
+    show ensureBluetoothPermissions;
 import 'package:stockall/services/printing/escpos_builder.dart';
 import 'package:stockall/services/printing/escpos_receipt.dart';
 import 'package:stockall/services/printing/pdf_escpos_raster.dart';
@@ -83,6 +85,8 @@ class _BluetoothDevicesPageState
 
   Future onScanPressed() async {
     try {
+      final hasPermission = await ensureBluetoothPermissions();
+      if (!hasPermission) return;
       await BluetoothPrintPlus.startScan(
         timeout: Duration(seconds: 10),
       );

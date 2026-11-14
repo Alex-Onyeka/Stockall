@@ -36,6 +36,9 @@ class _PurchaseListMobileState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
+      if (returnPurchaseProvider().purchases.isEmpty) {
+        getPurchases();
+      }
     });
   }
 

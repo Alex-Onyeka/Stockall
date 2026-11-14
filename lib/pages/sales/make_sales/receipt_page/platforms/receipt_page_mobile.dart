@@ -16,8 +16,8 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:stockall/services/printing/import_helper.dart'
-    show scanBluetoothPrinters;
+import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
+    show openPosPrinterSettings;
 
 class ReceiptPageMobile extends StatefulWidget {
   final bool isMain;
@@ -186,6 +186,21 @@ class _ReceiptPageMobileState
                                 // : 'Select Bluetooth Printer',
                               ),
                             ),
+                            if (!kIsWeb)
+                              PopupMenuItem(
+                                onTap:
+                                    openPosPrinterSettings,
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                  ),
+                                  'Choose POS Printer',
+                                ),
+                              ),
                           ];
                         },
                         child: Row(
@@ -2133,7 +2148,7 @@ class _ReceiptDetailsContainerState
                                       Navigator.of(
                                         context,
                                       ).pop();
-                                      if (usesSystemPrintDialog()) {
+                                      try {
                                         await generateAndPreviewPdfRoll(
                                           printerType:
                                               widget
@@ -2156,39 +2171,20 @@ class _ReceiptDetailsContainerState
                                               returnShopProvider()
                                                   .userShop()!,
                                         );
-                                      } else {
+                                      } catch (e, st) {
                                         await mainLocalLog(
-                                          'Bluetooth Scanning Started',
+                                          'Error printing receipt on mobile: $e\n$st',
                                         );
-                                        scanBluetoothPrinters(
-                                          receipt:
-                                              widget
-                                                  .mainReceipt,
-                                          context:
-                                              safeContext,
-                                          records: records,
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                          staffName:
-                                              staff?.name ??
-                                              widget
-                                                  .mainReceipt
-                                                  .staffName ??
-                                              "Not Set",
-                                        );
-                                      }
-                                      // }
-                                      // }
-                                      if (safeContext
-                                              .mounted &&
-                                          kIsWeb) {
-                                        returnReceiptProvider(
-                                          safeContext,
-                                          listen: false,
-                                        ).toggleIsLoading(
-                                          false,
-                                        );
+                                      } finally {
+                                        if (safeContext
+                                            .mounted) {
+                                          returnReceiptProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).toggleIsLoading(
+                                            false,
+                                          );
+                                        }
                                       }
                                     },
                                   );

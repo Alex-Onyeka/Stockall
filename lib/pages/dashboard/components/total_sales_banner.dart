@@ -384,7 +384,7 @@ class _DashboardTotalSalesBannerState
                     returnData().toggleRefreshing(true);
                     await RefreshFunctions(
                       context,
-                    ).refreshAll(context);
+                    ).refreshDashboard(context);
                     if (context.mounted) {
                       returnData().toggleRefreshing(false);
                     }

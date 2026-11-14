@@ -88,7 +88,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
         context,
         listen: false,
       ).isLoaded) {
-        await RefreshFunctions(context).refreshAll(context);
+        await RefreshFunctions(
+          context,
+        ).refreshDashboard(context);
         returnReceiptProvider(
           context,
           listen: false,
@@ -226,7 +228,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                         onRefresh: () async {
                           return await RefreshFunctions(
                             context,
-                          ).refreshAll(context);
+                          ).refreshDashboard(context);
                         },
                         backgroundColor: Colors.white,
                         color:
