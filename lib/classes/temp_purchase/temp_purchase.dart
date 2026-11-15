@@ -53,6 +53,9 @@ class TempPurchase extends HiveObject {
   @HiveField(13)
   List<TempItemPurchaseRecord>? items;
 
+  @HiveField(14)
+  String? trackingNumber;
+
   TempPurchase({
     required this.createdAt,
     required this.shopId,
@@ -68,6 +71,7 @@ class TempPurchase extends HiveObject {
     required this.purchasePayments,
     required this.updatedAt,
     this.items,
+    this.trackingNumber,
   });
 
   factory TempPurchase.fromJson(Map<String, dynamic> json) {
@@ -105,6 +109,7 @@ class TempPurchase extends HiveObject {
       items: TempItemPurchaseRecord.itemsFromJson(
         json['items'],
       ),
+      trackingNumber: json['tracking_number'] as String?,
     );
   }
 
@@ -125,6 +130,7 @@ class TempPurchase extends HiveObject {
       'payments':
           purchasePayments.map((e) => e.toJson()).toList(),
       'updated_at': updatedAt?.toUtc().toIso8601String(),
+      'tracking_number': trackingNumber,
       // Left out when empty so an upsert never clears stored items.
       if (items?.isNotEmpty == true)
         'items': TempItemPurchaseRecord.itemsToJson(items!),
@@ -146,6 +152,7 @@ class TempPurchase extends HiveObject {
     List<PurchasePayments>? purchasePayments,
     DateTime? updatedAt,
     List<TempItemPurchaseRecord>? items,
+    String? trackingNumber,
   }) {
     return TempPurchase(
       createdAt: createdAt ?? this.createdAt,
@@ -171,6 +178,7 @@ class TempPurchase extends HiveObject {
               : this.items != null
               ? [...this.items!]
               : null,
+      trackingNumber: trackingNumber ?? this.trackingNumber,
     );
   }
 

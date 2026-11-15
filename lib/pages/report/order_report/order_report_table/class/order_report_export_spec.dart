@@ -17,22 +17,32 @@ const String _dash = '—';
 /// The notes the Order table and Order summary show under their
 /// toolbar. The views draw these and the export carries them, so they
 /// always match.
-List<String> orderReportNotes({required ReceiptsReportPeriod period}) => [
-  if (period.isAllTime) 'All time covers the orders loaded on this device.',
+List<String> orderReportNotes({
+  required ReceiptsReportPeriod period,
+}) => [
+  if (period.isAllTime)
+    'All time covers the orders loaded on this device.',
 ];
 
 /// The Notes column: why an order's quantities need a second look.
 String orderRowNote(OrderReportRow r) {
   if (r.recordsDisagree) return 'Records disagree';
-  if (r.delivery.receiptLinesUnavailable) return 'Receipt lines unavailable';
+  if (r.delivery.receiptLinesUnavailable)
+    return 'Receipt lines unavailable';
   return _dash;
 }
 
 /// "Est. ₦x" until every counted order is Fully Delivered, "N/A"
 /// without a cost, as the Profit/Loss cells show it.
-String orderProfitText(double? profit, bool estimate, ExportFormatter f) {
+String orderProfitText(
+  double? profit,
+  bool estimate,
+  ExportFormatter f,
+) {
   if (profit == null) return 'N/A';
-  return estimate ? 'Est. ${f.money(profit)}' : f.money(profit);
+  return estimate
+      ? 'Est. ${f.money(profit)}'
+      : f.money(profit);
 }
 
 const Map<OrderSortField, String> orderSortLabels = {
@@ -56,9 +66,13 @@ const Map<OrderSortField, String> orderSortLabels = {
   OrderSortField.margin: 'Margin (%)',
 };
 
-String _dir(bool ascending) => ascending ? 'ascending' : 'descending';
+String _dir(bool ascending) =>
+    ascending ? 'ascending' : 'descending';
 
-String orderSortLabel(OrderSortField field, bool ascending) =>
+String orderSortLabel(
+  OrderSortField field,
+  bool ascending,
+) =>
     '${orderSortLabels[field] ?? field.name} (${_dir(ascending)})';
 
 String orderGroupSortLabel(
@@ -71,7 +85,8 @@ String orderGroupSortLabel(
     OrderGroupSortField.count => 'Orders',
     OrderGroupSortField.total => 'Total',
     OrderGroupSortField.deliveredValue => 'Delivered Value',
-    OrderGroupSortField.undeliveredValue => 'Undelivered Value',
+    OrderGroupSortField.undeliveredValue =>
+      'Undelivered Value',
     OrderGroupSortField.paid => 'Paid',
     OrderGroupSortField.balance => 'Balance',
   };
@@ -94,9 +109,18 @@ List<ExportFilter> orderExportFilters({
   String range(double? min, double? max) =>
       '${min != null ? f.money(min) : 'Any'} - ${max != null ? f.money(max) : 'Any'}';
   final out = <ExportFilter>[];
-  void key(String title, String? k, List<OrderReportFilterOption> options) {
+  void key(
+    String title,
+    String? k,
+    List<OrderReportFilterOption> options,
+  ) {
     if (k == null) return;
-    out.add(ExportFilter(title, OrderReportOptions.labelFor(options, k, title)));
+    out.add(
+      ExportFilter(
+        title,
+        OrderReportOptions.labelFor(options, k, title),
+      ),
+    );
   }
 
   void rangeOf(String title, double? min, double? max) {
@@ -105,20 +129,47 @@ List<ExportFilter> orderExportFilters({
   }
 
   final search = filters.search.trim();
-  if (search.isNotEmpty) out.add(ExportFilter('Search', search));
+  if (search.isNotEmpty)
+    out.add(ExportFilter('Search', search));
   if (filters.deliveryStatus != null) {
-    out.add(ExportFilter('Status', filters.deliveryStatus!.label));
+    out.add(
+      ExportFilter('Status', filters.deliveryStatus!.label),
+    );
   }
-  if (filters.recordsDisagree) out.add(const ExportFilter('Records', 'Records disagree only'));
-  if (filters.channel != null) out.add(ExportFilter('Channel', filters.channel!.label));
+  if (filters.recordsDisagree)
+    out.add(
+      const ExportFilter(
+        'Records',
+        'Records disagree only',
+      ),
+    );
+  if (filters.channel != null)
+    out.add(
+      ExportFilter('Channel', filters.channel!.label),
+    );
   key('Staff', filters.staffKey, staffOptions);
   key('Customer', filters.customerKey, customerOptions);
-  if (subStaffEnabled) key('Sub-Staff', filters.subStaffKey, subStaffOptions);
-  if (departmentsEnabled) key('Department', filters.departmentKey, departmentOptions);
+  if (subStaffEnabled)
+    key('Sub-Staff', filters.subStaffKey, subStaffOptions);
+  if (departmentsEnabled)
+    key(
+      'Department',
+      filters.departmentKey,
+      departmentOptions,
+    );
   rangeOf('Total', filters.totalMin, filters.totalMax);
   rangeOf('Paid', filters.paidMin, filters.paidMax);
-  rangeOf('Balance', filters.balanceMin, filters.balanceMax);
-  if (profitVisible) rangeOf('Profit/Loss', filters.profitMin, filters.profitMax);
+  rangeOf(
+    'Balance',
+    filters.balanceMin,
+    filters.balanceMax,
+  );
+  if (profitVisible)
+    rangeOf(
+      'Profit/Loss',
+      filters.profitMin,
+      filters.profitMax,
+    );
   return out;
 }
 
@@ -130,7 +181,8 @@ Map<String, Object?> orderTotals(
 }) {
   final t = OrderReportQuery.paginate(rows, 1).totals;
   return {
-    'id': '${f.integer(t.count)} ${t.count == 1 ? 'order' : 'orders'}',
+    'id':
+        '${f.integer(t.count)} ${t.count == 1 ? 'order' : 'orders'}',
     'total': t.total,
     'deliveredValue': t.deliveredValue,
     'undeliveredValue': t.undeliveredValue,
@@ -138,9 +190,14 @@ Map<String, Object?> orderTotals(
     'balance': t.balance,
     if (canSeeCost) ...{
       'cost': t.cost ?? 'N/A',
-      'profit': t.profit == null || t.profitIsEstimate
-          ? orderProfitText(t.profit, t.profitIsEstimate, f)
-          : t.profit,
+      'profit':
+          t.profit == null || t.profitIsEstimate
+              ? orderProfitText(
+                t.profit,
+                t.profitIsEstimate,
+                f,
+              )
+              : t.profit,
     },
   };
 }
@@ -152,15 +209,26 @@ ExportTableSection<OrderReportRow> orderTableSection({
   required bool departmentsEnabled,
   required bool subStaffEnabled,
 }) {
-  String items(double? v) => v == null ? _dash : f.quantity(v);
+  String items(double? v) =>
+      v == null ? _dash : f.quantity(v);
   String value(double? v) => v == null ? _dash : f.money(v);
 
   return ExportTableSection<OrderReportRow>(
     title: 'Orders',
     rows: rows,
     columns: [
-      ExportColumn(id: 'id', label: 'ID', value: (r) => r.displayId, width: 1.4),
-      ExportColumn(id: 'staff', label: 'Staff', value: (r) => r.staffLabel, width: 1.2),
+      ExportColumn(
+        id: 'id',
+        label: 'ID',
+        value: (r) => r.displayId,
+        width: 1.4,
+      ),
+      ExportColumn(
+        id: 'staff',
+        label: 'Staff',
+        value: (r) => r.staffLabel,
+        width: 1.2,
+      ),
       if (subStaffEnabled)
         ExportColumn(
           id: 'subStaff',
@@ -216,7 +284,11 @@ ExportTableSection<OrderReportRow> orderTableSection({
         display: (r) => items(r.delivery.deliveredItems),
         width: 0.8,
       ),
-      ExportColumn(id: 'channel', label: 'Channel', value: (r) => r.channel.label),
+      ExportColumn(
+        id: 'channel',
+        label: 'Channel',
+        value: (r) => r.channelLabel,
+      ),
       ExportColumn(
         id: 'discount',
         label: 'Discount',
@@ -225,7 +297,9 @@ ExportTableSection<OrderReportRow> orderTableSection({
         display: (r) {
           if (r.discountAmount <= 0) return _dash;
           final pct = r.order.generalDiscount;
-          final showPct = (r.order.fixedDiscount ?? 0) <= 0 && pct != null;
+          final showPct =
+              (r.order.fixedDiscount ?? 0) <= 0 &&
+              pct != null;
           return showPct
               ? '${f.money(r.discountAmount)} (${f.percent(pct)})'
               : f.money(r.discountAmount);
@@ -237,7 +311,11 @@ ExportTableSection<OrderReportRow> orderTableSection({
         label: 'VAT',
         format: ExportFormat.money,
         value: (r) => r.vatAmount,
-        display: (r) => r.vatAmount <= 0 ? _dash : f.money(r.vatAmount),
+        display:
+            (r) =>
+                r.vatAmount <= 0
+                    ? _dash
+                    : f.money(r.vatAmount),
         inPdf: false,
       ),
       ExportColumn(
@@ -283,7 +361,9 @@ ExportTableSection<OrderReportRow> orderTableSection({
           label: 'Cost',
           format: ExportFormat.money,
           value: (r) => r.cost,
-          display: (r) => r.cost == null ? 'N/A' : f.money(r.cost!),
+          display:
+              (r) =>
+                  r.cost == null ? 'N/A' : f.money(r.cost!),
           inPdf: false,
         ),
         ExportColumn(
@@ -291,7 +371,12 @@ ExportTableSection<OrderReportRow> orderTableSection({
           label: 'Profit/Loss',
           format: ExportFormat.money,
           value: (r) => r.profit,
-          display: (r) => orderProfitText(r.profit, r.profitIsEstimate, f),
+          display:
+              (r) => orderProfitText(
+                r.profit,
+                r.profitIsEstimate,
+                f,
+              ),
           width: 1.4,
         ),
         ExportColumn(
@@ -299,17 +384,30 @@ ExportTableSection<OrderReportRow> orderTableSection({
           label: 'Margin (%)',
           format: ExportFormat.percent,
           value: (r) => r.margin,
-          display: (r) => r.margin == null ? 'N/A' : f.percent(r.margin!),
+          display:
+              (r) =>
+                  r.margin == null
+                      ? 'N/A'
+                      : f.percent(r.margin!),
           width: 0.9,
         ),
         ExportColumn(
           id: 'estimate',
           label: 'Est. Profit',
-          value: (r) => r.profit == null ? _dash : (r.profitIsEstimate ? 'Yes' : 'No'),
+          value:
+              (r) =>
+                  r.profit == null
+                      ? _dash
+                      : (r.profitIsEstimate ? 'Yes' : 'No'),
           inPdf: false,
         ),
       ],
-      ExportColumn(id: 'notes', label: 'Notes', value: orderRowNote, width: 1.4),
+      ExportColumn(
+        id: 'notes',
+        label: 'Notes',
+        value: orderRowNote,
+        width: 1.4,
+      ),
       ExportColumn(
         id: 'comment',
         label: 'Comment',
@@ -318,14 +416,18 @@ ExportTableSection<OrderReportRow> orderTableSection({
         inPdf: false,
       ),
     ],
-    totalsFor: (rs) => orderTotals(rs, canSeeCost: canSeeCost, f: f),
+    totalsFor:
+        (rs) =>
+            orderTotals(rs, canSeeCost: canSeeCost, f: f),
     splits: [
       staffSplit<OrderReportRow>(
         rows: rows,
         staffId: (r) => r.staffKey,
         staffName: (r) => r.staffName,
       ),
-      channelSplit<OrderReportRow>(channel: (r) => r.channel.label),
+      channelSplit<OrderReportRow>(
+        channel: (r) => r.channelLabel,
+      ),
       labelSplit<OrderReportRow>(
         id: 'deliveryStatus',
         label: 'Delivery Status',
@@ -357,7 +459,8 @@ ExportTableSection<OrderReportRow> orderTableSection({
       flex58: [1, 1],
       flex80: [15, 14, 19],
     ),
-    emptyMessage: 'No order matches the selected period and filters.',
+    emptyMessage:
+        'No order matches the selected period and filters.',
   );
 }
 
@@ -368,12 +471,18 @@ ExportTableSection<OrderReportGroupRow> orderGroupSection({
   required ExportFormatter f,
   required bool canSeeCost,
 }) {
-  final t = OrderReportGrouping.paginate(groups, rows, 1).totals;
+  final t =
+      OrderReportGrouping.paginate(groups, rows, 1).totals;
   return ExportTableSection<OrderReportGroupRow>(
     title: 'Orders by ${groupBy.label}',
     rows: groups,
     columns: [
-      ExportColumn(id: 'name', label: groupBy.label, value: (g) => g.label, width: 2),
+      ExportColumn(
+        id: 'name',
+        label: groupBy.label,
+        value: (g) => g.label,
+        width: 2,
+      ),
       ExportColumn(
         id: 'orders',
         label: 'Orders',
@@ -420,13 +529,19 @@ ExportTableSection<OrderReportGroupRow> orderGroupSection({
           label: 'Profit/Loss',
           format: ExportFormat.money,
           value: (g) => g.profit,
-          display: (g) => orderProfitText(g.profit, g.profitIsEstimate, f),
+          display:
+              (g) => orderProfitText(
+                g.profit,
+                g.profitIsEstimate,
+                f,
+              ),
           width: 1.4,
         ),
     ],
     // The screen's OrderReportGroupPage totals, which need the rows.
     totals: {
-      'name': '${f.integer(groups.length)} ${groupBy.pagerLabel}',
+      'name':
+          '${f.integer(groups.length)} ${groupBy.pagerLabel}',
       'orders': t.count,
       'total': t.total,
       'deliveredValue': t.deliveredValue,
@@ -434,9 +549,14 @@ ExportTableSection<OrderReportGroupRow> orderGroupSection({
       'paid': t.paid,
       'balance': t.balance,
       if (canSeeCost)
-        'profit': t.profit == null || t.profitIsEstimate
-            ? orderProfitText(t.profit, t.profitIsEstimate, f)
-            : t.profit,
+        'profit':
+            t.profit == null || t.profitIsEstimate
+                ? orderProfitText(
+                  t.profit,
+                  t.profitIsEstimate,
+                  f,
+                )
+                : t.profit,
     },
     // 58mm: 15 / 16 characters, 80mm: 23 / 5 / 18.
     roll: const RollLayout(
@@ -445,7 +565,8 @@ ExportTableSection<OrderReportGroupRow> orderGroupSection({
       flex58: [1, 1],
       flex80: [4, 1, 3],
     ),
-    emptyMessage: 'No order matches the selected period and filters.',
+    emptyMessage:
+        'No order matches the selected period and filters.',
   );
 }
 
@@ -491,9 +612,14 @@ ReportExportSpec orderReportExportSpec({
       profitVisible: canSeeCost,
       f: f,
     ),
-    sortedBy: grouped
-        ? orderGroupSortLabel(groupSortField, groupAscending, groupBy)
-        : orderSortLabel(sortField, ascending),
+    sortedBy:
+        grouped
+            ? orderGroupSortLabel(
+              groupSortField,
+              groupAscending,
+              groupBy,
+            )
+            : orderSortLabel(sortField, ascending),
     groupedBy: grouped ? groupBy.label : null,
     notes: orderReportNotes(period: period),
     sections: [

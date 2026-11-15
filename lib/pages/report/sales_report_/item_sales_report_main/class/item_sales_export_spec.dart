@@ -414,7 +414,7 @@ ExportTableSection<ItemSalesRow> itemSalesTableSection({
         staffId: (r) => r.parent.staffKey,
         staffName: (r) => r.parent.staffName,
       ),
-      channelSplit<ItemSalesRow>(channel: (r) => r.parent.channel.label),
+      channelSplit<ItemSalesRow>(channel: (r) => r.parent.channelLabel),
     ],
     // 58mm: 15 / 16 characters, 80mm: 20 / 7 / 19, so "₦1,250,000.00"
     // and "1,250" stay on one line.

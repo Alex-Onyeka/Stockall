@@ -27,6 +27,7 @@ class PurchaseActionProvider extends ChangeNotifier {
     purchaseListItems.clear();
     // isGroup = false;
     tempSupplier = null;
+    trackingNumber = null;
     customTotalAmount = null;
     notifyListeners();
   }
@@ -80,6 +81,11 @@ class PurchaseActionProvider extends ChangeNotifier {
       temp.first.unit = item.unit;
       temp.first.unitsList = item.unitsList;
       temp.first.qttyPerGroup = item.qttyPerGroup;
+      temp.first.widthDimension = item.widthDimension;
+      temp.first.heightDimension = item.heightDimension;
+      temp.first.trackingNumber = item.trackingNumber;
+      temp.first.supplierId = item.supplierId;
+      temp.first.supplierName = item.supplierName;
     }
     notifyListeners();
   }
@@ -88,6 +94,15 @@ class PurchaseActionProvider extends ChangeNotifier {
 
   void selectSupplier({SuppliersClass? supplier}) {
     tempSupplier = supplier;
+    notifyListeners();
+  }
+
+  String? trackingNumber;
+
+  void setTrackingNumber(String? value) {
+    final trimmed = value?.trim();
+    trackingNumber =
+        (trimmed == null || trimmed.isEmpty) ? null : trimmed;
     notifyListeners();
   }
 
@@ -112,6 +127,7 @@ class PurchaseActionProvider extends ChangeNotifier {
     TempPurchase? purchase,
     bool? updateInventory,
     double? paymentAmount,
+    String? paymentMethod,
   }) async {
     try {
       if (purchase != null) {
@@ -125,6 +141,7 @@ class PurchaseActionProvider extends ChangeNotifier {
         staffName: purchase?.staffName ?? currentUser().name,
         supplierId: tempSupplier?.uuid,
         supplierName: tempSupplier?.name,
+        trackingNumber: trackingNumber,
         total: totalPurchaseAmount(),
         uuid: purchase?.uuid ?? tempUuid,
         isCustomPriceSet: customTotalAmount != null,
@@ -141,7 +158,7 @@ class PurchaseActionProvider extends ChangeNotifier {
                     createdAt: DateTime.now(),
                     amount: paymentAmount,
                     userId: purchase?.staffId ?? currentUser().userId!,
-                    paymentMethod: 'Cash',
+                    paymentMethod: paymentMethod ?? 'Cash',
                     staffName: purchase?.staffName ?? currentUser().name,
                   ),
                 ],
@@ -153,35 +170,44 @@ class PurchaseActionProvider extends ChangeNotifier {
       List<TempItemPurchaseRecord> purchaseRecords =
           purchaseListItems
               .map(
-                (item) => TempItemPurchaseRecord(
-                  unitUuid: item.unitUuid,
-                  unitsList: item.getUnitListFinal(),
-                  unit: item.getSelectedUnit().name,
-                  customPrice: item.customPrice,
-                  originalPrice: item.originalPrice,
-                  createdAt: purchase?.createdAt ?? DateTime.now(),
-                  shopId: purchase?.shopId ?? shopId(),
-                  staffId: purchase?.staffId ?? currentUser().userId,
-                  itemId:
-                      isManageStorage
-                          ? null
-                          : (item.itemUuid ?? item.storageItemUuid),
-                  storageItemId:
-                      isManageStorage
-                          ? (item.storageItemUuid ?? item.itemUuid)
-                          : null,
-                  itemName: item.itemName,
-                  purchaseId: purchase?.uuid ?? tempUuid,
-                  quantity: item.quantity,
-                  supplierId: tempSupplier?.uuid,
-                  total: item.getPrice(),
-                  uuid: uuidGen(),
-                  isGroup: item.isGroup,
-                  qttyPerGroup: item.qttyPerGroup,
-                  widthDimension: item.widthDimension,
-                  heightDimension: item.heightDimension,
-                  trackingNumber: item.trackingNumber,
-                ),
+                (item) {
+                  final isStorageLine =
+                      (item.storageItemUuid != null &&
+                          item.storageItemUuid!.isNotEmpty) ||
+                      (isManageStorage &&
+                          (item.itemUuid == null ||
+                              item.itemUuid!.isEmpty));
+                  return TempItemPurchaseRecord(
+                    unitUuid: item.unitUuid,
+                    unitsList: item.getUnitListFinal(),
+                    unit: item.getSelectedUnit().name,
+                    customPrice: item.customPrice,
+                    originalPrice: item.originalPrice,
+                    createdAt: purchase?.createdAt ?? DateTime.now(),
+                    shopId: purchase?.shopId ?? shopId(),
+                    staffId: purchase?.staffId ?? currentUser().userId,
+                    itemId: isStorageLine ? null : item.itemUuid,
+                    storageItemId:
+                        isStorageLine
+                            ? (item.storageItemUuid ?? item.itemUuid)
+                            : null,
+                    itemName: item.itemName,
+                    purchaseId: purchase?.uuid ?? tempUuid,
+                    quantity: item.quantity,
+                    supplierId: item.supplierId,
+                    supplierName: item.supplierName,
+                    globalSupplierId: tempSupplier?.uuid,
+                    globalSupplierName: tempSupplier?.name,
+                    total: item.getPrice(),
+                    uuid: uuidGen(),
+                    isGroup: item.isGroup,
+                    qttyPerGroup: item.qttyPerGroup,
+                    widthDimension: item.widthDimension,
+                    heightDimension: item.heightDimension,
+                    trackingNumber: item.trackingNumber,
+                    globalTrackingNumber: trackingNumber,
+                  );
+                },
               )
               .toList();
       tempPurchase.items = purchaseRecords;
@@ -199,9 +225,8 @@ class PurchaseActionProvider extends ChangeNotifier {
           await returnStorageProductProvider().getStorageProductsOffline(
             shopId(),
           );
-        } else {
-          await returnData().getProductsOffline(shopId());
         }
+        await returnData().getProductsOffline(shopId());
       }
       await returnPurchaseProvider().createItemPurchaseRecord(purchaseRecords);
       clearAll();
@@ -209,9 +234,8 @@ class PurchaseActionProvider extends ChangeNotifier {
         await returnStorageProductProvider().getStorageProductsOffline(
           shopId(),
         );
-      } else {
-        await returnData().getProductsOffline(shopId());
       }
+      await returnData().getProductsOffline(shopId());
       syncData();
       await returnPurchaseProvider().loadPurchases(shopId());
       return 1;
@@ -251,39 +275,51 @@ class PurchaseActionProvider extends ChangeNotifier {
 
     final isManageStorage =
         returnShopProvider().userShop()?.manageInventoryStorage == true;
+    final effectiveGlobalSupplierId =
+        keepSupplier ? base.supplierId : tempSupplier?.uuid;
+    final effectiveGlobalSupplierName =
+        keepSupplier ? base.supplierName : tempSupplier?.name;
     List<TempItemPurchaseRecord> purchaseRecords =
         purchaseListItems
             .map(
-              (item) => TempItemPurchaseRecord(
-                unitUuid: item.unitUuid,
-                unitsList: item.getUnitListFinal(),
-                unit: item.getSelectedUnit().name,
-                customPrice: item.customPrice,
-                originalPrice: item.originalPrice,
-                createdAt: base.createdAt,
-                shopId: base.shopId,
-                staffId: base.staffId,
-                itemId:
-                    isManageStorage
-                        ? null
-                        : (item.itemUuid ?? item.storageItemUuid),
-                storageItemId:
-                    isManageStorage
-                        ? (item.storageItemUuid ?? item.itemUuid)
-                        : null,
-                itemName: item.itemName,
-                purchaseId: purchaseUuid,
-                quantity: item.quantity,
-                supplierId:
-                    keepSupplier ? base.supplierId : tempSupplier?.uuid,
-                total: item.getPrice(),
-                uuid: uuidGen(),
-                isGroup: item.isGroup,
-                qttyPerGroup: item.qttyPerGroup,
-                widthDimension: item.widthDimension,
-                heightDimension: item.heightDimension,
+              (item) {
+                final isStorageLine =
+                    (item.storageItemUuid != null &&
+                        item.storageItemUuid!.isNotEmpty) ||
+                    (isManageStorage &&
+                        (item.itemUuid == null ||
+                            item.itemUuid!.isEmpty));
+                return TempItemPurchaseRecord(
+                  unitUuid: item.unitUuid,
+                  unitsList: item.getUnitListFinal(),
+                  unit: item.getSelectedUnit().name,
+                  customPrice: item.customPrice,
+                  originalPrice: item.originalPrice,
+                  createdAt: base.createdAt,
+                  shopId: base.shopId,
+                  staffId: base.staffId,
+                  itemId: isStorageLine ? null : item.itemUuid,
+                  storageItemId:
+                      isStorageLine
+                          ? (item.storageItemUuid ?? item.itemUuid)
+                          : null,
+                  itemName: item.itemName,
+                  purchaseId: purchaseUuid,
+                  quantity: item.quantity,
+                  supplierId: item.supplierId,
+                  supplierName: item.supplierName,
+                  globalSupplierId: effectiveGlobalSupplierId,
+                  globalSupplierName: effectiveGlobalSupplierName,
+                  total: item.getPrice(),
+                  uuid: uuidGen(),
+                  isGroup: item.isGroup,
+                  qttyPerGroup: item.qttyPerGroup,
+                  widthDimension: item.widthDimension,
+                  heightDimension: item.heightDimension,
                   trackingNumber: item.trackingNumber,
-              ),
+                  globalTrackingNumber: trackingNumber,
+                );
+              },
             )
             .toList();
 
@@ -294,8 +330,9 @@ class PurchaseActionProvider extends ChangeNotifier {
       staffName: base.staffName,
       departmentUuid: base.departmentUuid,
       departmentName: base.departmentName,
-      supplierId: keepSupplier ? base.supplierId : tempSupplier?.uuid,
-      supplierName: keepSupplier ? base.supplierName : tempSupplier?.name,
+      supplierId: effectiveGlobalSupplierId,
+      supplierName: effectiveGlobalSupplierName,
+      trackingNumber: trackingNumber,
       total: totalPurchaseAmount(),
       uuid: purchaseUuid,
       isCustomPriceSet: customTotalAmount != null,
@@ -322,9 +359,8 @@ class PurchaseActionProvider extends ChangeNotifier {
       await returnStorageProductProvider().getStorageProductsOffline(
         shopId(),
       );
-    } else {
-      await returnData().getProductsOffline(shopId());
     }
+    await returnData().getProductsOffline(shopId());
     syncData();
     await returnPurchaseProvider().loadPurchases(shopId());
     return 1;
@@ -362,23 +398,46 @@ class PurchaseActionProvider extends ChangeNotifier {
       List<PurchaseListItem> itemList =
           (purchase.items ?? [])
               .map(
-                (item) => PurchaseListItem(
-                  unitUuid: item.unitUuid,
-                  unitsList: item.getUnitListFinal(),
-                  itemName: item.itemName ?? 'Item Name',
-                  unit: item.unit ?? 'unit',
-                  itemUuid: item.itemId,
-                  totalPrice: item.total,
-                  quantity: item.quantity ?? 0,
-                  customPrice: item.customPrice,
-                  originalPrice: item.originalPrice,
-                  storageItemUuid: item.storageItemId,
-                  isGroup: item.isGroup ?? false,
-                  qttyPerGroup: item.qttyPerGroup,
-                  widthDimension: item.widthDimension,
-                  heightDimension: item.heightDimension,
-                  trackingNumber: item.trackingNumber,
-                ),
+                (item) {
+                  // Older purchases copied purchase.supplierId into
+                  // item.supplierId without globalSupplierId.
+                  final isLegacyGlobalCopy =
+                      item.globalSupplierId == null &&
+                      item.supplierName == null &&
+                      item.supplierId == purchase.supplierId;
+                  final itemSuppId =
+                      isLegacyGlobalCopy ? null : item.supplierId;
+                  final itemSuppName =
+                      isLegacyGlobalCopy
+                          ? null
+                          : (item.supplierName ??
+                              (itemSuppId != null
+                                  ? returnSuppliersProvider()
+                                      .suppliers
+                                      .where((s) => s.uuid == itemSuppId)
+                                      .firstOrNull
+                                      ?.name
+                                  : null));
+                  return PurchaseListItem(
+                    unitUuid: item.unitUuid,
+                    unitsList: item.getUnitListFinal(),
+                    itemName: item.itemName ?? 'Item Name',
+                    unit: item.unit ?? 'unit',
+                    itemUuid: item.itemId,
+                    totalPrice: item.total,
+                    quantity: item.quantity ?? 0,
+                    customPrice: item.customPrice,
+                    originalPrice: item.originalPrice,
+                    storageItemUuid: item.storageItemId,
+                    isGroup: item.isGroup ?? false,
+                    qttyPerGroup: item.qttyPerGroup,
+                    widthDimension: item.widthDimension,
+                    heightDimension: item.heightDimension,
+                    trackingNumber: item.trackingNumber,
+                    supplierId: itemSuppId,
+                    supplierName: itemSuppName,
+                  );
+                },
               )
               .toList();
 
@@ -387,6 +446,7 @@ class PurchaseActionProvider extends ChangeNotifier {
         (supp) => supp.uuid == purchase.supplierId,
       );
       tempSupplier = sups.isEmpty ? null : sups.first;
+      trackingNumber = purchase.trackingNumber;
 
       customTotalAmount = purchase.isCustomPriceSet ? purchase.total : null;
       notifyListeners();

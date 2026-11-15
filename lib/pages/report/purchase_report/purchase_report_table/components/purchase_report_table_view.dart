@@ -736,8 +736,8 @@ class _PurchaseReportTableViewState
                     decoration: InputDecoration(
                       hintText:
                           _departmentsEnabled
-                              ? 'Search supplier, staff, department or ID'
-                              : 'Search supplier, staff or ID',
+                              ? 'Search supplier, staff, department, tracking or ID'
+                              : 'Search supplier, staff, tracking or ID',
                       hintStyle: TextStyle(
                         fontSize: theme.mobileTexts.b3.fontSize,
                       ),
@@ -1059,6 +1059,18 @@ class _PurchaseReportTableViewState
               r.supplierLabel,
               align: TextAlign.start,
               color: r.supplierName == null ? Colors.grey : null,
+            ),
+      ),
+      _Col(
+        label: 'Tracking No.',
+        width: 150,
+        align: TextAlign.start,
+        cell:
+            (r) => _txt(
+              theme,
+              r.trackingNumberLabel,
+              align: TextAlign.start,
+              color: r.trackingNumber == null ? Colors.grey : null,
             ),
       ),
       _Col(

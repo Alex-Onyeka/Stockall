@@ -83,6 +83,34 @@ class PurchaseCartListItemWidget extends StatelessWidget {
                   ),
                 ],
               ),
+              if (item.supplierName != null ||
+                  (item.trackingNumber != null &&
+                      item.trackingNumber!.isNotEmpty))
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 2,
+                  children: [
+                    if (item.supplierName != null)
+                      Text(
+                        'Supplier: ${item.supplierName}',
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    if (item.trackingNumber != null &&
+                        item.trackingNumber!.isNotEmpty)
+                      Text(
+                        'Tracking: ${item.trackingNumber}',
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                  ],
+                ),
             ],
           ),
           Row(

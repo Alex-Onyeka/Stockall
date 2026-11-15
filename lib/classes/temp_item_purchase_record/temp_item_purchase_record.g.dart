@@ -15,7 +15,8 @@ class TempItemPurchaseRecordAdapter
   TempItemPurchaseRecord read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempItemPurchaseRecord(
       createdAt: fields[1] as DateTime,
@@ -35,18 +36,26 @@ class TempItemPurchaseRecordAdapter
       isGroup: fields[14] as bool?,
       qttyPerGroup: fields[15] as double?,
       unit: fields[16] as String?,
-      unitsList: (fields[17] as List?)?.cast<ProductUnitsClass>(),
+      unitsList:
+          (fields[17] as List?)?.cast<ProductUnitsClass>(),
       unitUuid: fields[18] as String?,
       widthDimension: fields[19] as double?,
       heightDimension: fields[20] as double?,
       trackingNumber: fields[21] as String?,
+      supplierName: fields[22] as String?,
+      globalSupplierId: fields[23] as String?,
+      globalSupplierName: fields[24] as String?,
+      globalTrackingNumber: fields[25] as String?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, TempItemPurchaseRecord obj) {
+  void write(
+    BinaryWriter writer,
+    TempItemPurchaseRecord obj,
+  ) {
     writer
-      ..writeByte(22)
+      ..writeByte(26)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -90,7 +99,15 @@ class TempItemPurchaseRecordAdapter
       ..writeByte(20)
       ..write(obj.heightDimension)
       ..writeByte(21)
-      ..write(obj.trackingNumber);
+      ..write(obj.trackingNumber)
+      ..writeByte(22)
+      ..write(obj.supplierName)
+      ..writeByte(23)
+      ..write(obj.globalSupplierId)
+      ..writeByte(24)
+      ..write(obj.globalSupplierName)
+      ..writeByte(25)
+      ..write(obj.globalTrackingNumber);
   }
 
   @override

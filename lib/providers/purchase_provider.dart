@@ -725,6 +725,30 @@ class PurchaseProvider extends ChangeNotifier {
     return storageProduct.getPrimaryUnit();
   }
 
+  bool _isStorageRecord(
+    TempItemPurchaseRecord rec,
+    bool isManageStorage,
+  ) {
+    if (rec.storageItemId != null &&
+        rec.storageItemId!.trim().isNotEmpty) {
+      return true;
+    }
+    if (rec.itemId != null && rec.itemId!.trim().isNotEmpty) {
+      return false;
+    }
+    return isManageStorage;
+  }
+
+  String? _lookupSupplierName(String? supplierUuid) {
+    if (supplierUuid == null || supplierUuid.trim().isEmpty) {
+      return null;
+    }
+    return returnSuppliersProvider().suppliers
+        .where((s) => s.uuid == supplierUuid)
+        .firstOrNull
+        ?.name;
+  }
+
   // DELETE a Purchase
   Future<int> deletePurchase(
     TempPurchase purchase,
@@ -814,7 +838,17 @@ class PurchaseProvider extends ChangeNotifier {
         // }
 
         if (shouldReverseInventory) {
-          if (isManageStorage) {
+          final recSupplierUuid = rec.effectiveSupplierId(
+            purchaseSupplierUuid,
+          );
+          final recSupplierName =
+              rec.effectiveSupplierName(
+                purchaseSupplierName,
+              ) ??
+              _lookupSupplierName(recSupplierUuid);
+          final recTrackingNumber = rec
+              .effectiveTrackingNumber(purchase.trackingNumber);
+          if (_isStorageRecord(rec, isManageStorage)) {
             final targetStorageId =
                 rec.storageItemId ?? rec.itemId;
             final storageProd = _findStorageProduct(
@@ -914,9 +948,9 @@ class PurchaseProvider extends ChangeNotifier {
                       primaryUnit: primaryUnit.name,
                       primaryQuantity: deltaQty.abs(),
                     ),
-                    supplierUuid: purchaseSupplierUuid,
-                    supplierName: purchaseSupplierName,
-                    trackingNumber: rec.trackingNumber,
+                    supplierUuid: recSupplierUuid,
+                    supplierName: recSupplierName,
+                    trackingNumber: recTrackingNumber,
                   );
                 }
 
@@ -1038,9 +1072,9 @@ class PurchaseProvider extends ChangeNotifier {
                     primaryUnit: primaryUnit.name,
                     primaryQuantity: deltaArea.abs(),
                   ),
-                  supplierUuid: purchaseSupplierUuid,
-                  supplierName: purchaseSupplierName,
-                  trackingNumber: rec.trackingNumber,
+                  supplierUuid: recSupplierUuid,
+                  supplierName: recSupplierName,
+                  trackingNumber: recTrackingNumber,
                 );
               }
 
@@ -1354,22 +1388,28 @@ class PurchaseProvider extends ChangeNotifier {
               ?.manageInventoryStorage ==
           true;
       for (var item in records) {
-        final itemSupplierUuid = item.supplierId;
+        final parentPurchase =
+            item.purchaseId != null
+                ? (purchases
+                        .where((p) => p.uuid == item.purchaseId)
+                        .firstOrNull ??
+                    PurchaseFunc().getSinglePurchase(
+                      uuid: item.purchaseId!,
+                    ))
+                : null;
+        final itemSupplierUuid = item.effectiveSupplierId(
+          parentPurchase?.supplierId,
+        );
         final itemSupplierName =
-            (item.supplierId != null
-                ? returnSuppliersProvider().suppliers
-                    .where((s) => s.uuid == item.supplierId)
-                    .firstOrNull
-                    ?.name
-                : null) ??
-            (item.purchaseId != null
-                ? purchases
-                    .where((p) => p.uuid == item.purchaseId)
-                    .firstOrNull
-                    ?.supplierName
-                : null);
+            item.effectiveSupplierName(
+              parentPurchase?.supplierName,
+            ) ??
+            _lookupSupplierName(itemSupplierUuid);
+        final itemTrackingNumber = item.effectiveTrackingNumber(
+          parentPurchase?.trackingNumber,
+        );
 
-        if (isManageStorage) {
+        if (_isStorageRecord(item, isManageStorage)) {
           final targetStorageId =
               item.storageItemId ?? item.itemId;
           final storageProduct = _findStorageProduct(
@@ -1464,7 +1504,7 @@ class PurchaseProvider extends ChangeNotifier {
             ),
             supplierUuid: itemSupplierUuid,
             supplierName: itemSupplierName,
-            trackingNumber: item.trackingNumber,
+            trackingNumber: itemTrackingNumber,
           );
 
           await returnStorageProductProvider()
@@ -1574,7 +1614,7 @@ class PurchaseProvider extends ChangeNotifier {
             ),
             supplierUuid: itemSupplierUuid,
             supplierName: itemSupplierName,
-            trackingNumber: item.trackingNumber,
+            trackingNumber: itemTrackingNumber,
           );
 
           await returnData().updateProduct(
@@ -1601,7 +1641,7 @@ class PurchaseProvider extends ChangeNotifier {
     TempItemPurchaseRecord item,
     bool isManageStorage,
   ) {
-    if (isManageStorage) {
+    if (_isStorageRecord(item, isManageStorage)) {
       final storageProduct = _findStorageProduct(
         item.storageItemId ?? item.itemId,
       );
@@ -1698,6 +1738,12 @@ class PurchaseProvider extends ChangeNotifier {
       );
       final idDigits = returnOnlyDigits(purchaseUuid);
 
+      final parentPurchase =
+          purchases
+              .where((p) => p.uuid == purchaseUuid)
+              .firstOrNull ??
+          PurchaseFunc().getSinglePurchase(uuid: purchaseUuid);
+
       for (final entry in deltas.entries) {
         final delta = entry.value;
         final isIncrease = delta > 0;
@@ -1705,7 +1751,7 @@ class PurchaseProvider extends ChangeNotifier {
             newItems
                 .where(
                   (i) =>
-                      (isManageStorage
+                      (_isStorageRecord(i, isManageStorage)
                           ? (i.storageItemId ?? i.itemId)
                           : (i.itemId ??
                               i.storageItemId)) ==
@@ -1715,32 +1761,36 @@ class PurchaseProvider extends ChangeNotifier {
             oldItems
                 .where(
                   (i) =>
-                      (isManageStorage
+                      (_isStorageRecord(i, isManageStorage)
                           ? (i.storageItemId ?? i.itemId)
                           : (i.itemId ??
                               i.storageItemId)) ==
                       entry.key,
                 )
                 .firstOrNull;
-        final editTrackingNumber =
-            matchedItem?.trackingNumber;
-        final editSupplierUuid = matchedItem?.supplierId;
+        final editTrackingNumber = matchedItem
+            ?.effectiveTrackingNumber(
+              parentPurchase?.trackingNumber,
+            );
+        final editSupplierUuid = matchedItem
+            ?.effectiveSupplierId(
+              parentPurchase?.supplierId,
+            );
         final editSupplierName =
-            (matchedItem?.supplierId != null
-                ? returnSuppliersProvider().suppliers
-                    .where(
-                      (s) =>
-                          s.uuid == matchedItem!.supplierId,
-                    )
-                    .firstOrNull
-                    ?.name
-                : null) ??
-            purchases
-                .where((p) => p.uuid == purchaseUuid)
-                .firstOrNull
-                ?.supplierName;
+            matchedItem?.effectiveSupplierName(
+              parentPurchase?.supplierName,
+            ) ??
+            _lookupSupplierName(editSupplierUuid);
 
-        if (isManageStorage) {
+        final isStorageItem =
+            matchedItem != null
+                ? _isStorageRecord(
+                  matchedItem,
+                  isManageStorage,
+                )
+                : isManageStorage;
+
+        if (isStorageItem) {
           final storageProduct = _findStorageProduct(
             entry.key,
           );

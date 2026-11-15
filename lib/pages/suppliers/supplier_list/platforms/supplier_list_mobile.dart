@@ -13,10 +13,12 @@ import 'package:stockall/pages/suppliers/supplier_page/supplier_page.dart';
 class SupplierListMobile extends StatefulWidget {
   final TextEditingController searchController;
   final bool? isPurchase;
+  final Function(SuppliersClass supplier)? onSelectSupplier;
   const SupplierListMobile({
     super.key,
     required this.searchController,
     this.isPurchase,
+    this.onSelectSupplier,
   });
 
   @override
@@ -218,7 +220,18 @@ class _SupplierListMobileState
 
                                 return SupplierMainTile(
                                   action: () {
-                                    if (widget.isPurchase !=
+                                    if (widget
+                                            .onSelectSupplier !=
+                                        null) {
+                                      widget
+                                          .onSelectSupplier!(
+                                        supplier,
+                                      );
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    } else if (widget
+                                            .isPurchase !=
                                         null) {
                                       returnPurchaseActionProvider()
                                           .selectSupplier(

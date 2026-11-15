@@ -20,11 +20,13 @@ class SupplierListDesktop extends StatefulWidget {
   final TextEditingController searchController;
   final bool? isPurchase;
   final String? supplierUuid;
+  final Function(SuppliersClass supplier)? onSelectSupplier;
   const SupplierListDesktop({
     super.key,
     required this.searchController,
     this.isPurchase,
     this.supplierUuid,
+    this.onSelectSupplier,
   });
 
   @override
@@ -397,7 +399,14 @@ class _SupplierListDesktopState
 
                                               return SupplierMainTile(
                                                 action: () {
-                                                  if (widget
+                                                  if (widget.onSelectSupplier != null) {
+                                                    widget.onSelectSupplier!(
+                                                      supplier,
+                                                    );
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  } else if (widget
                                                           .isPurchase !=
                                                       null) {
                                                     returnPurchaseActionProvider().selectSupplier(

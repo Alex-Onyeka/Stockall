@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
@@ -531,7 +532,10 @@ class InvoiceSummaryBuilder {
             if (row.paymentChannel != 'Cash') continue;
             break;
           case InvoicePaymentChannelFilter.bank:
-            if (row.paymentChannel != 'Bank') continue;
+            if (!PaymentMethods.isBankMethod(
+              row.paymentChannel,
+            ))
+              continue;
             break;
           case InvoicePaymentChannelFilter.split:
             if (row.paymentChannel != 'Split') continue;
@@ -678,16 +682,14 @@ class InvoiceSummaryBuilder {
       }
 
       // Payment channel breakdown on invoice population
-      switch (row.paymentChannel) {
-        case 'Cash':
-          cashPaymentTransactions++;
-          break;
-        case 'Bank':
-          bankPaymentTransactions++;
-          break;
-        case 'Split':
-          splitPaymentTransactions++;
-          break;
+      if (row.paymentChannel == 'Cash') {
+        cashPaymentTransactions++;
+      } else if (row.paymentChannel == 'Split') {
+        splitPaymentTransactions++;
+      } else if (row.paymentChannel != 'Unpaid' &&
+          row.paymentChannel != 'Account' &&
+          PaymentMethods.isBankMethod(row.paymentChannel)) {
+        bankPaymentTransactions++;
       }
 
       // Distinct customers: use UUID if present; if null/walk-in, keep separate

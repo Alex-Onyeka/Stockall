@@ -86,8 +86,9 @@ class PurchaseReportClassifier {
   static bool overpaid(double total, double paid) =>
       total - paid < -purchaseAmountTolerance;
 
-  /// From the methods of the payments made. Unknown methods are
-  /// Cash, as on receipts. Null without any payment.
+  /// From the methods of the payments made. 'Cash' or empty is
+  /// Cash; any other method (Bank, Transfer, or a custom channel
+  /// like Opay) is classified under Bank. Null without any payment.
   static PurchaseChannel? channel(
     List<PurchasePayments> payments,
   ) {
@@ -96,14 +97,35 @@ class PurchaseReportClassifier {
       if (p.amount <= purchaseAmountTolerance) continue;
       final method = p.paymentMethod.trim().toLowerCase();
       used.add(
-        method == 'bank' || method == 'transfer'
-            ? PurchaseChannel.bank
-            : PurchaseChannel.cash,
+        (method.isEmpty || method == 'cash')
+            ? PurchaseChannel.cash
+            : PurchaseChannel.bank,
       );
     }
     if (used.isEmpty) return null;
     if (used.length > 1) return PurchaseChannel.split;
     return used.first;
+  }
+
+  /// Display label preserving custom payment channel names (e.g.
+  /// 'Opay' instead of defaulting to 'Bank'). Null without payments.
+  static String? channelLabel(
+    List<PurchasePayments> payments,
+  ) {
+    final labels = <String>{};
+    final lowerLabels = <String>{};
+    for (final p in payments) {
+      if (p.amount <= purchaseAmountTolerance) continue;
+      final raw = p.paymentMethod.trim();
+      final label = raw.isEmpty ? 'Cash' : raw;
+      final lower = label.toLowerCase();
+      if (lowerLabels.add(lower)) {
+        labels.add(label);
+      }
+    }
+    if (labels.isEmpty) return null;
+    if (labels.length > 1) return PurchaseChannel.split.label;
+    return labels.first;
   }
 }
 
@@ -136,6 +158,7 @@ class PurchaseReportRow {
   /// paid - total when [overpaid], else 0.
   final double overpaidBy;
   final PurchaseChannel? channel;
+  final String? _channelLabel;
 
   /// A custom total that differs from the line total.
   final bool hasAdjustment;
@@ -161,10 +184,12 @@ class PurchaseReportRow {
     required this.overpaid,
     required this.overpaidBy,
     required this.channel,
+    String? channelLabel,
     required this.hasAdjustment,
     required this.adjustment,
     String? supplierName,
-  }) : _supplierName = supplierName;
+  }) : _supplierName = supplierName,
+       _channelLabel = channelLabel;
 
   String get uuid => purchase.uuid ?? '';
 
@@ -190,7 +215,9 @@ class PurchaseReportRow {
           ? 'No Department'
           : departmentName ?? 'No Department';
   String get channelLabel =>
-      channel?.label ?? purchasesUnpaidLabel;
+      _channelLabel ?? channel?.label ?? purchasesUnpaidLabel;
+  String? get trackingNumber => _name(purchase.trackingNumber);
+  String get trackingNumberLabel => trackingNumber ?? '—';
 
   /// The key rule of [supplierKey] etc., for matching other
   /// records (e.g. suppliers) to rows.
@@ -290,6 +317,9 @@ class PurchaseReportRowBuilder {
       overpaid: overpaid,
       overpaidBy: overpaid ? -owed : 0,
       channel: PurchaseReportClassifier.channel(
+        purchase.purchasePayments,
+      ),
+      channelLabel: PurchaseReportClassifier.channelLabel(
         purchase.purchasePayments,
       ),
       hasAdjustment: hasAdjustment,
@@ -480,7 +510,8 @@ class PurchaseReportFilters {
     return has(r.supplierName) ||
         has(r.staffName) ||
         (departmentsEnabled && has(r.departmentName)) ||
-        has(r.displayId);
+        has(r.displayId) ||
+        has(r.trackingNumber);
   }
 
   /// [departmentsEnabled] switches off the department search and

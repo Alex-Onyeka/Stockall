@@ -73,6 +73,18 @@ class TempItemPurchaseRecord {
   @HiveField(21)
   String? trackingNumber;
 
+  @HiveField(22)
+  String? supplierName;
+
+  @HiveField(23)
+  String? globalSupplierId;
+
+  @HiveField(24)
+  String? globalSupplierName;
+
+  @HiveField(25)
+  String? globalTrackingNumber;
+
   TempItemPurchaseRecord({
     required this.createdAt,
     required this.shopId,
@@ -96,6 +108,10 @@ class TempItemPurchaseRecord {
     this.widthDimension,
     this.heightDimension,
     this.trackingNumber,
+    this.supplierName,
+    this.globalSupplierId,
+    this.globalSupplierName,
+    this.globalTrackingNumber,
   });
 
   factory TempItemPurchaseRecord.fromJson(
@@ -144,6 +160,13 @@ class TempItemPurchaseRecord {
           (json['tracking_number'] ??
                   json['tracking_number'])
               as String?,
+      supplierName: json['supplier_name'] as String?,
+      globalSupplierId:
+          json['global_supplier_id'] as String?,
+      globalSupplierName:
+          json['global_supplier_name'] as String?,
+      globalTrackingNumber:
+          json['global_tracking_number'] as String?,
     );
   }
 
@@ -174,6 +197,10 @@ class TempItemPurchaseRecord {
       'width_dimension': widthDimension,
       'height_dimension': heightDimension,
       'tracking_number': trackingNumber,
+      'supplier_name': supplierName,
+      'global_supplier_id': globalSupplierId,
+      'global_supplier_name': globalSupplierName,
+      'global_tracking_number': globalTrackingNumber,
     };
   }
 
@@ -237,6 +264,10 @@ class TempItemPurchaseRecord {
     double? widthDimension,
     double? heightDimension,
     String? trackingNumber,
+    String? supplierName,
+    String? globalSupplierId,
+    String? globalSupplierName,
+    String? globalTrackingNumber,
   }) {
     return TempItemPurchaseRecord(
       uuid: uuid ?? this.uuid,
@@ -262,7 +293,71 @@ class TempItemPurchaseRecord {
       heightDimension:
           heightDimension ?? this.heightDimension,
       trackingNumber: trackingNumber ?? this.trackingNumber,
+      supplierName: supplierName ?? this.supplierName,
+      globalSupplierId:
+          globalSupplierId ?? this.globalSupplierId,
+      globalSupplierName:
+          globalSupplierName ?? this.globalSupplierName,
+      globalTrackingNumber:
+          globalTrackingNumber ?? this.globalTrackingNumber,
     );
+  }
+
+  /// Effective supplier id: item-specific supplier first, then
+  /// item-level global supplier snapshot, then optional parent
+  /// purchase's supplierId.
+  String? effectiveSupplierId([String? parentSupplierId]) {
+    if (supplierId != null && supplierId!.trim().isNotEmpty) {
+      return supplierId;
+    }
+    if (globalSupplierId != null &&
+        globalSupplierId!.trim().isNotEmpty) {
+      return globalSupplierId;
+    }
+    if (parentSupplierId != null &&
+        parentSupplierId.trim().isNotEmpty) {
+      return parentSupplierId;
+    }
+    return null;
+  }
+
+  /// Effective supplier name: item-specific supplier name first,
+  /// then global supplier name snapshot, then optional parent's.
+  String? effectiveSupplierName([String? parentSupplierName]) {
+    if (supplierName != null &&
+        supplierName!.trim().isNotEmpty) {
+      return supplierName;
+    }
+    if (globalSupplierName != null &&
+        globalSupplierName!.trim().isNotEmpty) {
+      return globalSupplierName;
+    }
+    if (parentSupplierName != null &&
+        parentSupplierName.trim().isNotEmpty) {
+      return parentSupplierName;
+    }
+    return null;
+  }
+
+  /// Effective tracking number: item-specific tracking number
+  /// first, then global tracking number snapshot, then optional
+  /// parent purchase's trackingNumber.
+  String? effectiveTrackingNumber([
+    String? parentTrackingNumber,
+  ]) {
+    if (trackingNumber != null &&
+        trackingNumber!.trim().isNotEmpty) {
+      return trackingNumber;
+    }
+    if (globalTrackingNumber != null &&
+        globalTrackingNumber!.trim().isNotEmpty) {
+      return globalTrackingNumber;
+    }
+    if (parentTrackingNumber != null &&
+        parentTrackingNumber.trim().isNotEmpty) {
+      return parentTrackingNumber;
+    }
+    return null;
   }
 
   List<ProductUnitsClass> getUnitListFinal() {

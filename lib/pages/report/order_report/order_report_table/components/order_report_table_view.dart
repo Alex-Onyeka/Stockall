@@ -1549,7 +1549,7 @@ class _OrderReportTableViewState
         cell:
             (r) => _txt(
               theme,
-              r.channel.label,
+              r.channelLabel,
               color:
                   r.channel == OrderPaymentChannel.unpaid
                       ? Colors.grey

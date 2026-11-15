@@ -5,6 +5,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/purchases/create_purchase/components/purchase_bottom_total_section.dart';
 import 'package:stockall/pages/purchases/create_purchase/components/purchase_cart_list_item_widget.dart';
 import 'package:stockall/pages/purchases/create_purchase/components/purchase_select_supplier_widget.dart';
+import 'package:stockall/pages/purchases/create_purchase/components/purchase_tracking_number_widget.dart';
 import 'package:stockall/pages/purchases/create_purchase/components/select_products_for_purchase_bottom_sheet.dart';
 
 class CreatePurchaseMobile extends StatefulWidget {
@@ -113,6 +114,7 @@ class CreatePurchaseMobileState
                   Column(
                     children: [
                       PurchaseSelectSupplierWidget(),
+                      PurchaseTrackingNumberWidget(),
                       Expanded(
                         child: Padding(
                           padding:

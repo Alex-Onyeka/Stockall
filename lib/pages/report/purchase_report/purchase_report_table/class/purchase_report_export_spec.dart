@@ -154,6 +154,12 @@ ExportTableSection<PurchaseReportRow> purchaseTableSection({
       ExportColumn(id: 'status', label: 'Status', value: (r) => r.status.label),
       ExportColumn(id: 'channel', label: 'Channel', value: (r) => r.channelLabel),
       ExportColumn(
+        id: 'trackingNumber',
+        label: 'Tracking No.',
+        value: (r) => r.trackingNumberLabel,
+        width: 1.2,
+      ),
+      ExportColumn(
         id: 'lines',
         label: 'Lines',
         format: ExportFormat.integer,

@@ -7,6 +7,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 
 class PurchaseBottomTotalSection extends StatefulWidget {
   final TextEditingController priceController;
@@ -32,6 +33,8 @@ class _PurchaseBottomTotalSectionState
     extends State<PurchaseBottomTotalSection> {
   bool updateInventory = true;
   int paymentSelected = 2;
+  int paymentChannelOption = 0; // 0 = Cash, 1 = Bank
+  String? selectedBankName;
 
   void checkFields() async {
     if (returnPurchaseActionProvider()
@@ -54,6 +57,8 @@ class _PurchaseBottomTotalSectionState
         context: context,
         builder: (firstDialog) {
           paymentSelected = 2;
+          paymentChannelOption = 0;
+          selectedBankName = null;
           widget.priceController.text =
               returnPurchaseActionProvider()
                   .totalPurchaseAmount()
@@ -98,6 +103,14 @@ class _PurchaseBottomTotalSectionState
                                   updateInventory:
                                       widget.purchase !=
                                       null,
+                                  paymentMethod:
+                                      PurchasePaymentChannelSelector
+                                          .resolvePaymentMethod(
+                                        paymentOption:
+                                            paymentChannelOption,
+                                        selectedBankName:
+                                            selectedBankName,
+                                      ),
                                   paymentAmount:
                                       widget
                                               .priceController
@@ -389,6 +402,23 @@ class _PurchaseBottomTotalSectionState
                             context,
                             listen: false,
                           ),
+                        ),
+                        PurchasePaymentChannelSelector(
+                          paymentOption: paymentChannelOption,
+                          selectedBankName: selectedBankName,
+                          onOptionChanged: (val) {
+                            setStatee(() {
+                              paymentChannelOption = val;
+                              if (val == 0) {
+                                selectedBankName = null;
+                              }
+                            });
+                          },
+                          onBankSelected: (bank) {
+                            setStatee(() {
+                              selectedBankName = bank;
+                            });
+                          },
                         ),
                       ],
                     ),

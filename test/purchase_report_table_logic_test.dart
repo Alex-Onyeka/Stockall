@@ -278,7 +278,7 @@ void main() {
         channelOf([(10, ' Transfer ')]),
         PurchaseChannel.bank,
       );
-      expect(channelOf([(10, 'POS')]), PurchaseChannel.cash);
+      expect(channelOf([(10, 'POS')]), PurchaseChannel.bank);
       expect(
         channelOf([(10, 'Cash'), (5, 'Cash')]),
         PurchaseChannel.cash,

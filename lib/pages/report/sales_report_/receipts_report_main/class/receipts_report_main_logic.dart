@@ -203,6 +203,31 @@ class ReceiptsReportRow {
   /// Null when there is no comment to show.
   String? get comment => _name(receipt.comment);
 
+  /// Payment channel label preserving custom bank names (e.g.
+  /// 'Opay') instead of defaulting to 'Bank'.
+  String get channelLabel {
+    if (channel == ReceiptChannel.bank) {
+      final breakdownLabel =
+          receipt.paymentBreakdown().label.trim();
+      if (breakdownLabel.isNotEmpty &&
+          PaymentMethods.isBankMethod(breakdownLabel) &&
+          breakdownLabel.toLowerCase() != 'bank') {
+        return breakdownLabel;
+      }
+      final selBank = receipt.selectedBank?.displayName.trim();
+      if (selBank != null && selBank.isNotEmpty) {
+        return selBank;
+      }
+      final method = receipt.paymentMethod.trim();
+      if (method.isNotEmpty &&
+          PaymentMethods.isBankMethod(method) &&
+          method.toLowerCase() != 'bank') {
+        return method;
+      }
+    }
+    return channel.label;
+  }
+
   /// Subtotal, discount and VAT are hidden on these rows.
   bool get hidesDocumentTotals =>
       type == ReceiptType.invoicePayment ||

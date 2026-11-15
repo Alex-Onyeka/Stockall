@@ -29,393 +29,445 @@ void selectProductsForPurchaseBottomSheet({
         maxChildSize: 0.95,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<TempProductClass> products = [];
-          List<TempStorageProducts> storageProducts = [];
-          if (returnShopProvider()
+          final bool manageStorage =
+              returnShopProvider()
                   .userShop()
-                  ?.manageInventoryStorage !=
-              true) {
-            products =
-                returnData(
+                  ?.manageInventoryStorage ==
+              true;
+          // When manageInventoryStorage is enabled, default to Storage
+          // Items, and allow switching between Storage Items and Sales Items.
+          bool showStorageItems = manageStorage;
+
+          List<TempProductClass> products =
+              returnData(
                   context: context,
                 ).productListMain.where((item) {
-                  if (returnPurchaseActionProvider()
+                  return returnPurchaseActionProvider()
                       .purchaseListItems
                       .where(
                         (purch) =>
-                            (purch.itemUuid ??
-                                purch.storageItemUuid) ==
-                            item.uuid,
+                            purch.itemUuid == item.uuid,
                       )
-                      .isEmpty) {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                }).toList();
-            products.sort(
-              (a, b) => a.name.toLowerCase().compareTo(
-                b.name.toLowerCase(),
-              ),
-            );
-          } else {
-            storageProducts =
-                returnStorageProductProvider()
-                    .storageProductListMain
-                    .where((item) {
-                      if (returnPurchaseActionProvider()
-                          .purchaseListItems
-                          .where(
-                            (purch) =>
-                                (purch.storageItemUuid ??
-                                    purch.itemUuid) ==
-                                item.uuid,
-                          )
-                          .isEmpty) {
-                        return true;
-                      } else {
-                        return false;
-                      }
-                    })
-                    .toList();
+                      .isEmpty;
+                }).toList()
+                ..sort(
+                  (a, b) => a.name.toLowerCase().compareTo(
+                    b.name.toLowerCase(),
+                  ),
+                );
 
-            storageProducts.sort(
-              (a, b) => a.name.toLowerCase().compareTo(
-                b.name.toLowerCase(),
-              ),
-            );
-          }
+          List<TempStorageProducts> storageProducts =
+              manageStorage
+                  ? (returnStorageProductProvider()
+                      .storageProductListMain
+                      .where((item) {
+                        return returnPurchaseActionProvider()
+                            .purchaseListItems
+                            .where(
+                              (purch) =>
+                                  purch.storageItemUuid ==
+                                  item.uuid,
+                            )
+                            .isEmpty;
+                      })
+                      .toList()
+                    ..sort(
+                      (a, b) => a.name
+                          .toLowerCase()
+                          .compareTo(b.name.toLowerCase()),
+                    ))
+                  : [];
 
           return StatefulBuilder(
-            builder:
-                (context, setState) => Container(
-                  padding: const EdgeInsets.fromLTRB(
-                    30,
-                    15,
-                    30,
-                    45,
-                  ),
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Container(
-                          height: 4,
-                          width: 70,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(5),
-                            color: Colors.grey.shade400,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Select Items',
-                              style: TextStyle(
-                                fontSize:
-                                    returnTheme(context)
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: SizedBox(
-                              height: 30,
-                              width: 200,
-                              child: GeneralTextfieldOnly(
-                                onChanged: (value) {
-                                  setState(() {});
-                                },
-                                hint: 'Search Name',
-                                controller:
-                                    searchController,
-                                lines: 1,
-                                theme: returnTheme(
-                                  context,
-                                  listen: false,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  mouseCursor:
-                                      SystemMouseCursors
-                                          .click,
-                                  onPressed: () {
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                    FocusScope.of(
-                                      context,
-                                    ).unfocus();
-                                  },
-                                  icon: Icon(Icons.check),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                            ),
-                          ),
-                          child: ListView(
-                            controller: scrollController,
-                            children:
-                                returnShopProvider()
-                                            .userShop()
-                                            ?.manageInventoryStorage ==
-                                        true
-                                    ? storageProducts
-                                        .where(
-                                          (prod) => prod
-                                              .name
-                                              .toLowerCase()
-                                              .contains(
-                                                searchController
-                                                    .text
-                                                    .toLowerCase(),
-                                              ),
-                                        )
-                                        .map(
-                                          (
-                                            pro,
-                                          ) => Container(
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                top: BorderSide(
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade300,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Material(
-                                              color:
-                                                  Colors
-                                                      .white,
-                                              child: ListTile(
-                                                title: Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        returnTheme(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).mobileTexts.b2.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  pro.name,
-                                                ),
-                                                onTap: () {
-                                                  final units =
-                                                      pro.getUnitListFinal();
-                                                  final primaryUnitUuid =
-                                                      units
-                                                          .where(
-                                                            (
-                                                              u,
-                                                            ) =>
-                                                                u.isPrimary,
-                                                          )
-                                                          .firstOrNull
-                                                          ?.uuid ??
-                                                      units
-                                                          .firstOrNull
-                                                          ?.uuid ??
-                                                      pro
-                                                          .getPrimaryUnit()
-                                                          .uuid;
-                                                  selectProductPurchase(
-                                                    // storageProduct:
-                                                    //     pro,
-                                                    isEdit:
-                                                        false,
-                                                    purchaseItem: PurchaseListItem(
-                                                      itemName:
-                                                          pro.name,
-                                                      itemUuid:
-                                                          null,
-                                                      totalPrice:
-                                                          null,
-                                                      quantity:
-                                                          0,
-                                                      unit:
-                                                          pro.unit,
-                                                      customPrice:
-                                                          null,
-                                                      originalPrice:
-                                                          pro.costPrice,
-                                                      storageItemUuid:
-                                                          pro.uuid,
-                                                      isGroup:
-                                                          false,
-                                                      qttyPerGroup:
-                                                          pro.qttyPerGroup,
-                                                      unitsList:
-                                                          units,
-                                                      unitUuid:
-                                                          primaryUnitUuid,
-                                                    ),
-                                                    closeAction:
-                                                        () {},
-                                                    priceController:
-                                                        priceController,
-                                                    quantityController:
-                                                        quantityController,
-                                                    context:
-                                                        context,
-                                                  );
-                                                },
-                                                trailing: Icon(
-                                                  size: 18,
-                                                  Icons.add,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        .toList()
-                                    : products
-                                        .where(
-                                          (prod) => prod
-                                              .name
-                                              .toLowerCase()
-                                              .contains(
-                                                searchController
-                                                    .text
-                                                    .toLowerCase(),
-                                              ),
-                                        )
-                                        .map(
-                                          (
-                                            pro,
-                                          ) => Container(
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                top: BorderSide(
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade300,
-                                                ),
-                                              ),
-                                            ),
-                                            child: Material(
-                                              color:
-                                                  Colors
-                                                      .white,
-                                              child: ListTile(
-                                                title: Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        returnTheme(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).mobileTexts.b2.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  pro.name,
-                                                ),
-                                                onTap: () {
-                                                  final units =
-                                                      pro.getUnitListFinal();
-                                                  final primaryUnitUuid =
-                                                      units
-                                                          .where(
-                                                            (
-                                                              u,
-                                                            ) =>
-                                                                u.isPrimary,
-                                                          )
-                                                          .firstOrNull
-                                                          ?.uuid ??
-                                                      units
-                                                          .firstOrNull
-                                                          ?.uuid ??
-                                                      pro
-                                                          .getPrimaryUnit()
-                                                          .uuid;
-                                                  selectProductPurchase(
-                                                    // product:
-                                                    //     pro,
-                                                    isEdit:
-                                                        false,
-                                                    purchaseItem: PurchaseListItem(
-                                                      itemName:
-                                                          pro.name,
-                                                      itemUuid:
-                                                          pro.uuid,
-                                                      totalPrice:
-                                                          null,
-                                                      quantity:
-                                                          0,
-                                                      unit:
-                                                          pro.unit,
-                                                      customPrice:
-                                                          null,
-                                                      originalPrice:
-                                                          pro.costPrice,
-                                                      storageItemUuid:
-                                                          null,
-                                                      isGroup:
-                                                          false,
-                                                      qttyPerGroup:
-                                                          pro.qttyPerGroup,
-                                                      unitsList:
-                                                          units,
-                                                      unitUuid:
-                                                          primaryUnitUuid,
-                                                    ),
-                                                    closeAction:
-                                                        () {},
-                                                    priceController:
-                                                        priceController,
-                                                    quantityController:
-                                                        quantityController,
-                                                    context:
-                                                        context,
-                                                  );
-                                                },
-                                                trailing: Icon(
-                                                  size: 18,
-                                                  Icons.add,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            builder: (context, setState) {
+              final theme = returnTheme(
+                context,
+                listen: false,
+              );
+              return Container(
+                padding: const EdgeInsets.fromLTRB(
+                  30,
+                  15,
+                  30,
+                  45,
                 ),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        height: 4,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 36,
+                            child: GeneralTextfieldOnly(
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                              hint: 'Search Name',
+                              controller: searchController,
+                              lines: 1,
+                              theme: theme,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (manageStorage)
+                              PopupMenuButton<bool>(
+                                offset: const Offset(
+                                  -20,
+                                  35,
+                                ),
+                                color: Colors.white,
+                                onSelected: (val) {
+                                  setState(() {
+                                    showStorageItems = val;
+                                  });
+                                },
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem<bool>(
+                                      value: false,
+                                      child: Text(
+                                        'Sales Items',
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              !showStorageItems
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                      ),
+                                    ),
+                                    PopupMenuItem<bool>(
+                                      value: true,
+                                      child: Text(
+                                        'Storage Items',
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              showStorageItems
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                      ),
+                                    ),
+                                  ];
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 6,
+                                      ),
+                                  child: Row(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    spacing: 4,
+                                    children: [
+                                      Text(
+                                        showStorageItems
+                                            ? 'Storage'
+                                            : 'Sales',
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                      ),
+                                      const Icon(
+                                        Icons
+                                            .keyboard_arrow_down_rounded,
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            IconButton(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                FocusScope.of(
+                                  context,
+                                ).unfocus();
+                              },
+                              icon: const Icon(Icons.clear),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        child: ListView(
+                          controller: scrollController,
+                          children:
+                              showStorageItems
+                                  ? storageProducts
+                                      .where(
+                                        (prod) => prod.name
+                                            .toLowerCase()
+                                            .contains(
+                                              searchController
+                                                  .text
+                                                  .toLowerCase(),
+                                            ),
+                                      )
+                                      .map(
+                                        (pro) => Container(
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade300,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Material(
+                                            color:
+                                                Colors
+                                                    .white,
+                                            child: ListTile(
+                                              title: Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      returnTheme(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).mobileTexts.b2.fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                pro.name,
+                                              ),
+                                              onTap: () {
+                                                final units =
+                                                    pro.getUnitListFinal();
+                                                final primaryUnitUuid =
+                                                    units
+                                                        .where(
+                                                          (
+                                                            u,
+                                                          ) =>
+                                                              u.isPrimary,
+                                                        )
+                                                        .firstOrNull
+                                                        ?.uuid ??
+                                                    units
+                                                        .firstOrNull
+                                                        ?.uuid ??
+                                                    pro
+                                                        .getPrimaryUnit()
+                                                        .uuid;
+                                                selectProductPurchase(
+                                                  // storageProduct:
+                                                  //     pro,
+                                                  isEdit:
+                                                      false,
+                                                  purchaseItem: PurchaseListItem(
+                                                    itemName:
+                                                        pro.name,
+                                                    itemUuid:
+                                                        null,
+                                                    totalPrice:
+                                                        null,
+                                                    quantity:
+                                                        0,
+                                                    unit:
+                                                        pro.unit,
+                                                    customPrice:
+                                                        null,
+                                                    originalPrice:
+                                                        pro.costPrice,
+                                                    storageItemUuid:
+                                                        pro.uuid,
+                                                    isGroup:
+                                                        false,
+                                                    qttyPerGroup:
+                                                        pro.qttyPerGroup,
+                                                    unitsList:
+                                                        units,
+                                                    unitUuid:
+                                                        primaryUnitUuid,
+                                                  ),
+                                                  closeAction:
+                                                      () {},
+                                                  priceController:
+                                                      priceController,
+                                                  quantityController:
+                                                      quantityController,
+                                                  context:
+                                                      context,
+                                                );
+                                              },
+                                              trailing: Icon(
+                                                size: 18,
+                                                Icons.add,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList()
+                                  : products
+                                      .where(
+                                        (prod) => prod.name
+                                            .toLowerCase()
+                                            .contains(
+                                              searchController
+                                                  .text
+                                                  .toLowerCase(),
+                                            ),
+                                      )
+                                      .map(
+                                        (pro) => Container(
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              top: BorderSide(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade300,
+                                              ),
+                                            ),
+                                          ),
+                                          child: Material(
+                                            color:
+                                                Colors
+                                                    .white,
+                                            child: ListTile(
+                                              title: Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      returnTheme(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).mobileTexts.b2.fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                pro.name,
+                                              ),
+                                              onTap: () {
+                                                final units =
+                                                    pro.getUnitListFinal();
+                                                final primaryUnitUuid =
+                                                    units
+                                                        .where(
+                                                          (
+                                                            u,
+                                                          ) =>
+                                                              u.isPrimary,
+                                                        )
+                                                        .firstOrNull
+                                                        ?.uuid ??
+                                                    units
+                                                        .firstOrNull
+                                                        ?.uuid ??
+                                                    pro
+                                                        .getPrimaryUnit()
+                                                        .uuid;
+                                                selectProductPurchase(
+                                                  // product:
+                                                  //     pro,
+                                                  isEdit:
+                                                      false,
+                                                  purchaseItem: PurchaseListItem(
+                                                    itemName:
+                                                        pro.name,
+                                                    itemUuid:
+                                                        pro.uuid,
+                                                    totalPrice:
+                                                        null,
+                                                    quantity:
+                                                        0,
+                                                    unit:
+                                                        pro.unit,
+                                                    customPrice:
+                                                        null,
+                                                    originalPrice:
+                                                        pro.costPrice,
+                                                    storageItemUuid:
+                                                        null,
+                                                    isGroup:
+                                                        false,
+                                                    qttyPerGroup:
+                                                        pro.qttyPerGroup,
+                                                    unitsList:
+                                                        units,
+                                                    unitUuid:
+                                                        primaryUnitUuid,
+                                                  ),
+                                                  closeAction:
+                                                      () {},
+                                                  priceController:
+                                                      priceController,
+                                                  quantityController:
+                                                      quantityController,
+                                                  context:
+                                                      context,
+                                                );
+                                              },
+                                              trailing: Icon(
+                                                size: 18,
+                                                Icons.add,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           );
         },
       );

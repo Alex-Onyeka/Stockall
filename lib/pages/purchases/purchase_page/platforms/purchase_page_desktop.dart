@@ -17,6 +17,7 @@ import 'package:stockall/constants/purchase_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 
 class PurchasePageDesktop extends StatefulWidget {
@@ -38,6 +39,128 @@ class _PurchasePageDesktopState
   FocusNode paymentNode = FocusNode();
 
   int paymentSelected = 1;
+  int paymentChannelOption = 0;
+  String? selectedBankName;
+
+  void _openMakePaymentChannelDialog(
+    TempPurchase purchase,
+    dynamic theme,
+  ) {
+    paymentChannelOption = 0;
+    selectedBankName = null;
+    showDialog(
+      context: context,
+      builder: (channelDialog) {
+        return StatefulBuilder(
+          builder: (ctx, setChannelState) {
+            return DialogTemplate(
+              theme: theme,
+              title: 'Make Payment',
+              message:
+                  'Select the payment channel for this purchase payment.',
+              widget: PurchasePaymentChannelSelector(
+                paymentOption: paymentChannelOption,
+                selectedBankName: selectedBankName,
+                onOptionChanged: (val) {
+                  setChannelState(() {
+                    paymentChannelOption = val;
+                    if (val == 0) selectedBankName = null;
+                  });
+                },
+                onBankSelected: (bank) {
+                  setChannelState(() {
+                    selectedBankName = bank;
+                  });
+                },
+              ),
+              action: () {
+                Navigator.of(channelDialog).pop();
+                showDialog(
+                  context: context,
+                  builder: (confirmDialog) {
+                    return ConfirmationAlert(
+                      theme: theme,
+                      message:
+                          'You are about to pay for an purchase. Are you sure you want to proceed?',
+                      title: 'Make Payment',
+                      action: () async {
+                        Navigator.of(confirmDialog).pop();
+                        setState(() {
+                          isLoading = true;
+                        });
+                        var tempPurchase =
+                            purchase.copyWith();
+                        tempPurchase.purchasePayments.add(
+                          PurchasePayments(
+                            uuid: uuidGen(),
+                            purchaseId: purchase.uuid!,
+                            createdAt: DateTime.now(),
+                            amount:
+                                double.tryParse(
+                                  paymentController.text
+                                      .replaceAll(',', ''),
+                                ) ??
+                                0,
+                            userId: currentUser().userId!,
+                            staffName: currentUser().name,
+                            paymentMethod:
+                                PurchasePaymentChannelSelector.resolvePaymentMethod(
+                                  paymentOption:
+                                      paymentChannelOption,
+                                  selectedBankName:
+                                      selectedBankName,
+                                ),
+                          ),
+                        );
+
+                        var res =
+                            await returnPurchaseProvider()
+                                .updatePurchase(
+                                  tempPurchase,
+                                );
+
+                        if (res == null) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          if (!mounted) return;
+                          showDialog(
+                            context: context,
+                            builder: (popDialog) {
+                              return InfoAlert(
+                                theme: theme,
+                                message:
+                                    'An Error Occoured while making this payment. Please try again.',
+                                title: 'An Error Occoured',
+                              );
+                            },
+                          );
+                        } else {
+                          setState(() {
+                            isLoading = false;
+                            paymentSelected = 1;
+                          });
+                          actionResultDialog(
+                            // ignore: use_build_context_synchronously
+                            context: context,
+                            isSuccess: true,
+                            message: 'Payment Successful',
+                          );
+                          if (mounted) {
+                            paymentController.clear();
+                          }
+                        }
+                      },
+                    );
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
 
   void selectPayment({
     required int value,
@@ -361,8 +484,7 @@ class _PurchasePageDesktopState
                                       // One path: the POS printer on desktop, the system
                                       // print dialog (once) on web.
                                       await generateAndPreviewPdfRollPurchase(
-                                        purchase:
-                                            purchase,
+                                        purchase: purchase,
                                         printerType:
                                             returnShopProvider()
                                                 .userShop()!
@@ -1199,6 +1321,44 @@ class _PurchasePageDesktopState
                                                     ),
                                                   ],
                                                 ),
+                                                Row(
+                                                  spacing:
+                                                      5,
+                                                  children: [
+                                                    SizedBox(
+                                                      width:
+                                                          65,
+                                                      child: Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b4.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                        ),
+                                                        'Tracking No.:',
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            (purchase.trackingNumber ==
+                                                                        null ||
+                                                                    purchase.trackingNumber!.trim().isEmpty)
+                                                                ? Colors.grey
+                                                                : null,
+                                                      ),
+                                                      (purchase.trackingNumber ==
+                                                                  null ||
+                                                              purchase.trackingNumber!.trim().isEmpty)
+                                                          ? 'Not Set'
+                                                          : purchase.trackingNumber!.trim(),
+                                                    ),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                             Container(
@@ -1683,112 +1843,9 @@ class _PurchasePageDesktopState
                                                           .text !=
                                                       '0' &&
                                                   !isLoading) {
-                                                showDialog(
-                                                  context:
-                                                      context,
-                                                  builder: (
-                                                    confirmDialog,
-                                                  ) {
-                                                    return ConfirmationAlert(
-                                                      theme:
-                                                          theme,
-                                                      message:
-                                                          'You are about to pay for an purchase. Are you sure you want to proceed?',
-                                                      title:
-                                                          'Make Payment',
-                                                      action: () async {
-                                                        Navigator.of(
-                                                          confirmDialog,
-                                                        ).pop();
-                                                        setState(() {
-                                                          isLoading =
-                                                              true;
-                                                        });
-                                                        var tempPurchase =
-                                                            purchase.copyWith();
-                                                        tempPurchase.purchasePayments.add(
-                                                          PurchasePayments(
-                                                            uuid:
-                                                                uuidGen(),
-                                                            purchaseId:
-                                                                purchase.uuid!,
-                                                            createdAt:
-                                                                DateTime.now(),
-                                                            amount:
-                                                                double.tryParse(
-                                                                  paymentController.text.replaceAll(
-                                                                    ',',
-                                                                    '',
-                                                                  ),
-                                                                ) ??
-                                                                0,
-                                                            userId:
-                                                                currentUser().userId!,
-                                                            staffName:
-                                                                currentUser().name,
-                                                            paymentMethod:
-                                                                'Cash',
-                                                          ),
-                                                        );
-
-                                                        var res = await returnPurchaseProvider().updatePurchase(
-                                                          tempPurchase,
-                                                        );
-
-                                                        if (res ==
-                                                            null) {
-                                                          setState(
-                                                            () {
-                                                              isLoading =
-                                                                  false;
-                                                            },
-                                                          );
-                                                          showDialog(
-                                                            // ignore: use_build_context_synchronously
-                                                            context:
-                                                                context,
-                                                            builder: (
-                                                              popDialog,
-                                                            ) {
-                                                              return InfoAlert(
-                                                                theme:
-                                                                    theme,
-                                                                message:
-                                                                    'An Error Occoured while making this payment. Please try again.',
-                                                                title:
-                                                                    'An Error Occoured',
-                                                              );
-                                                            },
-                                                          );
-                                                        } else {
-                                                          setState(
-                                                            () {
-                                                              isLoading =
-                                                                  false;
-                                                            },
-                                                          );
-                                                          actionResultDialog(
-                                                            // ignore: use_build_context_synchronously
-                                                            context:
-                                                                context,
-                                                            isSuccess:
-                                                                true,
-                                                            message:
-                                                                'Payment Successful',
-                                                          );
-                                                          if (context.mounted) {
-                                                            paymentController.clear();
-                                                          }
-                                                          setState(
-                                                            () {
-                                                              paymentSelected =
-                                                                  1;
-                                                            },
-                                                          );
-                                                        }
-                                                      },
-                                                    );
-                                                  },
+                                                _openMakePaymentChannelDialog(
+                                                  purchase,
+                                                  theme,
                                                 );
                                               } else {
                                                 paymentNode

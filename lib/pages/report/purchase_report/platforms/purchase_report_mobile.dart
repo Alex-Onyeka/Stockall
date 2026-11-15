@@ -4,6 +4,8 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_list_tile.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_item_analysis/purchase_item_analysis_page.dart';
+import 'package:stockall/pages/report/purchase_report/purchase_item_report/purchase_item_report_page.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/purchase_report_table_page.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_summary/purchase_summary_page.dart';
 
@@ -104,6 +106,58 @@ class PurchaseReportMobile extends StatelessWidget {
                                 'Aggregated overview of purchase spend, payments, balances and supplier performance',
                             title:
                                 'Purchase Summary and Analysis',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .managePurchases,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const PurchaseItemReportPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Item-level breakdown of every purchased item with global and item-specific supplier and tracking details',
+                            title: 'Purchase Item Report',
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              !isStoreKeeper() &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .managePurchases,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const PurchaseItemAnalysisPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'Analyze purchased item spend, quantities, suppliers, channels and trends',
+                            title: 'Purchase Item Analysis',
                           ),
                         ),
                         const SizedBox(height: 30),

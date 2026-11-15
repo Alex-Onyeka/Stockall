@@ -6,7 +6,8 @@ part of 'temp_purchase.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempPurchaseAdapter extends TypeAdapter<TempPurchase> {
+class TempPurchaseAdapter
+    extends TypeAdapter<TempPurchase> {
   @override
   final int typeId = 73;
 
@@ -14,7 +15,8 @@ class TempPurchaseAdapter extends TypeAdapter<TempPurchase> {
   TempPurchase read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempPurchase(
       createdAt: fields[1] as DateTime,
@@ -28,16 +30,20 @@ class TempPurchaseAdapter extends TypeAdapter<TempPurchase> {
       supplierId: fields[5] as String?,
       supplierName: fields[11] as String?,
       isCustomPriceSet: fields[9] as bool,
-      purchasePayments: (fields[10] as List).cast<PurchasePayments>(),
+      purchasePayments:
+          (fields[10] as List).cast<PurchasePayments>(),
       updatedAt: fields[12] as DateTime?,
-      items: (fields[13] as List?)?.cast<TempItemPurchaseRecord>(),
+      items:
+          (fields[13] as List?)
+              ?.cast<TempItemPurchaseRecord>(),
+      trackingNumber: fields[14] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempPurchase obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -65,7 +71,9 @@ class TempPurchaseAdapter extends TypeAdapter<TempPurchase> {
       ..writeByte(12)
       ..write(obj.updatedAt)
       ..writeByte(13)
-      ..write(obj.items);
+      ..write(obj.items)
+      ..writeByte(14)
+      ..write(obj.trackingNumber);
   }
 
   @override

@@ -13,6 +13,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/unit_selection_widget.dart';
+import 'package:stockall/pages/suppliers/supplier_list/supplier_list.dart';
 
 void selectProductPurchase({
   required Function() closeAction,
@@ -63,6 +64,16 @@ void selectProductPurchase({
   final trackingNumberController = TextEditingController(
     text: purchaseItem.trackingNumber ?? '',
   );
+  String? selectedSupplierId = purchaseItem.supplierId;
+  String? selectedSupplierName = purchaseItem.supplierName;
+  if (selectedSupplierName == null && selectedSupplierId != null) {
+    selectedSupplierName =
+        returnSuppliersProvider(context: context, listen: false)
+            .suppliers
+            .where((s) => s.uuid == selectedSupplierId)
+            .firstOrNull
+            ?.name;
+  }
   final widthController = TextEditingController();
   final heightController = TextEditingController();
   if (purchaseItem.widthDimension != null) {
@@ -390,10 +401,107 @@ void selectProductPurchase({
                     ),
                     SizedBox(height: 10),
                     GeneralTextfieldOnly(
-                      hint: 'Tracking Number',
+                      hint: 'Tracking Number (Optional)',
                       controller: trackingNumberController,
                       lines: 1,
                       theme: theme,
+                    ),
+                    SizedBox(height: 10),
+                    InkWell(
+                      mouseCursor: SystemMouseCursors.click,
+                      borderRadius: BorderRadius.circular(5),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return SupplierList(
+                                isPurchase: true,
+                                onSelectSupplier: (supplier) {
+                                  setState(() {
+                                    selectedSupplierId = supplier.uuid;
+                                    selectedSupplierName = supplier.name;
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 40,
+                        padding: const EdgeInsets.only(left: 15, right: 5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                selectedSupplierName ??
+                                    'Select Item Supplier (Optional)',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight:
+                                      selectedSupplierName != null
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                  color:
+                                      selectedSupplierName != null
+                                          ? Colors.black87
+                                          : Colors.grey.shade600,
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              mouseCursor: SystemMouseCursors.click,
+                              onTap: () {
+                                if (selectedSupplierId != null) {
+                                  setState(() {
+                                    selectedSupplierId = null;
+                                    selectedSupplierName = null;
+                                  });
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SupplierList(
+                                          isPurchase: true,
+                                          onSelectSupplier: (supplier) {
+                                            setState(() {
+                                              selectedSupplierId =
+                                                  supplier.uuid;
+                                              selectedSupplierName =
+                                                  supplier.name;
+                                            });
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(7),
+                                child: Icon(
+                                  size: 18,
+                                  selectedSupplierId == null
+                                      ? Icons.arrow_forward_ios_rounded
+                                      : Icons.clear,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     SizedBox(height: 15),
                     Container(
@@ -599,6 +707,8 @@ void selectProductPurchase({
                                               : trackingNumberController
                                                   .text
                                                   .trim(),
+                                      supplierId: selectedSupplierId,
+                                      supplierName: selectedSupplierName,
                                     ),
                                   );
                                 } else {
@@ -662,6 +772,8 @@ void selectProductPurchase({
                                               : trackingNumberController
                                                   .text
                                                   .trim(),
+                                      supplierId: selectedSupplierId,
+                                      supplierName: selectedSupplierName,
                                     ),
                                   );
                                   Navigator.of(

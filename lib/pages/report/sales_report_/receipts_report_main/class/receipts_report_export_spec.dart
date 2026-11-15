@@ -149,7 +149,7 @@ ExportTableSection<ReceiptsReportRow> receiptsTableSection({
         value: (r) => r.customerLabel,
         width: 1.4,
       ),
-      ExportColumn(id: 'channel', label: 'Channel', value: (r) => r.channel.label),
+      ExportColumn(id: 'channel', label: 'Channel', value: (r) => r.channelLabel),
       ExportColumn(
         id: 'date',
         label: 'Date',
@@ -260,7 +260,7 @@ ExportTableSection<ReceiptsReportRow> receiptsTableSection({
         staffId: (r) => r.staffKey,
         staffName: (r) => r.staffName,
       ),
-      channelSplit<ReceiptsReportRow>(channel: (r) => r.channel.label),
+      channelSplit<ReceiptsReportRow>(channel: (r) => r.channelLabel),
       if (departmentsEnabled)
         fieldSplit<ReceiptsReportRow>(
           id: 'department',

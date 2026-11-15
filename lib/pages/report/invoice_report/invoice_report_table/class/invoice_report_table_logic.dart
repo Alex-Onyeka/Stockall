@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
@@ -453,7 +454,35 @@ class InvoiceReportRowBuilder {
       if (methodsUsed > 1) {
         paymentChannel = 'Split';
       } else if (bankPaid > 0) {
-        paymentChannel = 'Bank';
+        final bankLabels = <String>{};
+        for (final rec in relatedReceipts) {
+          if (rec.bank <= 0) continue;
+          final bLabel = rec.paymentBreakdown().label.trim();
+          if (bLabel.isNotEmpty &&
+              PaymentMethods.isBankMethod(bLabel) &&
+              bLabel.toLowerCase() != 'bank') {
+            bankLabels.add(bLabel);
+          } else if (rec.selectedBank != null &&
+              rec.selectedBank!.displayName.trim().isNotEmpty) {
+            bankLabels.add(rec.selectedBank!.displayName.trim());
+          } else if (PaymentMethods.isBankMethod(rec.paymentMethod) &&
+              rec.paymentMethod.trim().isNotEmpty &&
+              rec.paymentMethod.trim().toLowerCase() != 'bank') {
+            bankLabels.add(rec.paymentMethod.trim());
+          }
+        }
+        if (bankLabels.length == 1) {
+          paymentChannel = bankLabels.first;
+        } else if (invoice.selectedBank != null &&
+            invoice.selectedBank!.displayName.trim().isNotEmpty) {
+          paymentChannel = invoice.selectedBank!.displayName.trim();
+        } else if (PaymentMethods.isBankMethod(invoice.paymentMethod) &&
+            invoice.paymentMethod.trim().isNotEmpty &&
+            invoice.paymentMethod.trim().toLowerCase() != 'bank') {
+          paymentChannel = invoice.paymentMethod.trim();
+        } else {
+          paymentChannel = 'Bank';
+        }
       } else if (cashPaid > 0) {
         paymentChannel = 'Cash';
       } else if (accountPaid > 0) {
@@ -722,7 +751,7 @@ class InvoiceReportQuery {
                   return false;
                 break;
               case InvoicePaymentChannelFilter.bank:
-                if (row.paymentChannel != 'Bank')
+                if (!PaymentMethods.isBankMethod(row.paymentChannel))
                   return false;
                 break;
               case InvoicePaymentChannelFilter.split:

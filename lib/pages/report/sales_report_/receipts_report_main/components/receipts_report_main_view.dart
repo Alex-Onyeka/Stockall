@@ -1079,7 +1079,7 @@ class _ReceiptsReportMainViewState
       _Col(
         label: 'Channel',
         width: 140,
-        cell: (r) => _txt(theme, r.channel.label),
+        cell: (r) => _txt(theme, r.channelLabel),
       ),
       _Col(
         label: 'Date',

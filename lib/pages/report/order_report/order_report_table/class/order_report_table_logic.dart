@@ -366,6 +366,7 @@ class OrderReportRow {
   final double balance;
 
   final OrderPaymentChannel channel;
+  final String channelLabel;
 
   /// Null when no line has a cost price.
   final double? cost;
@@ -389,10 +390,11 @@ class OrderReportRow {
     required this.paid,
     required this.balance,
     required this.channel,
+    String? channelLabel,
     required this.cost,
     required this.profit,
     required this.margin,
-  });
+  }) : channelLabel = channelLabel ?? channel.label;
 
   String get uuid => order.uuid ?? '';
   String? get barcode => order.barcode;
@@ -510,6 +512,29 @@ class OrderReportRowBuilder {
     } else {
       channel = OrderPaymentChannel.cash;
     }
+    String channelLabel = channel.label;
+    if (channel == OrderPaymentChannel.bank) {
+      final bankLabels = <String>{};
+      for (final r in receipts) {
+        if (r.bank <= 0) continue;
+        final bLabel = r.paymentBreakdown().label.trim();
+        if (bLabel.isNotEmpty &&
+            PaymentMethods.isBankMethod(bLabel) &&
+            bLabel.toLowerCase() != 'bank') {
+          bankLabels.add(bLabel);
+        } else if (r.selectedBank != null &&
+            r.selectedBank!.displayName.trim().isNotEmpty) {
+          bankLabels.add(r.selectedBank!.displayName.trim());
+        } else if (PaymentMethods.isBankMethod(r.paymentMethod) &&
+            r.paymentMethod.trim().isNotEmpty &&
+            r.paymentMethod.trim().toLowerCase() != 'bank') {
+          bankLabels.add(r.paymentMethod.trim());
+        }
+      }
+      if (bankLabels.length == 1) {
+        channelLabel = bankLabels.first;
+      }
+    }
 
     final total = order.total ?? 0;
     final balance = math.max(0.0, total - paid);
@@ -566,6 +591,7 @@ class OrderReportRowBuilder {
       paid: paid,
       balance: balance,
       channel: channel,
+      channelLabel: channelLabel,
       cost: cost,
       profit: profit,
       margin: margin,

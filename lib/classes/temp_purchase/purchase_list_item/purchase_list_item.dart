@@ -18,6 +18,8 @@ class PurchaseListItem {
   double? widthDimension;
   double? heightDimension;
   String? trackingNumber;
+  String? supplierId;
+  String? supplierName;
 
   PurchaseListItem({
     required this.itemName,
@@ -35,6 +37,8 @@ class PurchaseListItem {
     this.widthDimension,
     this.heightDimension,
     this.trackingNumber,
+    this.supplierId,
+    this.supplierName,
   });
 
   PurchaseListItem copyWith({
@@ -53,6 +57,8 @@ class PurchaseListItem {
     double? widthDimension,
     double? heightDimension,
     String? trackingNumber,
+    String? supplierId,
+    String? supplierName,
   }) {
     return PurchaseListItem(
       itemName: itemName ?? this.itemName,
@@ -71,6 +77,8 @@ class PurchaseListItem {
       widthDimension: widthDimension ?? this.widthDimension,
       heightDimension: heightDimension ?? this.heightDimension,
       trackingNumber: trackingNumber ?? this.trackingNumber,
+      supplierId: supplierId ?? this.supplierId,
+      supplierName: supplierName ?? this.supplierName,
     );
   }
 
