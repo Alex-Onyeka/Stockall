@@ -6,6 +6,7 @@ import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -31,6 +32,14 @@ class LinkedDepartmentProductInfo {
     required this.product,
     required this.department,
   });
+}
+
+String _formatLinkedProductStock(TempProductClass product) {
+  final primaryQty = product.getPrimaryUnitQuantity(
+    index: 0,
+  );
+  final primaryUnit = product.getPrimaryUnit();
+  return '${formatLargeNumberDouble(primaryQty)} ${primaryUnit.name}';
 }
 
 // ============================================================================
@@ -362,7 +371,7 @@ class _BranchProductLinkWidgetState
                                                 ),
                                               ),
                                               subtitle: Text(
-                                                'Available: ${p.getActualQuantity() ?? 0} ${p.getProductUnit().name}',
+                                                'Available: ${_formatLinkedProductStock(p)}',
                                                 style: const TextStyle(
                                                   fontSize:
                                                       11,
@@ -388,25 +397,26 @@ class _BranchProductLinkWidgetState
                                                   productDialogCtx,
                                                 ).pop();
                                                 setState(() {
-                                                  _stagedBranches
-                                                      .removeWhere(
-                                                        (b) =>
-                                                            b.shop.shopId ==
-                                                            shop.shopId,
-                                                      );
+                                                  _stagedBranches.removeWhere(
+                                                    (b) =>
+                                                        b.shop.shopId ==
+                                                        shop.shopId,
+                                                  );
                                                   _stagedBranches.add(
                                                     LinkedProductInfo(
-                                                      product: p,
-                                                      shop: shop,
+                                                      product:
+                                                          p,
+                                                      shop:
+                                                          shop,
                                                     ),
                                                   );
-                                                  _removedBranches
-                                                      .removeWhere(
-                                                        (b) =>
-                                                            b.shop.shopId ==
-                                                            shop.shopId,
-                                                      );
-                                                  _isUnlinked = false;
+                                                  _removedBranches.removeWhere(
+                                                    (b) =>
+                                                        b.shop.shopId ==
+                                                        shop.shopId,
+                                                  );
+                                                  _isUnlinked =
+                                                      false;
                                                 });
                                                 widget.onBranchesChanged(
                                                   _stagedBranches,
@@ -441,7 +451,11 @@ class _BranchProductLinkWidgetState
         _isUnlinked = true;
       }
     });
-    widget.onBranchesChanged(_stagedBranches, _removedBranches, _isUnlinked);
+    widget.onBranchesChanged(
+      _stagedBranches,
+      _removedBranches,
+      _isUnlinked,
+    );
   }
 
   void _unlink() {
@@ -623,7 +637,7 @@ class _BranchProductLinkWidgetState
                                 ),
                               ),
                               Text(
-                                '${info.product.name} (Stock: ${info.product.getActualQuantity() ?? 0} ${info.product.getProductUnit().name})',
+                                '${info.product.name} (Stock: ${_formatLinkedProductStock(info.product)})',
                                 style: TextStyle(
                                   fontSize:
                                       widget
@@ -651,7 +665,8 @@ class _BranchProductLinkWidgetState
                           color: Colors.red.shade400,
                           splashRadius: 18,
                           tooltip: 'Remove',
-                          onPressed: () => _removeBranch(info),
+                          onPressed:
+                              () => _removeBranch(info),
                         ),
                       ],
                     ),
@@ -773,7 +788,8 @@ class DepartmentProductLinkWidget extends StatefulWidget {
 class _DepartmentProductLinkWidgetState
     extends State<DepartmentProductLinkWidget> {
   List<LinkedDepartmentProductInfo> _stagedDepts = [];
-  final List<LinkedDepartmentProductInfo> _removedDepts = [];
+  final List<LinkedDepartmentProductInfo> _removedDepts =
+      [];
   bool _isUnlinked = false;
 
   @override
@@ -911,11 +927,15 @@ class _DepartmentProductLinkWidgetState
                                     : null,
                             trailing: Icon(
                               isSelected
-                                  ? Icons.radio_button_checked
+                                  ? Icons
+                                      .radio_button_checked
                                   : Icons.radio_button_off,
                               color:
                                   isSelected
-                                      ? widget.theme.lightModeColor.prColor250
+                                      ? widget
+                                          .theme
+                                          .lightModeColor
+                                          .prColor250
                                       : Colors.grey,
                             ),
                             mouseCursor:
@@ -1005,7 +1025,9 @@ class _DepartmentProductLinkWidgetState
                                         final isSelected =
                                             _stagedDepts.any(
                                               (d) =>
-                                                  d.product.uuid ==
+                                                  d
+                                                      .product
+                                                      .uuid ==
                                                   p.uuid,
                                             );
 
@@ -1029,7 +1051,7 @@ class _DepartmentProductLinkWidgetState
                                             ),
                                           ),
                                           subtitle: Text(
-                                            'Available: ${p.getActualQuantity() ?? 0} ${p.getProductUnit().name}',
+                                            'Available: ${_formatLinkedProductStock(p)}',
                                             style:
                                                 const TextStyle(
                                                   fontSize:
@@ -1058,12 +1080,13 @@ class _DepartmentProductLinkWidgetState
                                               prodDialogCtx,
                                             ).pop();
                                             setState(() {
-                                              _stagedDepts
-                                                  .removeWhere(
-                                                    (d) =>
-                                                        d.department.uuid ==
-                                                        dept.uuid,
-                                                  );
+                                              _stagedDepts.removeWhere(
+                                                (d) =>
+                                                    d
+                                                        .department
+                                                        .uuid ==
+                                                    dept.uuid,
+                                              );
                                               _stagedDepts.add(
                                                 LinkedDepartmentProductInfo(
                                                   product:
@@ -1072,21 +1095,21 @@ class _DepartmentProductLinkWidgetState
                                                       dept,
                                                 ),
                                               );
-                                              _removedDepts
-                                                  .removeWhere(
-                                                    (d) =>
-                                                        d.department.uuid ==
-                                                        dept.uuid,
-                                                  );
+                                              _removedDepts.removeWhere(
+                                                (d) =>
+                                                    d
+                                                        .department
+                                                        .uuid ==
+                                                    dept.uuid,
+                                              );
                                               _isUnlinked =
                                                   false;
                                             });
-                                            widget
-                                                .onDepartmentsChanged(
-                                                  _stagedDepts,
-                                                  _removedDepts,
-                                                  false,
-                                                );
+                                            widget.onDepartmentsChanged(
+                                              _stagedDepts,
+                                              _removedDepts,
+                                              false,
+                                            );
                                           },
                                         );
                                       }).toList(),
@@ -1113,7 +1136,11 @@ class _DepartmentProductLinkWidgetState
         _isUnlinked = true;
       }
     });
-    widget.onDepartmentsChanged(_stagedDepts, _removedDepts, _isUnlinked);
+    widget.onDepartmentsChanged(
+      _stagedDepts,
+      _removedDepts,
+      _isUnlinked,
+    );
   }
 
   void _unlink() {
@@ -1162,7 +1189,10 @@ class _DepartmentProductLinkWidgetState
                 size: 16,
                 color:
                     hasLinks
-                        ? widget.theme.lightModeColor.prColor250
+                        ? widget
+                            .theme
+                            .lightModeColor
+                            .prColor250
                         : Colors.grey.shade700,
               ),
               const SizedBox(width: 8),
@@ -1284,7 +1314,7 @@ class _DepartmentProductLinkWidgetState
                                 ),
                               ),
                               Text(
-                                '${info.product.name} (Stock: ${info.product.getActualQuantity() ?? 0} ${info.product.getProductUnit().name})',
+                                '${info.product.name} (Stock: ${_formatLinkedProductStock(info.product)})',
                                 style: TextStyle(
                                   fontSize:
                                       widget
@@ -1312,7 +1342,8 @@ class _DepartmentProductLinkWidgetState
                           color: Colors.red.shade400,
                           splashRadius: 18,
                           tooltip: 'Remove',
-                          onPressed: () => _removeDept(info),
+                          onPressed:
+                              () => _removeDept(info),
                         ),
                       ],
                     ),

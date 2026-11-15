@@ -1386,7 +1386,7 @@ class _BulkTransferWizardDialogState
                                       ),
                                     ),
                                     Text(
-                                      'Available: ${item.sourceProduct.getActualQuantity() ?? 0} ${item.sourceProduct.getProductUnit().name}',
+                                      'Available: ${formatLargeNumberDouble(item.sourceProduct.getPrimaryUnitQuantity(index: 1))} ${item.sourceProduct.getPrimaryUnit().name}',
                                       style: TextStyle(
                                         color:
                                             Colors
@@ -1462,18 +1462,34 @@ class _BulkTransferWizardDialogState
                                                         6,
                                                   ),
                                                   Expanded(
-                                                    child: Text(
-                                                      item.isCreateInDestination
-                                                          ? '${dest.name} (New Product)'
-                                                          : dest.name,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize:
-                                                            theme.mobileTexts.b4.fontSize,
-                                                      ),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          item.isCreateInDestination
+                                                              ? '${dest.name} (New Product)'
+                                                              : dest.name,
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize:
+                                                                theme.mobileTexts.b4.fontSize,
+                                                          ),
+                                                          overflow:
+                                                              TextOverflow.ellipsis,
+                                                        ),
+                                                        if (!item.isCreateInDestination)
+                                                          Text(
+                                                            '${formatLargeNumberDouble(dest.getPrimaryUnitQuantity(index: 1))} ${dest.getPrimaryUnit().name}',
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  theme.mobileTexts.b5.fontSize,
+                                                              color:
+                                                                  Colors.grey.shade600,
+                                                            ),
+                                                          ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ],
@@ -1739,7 +1755,7 @@ class _BulkTransferWizardDialogState
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Destination: ${dest.name} ($destTitle)',
+                            'Destination: ${dest.name} ($destTitle)${!item.isCreateInDestination ? ' • Stock: ${formatLargeNumberDouble(dest.getPrimaryUnitQuantity(index: 1))} ${dest.getPrimaryUnit().name}' : ''}',
                             style: TextStyle(
                               fontSize:
                                   theme
@@ -2335,6 +2351,9 @@ class _BulkTransferWizardDialogState
                           ),
                         ),
                         Container(
+                          constraints: BoxConstraints(
+                            maxWidth: 130,
+                          ),
                           padding:
                               const EdgeInsets.symmetric(
                                 horizontal: 10,
@@ -2349,17 +2368,6 @@ class _BulkTransferWizardDialogState
                                 BorderRadius.circular(6),
                           ),
                           child: Text(
-                            item.transferQuantity > 0
-                                ? (item.showDimensionFields &&
-                                        item.customWidth !=
-                                            null &&
-                                        item.customHeight !=
-                                            null
-                                    ? '${formatLargeNumberDouble(item.transferQuantity)} $unitName (${formatDimension(item.customWidth!)} x ${formatDimension(item.customHeight!)} ${item.sourceProduct.dimensionUnit ?? ''})'
-                                    : '${formatLargeNumberDouble(item.transferQuantity)} $unitName')
-                                : (item.isCreateInDestination
-                                    ? 'Create Only (0 $unitName)'
-                                    : '0 $unitName'),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color:
@@ -2372,6 +2380,17 @@ class _BulkTransferWizardDialogState
                                       .b4
                                       .fontSize,
                             ),
+                            item.transferQuantity > 0
+                                ? (item.showDimensionFields &&
+                                        item.customWidth !=
+                                            null &&
+                                        item.customHeight !=
+                                            null
+                                    ? '${formatLargeNumberDouble(item.transferQuantity)} $unitName (${formatDimension(item.customWidth!)} x ${formatDimension(item.customHeight!)} ${item.sourceProduct.dimensionUnit ?? ''})'
+                                    : '${formatLargeNumberDouble(item.transferQuantity)} $unitName')
+                                : (item.isCreateInDestination
+                                    ? 'Create Only (0 $unitName)'
+                                    : '0 $unitName'),
                           ),
                         ),
                       ],
