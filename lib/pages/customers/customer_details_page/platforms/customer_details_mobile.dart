@@ -8,6 +8,7 @@ import 'package:stockall/pages/customers/customer_details_page/components/custom
 import 'package:stockall/pages/customers/customer_details_page/components/customer_details_section_widget.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_invoices_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_orders_section.dart';
+import 'package:stockall/pages/customers/customer_details_page/components/customer_print_record_button.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_sales_section.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_transactions_section.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
@@ -133,6 +134,13 @@ class _CustomerDetailsMobileState
                           ),
                         ],
                       ),
+                      const Spacer(),
+                      if (customer != null)
+                        CustomerPrintRecordButton(
+                          customer: customer,
+                          iconOnly: true,
+                        ),
+                      const SizedBox(width: 10),
                       Padding(
                         padding: const EdgeInsets.only(
                           right: 15.0,
