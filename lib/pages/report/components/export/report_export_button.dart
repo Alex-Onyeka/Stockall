@@ -38,11 +38,16 @@ class ReportExportButton extends StatefulWidget {
   final ReportExportBackend backend;
   final String label;
 
+  /// True shows a print icon with [label] as its tooltip instead of the
+  /// pill, for tight headers. The menu is the same.
+  final bool iconOnly;
+
   const ReportExportButton({
     super.key,
     required this.buildSpec,
     this.backend = const DefaultReportExportBackend(),
     this.label = 'Export',
+    this.iconOnly = false,
   });
 
   @override
@@ -233,7 +238,16 @@ class _ReportExportButtonState
       controller: _menu,
       menuChildren: _menuChildren(),
       builder:
-          (context, controller, child) => ReportPill(
+          (context, controller, child) =>
+              widget.iconOnly
+                  ? Tooltip(
+                    message: widget.label,
+                    child: IconButton(
+                      icon: const Icon(Icons.print_outlined),
+                      onPressed: _open,
+                    ),
+                  )
+                  : ReportPill(
             theme: theme,
             icon: Icons.ios_share_rounded,
             label: widget.label,
