@@ -246578,8 +246578,8 @@ var $async$a_3=A.h(function(b,c){if(b===1)return A.i(c,r)
 for(;;)switch(s){case 0:if(p.c||a.e==null){s=1
 break}s=p.Wl()!=null?3:5
 break
-case 3:if(A.a0(a,null,t.l).w.a.a>650){if("1.11.104.0"!==p.Wl().f){p.c=!0
-A.fWV(a,!1)}}else if("1.1.11+104"!==p.Wl().e){p.c=!0
+case 3:if(A.a0(a,null,t.l).w.a.a>650){if("1.11.107.0"!==p.Wl().f){p.c=!0
+A.fWV(a,!1)}}else if("1.1.11+107"!==p.Wl().e){p.c=!0
 A.fWV(a,!1)}s=4
 break
 case 5:s=6
@@ -246596,8 +246596,8 @@ i=l.f
 l=l.r
 n=new A.M3(k,j,i,l,null,null,A.O(t.n,t.S))
 if(n.r<2)++n.r
-else{n.e="1.1.11+104"
-n.f="1.11.104.0"
+else{n.e="1.1.11+107"
+n.f="1.11.107.0"
 n.r=0}s=6
 return A.b(o.IV(n),$async$W6)
 case 6:s=7
@@ -259823,7 +259823,7 @@ r=A.ae(o)
 r=A.K(A.dl(new A.d7G(),p,p,18,B.fN,p,p,"Call Us (+234 812 8735 130)"),!1,!1,!1,!1,r)
 q=A.ae(o)
 n=n.w.a
-return new A.hx(p,A.v(A.a([new A.p(p,10,p,p),m,new A.p(p,10,p,p),A.E(A.b5(A.ai(!1,B.C,!0,p,new A.A(B.dN,A.v(A.a([A.v(A.a([new A.aoT(p),new A.aoS(p),new A.a3m(p),r,A.K(A.dl(new A.d7H(),p,p,14,p,p,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,q),A.dl(new A.d7I(),p,p,20,B.kK,p,p,"Visit Help Center"),A.dl(new A.d7J(),p,p,18,B.kM,p,p,"Privacy P. & Terms/C."),A.dl(new A.d7K(),p,p,18,B.pH,p,p,"Go to Website.")],s),B.c,p,B.f,B.b,0,B.m),new A.p(p,A.a0(a,p,t.l).w.a.b*0.2,p,p)],s),B.c,p,B.f,B.b,0,B.m),p),B.j,B.G,0,p,p,p,p,p,B.L),B.B,p,p,p,p,!1,B.K),1),new A.p(p,15,p,p),A.z(p,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",p,p,p,p,A.e(p,p,B.dv,p,p,p,p,p,p,p,p,n,B.eC,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.f,B.b,10,p),A.d("1.11.104.0",p,p,p,p,A.e(p,p,B.at,p,p,p,p,p,p,p,p,n,B.eC,p,B.l,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.M,B.b,10,p),p),B.j,B.G,p,p,p,20,p,p,p,p,p,p),new A.p(p,10,p,p)],s),B.c,p,B.f,B.b,0,B.m),p)}}
+return new A.hx(p,A.v(A.a([new A.p(p,10,p,p),m,new A.p(p,10,p,p),A.E(A.b5(A.ai(!1,B.C,!0,p,new A.A(B.dN,A.v(A.a([A.v(A.a([new A.aoT(p),new A.aoS(p),new A.a3m(p),r,A.K(A.dl(new A.d7H(),p,p,14,p,p,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,q),A.dl(new A.d7I(),p,p,20,B.kK,p,p,"Visit Help Center"),A.dl(new A.d7J(),p,p,18,B.kM,p,p,"Privacy P. & Terms/C."),A.dl(new A.d7K(),p,p,18,B.pH,p,p,"Go to Website.")],s),B.c,p,B.f,B.b,0,B.m),new A.p(p,A.a0(a,p,t.l).w.a.b*0.2,p,p)],s),B.c,p,B.f,B.b,0,B.m),p),B.j,B.G,0,p,p,p,p,p,B.L),B.B,p,p,p,p,!1,B.K),1),new A.p(p,15,p,p),A.z(p,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",p,p,p,p,A.e(p,p,B.dv,p,p,p,p,p,p,p,p,n,B.eC,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.f,B.b,10,p),A.d("1.11.107.0",p,p,p,p,A.e(p,p,B.at,p,p,p,p,p,p,p,p,n,B.eC,p,B.l,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.M,B.b,10,p),p),B.j,B.G,p,p,p,20,p,p,p,p,p,p),new A.p(p,10,p,p)],s),B.c,p,B.f,B.b,0,B.m),p)}}
 A.d7F.prototype={
 $0(){A.B(this.a,!1).D()},
 $S:0}
@@ -259874,7 +259874,7 @@ s=A.ae(p)
 r=t.p
 s=A.E(A.dH(A.a([new A.aoT(q),new A.aoS(q),new A.a3m(q),m,A.K(A.dl(new A.d7N(),q,q,14,q,q,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,s),A.dl(new A.d7O(),q,q,20,B.kK,q,q,"Visit Help Center"),A.dl(new A.d7P(),q,q,18,B.kM,q,q,"Privacy P. & Terms/C."),A.dl(new A.d7Q(),q,q,18,B.pH,q,q,"Go to Website.")],r),q,q,q,B.K,!1),1)
 o=o.b.w.a
-return A.aP(n,q,A.eV(!0,new A.A(B.jB,A.v(A.a([s,new A.p(q,15,q,q),A.z(q,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",q,q,q,q,A.e(q,q,B.dv,q,q,q,q,q,q,q,q,o,B.eC,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.f,B.b,10,q),A.d("1.1.11+104",q,q,q,q,A.e(q,q,B.at,q,q,q,q,q,q,q,q,o,B.eC,q,B.l,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.M,B.b,10,q),q),B.j,B.G,q,q,q,20,q,q,q,q,q,q),new A.p(q,20,q,q)],r),B.c,q,B.f,B.b,0,B.m),q),B.ay,!0),q,q,q,q,q,q)}}
+return A.aP(n,q,A.eV(!0,new A.A(B.jB,A.v(A.a([s,new A.p(q,15,q,q),A.z(q,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",q,q,q,q,A.e(q,q,B.dv,q,q,q,q,q,q,q,q,o,B.eC,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.f,B.b,10,q),A.d("1.1.11+107",q,q,q,q,A.e(q,q,B.at,q,q,q,q,q,q,q,q,o,B.eC,q,B.l,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.M,B.b,10,q),q),B.j,B.G,q,q,q,20,q,q,q,q,q,q),new A.p(q,20,q,q)],r),B.c,q,B.f,B.b,0,B.m),q),B.ay,!0),q,q,q,q,q,q)}}
 A.d7L.prototype={
 $0(){A.B(this.a,!1).D()},
 $S:1}
@@ -261351,7 +261351,7 @@ f=A.ae(a3)
 l=A.v(A.a([p,A.E(A.e9(B.w,new A.A(B.bS,A.dH(A.a([new A.p(a1,10,a1,a1),m,new A.p(a1,20,a1,a1),new A.a3Y(a1),e,new A.p(a1,20,a1,a1),A.K(A.v(A.a([k,new A.p(a1,15,a1,a1),new A.p(1/0,a1,A.v(A.a([h,A.f(A.a([A.K(A.h7(new A.d9t(b3),"assets/svgs/employees_icon.svg",j,a1,b1,"Staffs"),!1,!1,!1,!1,f),A.K(new A.p(10,a1,a1,a1),!1,!1,!1,!1,A.ae(a3)),A.h7(new A.d9u(b3),a8,a1,a1,b1,a9),new A.p(10,a1,a1,a1),A.h7(new A.d9v(a0,b3),a6,a1,a1,b1,a7)],a),B.c,B.f,B.b,0,a1)],a),B.c,a1,B.f,B.b,10,B.m),a1)],a),B.c,a1,B.f,B.b,0,B.m),!1,!1,!1,!1,l!=="Store Keeper"),new A.p(a1,30,a1,a1)],a),a1,a1,a1,B.K,!1),a1),n,10,new A.d9w(b3),2.5),1)],a),B.c,a1,B.f,B.b,0,B.m)
 p=t.Cx
 m=A.u(b3,!0,p).c
-p="1.11.104.0"!==(m==null?a1:m.f)&&!A.u(b3,!0,p).e
+p="1.11.107.0"!==(m==null?a1:m.f)&&!A.u(b3,!0,p).e
 i=A.a([new A.bh(10,B.ai,B.Fg,B.T,20)],i)
 m=A.I(5)
 k=A.f(A.a([A.ev(A.c_(a1,a1,a1,A.S(B.Z,a1,a1,a1,a1),a1,a1,B.y,new A.d9x(),a1,a1,a1,a1,a1),0),A.d("NEW UPDATE AVAILABLE",a1,a1,a1,a1,A.e(a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,B.l,a1,a1,!0,a1,a1,a1,a1,a1,a1,a1,a1),a1,a1,a1),A.c_(a1,a1,a1,A.S(B.Z,a1,a1,a1,a1),a1,a1,B.y,new A.d9y(b3),a1,a1,a1,a1,a1)],a),B.c,B.E,B.b,10,a1)
@@ -261782,7 +261782,7 @@ g=i.e
 j=A.v(A.a([q,A.E(A.e9(B.w,new A.A(B.bS,A.dH(A.a([new A.p(a4,10,a4,a4),n,new A.p(a4,20,a4,a4),new A.a3Y(a4),m,k,new A.p(a4,20,a4,a4),A.K(A.v(A.a([A.f(A.a([A.d("Quick Actions",a4,a4,a4,a4,A.e(a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,g.a,a4,a4,g.c,a4,a4,!0,a4,a4,a4,a4,a4,a4,a4,a4),a4,a4,a4)],l),B.c,B.f,B.b,0,a4),new A.p(a4,15,a4,a4),new A.p(1/0,a4,A.bs(new A.daX(a3,a9)),a4)],l),B.c,a4,B.f,B.b,0,B.m),!1,!1,!1,!1,j!=="Store Keeper"),new A.p(a4,100,a4,a4)],l),a4,a4,a4,B.K,!1),a4),o,10,new A.daY(b1),2.5),1)],l),B.c,a4,B.f,B.b,0,B.m)
 q=t.Cx
 n=A.u(b1,!0,q).c
-n="1.1.11+104"!==(n==null?a4:n.e)&&!A.u(b1,!0,q).e
+n="1.1.11+107"!==(n==null?a4:n.e)&&!A.u(b1,!0,q).e
 m=t.V
 k=A.a([new A.bh(10,B.ai,B.Fg,B.T,20)],m)
 g=A.I(5)
@@ -261810,7 +261810,7 @@ a0=A.aT(b1)
 a1=A.I(5)
 n=A.K(new A.bi(new A.bR(0,-0.8),a4,a4,A.ai(!1,B.C,!0,a4,A.z(a4,A.v(A.a([f,d,c,new A.p(a4,15,a4,a4),A.f(A.a([b,a,h,A.K(A.E(A.ai(!1,B.C,!0,a4,A.bt(A.a1(!1,a4,!0,A.z(a4,A.ar(new A.A(B.ky,a3.d?A.e_(a4,B.w,a4,a4,a4,a4,a4,a4,a4,a4):A.d(a8,a4,a4,a4,a4,A.e(a4,a4,B.w,a4,a4,a4,a4,a4,a4,a4,a4,i,a4,a4,B.l,a4,a4,!0,a4,a4,a4,a4,a4,a4,a4,a4),a4,a4,a4),a4),a4,a4),B.j,a4,a4,a4,a4,a4,a4,a4,new A.C(15,10,15,10),a4,a4,a4),a4,!0,a4,a4,a4,a4,a4,B.y,a4,a4,a4,a4,a4,new A.daM(a3),a4,a4,a4,a4,a4,a4,a4),a4,new A.F(o,a4,a4,a1,a4,a4,B.r),a4),B.j,B.G,0,a4,a4,a4,a4,a4,B.L),1),!1,!1,!1,!1,a0.w!==B.bp)],l),B.c,B.M,B.b,0,a4)],l),B.c,a4,B.f,B.I,0,B.m),B.j,a4,a4,new A.F(B.w,a4,a4,g,k,a4,B.r),a4,a4,a4,a4,new A.C(15,15,15,30),a4,a4,450),B.j,B.G,2,a4,a4,a4,a4,a4,B.L),a4),!1,!1,!1,!1,n)
 k=A.u(b1,!0,q).c
-q="1.11.104.0"!==(k==null?a4:k.f)&&!A.u(b1,!0,q).e
+q="1.11.107.0"!==(k==null?a4:k.f)&&!A.u(b1,!0,q).e
 m=A.a([new A.bh(10,B.ai,B.Fg,B.T,20)],m)
 k=A.I(5)
 h=A.f(A.a([A.ev(A.c_(a4,a4,a4,A.S(B.Z,a4,a4,a4,a4),a4,a4,B.y,new A.daN(),a4,a4,a4,a4,a4),0),A.d("APP UPDATE AVAILABLE",a4,a4,a4,a4,A.e(a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,B.l,a4,a4,!0,a4,a4,a4,a4,a4,a4,a4,a4),a4,a4,a4),A.c_(a4,a4,a4,A.S(B.Z,a4,a4,a4,a4),a4,a4,B.y,new A.daO(b1),a4,a4,a4,a4,a4)],l),B.c,B.E,B.b,10,a4)
@@ -281220,7 +281220,7 @@ r=A.ae(o)
 r=A.K(A.dl(new A.efe(),p,p,18,B.fN,p,p,"Call Us (+234 812 8735 130)"),!1,!1,!1,!1,r)
 q=A.ae(o)
 n=n.w.a
-return new A.hx(p,A.v(A.a([new A.p(p,10,p,p),m,new A.p(p,10,p,p),A.E(A.b5(A.ai(!1,B.C,!0,p,new A.A(B.dN,A.v(A.a([A.v(A.a([new A.aoW(p),new A.aoU(p),r,A.K(A.dl(new A.eff(),p,p,14,p,p,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,q),A.dl(new A.efg(),p,p,20,B.kK,p,p,"Visit Help Center"),A.dl(new A.efh(),p,p,18,B.kM,p,p,"Privacy P. & Terms/C."),A.dl(new A.efi(),p,p,18,B.pH,p,p,"Go to Website.")],s),B.c,p,B.f,B.b,0,B.m),new A.p(p,A.a0(a,p,t.l).w.a.b*0.2,p,p)],s),B.c,p,B.f,B.b,0,B.m),p),B.j,B.G,0,p,p,p,p,p,B.L),B.B,p,p,p,p,!1,B.K),1),new A.p(p,15,p,p),A.z(p,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",p,p,p,p,A.e(p,p,B.dv,p,p,p,p,p,p,p,p,n,B.eC,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.f,B.b,10,p),A.d("1.11.104.0",p,p,p,p,A.e(p,p,B.at,p,p,p,p,p,p,p,p,n,B.eC,p,B.l,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.M,B.b,10,p),p),B.j,B.G,p,p,p,20,p,p,p,p,p,p),new A.p(p,10,p,p)],s),B.c,p,B.f,B.b,0,B.m),p)}}
+return new A.hx(p,A.v(A.a([new A.p(p,10,p,p),m,new A.p(p,10,p,p),A.E(A.b5(A.ai(!1,B.C,!0,p,new A.A(B.dN,A.v(A.a([A.v(A.a([new A.aoW(p),new A.aoU(p),r,A.K(A.dl(new A.eff(),p,p,14,p,p,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,q),A.dl(new A.efg(),p,p,20,B.kK,p,p,"Visit Help Center"),A.dl(new A.efh(),p,p,18,B.kM,p,p,"Privacy P. & Terms/C."),A.dl(new A.efi(),p,p,18,B.pH,p,p,"Go to Website.")],s),B.c,p,B.f,B.b,0,B.m),new A.p(p,A.a0(a,p,t.l).w.a.b*0.2,p,p)],s),B.c,p,B.f,B.b,0,B.m),p),B.j,B.G,0,p,p,p,p,p,B.L),B.B,p,p,p,p,!1,B.K),1),new A.p(p,15,p,p),A.z(p,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",p,p,p,p,A.e(p,p,B.dv,p,p,p,p,p,p,p,p,n,B.eC,p,p,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.f,B.b,10,p),A.d("1.11.107.0",p,p,p,p,A.e(p,p,B.at,p,p,p,p,p,p,p,p,n,B.eC,p,B.l,p,p,!0,p,p,p,p,p,p,p,p),p,p,p)],s),B.c,B.M,B.b,10,p),p),B.j,B.G,p,p,p,20,p,p,p,p,p,p),new A.p(p,10,p,p)],s),B.c,p,B.f,B.b,0,B.m),p)}}
 A.efd.prototype={
 $0(){A.B(this.a,!1).D()},
 $S:0}
@@ -281271,7 +281271,7 @@ s=A.ae(p)
 r=t.p
 s=A.E(A.dH(A.a([new A.aoW(q),new A.aoU(q),m,A.K(A.dl(new A.efl(),q,q,14,q,q,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,s),A.dl(new A.efm(),q,q,20,B.kK,q,q,"Visit Help Center"),A.dl(new A.efn(),q,q,18,B.kM,q,q,"Privacy P. & Terms/C."),A.dl(new A.efo(),q,q,18,B.pH,q,q,"Go to Website.")],r),q,q,q,B.K,!1),1)
 o=o.b.w.a
-return A.aP(n,q,A.eV(!0,new A.A(B.jB,A.v(A.a([s,new A.p(q,15,q,q),A.z(q,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",q,q,q,q,A.e(q,q,B.dv,q,q,q,q,q,q,q,q,o,B.eC,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.f,B.b,10,q),A.d("1.1.11+104",q,q,q,q,A.e(q,q,B.at,q,q,q,q,q,q,q,q,o,B.eC,q,B.l,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.M,B.b,10,q),q),B.j,B.G,q,q,q,20,q,q,q,q,q,q),new A.p(q,20,q,q)],r),B.c,q,B.f,B.b,0,B.m),q),B.ay,!0),q,q,q,q,q,q)}}
+return A.aP(n,q,A.eV(!0,new A.A(B.jB,A.v(A.a([s,new A.p(q,15,q,q),A.z(q,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",q,q,q,q,A.e(q,q,B.dv,q,q,q,q,q,q,q,q,o,B.eC,q,q,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.f,B.b,10,q),A.d("1.1.11+107",q,q,q,q,A.e(q,q,B.at,q,q,q,q,q,q,q,q,o,B.eC,q,B.l,q,q,!0,q,q,q,q,q,q,q,q),q,q,q)],r),B.c,B.M,B.b,10,q),q),B.j,B.G,q,q,q,20,q,q,q,q,q,q),new A.p(q,20,q,q)],r),B.c,q,B.f,B.b,0,B.m),q),B.ay,!0),q,q,q,q,q,q)}}
 A.efj.prototype={
 $0(){A.B(this.a,!1).D()},
 $S:1}
@@ -340770,7 +340770,7 @@ a4=A.dl(new A.eDC(a9,a4),a,a,18,B.nt,a,a,"Download Desktop App")
 d=A.ae(a1)
 d=A.K(A.dl(new A.eDE(),a,a,18,B.fN,a,a,"Call Us (+234 812 8735 130)"),!1,!1,!1,!1,d)
 c=A.ae(a1)
-return A.aV(B.ad,A.a([new A.hx(a,A.v(A.a([new A.p(a,10,a,a),a6,new A.p(a,10,a,a),A.E(A.b5(A.ai(!1,B.C,!0,a,new A.A(B.dN,A.v(A.a([A.v(A.a([a5,s,r,q,p,o,new A.afY(a),new A.aoV(a),new A.ap_(a),new A.afX(a),new A.aoY(a),new A.aoX(a),new A.apP(a),new A.aoZ(a),new A.a3l(a),n,m,l,new A.aoP(a),k,j,i,h,g,f,e,a4,d,A.K(A.dl(new A.eDF(),a,a,14,a,a,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,c),A.dl(new A.eDG(),a,a,20,B.kK,a,a,"Visit Help Center"),A.dl(new A.eDH(),a,a,18,B.kM,a,a,"Privacy P. & Terms/C."),A.dl(new A.eDI(),a,a,18,B.pH,a,a,"Go to Website."),B.arO,B.arM,new A.a9K(a)],a7),B.c,a,B.f,B.b,0,B.m),new A.p(a,A.a0(a9,a,t.l).w.a.b*0.2,a,a)],a7),B.c,a,B.f,B.b,0,B.m),a),B.j,B.G,0,a,a,a,a,a,B.L),B.B,a,a,a,a,!1,B.K),1),new A.p(a,15,a,a),A.z(a,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",a,a,a,a,A.e(a,a,B.dv,a,a,a,a,a,a,a,a,a8,B.eC,a,a,a,a,!0,a,a,a,a,a,a,a,a),a,a,a)],a7),B.c,B.f,B.b,10,a),A.d("1.11.104.0",a,a,a,a,A.e(a,a,B.at,a,a,a,a,a,a,a,a,a8,B.eC,a,B.l,a,a,!0,a,a,a,a,a,a,a,a),a,a,a)],a7),B.c,B.M,B.b,10,a),a),B.j,B.G,a,a,a,20,a,a,a,a,a,a),new A.p(a,10,a,a)],a7),B.c,a,B.f,B.b,0,B.m),a),A.K(A.u(a9,!1,t.r).bm("Deleting Store"),!1,!1,!1,!1,!1)],a7),B.B,B.a_,a)}}
+return A.aV(B.ad,A.a([new A.hx(a,A.v(A.a([new A.p(a,10,a,a),a6,new A.p(a,10,a,a),A.E(A.b5(A.ai(!1,B.C,!0,a,new A.A(B.dN,A.v(A.a([A.v(A.a([a5,s,r,q,p,o,new A.afY(a),new A.aoV(a),new A.ap_(a),new A.afX(a),new A.aoY(a),new A.aoX(a),new A.apP(a),new A.aoZ(a),new A.a3l(a),n,m,l,new A.aoP(a),k,j,i,h,g,f,e,a4,d,A.K(A.dl(new A.eDF(),a,a,14,a,a,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,c),A.dl(new A.eDG(),a,a,20,B.kK,a,a,"Visit Help Center"),A.dl(new A.eDH(),a,a,18,B.kM,a,a,"Privacy P. & Terms/C."),A.dl(new A.eDI(),a,a,18,B.pH,a,a,"Go to Website."),B.arO,B.arM,new A.a9K(a)],a7),B.c,a,B.f,B.b,0,B.m),new A.p(a,A.a0(a9,a,t.l).w.a.b*0.2,a,a)],a7),B.c,a,B.f,B.b,0,B.m),a),B.j,B.G,0,a,a,a,a,a,B.L),B.B,a,a,a,a,!1,B.K),1),new A.p(a,15,a,a),A.z(a,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",a,a,a,a,A.e(a,a,B.dv,a,a,a,a,a,a,a,a,a8,B.eC,a,a,a,a,!0,a,a,a,a,a,a,a,a),a,a,a)],a7),B.c,B.f,B.b,10,a),A.d("1.11.107.0",a,a,a,a,A.e(a,a,B.at,a,a,a,a,a,a,a,a,a8,B.eC,a,B.l,a,a,!0,a,a,a,a,a,a,a,a),a,a,a)],a7),B.c,B.M,B.b,10,a),a),B.j,B.G,a,a,a,20,a,a,a,a,a,a),new A.p(a,10,a,a)],a7),B.c,a,B.f,B.b,0,B.m),a),A.K(A.u(a9,!1,t.r).bm("Deleting Store"),!1,!1,!1,!1,!1)],a7),B.B,B.a_,a)}}
 A.eDq.prototype={
 $0(){A.B(this.a,!1).D()},
 $S:0}
@@ -341256,7 +341256,7 @@ f=A.dl(new A.eEW(a8,a2),c,c,18,B.nt,c,c,f)
 a2=A.ae(a)
 a2=A.K(A.dl(new A.eEX(),c,c,18,B.fN,c,c,"Call Us (+234 812 8735 130)"),!1,!1,!1,!1,a2)
 e=A.ae(a)
-return A.aV(B.ad,A.a([A.aP(a5,c,A.eV(!0,new A.A(B.jB,A.v(A.a([A.E(A.dH(A.a([a6,a7,s,r,q,p,o,n,m,l,k,new A.afY(c),new A.aoV(c),new A.ap_(c),new A.aoY(c),new A.aoX(c),new A.afX(c),new A.apP(c),new A.aoZ(c),new A.a3l(c),j,i,new A.aoP(c),h,g,f,a2,A.K(A.dl(new A.eEZ(),c,c,14,c,c,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,e),A.dl(new A.eF_(),c,c,20,B.kK,c,c,"Visit Help Center"),A.dl(new A.eF0(),c,c,18,B.kM,c,c,"Privacy P. & Terms/C."),A.dl(new A.eF1(),c,c,18,B.pH,c,c,"Go to Website."),B.arO,B.arM,new A.a9K(c)],a4),c,c,c,B.K,!1),1),new A.p(c,15,c,c),A.z(c,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",c,c,c,c,A.e(c,c,B.dv,c,c,c,c,c,c,c,c,a3,B.eC,c,c,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],a4),B.c,B.f,B.b,10,c),A.d("1.1.11+104",c,c,c,c,A.e(c,c,B.at,c,c,c,c,c,c,c,c,a3,B.eC,c,B.l,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],a4),B.c,B.M,B.b,10,c),c),B.j,B.G,c,c,c,20,c,c,c,c,c,c),new A.p(c,20,c,c)],a4),B.c,c,B.f,B.b,0,B.m),c),B.ay,!0),c,c,c,c,c,c),A.K(A.u(a8,!1,t.r).bm("Deleting Store"),!1,!1,!1,!1,!1)],a4),B.B,B.a_,c)}}
+return A.aV(B.ad,A.a([A.aP(a5,c,A.eV(!0,new A.A(B.jB,A.v(A.a([A.E(A.dH(A.a([a6,a7,s,r,q,p,o,n,m,l,k,new A.afY(c),new A.aoV(c),new A.ap_(c),new A.aoY(c),new A.aoX(c),new A.afX(c),new A.apP(c),new A.aoZ(c),new A.a3l(c),j,i,new A.aoP(c),h,g,f,a2,A.K(A.dl(new A.eEZ(),c,c,14,c,c,"assets/svgs/whatsapp_logo_icon.svg","Chat With Us"),!1,!1,!1,!1,e),A.dl(new A.eF_(),c,c,20,B.kK,c,c,"Visit Help Center"),A.dl(new A.eF0(),c,c,18,B.kM,c,c,"Privacy P. & Terms/C."),A.dl(new A.eF1(),c,c,18,B.pH,c,c,"Go to Website."),B.arO,B.arM,new A.a9K(c)],a4),c,c,c,B.K,!1),1),new A.p(c,15,c,c),A.z(c,new A.A(B.ap,A.f(A.a([A.f(A.a([A.d("Current Version:",c,c,c,c,A.e(c,c,B.dv,c,c,c,c,c,c,c,c,a3,B.eC,c,c,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],a4),B.c,B.f,B.b,10,c),A.d("1.1.11+107",c,c,c,c,A.e(c,c,B.at,c,c,c,c,c,c,c,c,a3,B.eC,c,B.l,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],a4),B.c,B.M,B.b,10,c),c),B.j,B.G,c,c,c,20,c,c,c,c,c,c),new A.p(c,20,c,c)],a4),B.c,c,B.f,B.b,0,B.m),c),B.ay,!0),c,c,c,c,c,c),A.K(A.u(a8,!1,t.r).bm("Deleting Store"),!1,!1,!1,!1,!1)],a4),B.B,B.a_,c)}}
 A.eEL.prototype={
 $0(){A.B(this.a,!1).D()},
 $S:1}
@@ -347549,8 +347549,8 @@ c43(a){var s,r
 if(this.c==null)return!1
 s=A.a0(a,null,t.l).w
 r=this.c
-if(s.a.a<=650)return r.e!=="1.1.11+104"
-else return r.f!=="1.11.104.0"},
+if(s.a.a<=650)return r.e!=="1.1.11+107"
+else return r.f!=="1.11.107.0"},
 xW(a){return this.b2n(a)},
 b2n(a){var s=0,r=A.l(t.In),q,p=2,o=[],n=this,m,l,k,j,i,h
 var $async$xW=A.h(function(b,c){if(b===1){o.push(c)
@@ -347577,10 +347577,10 @@ n.A()
 s=13
 return A.b(A.m("App Version gotten Successfully",null,null),$async$xW)
 case 13:if(A.a0(a,null,t.l).w.a.a<=650){k=n.c
-if((k==null?null:k.e)!=="1.1.11+104"){n.e=!1
+if((k==null?null:k.e)!=="1.1.11+107"){n.e=!1
 n.A()}else{n.e=!0
 n.A()}}else{k=n.c
-if((k==null?null:k.f)!=="1.11.104.0"){n.e=!1
+if((k==null?null:k.f)!=="1.11.107.0"){n.e=!1
 n.A()}else{n.e=!0
 n.A()}}k=n.c
 q=k
@@ -347617,10 +347617,10 @@ k=k.T()
 k=k.b.$1(J.ex(k.a))}else k=null
 n.c=k
 if(A.a0(a,null,t.l).w.a.a<=650){k=n.c
-if((k==null?null:k.e)!=="1.1.11+104"){n.e=!1
+if((k==null?null:k.e)!=="1.1.11+107"){n.e=!1
 n.A()}else{n.e=!0
 n.A()}}else{k=n.c
-if((k==null?null:k.f)!=="1.11.104.0"){n.e=!1
+if((k==null?null:k.f)!=="1.11.107.0"){n.e=!1
 n.A()}else{n.e=!0
 n.A()}}s=15
 return A.b(A.m("App version gotten Offline",null,null),$async$xW)

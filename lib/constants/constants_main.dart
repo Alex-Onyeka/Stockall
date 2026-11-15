@@ -168,8 +168,8 @@ String getContactPhoneNumber({required int formatIndex}) {
       : contactPhoneNumberCpountryCodeFormatted;
 }
 
-const String appVersionMobile = '1.1.11+104';
-const String appVersionDesktop = '1.11.104.0';
+const String appVersionMobile = '1.1.11+107';
+const String appVersionDesktop = '1.11.107.0';
 
 String shopRef() {
   String tempId =
