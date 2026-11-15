@@ -271,8 +271,7 @@ class DataProvider extends ChangeNotifier {
                     isIncludeQuantity:
                         item.includeQuantity ?? true,
                   ),
-                )
-                .select();
+                );
             count++;
             await CreatedProductFunc().deleteProduct(
               item.product.uuid!,
@@ -300,9 +299,7 @@ class DataProvider extends ChangeNotifier {
         await mainLocalLog(
           '$count items added successfully',
         );
-        await getProducts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await syncProductsIncremental();
 
         clearFields();
         await mainLocalLog('Unsynced Products Cleared');
@@ -329,12 +326,11 @@ class DataProvider extends ChangeNotifier {
 
         try {
           // Attempt bulk delete first
-          final data =
-              await supabase
-                  .from('products')
-                  .delete()
-                  .inFilter('uuid', uuids)
-                  .select();
+          final data = await supabase
+              .from('products')
+              .delete()
+              .inFilter('uuid', uuids)
+              .select('uuid');
 
           await mainLocalLog(
             '${data.length} items deleted successfully',
@@ -374,9 +370,7 @@ class DataProvider extends ChangeNotifier {
           }
         }
 
-        await getProducts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        await syncProductsIncremental();
 
         clearFields();
         await mainLocalLog(
@@ -661,8 +655,11 @@ class DataProvider extends ChangeNotifier {
       try {
         bool isOnline = await connectivity.isOnline();
         if (isOnline) {
+          final shopProvider = returnShopProvider();
           List<TempShopClass> shop =
-              await returnShopProvider().getUserShops();
+              shopProvider.userShops.isNotEmpty
+                  ? shopProvider.userShops
+                  : await shopProvider.getUserShops();
           if (shop.isNotEmpty) {
             if (CreatedCategoriesFunc()
                     .getCreateCategories()

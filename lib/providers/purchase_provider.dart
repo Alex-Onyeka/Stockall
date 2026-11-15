@@ -49,6 +49,34 @@ class PurchaseProvider extends ChangeNotifier {
   List<TempPurchase> _purchases = [];
   List<TempPurchase> get purchases => _purchases;
   final Set<String> _reversedPurchaseIds = {};
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
 
   final String tableName = 'purchases';
   final String itemPurchaseTableName =
@@ -57,6 +85,8 @@ class PurchaseProvider extends ChangeNotifier {
   void clearPurchases() {
     _purchases.clear();
     _reversedPurchaseIds.clear();
+    _fetchedDateKeys.clear();
+    _fetchedShopId = null;
     // clearRecords();
     mainLocalLog('Purchases Cleared');
     notifyListeners();
@@ -326,18 +356,58 @@ class PurchaseProvider extends ChangeNotifier {
     return renamed.length;
   }
 
-  // READ all Purchases for a shop
+  // READ Purchases for a shop (current business day by default, or specific date range)
   Future<List<TempPurchase>> loadPurchases(
-    int shopId,
-  ) async {
+    int shopId, {
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline && PurchaseFunc().isSynced()) {
+      final effectiveStart =
+          startDate ??
+          dateSet ??
+          rangeStartDate ??
+          resolveBusinessDate(DateTime.now());
+      final effectiveEnd =
+          endDate ??
+          (dateSet ?? rangeEndDate ?? effectiveStart);
+
+      if (!fetchAll &&
+          !forceRefresh &&
+          _isRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          )) {
+        return _purchases;
+      }
+
+      final windowStart = fourAm(effectiveStart);
+      final windowEnd = fourAmNextDay(effectiveEnd);
+
       try {
-        final data = await supabase
+        var query = supabase
             .from(tableName)
             .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          query = query
+              .gte(
+                'created_at',
+                windowStart.toUtc().toIso8601String(),
+              )
+              .lt(
+                'created_at',
+                windowEnd.toUtc().toIso8601String(),
+              );
+        }
+        final data = await query.order(
+          'created_at',
+          ascending: false,
+        );
         if (data.isNotEmpty) {
           await mainLocalLog(
             'Purchases Gotten ${data.length}',
@@ -348,7 +418,31 @@ class PurchaseProvider extends ChangeNotifier {
             (data as List)
                 .map((json) => TempPurchase.fromJson(json))
                 .toList();
-        _purchases = remotePurchases;
+        if (fetchAll) {
+          _purchases = remotePurchases;
+        } else {
+          final fetchedUuids =
+              remotePurchases.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              _purchases.where((rec) {
+                if (fetchedUuids.contains(rec.uuid)) {
+                  return false;
+                }
+                final inWindow =
+                    !rec.createdAt.isBefore(windowStart) &&
+                    rec.createdAt.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          _purchases = [...remotePurchases, ...outsideWindow]
+            ..sort(
+              (a, b) => b.createdAt.compareTo(a.createdAt),
+            );
+          _markRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          );
+        }
         await PurchaseFunc().insertAllPurchases(_purchases);
         await mainLocalLog('Loaded');
         notifyListeners();
@@ -394,6 +488,10 @@ class PurchaseProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      final sId = returnShopProvider().userShop()?.shopId;
+      if (sId != null) {
+        loadPurchases(sId, startDate: date, endDate: date);
+      }
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -411,6 +509,14 @@ class PurchaseProvider extends ChangeNotifier {
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
+    final sId = returnShopProvider().userShop()?.shopId;
+    if (sId != null) {
+      loadPurchases(
+        sId,
+        startDate: rangeStart,
+        endDate: endOfrange,
+      );
+    }
     notifyListeners();
   }
 
@@ -989,8 +1095,7 @@ class PurchaseProvider extends ChangeNotifier {
                 .upsert(
                   item.purchase.toJson(),
                   onConflict: 'uuid',
-                )
-                .select();
+                );
             count++;
             await CreatedPurchasesFunc().deletePurchase(
               uuid,

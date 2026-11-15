@@ -111,7 +111,7 @@ class ProductionItemsProvider extends ChangeNotifier {
                         isIncludeQuantity: item.includeQuantity ?? true,
                       ),
                     )
-                    .select()
+                    .select('uuid')
                     .maybeSingle();
             if (res != null) {
               count++;
@@ -136,10 +136,6 @@ class ProductionItemsProvider extends ChangeNotifier {
         }
 
         await mainLocalLog('$count productionItems added successfully ✅');
-        // await CreatedProductionItemsFunc().clearProductionItems();
-        await mainLocalLog('Mounted, refreshing productionItems ✅');
-        await getProductionItems();
-
         await mainLocalLog('Unsynced ProductionItems Cleared');
       }
     } catch (e) {
@@ -164,17 +160,13 @@ class ProductionItemsProvider extends ChangeNotifier {
                 .from(tableName)
                 .delete()
                 .inFilter('uuid', uuids)
-                .select();
+                .select('uuid');
 
         await mainLocalLog(
           '${data.length} productionItems deleted successfully ✅',
         );
 
         await DeletedProductionItemsFunc().clearDeletedProductionItem();
-
-        await mainLocalLog('Mounted, refreshing productionItems ✅');
-        await getProductionItems();
-
         await mainLocalLog('Unsynced deleted productionItems cleared');
       }
     } catch (e) {
@@ -347,15 +339,22 @@ class ProductionItemsProvider extends ChangeNotifier {
     }
   }
 
+  DateTime? _lastSyncAt;
+  int? _lastSyncShopId;
+
   void clearProductionItems() {
     productionItemListMain.clear();
+    _lastSyncAt = null;
+    _lastSyncShopId = null;
     mainLocalLog('ProductionItems Cleared');
     notifyListeners();
   }
 
   int? allowedRangeProductionItems;
 
-  Future<List<ProductionItem>> getProductionItems() async {
+  Future<List<ProductionItem>> getProductionItems({
+    bool forceRefresh = false,
+  }) async {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog('✅✅ ProductionItems List Cleared');
@@ -364,6 +363,64 @@ class ProductionItemsProvider extends ChangeNotifier {
           returnShopProvider().userShop()?.manageProductions == true &&
           authorization(authorized: Authorizations().viewProductions) &&
           GeneralSettingsAuthAction().manageProductions(context: null)) {
+        final currentShopId = shopId();
+        if (!forceRefresh &&
+            _lastSyncAt != null &&
+            _lastSyncShopId == currentShopId &&
+            productionItemListMain.isNotEmpty) {
+          try {
+            final safeSince = _lastSyncAt!
+                .subtract(const Duration(seconds: 5))
+                .toUtc();
+            final res = await supabase
+                .from(tableName)
+                .select()
+                .eq('shop_id', currentShopId)
+                .gt('updated_at', safeSince.toIso8601String())
+                .order('updated_at', ascending: true);
+            if (res.isNotEmpty) {
+              final pendingUuids = {
+                ...UpdatedProductionItemsFunc()
+                    .getProductionItems()
+                    .map((u) => u.productionItem.uuid),
+                ...CreatedProductionItemsFunc()
+                    .getProductionItems()
+                    .map((c) => c.productionItem.uuid),
+              };
+              final updated =
+                  (res as List)
+                      .map((j) => ProductionItem.fromJson(j))
+                      .where((p) => !pendingUuids.contains(p.uuid))
+                      .toList();
+              for (final item in updated) {
+                final idx = productionItemListMain.indexWhere(
+                  (p) => p.uuid == item.uuid,
+                );
+                if (idx != -1) {
+                  productionItemListMain[idx] = item;
+                } else {
+                  productionItemListMain.add(item);
+                }
+              }
+              productionItemListMain.sort(
+                (a, b) => a.name.toLowerCase().compareTo(
+                  b.name.toLowerCase(),
+                ),
+              );
+              await ProductionItemsFunc().insertAllProductionItems(
+                productionItemListMain,
+              );
+              notifyListeners();
+            }
+            _lastSyncAt = DateTime.now().toUtc();
+            return productionItemListMain;
+          } catch (e) {
+            await mainLocalLog(
+              'Incremental ProductionItems Sync error: $e',
+            );
+          }
+        }
+
         final data = await supabase
             .from(tableName)
             .select()
@@ -440,6 +497,8 @@ class ProductionItemsProvider extends ChangeNotifier {
         await ProductionItemsFunc().insertAllProductionItems(
           productionItemListMain,
         );
+        _lastSyncAt = DateTime.now().toUtc();
+        _lastSyncShopId = currentShopId;
       } else {
         returnData().syncData();
         await mainLocalLog(

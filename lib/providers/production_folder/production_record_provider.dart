@@ -47,11 +47,41 @@ class ProductionRecordsProvider extends ChangeNotifier {
 
   List<ProductionRecord> get productionRecords =>
       _productionRecords;
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
 
   final String tableName = 'production_records';
 
   void clearProductionRecords() {
     _productionRecords.clear();
+    _fetchedDateKeys.clear();
+    _fetchedShopId = null;
     mainLocalLog('Production Records Cleared');
     notifyListeners();
   }
@@ -597,10 +627,14 @@ class ProductionRecordsProvider extends ChangeNotifier {
     }
   }
 
-  // READ all ProductionRecords for a shop
+  // READ ProductionRecords for a shop (current business day by default, or specific date range)
   Future<List<ProductionRecord>> getProductionRecords(
-    int shopId,
-  ) async {
+    int shopId, {
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline &&
         ProductionRecordsFunc().isSynced() &&
@@ -610,26 +644,88 @@ class ProductionRecordsProvider extends ChangeNotifier {
         GeneralSettingsAuthAction().manageProductions(
           context: null,
         )) {
-      await ProductionRecordsFunc()
-          .clearProductionRecords();
+      final effectiveStart =
+          startDate ??
+          dateSet ??
+          rangeStartDate ??
+          resolveBusinessDate(DateTime.now());
+      final effectiveEnd =
+          endDate ??
+          (dateSet ?? rangeEndDate ?? effectiveStart);
+
+      if (!fetchAll &&
+          !forceRefresh &&
+          _isRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          )) {
+        return _productionRecords;
+      }
+
+      final windowStart = fourAm(effectiveStart);
+      final windowEnd = fourAmNextDay(effectiveEnd);
+
       try {
-        final data = await supabase
+        var query = supabase
             .from(tableName)
             .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          query = query
+              .gte(
+                'created_at',
+                windowStart.toUtc().toIso8601String(),
+              )
+              .lt(
+                'created_at',
+                windowEnd.toUtc().toIso8601String(),
+              );
+        }
+        final data = await query.order(
+          'created_at',
+          ascending: false,
+        );
         if (data.isNotEmpty) {
           await mainLocalLog(
             'Production Records Gotten ${data.length}',
           );
         }
 
-        _productionRecords =
+        final fetched =
             (data as List)
                 .map(
                   (json) => ProductionRecord.fromJson(json),
                 )
                 .toList();
+        if (fetchAll) {
+          _productionRecords = fetched;
+        } else {
+          final fetchedUuids =
+              fetched.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              _productionRecords.where((rec) {
+                if (fetchedUuids.contains(rec.uuid)) {
+                  return false;
+                }
+                final created = rec.createdAt;
+                if (created == null) return true;
+                final inWindow =
+                    !created.isBefore(windowStart) &&
+                    created.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          _productionRecords = [...fetched, ...outsideWindow]
+            ..sort(
+              (a, b) => (b.createdAt ?? DateTime(1970))
+                  .compareTo(a.createdAt ?? DateTime(1970)),
+            );
+          _markRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          );
+        }
         await ProductionRecordsFunc()
             .insertAllProductionRecords(_productionRecords);
         await mainLocalLog('Loaded');
@@ -676,6 +772,14 @@ class ProductionRecordsProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      final sId = returnShopProvider().userShop()?.shopId;
+      if (sId != null) {
+        getProductionRecords(
+          sId,
+          startDate: date,
+          endDate: date,
+        );
+      }
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -693,6 +797,14 @@ class ProductionRecordsProvider extends ChangeNotifier {
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
+    final sId = returnShopProvider().userShop()?.shopId;
+    if (sId != null) {
+      getProductionRecords(
+        sId,
+        startDate: rangeStart,
+        endDate: endOfrange,
+      );
+    }
     notifyListeners();
   }
 
@@ -833,7 +945,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
             await supabase
                 .from(tableName)
                 .insert(payload)
-                .select();
+                .select('uuid');
 
         await mainLocalLog(
           '${data.length} items added succesfully ✅',
@@ -842,13 +954,6 @@ class ProductionRecordsProvider extends ChangeNotifier {
             .clearProductions();
         await mainLocalLog(
           'Unsynced Production Records Cleared',
-        );
-
-        await mainLocalLog(
-          'Mounted, refreshing Production Records ✅',
-        );
-        await getProductionRecords(
-          returnShopProvider().userShop()!.shopId!,
         );
       }
     } catch (e) {

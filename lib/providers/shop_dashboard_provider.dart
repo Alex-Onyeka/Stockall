@@ -33,6 +33,48 @@ class ShopDashboardProvider extends ChangeNotifier {
   }
 
   DateTime? dateSet;
+  final Set<String> _fetchedReceiptKeys = {};
+  final Set<String> _fetchedExpenseKeys = {};
+  final Set<String> _fetchedInvoiceKeys = {};
+
+  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(Set<String> keys, DateTime start, DateTime end) {
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!keys.contains(_dateKey(cursor))) return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(Set<String> keys, DateTime start, DateTime end) {
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      keys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
+
+  Future<void> _fetchForSelectedWindow({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      await Future.wait([
+        getAllReceipts(startDate: startDate, endDate: endDate),
+        getAllExpenses(startDate: startDate, endDate: endDate),
+        getAllInvoices(startDate: startDate, endDate: endDate),
+      ]);
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 
   void clearDate() {
     dateSet = null;
@@ -47,6 +89,7 @@ class ShopDashboardProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      _fetchForSelectedWindow(startDate: date, endDate: date);
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -62,6 +105,7 @@ class ShopDashboardProvider extends ChangeNotifier {
     rangeEndDate = endOfrange;
     mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
+    _fetchForSelectedWindow(startDate: rangeStart, endDate: endOfrange);
     notifyListeners();
   }
 
@@ -70,8 +114,8 @@ class ShopDashboardProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await returnShopProvider().getUserShops();
-      await getAllReceipts();
-      await getAllExpenses();
+      await getAllReceipts(forceRefresh: true);
+      await getAllExpenses(forceRefresh: true);
       await getAllCustomers();
       await getAllInvoices();
       await getAllItems();
@@ -86,18 +130,58 @@ class ShopDashboardProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<TempMainReceipt>> getAllReceipts() async {
+  Future<List<TempMainReceipt>> getAllReceipts({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool forceRefresh = false,
+  }) async {
     try {
-      List<TempMainReceipt> temp = [];
-      for (var shop in returnShopProvider().userShops) {
-        final data = await supabase
-            .from('receipts')
-            .select()
-            .eq('shop_id', shop.shopId!)
-            .order('created_at', ascending: false);
-        temp.addAll(data.map((dat) => TempMainReceipt.fromJson(dat)).toList());
+      final effectiveStart =
+          startDate ??
+          dateSet ??
+          rangeStartDate ??
+          resolveBusinessDate(DateTime.now());
+      final effectiveEnd =
+          endDate ?? (dateSet ?? rangeEndDate ?? effectiveStart);
+
+      if (!forceRefresh &&
+          _isRangeFetched(_fetchedReceiptKeys, effectiveStart, effectiveEnd)) {
+        return allReceipts;
       }
-      allReceipts = temp;
+
+      final windowStart = fourAm(effectiveStart);
+      final windowEnd = fourAmNextDay(effectiveEnd);
+
+      final shopIds =
+          returnShopProvider().userShops
+              .map((s) => s.shopId)
+              .whereType<int>()
+              .toList();
+      if (shopIds.isEmpty) {
+        return allReceipts;
+      }
+
+      final data = await supabase
+          .from('receipts')
+          .select()
+          .inFilter('shop_id', shopIds)
+          .gte('created_at', windowStart.toUtc().toIso8601String())
+          .lt('created_at', windowEnd.toUtc().toIso8601String())
+          .order('created_at', ascending: false);
+
+      final fetched = data.map((dat) => TempMainReceipt.fromJson(dat)).toList();
+      final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+      final outsideWindow =
+          allReceipts.where((rec) {
+            if (fetchedUuids.contains(rec.uuid)) return false;
+            final inWindow =
+                !rec.createdAt.isBefore(windowStart) &&
+                rec.createdAt.isBefore(windowEnd);
+            return !inWindow;
+          }).toList();
+      allReceipts = [...fetched, ...outsideWindow]
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      _markRangeFetched(_fetchedReceiptKeys, effectiveStart, effectiveEnd);
       await mainLocalLog("Receipts Gotten: ${allReceipts.length}");
       return allReceipts;
     } catch (e) {
@@ -138,19 +222,58 @@ class ShopDashboardProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<TempExpensesClass>> getAllExpenses() async {
+  Future<List<TempExpensesClass>> getAllExpenses({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool forceRefresh = false,
+  }) async {
     try {
-      List<TempExpensesClass> temp = [];
-      for (var shop in returnShopProvider().userShops) {
-        final data = await supabase
-            .from('expenses')
-            .select()
-            .eq('shop_id', shop.shopId!);
-        temp.addAll(
-          data.map((dat) => TempExpensesClass.fromJson(dat)).toList(),
-        );
+      final effectiveStart =
+          startDate ??
+          dateSet ??
+          rangeStartDate ??
+          resolveBusinessDate(DateTime.now());
+      final effectiveEnd =
+          endDate ?? (dateSet ?? rangeEndDate ?? effectiveStart);
+
+      if (!forceRefresh &&
+          _isRangeFetched(_fetchedExpenseKeys, effectiveStart, effectiveEnd)) {
+        return allExpenses;
       }
-      allExpenses = temp;
+
+      final windowStart = fourAm(effectiveStart);
+      final windowEnd = fourAmNextDay(effectiveEnd);
+
+      final shopIds =
+          returnShopProvider().userShops
+              .map((s) => s.shopId)
+              .whereType<int>()
+              .toList();
+      if (shopIds.isEmpty) {
+        return allExpenses;
+      }
+
+      final data = await supabase
+          .from('expenses')
+          .select()
+          .inFilter('shop_id', shopIds)
+          .gte('created_date', windowStart.toUtc().toIso8601String())
+          .lt('created_date', windowEnd.toUtc().toIso8601String());
+
+      final fetched =
+          data.map((dat) => TempExpensesClass.fromJson(dat)).toList();
+      final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+      final outsideWindow =
+          allExpenses.where((exp) {
+            if (fetchedUuids.contains(exp.uuid)) return false;
+            final created = exp.createdDate;
+            if (created == null) return true;
+            final inWindow =
+                !created.isBefore(windowStart) && created.isBefore(windowEnd);
+            return !inWindow;
+          }).toList();
+      allExpenses = [...fetched, ...outsideWindow];
+      _markRangeFetched(_fetchedExpenseKeys, effectiveStart, effectiveEnd);
       await mainLocalLog("Expenses Gotten ${allExpenses.length}");
       return allExpenses;
     } catch (e) {
@@ -191,18 +314,58 @@ class ShopDashboardProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<TempInvoice>> getAllInvoices() async {
+  Future<List<TempInvoice>> getAllInvoices({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool forceRefresh = false,
+  }) async {
     try {
-      List<TempInvoice> temp = [];
-      for (var shop in returnShopProvider().userShops) {
-        final data = await supabase
-            .from('invoices')
-            .select()
-            .eq('shop_id', shop.shopId!)
-            .order('created_at', ascending: false);
-        temp.addAll(data.map((dat) => TempInvoice.fromJson(dat)).toList());
+      final effectiveStart =
+          startDate ??
+          dateSet ??
+          rangeStartDate ??
+          resolveBusinessDate(DateTime.now());
+      final effectiveEnd =
+          endDate ?? (dateSet ?? rangeEndDate ?? effectiveStart);
+
+      if (!forceRefresh &&
+          _isRangeFetched(_fetchedInvoiceKeys, effectiveStart, effectiveEnd)) {
+        return allInvoices;
       }
-      allInvoices = temp;
+
+      final windowStart = fourAm(effectiveStart);
+      final windowEnd = fourAmNextDay(effectiveEnd);
+
+      final shopIds =
+          returnShopProvider().userShops
+              .map((s) => s.shopId)
+              .whereType<int>()
+              .toList();
+      if (shopIds.isEmpty) {
+        return allInvoices;
+      }
+
+      final data = await supabase
+          .from('invoices')
+          .select()
+          .inFilter('shop_id', shopIds)
+          .gte('created_at', windowStart.toUtc().toIso8601String())
+          .lt('created_at', windowEnd.toUtc().toIso8601String())
+          .order('created_at', ascending: false);
+
+      final fetched = data.map((dat) => TempInvoice.fromJson(dat)).toList();
+      final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+      final outsideWindow =
+          allInvoices.where((inv) {
+            if (fetchedUuids.contains(inv.uuid)) return false;
+            final inWindow =
+                !inv.createdAt.isBefore(windowStart) &&
+                inv.createdAt.isBefore(windowEnd);
+            return !inWindow;
+          }).toList();
+      allInvoices = [...fetched, ...outsideWindow]
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      _markRangeFetched(_fetchedInvoiceKeys, effectiveStart, effectiveEnd);
       await mainLocalLog("Invoices Gotten ${allInvoices.length}");
       return allInvoices;
     } catch (e) {
@@ -324,21 +487,24 @@ class ShopDashboardProvider extends ChangeNotifier {
 
   Future<List<TempUserClass>> getAllStaffs() async {
     try {
-      List<TempUserClass> temp = [];
+      final allEmployeeIds = <String>{};
       for (var shop in returnShopProvider().userShops) {
-        final data = await supabase
-            .from('users')
-            .select()
-            .inFilter('user_id', (shop.employees ?? []));
-        // await mainLocalLog('Users Gotten from Supabase: ${data.length}');
-
-        temp.addAll(
+        if (shop.employees != null) {
+          allEmployeeIds.addAll(shop.employees!);
+        }
+      }
+      if (allEmployeeIds.isEmpty) {
+        allStaffs = [];
+        return allStaffs;
+      }
+      final data = await supabase
+          .from('users')
+          .select()
+          .inFilter('user_id', allEmployeeIds.toList());
+      allStaffs =
           data
               .map<TempUserClass>((json) => TempUserClass.fromJson(json))
-              .toList(),
-        );
-      }
-      allStaffs = temp;
+              .toList();
       await mainLocalLog("Staffs Gotten ${allStaffs.length}");
       return allStaffs;
     } catch (e) {

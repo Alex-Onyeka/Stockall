@@ -27,9 +27,13 @@ class SuppliersProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity = ConnectivityProvider();
   List<SuppliersClass> suppliers = [];
   final String tableName = 'suppliers';
+  DateTime? _lastSyncAt;
+  int? _lastSyncShopId;
 
   void clearSuppliers() {
     suppliers.clear();
+    _lastSyncAt = null;
+    _lastSyncShopId = null;
     mainLocalLog('Suppliers Cleared');
     notifyListeners();
   }
@@ -65,11 +69,67 @@ class SuppliersProvider extends ChangeNotifier {
   }
 
   /// Fetch all Suppliers by shop ID
-  Future<List<SuppliersClass>> fetchSuppliers(int shopId) async {
+  Future<List<SuppliersClass>> fetchSuppliers(
+    int shopId, {
+    bool forceRefresh = false,
+  }) async {
     suppliers = SuppliersFunc().getSuppliers();
     notifyListeners();
     bool isOnline = await connectivity.isOnline();
     if (isOnline && SuppliersFunc().isSynced()) {
+      if (!forceRefresh &&
+          _lastSyncAt != null &&
+          _lastSyncShopId == shopId &&
+          suppliers.isNotEmpty) {
+        try {
+          final safeSince = _lastSyncAt!
+              .subtract(const Duration(seconds: 5))
+              .toUtc();
+          final res = await supabase
+              .from(tableName)
+              .select()
+              .eq('shop_id', shopId)
+              .gt('updated_at', safeSince.toIso8601String())
+              .order('updated_at', ascending: true);
+          if (res.isNotEmpty) {
+            final pendingUuids = {
+              ...UpdatedSupplierFunc()
+                  .getSuppliers()
+                  .map((u) => u.suppliers.uuid),
+              ...CreatedSupplierFunc()
+                  .getSuppliers()
+                  .map((c) => c.supplier.uuid),
+            };
+            final updated =
+                (res as List)
+                    .map((j) => SuppliersClass.fromJson(j))
+                    .where((s) => !pendingUuids.contains(s.uuid))
+                    .toList();
+            for (final item in updated) {
+              final idx = suppliers.indexWhere(
+                (s) => s.uuid == item.uuid,
+              );
+              if (idx != -1) {
+                suppliers[idx] = item;
+              } else {
+                suppliers.add(item);
+              }
+            }
+            suppliers.sort(
+              (a, b) => a.name.toLowerCase().compareTo(
+                b.name.toLowerCase(),
+              ),
+            );
+            await SuppliersFunc().insertAllSuppliers(suppliers);
+            notifyListeners();
+          }
+          _lastSyncAt = DateTime.now().toUtc();
+          return suppliers;
+        } catch (e) {
+          await mainLocalLog('Incremental Suppliers Sync error: $e');
+        }
+      }
+
       final data = await supabase
           .from(tableName)
           .select()
@@ -81,6 +141,8 @@ class SuppliersProvider extends ChangeNotifier {
           (data as List).map((json) => SuppliersClass.fromJson(json)).toList();
 
       await SuppliersFunc().insertAllSuppliers(suppliers);
+      _lastSyncAt = DateTime.now().toUtc();
+      _lastSyncShopId = shopId;
     } else {
       suppliers = SuppliersFunc().getSuppliers();
     }
@@ -253,7 +315,6 @@ class SuppliersProvider extends ChangeNotifier {
   Future<void> createSupplierSync(
     // BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -267,13 +328,11 @@ class SuppliersProvider extends ChangeNotifier {
         final payload = tempSuppliers.map((p) => p.supplier.toJson()).toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select();
+        final data = await supabase.from(tableName).insert(payload).select('uuid');
 
         await mainLocalLog('${data.length} items added successfully ✅');
         await CreatedSupplierFunc().clearSuppliers();
         await mainLocalLog('Unsynced Suppliers Cleared');
-        await mainLocalLog('Mounted, refreshing Suppliers ✅');
-        await fetchSuppliers(shopProvider.userShop()!.shopId!);
       }
     } catch (e) {
       await mainLocalLog('Batch Suppliers Insert failed ❌: $e');
@@ -287,7 +346,6 @@ class SuppliersProvider extends ChangeNotifier {
   //
 
   Future<void> updateSuppliersSync() async {
-    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
@@ -355,9 +413,6 @@ class SuppliersProvider extends ChangeNotifier {
 
         await UpdatedSupplierFunc().clearUpdatedSuppliers();
         await mainLocalLog('Unsynced updated Suppliers cleared');
-
-        await mainLocalLog('Mounted, refreshing Suppliers ✅');
-        await fetchSuppliers(shopProvider.userShop()!.shopId!);
       }
     } catch (e) {
       await mainLocalLog('Batch Suppliers Update failed ❌: $e');
@@ -370,7 +425,6 @@ class SuppliersProvider extends ChangeNotifier {
   //
 
   Future<void> deletedSuppliersSync() async {
-    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
 
@@ -386,15 +440,12 @@ class SuppliersProvider extends ChangeNotifier {
                 .from(tableName)
                 .delete()
                 .inFilter('uuid', uuids) // delete where id is in the list
-                .select();
+                .select('uuid');
 
         await mainLocalLog('${data.length} items deleted successfully ✅');
 
         await DeletedSupplierFunc().clearDeletedSupplier();
         await mainLocalLog('Unsynced deleted Suppliers cleared');
-
-        await mainLocalLog('Mounted, refreshing Suppliers ✅');
-        await fetchSuppliers(shopProvider.userShop()!.shopId!);
       }
     } catch (e) {
       await mainLocalLog('Batch Suppliers Delete failed ❌: $e');

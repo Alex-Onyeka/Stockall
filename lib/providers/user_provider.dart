@@ -26,6 +26,7 @@ class UserProvider extends ChangeNotifier {
 
   void clearUsers() {
     usersMain.clear();
+    _lastCurrentUserFetchedAt = null;
     mainLocalLog('📍📍📍Users Cleared');
     notifyListeners();
   }
@@ -43,8 +44,11 @@ class UserProvider extends ChangeNotifier {
       _users = UserFunc().getUsers();
       notifyListeners();
       if (isOnline) {
-        await returnShopProvider().getUserShops();
-        var employees = returnShopProvider().userShop()!.employees ?? [];
+        final shopProvider = returnShopProvider();
+        if (shopProvider.userShop() == null) {
+          await shopProvider.getUserShops();
+        }
+        var employees = shopProvider.userShop()?.employees ?? [];
         final data = await _supabase.client
             .from('users')
             .select()
@@ -95,8 +99,19 @@ class UserProvider extends ChangeNotifier {
 
   TempUserClass? _currentUser;
   TempUserClass? get currentUserMain => _currentUser;
+  DateTime? _lastCurrentUserFetchedAt;
 
-  Future<TempUserClass?> fetchCurrentUser(BuildContext context) async {
+  Future<TempUserClass?> fetchCurrentUser(
+    BuildContext context, {
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh &&
+        _lastCurrentUserFetchedAt != null &&
+        DateTime.now().difference(_lastCurrentUserFetchedAt!) <
+            const Duration(minutes: 2) &&
+        _currentUser != null) {
+      return _currentUser;
+    }
     _currentUser = LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
@@ -124,6 +139,7 @@ class UserProvider extends ChangeNotifier {
         await LoggedInUserFunc().insertLoggedInUser(
           LoggedInUser(loggedInUser: _currentUser),
         );
+        _lastCurrentUserFetchedAt = DateTime.now();
       } else {
         final authUser = _supabase.currentUser;
         if (authUser == null) {
@@ -143,6 +159,7 @@ class UserProvider extends ChangeNotifier {
         await LoggedInUserFunc().insertLoggedInUser(
           LoggedInUser(loggedInUser: _currentUser),
         );
+        _lastCurrentUserFetchedAt = DateTime.now();
       }
     } else {
       _currentUser = LoggedInUserFunc().getLoggedInUser()?.loggedInUser;

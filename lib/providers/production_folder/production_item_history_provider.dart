@@ -110,21 +110,23 @@ class ProductionItemHistoryProvider with ChangeNotifier {
         rangeStartDate == null) {
       return departmentProductionItemHistories()
           .where(
-            (productionItemHistory) => isDateTimeInBusinessWindow(
-              dateTime: productionItemHistory.createdAt,
-              dateSet: dateSet ?? DateTime.now(),
-            ),
+            (productionItemHistory) =>
+                isDateTimeInBusinessWindow(
+                  dateTime: productionItemHistory.createdAt,
+                  dateSet: dateSet ?? DateTime.now(),
+                ),
           )
           .toList();
     } else {
       return departmentProductionItemHistories()
           .where(
-            (productionItemHistory) => isDateTimeInBusinessWindow(
-              dateTime: productionItemHistory.createdAt,
-              dateSet: dateSet,
-              rangeStartDate: rangeStartDate,
-              rangeEndDate: rangeEndDate,
-            ),
+            (productionItemHistory) =>
+                isDateTimeInBusinessWindow(
+                  dateTime: productionItemHistory.createdAt,
+                  dateSet: dateSet,
+                  rangeStartDate: rangeStartDate,
+                  rangeEndDate: rangeEndDate,
+                ),
           )
           .toList();
     }
@@ -305,11 +307,10 @@ class ProductionItemHistoryProvider with ChangeNotifier {
                 .toList();
 
         // Insert all at once
-        final data =
-            await client
-                .from(tableName)
-                .insert(payload)
-                .select();
+        final data = await client
+            .from(tableName)
+            .insert(payload)
+            .select('uuid');
 
         await mainLocalLog(
           '${data.length} Production Item Histories added successfully ✅',
@@ -319,10 +320,6 @@ class ProductionItemHistoryProvider with ChangeNotifier {
         await mainLocalLog(
           'Unsynced Production Item Histories Cleared',
         );
-        await mainLocalLog(
-          'Mounted, refreshing Production Item Histories ✅',
-        );
-        await getProductionItemHistories();
       }
     } catch (e) {
       await mainLocalLog(

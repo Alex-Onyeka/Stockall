@@ -278,13 +278,11 @@ class SubStaffProvider extends ChangeNotifier {
         final payload = subStaffs.map((p) => p.subStaff.toJson()).toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select();
+        final data = await supabase.from(tableName).insert(payload).select('uuid');
 
         await mainLocalLog('${data.length} items added successfully ✅');
         await CreatedSubStaffFunc().clearSubStaffs();
         await mainLocalLog('Unsynced Sub Staffs Cleared');
-        await mainLocalLog('Mounted, refreshing Sub Staffs ✅');
-        await getSubStaffs();
       }
     } catch (e) {
       await mainLocalLog('Batch Sub Staffs Insert failed ❌: $e');
@@ -313,14 +311,12 @@ class SubStaffProvider extends ChangeNotifier {
                 .from(tableName)
                 .delete()
                 .inFilter('uuid', uuids) // delete where id is in the list
-                .select();
+                .select('uuid');
 
         await mainLocalLog('${data.length} items deleted successfully ✅');
 
         await DeletedSubStaffFunc().clearDeletedSubStaff();
         await mainLocalLog('Unsynced deleted Sub Staffs cleared');
-        await mainLocalLog('Mounted, refreshing Sub Staffs ✅');
-        await getSubStaffs();
       }
     } catch (e) {
       await mainLocalLog('Batch Sub Staffs Delete failed ❌: $e');

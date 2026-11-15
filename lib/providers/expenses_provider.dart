@@ -21,8 +21,39 @@ class ExpensesProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity = ConnectivityProvider();
 
   List<TempExpensesClass> expensesMain = [];
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
+
   void clearExpenses() {
     expensesMain.clear();
+    _fetchedDateKeys.clear();
+    _fetchedShopId = null;
     mainLocalLog('Expenses Cleared');
     notifyListeners();
   }
@@ -55,22 +86,69 @@ class ExpensesProvider extends ChangeNotifier {
   //
   //
 
-  Future<List<TempExpensesClass>> getExpenses(int shopId) async {
+  Future<List<TempExpensesClass>> getExpenses(
+    int shopId, {
+    bool forceRefresh = false,
+    bool fetchAll = false,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     await getExpensesOffline(shopId);
+    final effectiveStart =
+        startDate ??
+        rangeStartDate ??
+        dateSet ??
+        resolveBusinessDate(DateTime.now());
+    final effectiveEnd =
+        endDate ?? rangeEndDate ?? dateSet ?? effectiveStart;
+    final windowStart = fourAm(effectiveStart);
+    final windowEnd = fourAmNextDay(effectiveEnd);
+
     bool isOnline = await connectivity.isOnline();
     if (isOnline && ExpensesFunc().isSynced()) {
+      if (!forceRefresh &&
+          !fetchAll &&
+          _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {
+        return expensesMain;
+      }
       try {
-        final response = await supabase
+        var query = supabase
             .from('expenses')
             .select()
-            .eq('shop_id', shopId)
-            .order('created_date', ascending: false);
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          query = query
+              .gte('created_date', windowStart.toUtc().toIso8601String())
+              .lt('created_date', windowEnd.toUtc().toIso8601String());
+        }
+        final response = await query.order('created_date', ascending: false);
         await mainLocalLog('Expenses Gotten: ${response.length}');
 
-        expensesMain =
+        final fetched =
             (response as List)
                 .map((e) => TempExpensesClass.fromJson(e))
                 .toList();
+
+        if (fetchAll) {
+          expensesMain = fetched;
+        } else {
+          final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              expensesMain.where((exp) {
+                if (fetchedUuids.contains(exp.uuid)) return false;
+                final dt = exp.createdDate;
+                if (dt == null) return true;
+                final inWindow =
+                    !dt.isBefore(windowStart) && dt.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          expensesMain = [...fetched, ...outsideWindow]
+            ..sort(
+              (a, b) => (b.createdDate ?? DateTime(0))
+                  .compareTo(a.createdDate ?? DateTime(0)),
+            );
+          _markRangeFetched(shopId, effectiveStart, effectiveEnd);
+        }
 
         await ExpensesFunc().insertAllExpenses(expensesMain);
         notifyListeners();
@@ -132,6 +210,10 @@ class ExpensesProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      final sid = returnShopProvider().userShop()?.shopId;
+      if (sid != null && !_isRangeFetched(sid, date, date)) {
+        getExpenses(sid, startDate: date, endDate: date);
+      }
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -147,6 +229,10 @@ class ExpensesProvider extends ChangeNotifier {
     rangeEndDate = endOfrange;
     mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
+    final sid = returnShopProvider().userShop()?.shopId;
+    if (sid != null && !_isRangeFetched(sid, rangeStart, endOfrange)) {
+      getExpenses(sid, startDate: rangeStart, endDate: endOfrange);
+    }
     notifyListeners();
   }
 
@@ -401,8 +487,7 @@ class ExpensesProvider extends ChangeNotifier {
             // Insert all at once
             await supabase
                 .from('expenses')
-                .insert(item.expenses.toJson())
-                .select();
+                .insert(item.expenses.toJson());
             count++;
             await CreatedExpensesFunc().deleteExpenses(item.expenses.uuid!);
           } on PostgrestException catch (e) {
@@ -418,8 +503,6 @@ class ExpensesProvider extends ChangeNotifier {
         await mainLocalLog('$count items added successfully ✅');
         // await CreatedExpensesFunc().clearExpenses();
         await mainLocalLog('Unsynced Expenses Cleared');
-        await mainLocalLog('Mounted, refreshing Expenses ✅');
-        await getExpenses(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
       await mainLocalLog('Batch Expenses insert failed ❌: $e');
@@ -448,14 +531,12 @@ class ExpensesProvider extends ChangeNotifier {
                 .from('expenses')
                 .delete()
                 .inFilter('uuid', uuids) // delete where id is in the list
-                .select();
+                .select('uuid');
 
         await mainLocalLog('${data.length} items deleted successfully ✅');
 
         await DeletedExpensesFunc().clearDeletedExpenses();
         await mainLocalLog('Unsynced deleted Expenses cleared');
-        await mainLocalLog('Mounted, refreshing Expenses ✅');
-        await getExpenses(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
       await mainLocalLog('Batch Expenses delete failed ❌: $e');

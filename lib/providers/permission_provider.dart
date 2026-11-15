@@ -14,6 +14,7 @@ class PermissionProvider extends ChangeNotifier {
 
   List<PermissionModel> permissionsCache = [];
   final String tableName = 'permissions';
+  DateTime? _lastFetchedAt;
   List<PermissionModel> permissions() {
     for (var perm in permissionsCache) {
       perm.access.sort();
@@ -26,6 +27,7 @@ class PermissionProvider extends ChangeNotifier {
 
   void clearPermissions() {
     permissionsCache.clear();
+    _lastFetchedAt = null;
     mainLocalLog('Permissions Cleared');
     notifyListeners();
   }
@@ -39,7 +41,16 @@ class PermissionProvider extends ChangeNotifier {
   //
   //
 
-  Future<List<PermissionModel>> getPermissions() async {
+  Future<List<PermissionModel>> getPermissions({
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh &&
+        _lastFetchedAt != null &&
+        DateTime.now().difference(_lastFetchedAt!) <
+            const Duration(minutes: 10) &&
+        permissionsCache.isNotEmpty) {
+      return permissionsCache;
+    }
     permissionsCache = PermissionFunc().getPermissionModel();
     notifyListeners();
     bool isOnline = await connectivity.isOnline();
@@ -51,6 +62,7 @@ class PermissionProvider extends ChangeNotifier {
           (response as List).map((e) => PermissionModel.fromJson(e)).toList();
 
       await PermissionFunc().insertAllPermissions(permissionsCache);
+      _lastFetchedAt = DateTime.now();
     } else {
       permissionsCache = PermissionFunc().getPermissionModel();
     }

@@ -35,34 +35,91 @@ class MaterialsUsageProvider extends ChangeNotifier {
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
-  List<ProductionMaterialsUsage> _productionMaterialsUsage = [];
-  List<ProductionMaterialsUsage> get productionMaterialsUsage =>
-      _productionMaterialsUsage;
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
+  List<ProductionMaterialsUsage> _productionMaterialsUsage =
+      [];
+  List<ProductionMaterialsUsage>
+  get productionMaterialsUsage => _productionMaterialsUsage;
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor)))
+        return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
 
   final String tableName = 'production_materials_usage';
 
   void clearProductionMaterialsUsage() {
     _productionMaterialsUsage.clear();
+    _fetchedDateKeys.clear();
+    _fetchedShopId = null;
     mainLocalLog('Production Materials Usage Cleared');
     notifyListeners();
   }
 
   // CREATE a new ProductionMaterialsUsage
-  Future<ProductionMaterialsUsage?> createProductionMaterialsUsage(
+  Future<ProductionMaterialsUsage?>
+  createProductionMaterialsUsage(
     ProductionMaterialsUsage productionMaterialsUsage, {
     bool applyInventory = true,
     bool validateStock = true,
     bool removeFromCart = true,
   }) async {
     try {
-      await mainLocalLog('Inner Production Materials Usage Creation Started');
-      _snapshotUsageUnits(productionMaterialsUsage);
-      final selectedUnit = (productionMaterialsUsage.unitsList ?? []).where(
-        (unit) => unit.uuid == productionMaterialsUsage.unitUuid,
+      await mainLocalLog(
+        'Inner Production Materials Usage Creation Started',
       );
+      _snapshotUsageUnits(productionMaterialsUsage);
+      final selectedUnit =
+          (productionMaterialsUsage.unitsList ?? []).where(
+            (unit) =>
+                unit.uuid ==
+                productionMaterialsUsage.unitUuid,
+          );
       if (productionMaterialsUsage.unitUuid != null &&
-          productionMaterialsUsage.unitsList?.isNotEmpty == true &&
+          productionMaterialsUsage.unitsList?.isNotEmpty ==
+              true &&
           (selectedUnit.isEmpty ||
               !selectedUnit.first.conversion.isFinite ||
               selectedUnit.first.conversion <= 0)) {
@@ -71,7 +128,8 @@ class MaterialsUsageProvider extends ChangeNotifier {
         );
         return null;
       }
-      final usageQuantity = productionMaterialsUsage.getQuantity();
+      final usageQuantity =
+          productionMaterialsUsage.getQuantity();
       if (!usageQuantity.isFinite || usageQuantity <= 0) {
         await mainLocalLog(
           'Material usage quantity must be greater than zero.',
@@ -81,7 +139,9 @@ class MaterialsUsageProvider extends ChangeNotifier {
       final material =
           returnMaterialsProvider().materialListMain
               .where(
-                (item) => item.uuid == productionMaterialsUsage.materialUuid,
+                (item) =>
+                    item.uuid ==
+                    productionMaterialsUsage.materialUuid,
               )
               .toList();
       if (validateStock &&
@@ -94,33 +154,47 @@ class MaterialsUsageProvider extends ChangeNotifier {
         return null;
       }
       productionMaterialsUsage.createdAt = DateTime.now();
-      final localResult = await ProductionMaterialsUsageFunc()
-          .createProductionMaterialsUsage(productionMaterialsUsage);
+      final localResult =
+          await ProductionMaterialsUsageFunc()
+              .createProductionMaterialsUsage(
+                productionMaterialsUsage,
+              );
       if (localResult != 1) return null;
-      final unsyncedResult = await CreatedProductionMaterialsUsageFunc()
-          .createProductionMaterialsUsage(
-            CreatedProductionMaterialsUsage(
-              createdProductionMaterialsUsage: productionMaterialsUsage,
-            ),
-          );
+      final unsyncedResult =
+          await CreatedProductionMaterialsUsageFunc()
+              .createProductionMaterialsUsage(
+                CreatedProductionMaterialsUsage(
+                  createdProductionMaterialsUsage:
+                      productionMaterialsUsage,
+                ),
+              );
       if (unsyncedResult != 1) {
-        await ProductionMaterialsUsageFunc().deleteProductionMaterialsUsage(
-          productionMaterialsUsage.uuid,
-        );
+        await ProductionMaterialsUsageFunc()
+            .deleteProductionMaterialsUsage(
+              productionMaterialsUsage.uuid,
+            );
         return null;
       }
       notifyListeners();
-      var materials = returnMaterialsProvider().materialListMain.where(
-        (item) => item.uuid == productionMaterialsUsage.materialUuid,
-      );
+      var materials = returnMaterialsProvider()
+          .materialListMain
+          .where(
+            (item) =>
+                item.uuid ==
+                productionMaterialsUsage.materialUuid,
+          );
       if (applyInventory && materials.isNotEmpty) {
-        await _applyMaterialUsage(productionMaterialsUsage, increment: false);
+        await _applyMaterialUsage(
+          productionMaterialsUsage,
+          increment: false,
+        );
       }
 
       if (removeFromCart) {
-        await returnMaterialsUsageActionProvider().removeMaterialItemFromCart(
-          itemUuid: productionMaterialsUsage.uuid,
-        );
+        await returnMaterialsUsageActionProvider()
+            .removeMaterialItemFromCart(
+              itemUuid: productionMaterialsUsage.uuid,
+            );
       }
       return productionMaterialsUsage;
     } catch (e) {
@@ -131,7 +205,9 @@ class MaterialsUsageProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> createUsageRecordsForProduction(ProductionRecord record) async {
+  Future<bool> createUsageRecordsForProduction(
+    ProductionRecord record,
+  ) async {
     final productionRecordUuid = record.uuid;
     if (productionRecordUuid == null) {
       await mainLocalLog(
@@ -160,12 +236,15 @@ class MaterialsUsageProvider extends ChangeNotifier {
         updatedAt: material.createdAt,
         originalCostPerItem: material.originalCostPerItem,
         customUnit: material.customUnit,
-        originalUseGroupQuantity: material.originalUseGroupQuantity,
+        originalUseGroupQuantity:
+            material.originalUseGroupQuantity,
         groupUnit: material.groupUnit,
         selectedCostInt: 1,
         isManaged: material.isManaged,
         unitUuid: material.unitUuid,
-        unitsList: copyProductionUnitSnapshot(material.unitsList),
+        unitsList: copyProductionUnitSnapshot(
+          material.unitsList,
+        ),
         productionRecordUuid: productionRecordUuid,
       );
       final created = await createProductionMaterialsUsage(
@@ -190,16 +269,17 @@ class MaterialsUsageProvider extends ChangeNotifier {
   }
 
   void _snapshotUsageUnits(ProductionMaterialsUsage usage) {
-    final materials = returnMaterialsProvider().materialListMain.where(
-      (item) => item.uuid == usage.materialUuid,
-    );
+    final materials = returnMaterialsProvider()
+        .materialListMain
+        .where((item) => item.uuid == usage.materialUuid);
     if (materials.isEmpty) return;
     final material = materials.first;
     final units =
         usage.unitsList?.isNotEmpty == true
             ? usage.unitsList!
             : material.getUnitsList();
-    usage.unitsList = units.map((unit) => unit.copyWith()).toList();
+    usage.unitsList =
+        units.map((unit) => unit.copyWith()).toList();
     usage.unitUuid ??= legacyProductionUnitUuid(
       unitsList: units,
       useGroupQuantity: usage.isGroup,
@@ -211,9 +291,9 @@ class MaterialsUsageProvider extends ChangeNotifier {
     ProductionMaterialsUsage usage, {
     required bool increment,
   }) async {
-    final materials = returnMaterialsProvider().materialListMain.where(
-      (item) => item.uuid == usage.materialUuid,
-    );
+    final materials = returnMaterialsProvider()
+        .materialListMain
+        .where((item) => item.uuid == usage.materialUuid);
     if (materials.isEmpty) return;
 
     final oldMaterial = materials.first;
@@ -225,16 +305,19 @@ class MaterialsUsageProvider extends ChangeNotifier {
     }
     final newMaterial = oldMaterial.copyWith();
     final actualQuantity = usage.getQuantity();
-    final signedQuantity = increment ? actualQuantity : -actualQuantity;
-    newMaterial.quantity = (oldMaterial.quantity ?? 0) + signedQuantity;
+    final signedQuantity =
+        increment ? actualQuantity : -actualQuantity;
+    newMaterial.quantity =
+        (oldMaterial.quantity ?? 0) + signedQuantity;
     final primaryUnit = productionPrimaryUnitName(
       usage.unitsList,
       fallback: oldMaterial.getPrimaryUnit().name,
     );
-    final primaryUnitConversion = productionPrimaryUnitConversion(
-      usage.unitsList,
-      fallback: oldMaterial.getPrimaryUnit().conversion,
-    );
+    final primaryUnitConversion =
+        productionPrimaryUnitConversion(
+          usage.unitsList,
+          fallback: oldMaterial.getPrimaryUnit().conversion,
+        );
     final history = MaterialsItemHistory(
       event:
           increment
@@ -243,18 +326,29 @@ class MaterialsUsageProvider extends ChangeNotifier {
       isManaged: newMaterial.isManaged,
       source:
           increment
-              ? MaterialItemHistoryEventClass.materialUsageSource
-              : MaterialItemHistoryEventClass.materialSource,
+              ? MaterialItemHistoryEventClass
+                  .materialUsageSource
+              : MaterialItemHistoryEventClass
+                  .materialSource,
       destination:
           increment
-              ? MaterialItemHistoryEventClass.materialDestination
-              : MaterialItemHistoryEventClass.materialUsageDestination,
+              ? MaterialItemHistoryEventClass
+                  .materialDestination
+              : MaterialItemHistoryEventClass
+                  .materialUsageDestination,
       shopId: oldMaterial.shopId,
-      title: increment ? 'Material Usage Deleted' : 'Material Used',
+      title:
+          increment
+              ? 'Material Usage Deleted'
+              : 'Material Used',
       oldValue:
-          ((oldMaterial.quantity ?? 0) / primaryUnitConversion).toString(),
+          ((oldMaterial.quantity ?? 0) /
+                  primaryUnitConversion)
+              .toString(),
       newValue:
-          ((newMaterial.quantity ?? 0) / primaryUnitConversion).toString(),
+          ((newMaterial.quantity ?? 0) /
+                  primaryUnitConversion)
+              .toString(),
       quantityChange: (increment ? 1 : -1) * usage.quantity,
       desc:
           increment
@@ -275,36 +369,118 @@ class MaterialsUsageProvider extends ChangeNotifier {
     );
   }
 
-  // READ all ProductionMaterialsUsage for a shop
-  Future<List<ProductionMaterialsUsage>> getProductionMaterialsUsage(
-    int shopId,
-  ) async {
+  // READ ProductionMaterialsUsage for a shop (current business day by default, or specific date range)
+  Future<List<ProductionMaterialsUsage>>
+  getProductionMaterialsUsage(
+    int shopId, {
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline &&
         ProductionMaterialsUsageFunc().isSynced() &&
-        returnShopProvider().userShop()?.manageProductions == true &&
-        authorization(authorized: Authorizations().viewProductions) &&
-        GeneralSettingsAuthAction().manageProductions(context: null)) {
-      await ProductionMaterialsUsageFunc().clearProductionMaterialsUsages();
+        returnShopProvider()
+                .userShop()
+                ?.manageProductions ==
+            true &&
+        authorization(
+          authorized: Authorizations().viewProductions,
+        ) &&
+        GeneralSettingsAuthAction().manageProductions(
+          context: null,
+        )) {
+      final effectiveStart =
+          startDate ??
+          dateSet ??
+          rangeStartDate ??
+          resolveBusinessDate(DateTime.now());
+      final effectiveEnd =
+          endDate ??
+          (dateSet ?? rangeEndDate ?? effectiveStart);
+
+      if (!fetchAll &&
+          !forceRefresh &&
+          _isRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          )) {
+        return _productionMaterialsUsage;
+      }
+
+      final windowStart = fourAm(effectiveStart);
+      final windowEnd = fourAmNextDay(effectiveEnd);
+
       try {
-        final data = await supabase
+        var query = supabase
             .from(tableName)
             .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          query = query
+              .gte(
+                'created_at',
+                windowStart.toUtc().toIso8601String(),
+              )
+              .lt(
+                'created_at',
+                windowEnd.toUtc().toIso8601String(),
+              );
+        }
+        final data = await query.order(
+          'created_at',
+          ascending: false,
+        );
         if (data.isNotEmpty) {
           await mainLocalLog(
             'Production Materials Usage Gotten ${data.length}',
           );
         }
 
-        _productionMaterialsUsage =
+        final fetched =
             (data as List)
-                .map((json) => ProductionMaterialsUsage.fromJson(json))
+                .map(
+                  (json) =>
+                      ProductionMaterialsUsage.fromJson(
+                        json,
+                      ),
+                )
                 .toList();
-        await ProductionMaterialsUsageFunc().insertAllProductionMaterialsUsages(
-          _productionMaterialsUsage,
-        );
+        if (fetchAll) {
+          _productionMaterialsUsage = fetched;
+        } else {
+          final fetchedUuids =
+              fetched.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              _productionMaterialsUsage.where((rec) {
+                if (fetchedUuids.contains(rec.uuid))
+                  return false;
+                final created = rec.createdAt;
+                if (created == null) return true;
+                final inWindow =
+                    !created.isBefore(windowStart) &&
+                    created.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          _productionMaterialsUsage = [
+            ...fetched,
+            ...outsideWindow,
+          ]..sort(
+            (a, b) => (b.createdAt ?? DateTime(1970))
+                .compareTo(a.createdAt ?? DateTime(1970)),
+          );
+          _markRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          );
+        }
+        await ProductionMaterialsUsageFunc()
+            .insertAllProductionMaterialsUsages(
+              _productionMaterialsUsage,
+            );
         await mainLocalLog('Loaded');
         notifyListeners();
       } catch (e) {
@@ -315,8 +491,11 @@ class MaterialsUsageProvider extends ChangeNotifier {
       }
     } else {
       _productionMaterialsUsage =
-          ProductionMaterialsUsageFunc().getProductionMaterialsUsages();
-      await mainLocalLog('Offline Production Materials Usage Gotten');
+          ProductionMaterialsUsageFunc()
+              .getProductionMaterialsUsages();
+      await mainLocalLog(
+        'Offline Production Materials Usage Gotten',
+      );
       notifyListeners();
     }
     notifyListeners();
@@ -326,8 +505,11 @@ class MaterialsUsageProvider extends ChangeNotifier {
   Future<List<ProductionMaterialsUsage>>
   getProductionMaterialsUsageOffline() async {
     _productionMaterialsUsage =
-        ProductionMaterialsUsageFunc().getProductionMaterialsUsages();
-    await mainLocalLog('Offline Production Materials Usage Gotten');
+        ProductionMaterialsUsageFunc()
+            .getProductionMaterialsUsages();
+    await mainLocalLog(
+      'Offline Production Materials Usage Gotten',
+    );
     notifyListeners();
     notifyListeners();
     return _productionMaterialsUsage;
@@ -348,6 +530,14 @@ class MaterialsUsageProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      final sId = returnShopProvider().userShop()?.shopId;
+      if (sId != null) {
+        getProductionMaterialsUsage(
+          sId,
+          startDate: date,
+          endDate: date,
+        );
+      }
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -361,8 +551,18 @@ class MaterialsUsageProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
+    mainLocalLog(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
     dateSet = null;
+    final sId = returnShopProvider().userShop()?.shopId;
+    if (sId != null) {
+      getProductionMaterialsUsage(
+        sId,
+        startDate: rangeStart,
+        endDate: endOfrange,
+      );
+    }
     notifyListeners();
   }
 
@@ -373,35 +573,46 @@ class MaterialsUsageProvider extends ChangeNotifier {
     bool createUpdate, {
     bool allowProductionLinked = false,
   }) async {
-    await mainLocalLog('Deleting Production Materials Usage');
+    await mainLocalLog(
+      'Deleting Production Materials Usage',
+    );
     try {
-      if (productionMaterialsUsage.productionRecordUuid != null &&
+      if (productionMaterialsUsage.productionRecordUuid !=
+              null &&
           !allowProductionLinked) {
         await mainLocalLog(
           'Production-linked material usage must be changed by editing or deleting its production record.',
         );
         return 0;
       }
-      await mainLocalLog('Deleting ProductionMaterialsUsage Offline');
-      await ProductionMaterialsUsageFunc().deleteProductionMaterialsUsage(
-        productionMaterialsUsage.uuid,
+      await mainLocalLog(
+        'Deleting ProductionMaterialsUsage Offline',
       );
+      await ProductionMaterialsUsageFunc()
+          .deleteProductionMaterialsUsage(
+            productionMaterialsUsage.uuid,
+          );
       var containsCreated =
           CreatedProductionMaterialsUsageFunc()
               .getProductionMaterialsUsage()
               .where(
                 (purch) =>
-                    purch.createdProductionMaterialsUsage.uuid ==
+                    purch
+                        .createdProductionMaterialsUsage
+                        .uuid ==
                     productionMaterialsUsage.uuid,
               )
               .toList();
-      var containsUpdate = UpdatedProductionMaterialsUsageFunc()
-          .getProductionMaterialsUsageIds()
-          .where(
-            (purch) =>
-                purch.updatedProductionMaterialsUsage.uuid ==
-                productionMaterialsUsage.uuid,
-          );
+      var containsUpdate =
+          UpdatedProductionMaterialsUsageFunc()
+              .getProductionMaterialsUsageIds()
+              .where(
+                (purch) =>
+                    purch
+                        .updatedProductionMaterialsUsage
+                        .uuid ==
+                    productionMaterialsUsage.uuid,
+              );
       if (containsCreated.isNotEmpty) {
         await CreatedProductionMaterialsUsageFunc()
             .deleteCreatedProductionMaterialsUsage(
@@ -411,7 +622,8 @@ class MaterialsUsageProvider extends ChangeNotifier {
         await DeletedProductionMaterialsUsageFunc()
             .createDeletedDeletedProductionMaterialsUsage(
               DeletedProductionMaterialsUsage(
-                materialsUsageUuid: productionMaterialsUsage.uuid,
+                materialsUsageUuid:
+                    productionMaterialsUsage.uuid,
               ),
             );
       }
@@ -422,12 +634,17 @@ class MaterialsUsageProvider extends ChangeNotifier {
             );
       }
       if (updateInventory == true) {
-        await _applyMaterialUsage(productionMaterialsUsage, increment: true);
+        await _applyMaterialUsage(
+          productionMaterialsUsage,
+          increment: true,
+        );
       }
 
       // returnData().syncData();
       await getProductionMaterialsUsageOffline();
-      await mainLocalLog('✅ ProductionMaterialsUsage successfully Delete.');
+      await mainLocalLog(
+        '✅ ProductionMaterialsUsage successfully Delete.',
+      );
       notifyListeners();
       return 1;
     } catch (e) {
@@ -455,29 +672,38 @@ class MaterialsUsageProvider extends ChangeNotifier {
             CreatedProductionMaterialsUsageFunc()
                 .getProductionMaterialsUsage()
                 .toList();
-        var newProductionMaterialsUsage = tempProductionMaterialsUsage.map((
-          rec,
-        ) {
-          rec.createdProductionMaterialsUsage.createdAt =
-              rec.createdProductionMaterialsUsage.createdAt?.toUtc();
-          return rec;
-        });
+        var newProductionMaterialsUsage =
+            tempProductionMaterialsUsage.map((rec) {
+              rec
+                  .createdProductionMaterialsUsage
+                  .createdAt = rec
+                      .createdProductionMaterialsUsage
+                      .createdAt
+                      ?.toUtc();
+              return rec;
+            });
         final payload =
             newProductionMaterialsUsage
-                .map((p) => p.createdProductionMaterialsUsage.toJson())
+                .map(
+                  (p) =>
+                      p.createdProductionMaterialsUsage
+                          .toJson(),
+                )
                 .toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select();
+        final data = await supabase
+            .from(tableName)
+            .insert(payload)
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedProductionMaterialsUsageFunc()
             .clearCreatedProductionMaterialsUsage();
-        await mainLocalLog('Unsynced ProductionMaterialsUsage Cleared');
-
-        await mainLocalLog('Mounted, refreshing ProductionMaterialsUsage ✅');
-        await getProductionMaterialsUsage(
-          returnShopProvider().userShop()!.shopId!,
+        await mainLocalLog(
+          'Unsynced ProductionMaterialsUsage Cleared',
         );
       }
     } catch (e) {
@@ -528,7 +754,9 @@ class MaterialsUsageProvider extends ChangeNotifier {
           'Unsynced Deleted Production Materials Usage Cleared',
         );
 
-        await mainLocalLog('Mounted, refreshing Production Materials Usage ✅');
+        await mainLocalLog(
+          'Mounted, refreshing Production Materials Usage ✅',
+        );
         await getProductionMaterialsUsage(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -563,23 +791,30 @@ class MaterialsUsageProvider extends ChangeNotifier {
             UpdatedProductionMaterialsUsageFunc()
                 .getProductionMaterialsUsageIds();
 
-        for (final updated in updatedProductionMaterialsUsage) {
+        for (final updated
+            in updatedProductionMaterialsUsage) {
           final localProductionMaterialsUsage =
               updated.updatedProductionMaterialsUsage;
 
-          localProductionMaterialsUsage.updatedAt ??= DateTime.now().toLocal();
+          localProductionMaterialsUsage.updatedAt ??=
+              DateTime.now().toLocal();
 
           final remoteData =
               await supabase
                   .from(tableName)
                   .select('uuid, updated_at')
-                  .eq('uuid', localProductionMaterialsUsage.uuid)
+                  .eq(
+                    'uuid',
+                    localProductionMaterialsUsage.uuid,
+                  )
                   .maybeSingle();
 
           if (remoteData == null) {
             await supabase
                 .from(tableName)
-                .insert(localProductionMaterialsUsage.toJson());
+                .insert(
+                  localProductionMaterialsUsage.toJson(),
+                );
             await mainLocalLog(
               'Inserted product with uuid ${localProductionMaterialsUsage.uuid}',
             );
@@ -588,28 +823,38 @@ class MaterialsUsageProvider extends ChangeNotifier {
                   localProductionMaterialsUsage.uuid,
                 );
           } else {
-            final remoteUpdatedAtRaw = remoteData['updated_at'];
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localProductionMaterialsUsage.updatedAt =
-                (localProductionMaterialsUsage.updatedAt ?? DateTime.now())
+                (localProductionMaterialsUsage.updatedAt ??
+                        DateTime.now())
                     .toUtc(); // ✅ keep both UTC
             await mainLocalLog(
               "Local updatedAt: ${localProductionMaterialsUsage.updatedAt}",
             );
-            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
-                localProductionMaterialsUsage.updatedAt!.isAfter(
-                  remoteUpdatedAt,
-                )) {
+                localProductionMaterialsUsage.updatedAt!
+                    .isAfter(remoteUpdatedAt)) {
               await supabase
                   .from(tableName)
-                  .update(localProductionMaterialsUsage.toJson())
-                  .eq('uuid', localProductionMaterialsUsage.uuid);
+                  .update(
+                    localProductionMaterialsUsage.toJson(),
+                  )
+                  .eq(
+                    'uuid',
+                    localProductionMaterialsUsage.uuid,
+                  );
               await mainLocalLog(
                 'Updated Production Materials Usage with uuid ${localProductionMaterialsUsage.uuid}',
               );
@@ -630,7 +875,9 @@ class MaterialsUsageProvider extends ChangeNotifier {
         await mainLocalLog(
           'Unsynced ProductionMaterialsUsage products cleared',
         );
-        await mainLocalLog('Mounted, refreshing ProductionMaterials Usage ✅');
+        await mainLocalLog(
+          'Mounted, refreshing ProductionMaterials Usage ✅',
+        );
         await getProductionMaterialsUsage(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -648,20 +895,33 @@ class MaterialsUsageProvider extends ChangeNotifier {
   //
   //
 
-  List<ProductionMaterialsUsage> departmentProductionMaterialsUsage() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
+  List<ProductionMaterialsUsage>
+  departmentProductionMaterialsUsage() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
         return productionMaterialsUsage.where((cat) {
           return cat.departmentUuid ==
-              returnDepartmentProvider().currentDepartment()?.uuid;
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
         }).toList();
       } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
           return productionMaterialsUsage;
         } else {
           return productionMaterialsUsage.where((cat) {
             return cat.departmentUuid ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
             // }
           }).toList();
         }
@@ -673,89 +933,113 @@ class MaterialsUsageProvider extends ChangeNotifier {
 
   List<ProductionMaterialsUsage>
   returnOwnProductionMaterialsUsageByDayOrWeek() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
       if (rangeStartDate != null) {
         return departmentProductionMaterialsUsage().where((
           productionMaterialsUsage,
         ) {
-          final created = productionMaterialsUsage.createdAt!.toLocal();
-          return !created.isBefore(fourAm(rangeStartDate!)) &&
+          final created =
+              productionMaterialsUsage.createdAt!.toLocal();
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
         // final currentDate = dateSet ?? DateTime.now();
-        final currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
+        final currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         return departmentProductionMaterialsUsage()
             .where(
               (productionMaterialsUsage) =>
-                  !productionMaterialsUsage.createdAt!.isBefore(
-                    fourAm(currentDate),
-                  ) &&
-                  productionMaterialsUsage.createdAt!.isBefore(
-                    fourAmNextDay(currentDate),
-                  ),
+                  !productionMaterialsUsage.createdAt!
+                      .isBefore(fourAm(currentDate)) &&
+                  productionMaterialsUsage.createdAt!
+                      .isBefore(fourAmNextDay(currentDate)),
             )
             .toList();
       }
     } else {
       if (rangeStartDate != null) {
         if (authorization(
-          authorized: Authorizations().viewAllTransactionRecords,
+          authorized:
+              Authorizations().viewAllTransactionRecords,
         )) {
-          return productionMaterialsUsage.where((productionMaterialsUsage) {
-            final created = productionMaterialsUsage.createdAt!.toLocal();
-            return !created.isBefore(fourAm(rangeStartDate!)) &&
+          return productionMaterialsUsage.where((
+            productionMaterialsUsage,
+          ) {
+            final created =
+                productionMaterialsUsage.createdAt!
+                    .toLocal();
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 );
           }).toList();
         } else {
-          return productionMaterialsUsage.where((productionMaterialsUsage) {
-            final created = productionMaterialsUsage.createdAt!.toLocal();
-            return !created.isBefore(fourAm(rangeStartDate!)) &&
+          return productionMaterialsUsage.where((
+            productionMaterialsUsage,
+          ) {
+            final created =
+                productionMaterialsUsage.createdAt!
+                    .toLocal();
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ) &&
-                productionMaterialsUsage.staffUuid == currentUser().userId;
+                productionMaterialsUsage.staffUuid ==
+                    currentUser().userId;
           }).toList();
         }
       } else {
         final currentDate = dateSet ?? DateTime.now();
 
         if (authorization(
-          authorized: Authorizations().viewAllTransactionRecords,
+          authorized:
+              Authorizations().viewAllTransactionRecords,
         )) {
           return productionMaterialsUsage
               .where(
                 (productionMaterialsUsage) =>
-                    !productionMaterialsUsage.createdAt!.isBefore(
-                      fourAm(currentDate),
-                    ) &&
-                    !productionMaterialsUsage.createdAt!.isAfter(
-                      fourAmNextDay(currentDate),
-                    ),
+                    !productionMaterialsUsage.createdAt!
+                        .isBefore(fourAm(currentDate)) &&
+                    !productionMaterialsUsage.createdAt!
+                        .isAfter(
+                          fourAmNextDay(currentDate),
+                        ),
               )
               .toList();
         } else {
           return productionMaterialsUsage
               .where(
                 (productionMaterialsUsage) =>
-                    !productionMaterialsUsage.createdAt!.isBefore(
-                      fourAm(currentDate),
-                    ) &&
-                    !productionMaterialsUsage.createdAt!.isAfter(
-                      fourAmNextDay(currentDate),
-                    ) &&
-                    productionMaterialsUsage.staffUuid == currentUser().userId,
+                    !productionMaterialsUsage.createdAt!
+                        .isBefore(fourAm(currentDate)) &&
+                    !productionMaterialsUsage.createdAt!
+                        .isAfter(
+                          fourAmNextDay(currentDate),
+                        ) &&
+                    productionMaterialsUsage.staffUuid ==
+                        currentUser().userId,
               )
               .toList();
         }
@@ -768,9 +1052,10 @@ class MaterialsUsageProvider extends ChangeNotifier {
 
     for (var productionMaterialsUsage
         in (returnOwnProductionMaterialsUsageByDayOrWeek())) {
-      tempTotalRevenue += getTotalMainRevenueProductionMaterialsUsage(
-        productionMaterialsUsage,
-      );
+      tempTotalRevenue +=
+          getTotalMainRevenueProductionMaterialsUsage(
+            productionMaterialsUsage,
+          );
     }
 
     return tempTotalRevenue;

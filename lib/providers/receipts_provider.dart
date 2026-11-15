@@ -54,9 +54,57 @@ class ReceiptsProvider extends ChangeNotifier {
       ConnectivityProvider();
   List<TempMainReceipt> _receipts = [];
   List<TempMainReceipt> get receipts => _receipts;
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor)))
+        return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
 
   void clearReceipts() {
     _receipts.clear();
+    _fetchedDateKeys.clear();
+    _fetchedShopId = null;
     mainLocalLog('Receipts Cleared');
     notifyListeners();
   }
@@ -301,19 +349,57 @@ class ReceiptsProvider extends ChangeNotifier {
     }
   }
 
-  // READ all receipts for a shop
+  // READ receipts for a shop (defaults to current business day; fetches older ranges on demand)
   Future<List<TempMainReceipt>> loadReceipts(
-    int shopId,
-  ) async {
+    int shopId, {
+    bool forceRefresh = false,
+    bool fetchAll = false,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     await loadReceiptsOffline(shopId);
+    final effectiveStart =
+        startDate ??
+        rangeStartDate ??
+        dateSet ??
+        resolveBusinessDate(DateTime.now());
+    final effectiveEnd =
+        endDate ??
+        rangeEndDate ??
+        dateSet ??
+        effectiveStart;
+    final windowStart = fourAm(effectiveStart);
+    final windowEnd = fourAmNextDay(effectiveEnd);
+
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
     if (isOnline && MainReceiptFunc().isSynced()) {
+      if (!forceRefresh &&
+          !fetchAll &&
+          _isRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          )) {
+        return _receipts;
+      }
       try {
-        final data = await supabase
+        var baseQuery = supabase
             .from('receipts')
             .select()
-            .eq('shop_id', shopId)
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          baseQuery = baseQuery
+              .gte(
+                'created_at',
+                windowStart.toUtc().toIso8601String(),
+              )
+              .lt(
+                'created_at',
+                windowEnd.toUtc().toIso8601String(),
+              );
+        }
+        final data = await baseQuery
             .order('created_at', ascending: false)
             .range(0, 1000);
         tempList.addAll(data);
@@ -322,10 +408,22 @@ class ReceiptsProvider extends ChangeNotifier {
         );
 
         if (data.length >= 1000) {
-          final data2 = await supabase
+          var baseQuery2 = supabase
               .from('receipts')
               .select()
-              .eq('shop_id', shopId)
+              .eq('shop_id', shopId);
+          if (!fetchAll) {
+            baseQuery2 = baseQuery2
+                .gte(
+                  'created_at',
+                  windowStart.toUtc().toIso8601String(),
+                )
+                .lt(
+                  'created_at',
+                  windowEnd.toUtc().toIso8601String(),
+                );
+          }
+          final data2 = await baseQuery2
               .order('created_at', ascending: false)
               .range(1001, 2000);
           tempList.addAll(data2);
@@ -340,7 +438,7 @@ class ReceiptsProvider extends ChangeNotifier {
                 .map((e) => e.receiptUuid)
                 .toSet();
 
-        _receipts =
+        final fetched =
             (tempList as List)
                 .map(
                   (json) => TempMainReceipt.fromJson(json),
@@ -353,15 +451,49 @@ class ReceiptsProvider extends ChangeNotifier {
                       ),
                 )
                 .toList();
-        await MainReceiptFunc().clearReceipts();
+
+        if (fetchAll) {
+          _receipts = fetched;
+        } else {
+          final fetchedUuids =
+              fetched.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              _receipts.where((rec) {
+                if (fetchedUuids.contains(rec.uuid)) {
+                  return false;
+                }
+                final inWindow =
+                    !rec.createdAt.isBefore(windowStart) &&
+                    rec.createdAt.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          _receipts = [...fetched, ...outsideWindow]..sort(
+            (a, b) => b.createdAt.compareTo(a.createdAt),
+          );
+          _markRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          );
+        }
+
         await MainReceiptFunc().insertAllReceipts(
           _receipts,
         );
         await mainLocalLog('Loaded');
-        await returnInvoicesProvider().loadInvoices(shopId);
-        await returnData().getProducts(
-          returnShopProvider().userShop()!.shopId!,
+        await returnInvoicesProvider().loadInvoices(
+          shopId,
+          startDate: startDate,
+          endDate: endDate,
         );
+        final dataProvider = returnData();
+        if (dataProvider.productListMain.isNotEmpty) {
+          await dataProvider.syncProductsIncremental();
+        } else {
+          await dataProvider.getProducts(
+            returnShopProvider().userShop()!.shopId!,
+          );
+        }
         await loadProductSalesRecord(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -425,6 +557,11 @@ class ReceiptsProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      final sid = returnShopProvider().userShop()?.shopId;
+      if (sid != null &&
+          !_isRangeFetched(sid, date, date)) {
+        loadReceipts(sid, startDate: date, endDate: date);
+      }
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -442,6 +579,15 @@ class ReceiptsProvider extends ChangeNotifier {
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
+    final sid = returnShopProvider().userShop()?.shopId;
+    if (sid != null &&
+        !_isRangeFetched(sid, rangeStart, endOfrange)) {
+      loadReceipts(
+        sid,
+        startDate: rangeStart,
+        endDate: endOfrange,
+      );
+    }
     notifyListeners();
   }
 
@@ -638,8 +784,7 @@ class ReceiptsProvider extends ChangeNotifier {
             // Insert all at once
             await supabase
                 .from('receipts')
-                .insert(item.receipt.toJson())
-                .select();
+                .insert(item.receipt.toJson());
             count++;
             await CreatedReceiptsFunc().deleteReceipt(
               item.receipt.uuid!,
@@ -831,8 +976,10 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord> salesInvoice({
     BuildContext? context,
   }) {
-    return returnInvoicesProvider(context: context, listen: false)
-        .invoicesMain
+    return returnInvoicesProvider(
+          context: context,
+          listen: false,
+        ).invoicesMain
         .expand((item) => item.getItems())
         .toList();
     // return _sales;
@@ -1330,8 +1477,12 @@ class ReceiptsProvider extends ChangeNotifier {
 
     var res = grouped.values.toList();
     res.sort((a, b) {
-      final aIdx = PaymentMethods.all.indexOf(a.paymentMethod);
-      final bIdx = PaymentMethods.all.indexOf(b.paymentMethod);
+      final aIdx = PaymentMethods.all.indexOf(
+        a.paymentMethod,
+      );
+      final bIdx = PaymentMethods.all.indexOf(
+        b.paymentMethod,
+      );
       if (aIdx != -1 && bIdx != -1) {
         return aIdx.compareTo(bIdx);
       } else if (aIdx != -1) {

@@ -50,9 +50,39 @@ class InvoicesProvider extends ChangeNotifier {
       ConnectivityProvider();
   List<TempInvoice> _invoices = [];
   List<TempInvoice> get invoicesMain => _invoices;
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
 
   void clearinvoices() {
     _invoices.clear();
+    _fetchedDateKeys.clear();
+    _fetchedShopId = null;
     // clearRecords();
     mainLocalLog('Invoices Cleared');
     notifyListeners();
@@ -138,17 +168,43 @@ class InvoicesProvider extends ChangeNotifier {
     }
   }
 
-  // READ all Invoices for a shop
-  Future<List<TempInvoice>> loadInvoices(int shopId) async {
+  // READ Invoices for a shop (defaults to current business day; fetches older ranges on demand)
+  Future<List<TempInvoice>> loadInvoices(
+    int shopId, {
+    bool forceRefresh = false,
+    bool fetchAll = false,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     await loadInvoicesOffline(shopId);
+    final effectiveStart =
+        startDate ??
+        rangeStartDate ??
+        dateSet ??
+        resolveBusinessDate(DateTime.now());
+    final effectiveEnd =
+        endDate ?? rangeEndDate ?? dateSet ?? effectiveStart;
+    final windowStart = fourAm(effectiveStart);
+    final windowEnd = fourAmNextDay(effectiveEnd);
+
     bool isOnline = await connectivity.isOnline();
     if (isOnline && InvoicesFunc().isSynced()) {
+      if (!forceRefresh &&
+          !fetchAll &&
+          _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {
+        return _invoices;
+      }
       try {
-        final data = await supabase
+        var query = supabase
             .from('invoices')
             .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          query = query
+              .gte('created_at', windowStart.toUtc().toIso8601String())
+              .lt('created_at', windowEnd.toUtc().toIso8601String());
+        }
+        final data = await query.order('created_at', ascending: false);
         if (data.isNotEmpty) {
           await mainLocalLog(
             'Invoices Gotten ${data.length}',
@@ -161,7 +217,7 @@ class InvoicesProvider extends ChangeNotifier {
                 .map((e) => e.invoiceUuid)
                 .toSet();
 
-        _invoices =
+        final fetched =
             (data as List)
                 .map((json) => TempInvoice.fromJson(json))
                 .where(
@@ -170,7 +226,24 @@ class InvoicesProvider extends ChangeNotifier {
                       !deletedUuids.contains(inv.uuid),
                 )
                 .toList();
-        await InvoicesFunc().clearInvoices();
+
+        if (fetchAll) {
+          _invoices = fetched;
+        } else {
+          final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              _invoices.where((inv) {
+                if (fetchedUuids.contains(inv.uuid)) return false;
+                final inWindow =
+                    !inv.createdAt.isBefore(windowStart) &&
+                    inv.createdAt.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          _invoices = [...fetched, ...outsideWindow]
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          _markRangeFetched(shopId, effectiveStart, effectiveEnd);
+        }
+
         await InvoicesFunc().insertAllInvoices(_invoices);
         notifyListeners();
         await mainLocalLog('Invoices Loaded');
@@ -1188,6 +1261,10 @@ class InvoicesProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      final sid = returnShopProvider().userShop()?.shopId;
+      if (sid != null && !_isRangeFetched(sid, date, date)) {
+        loadInvoices(sid, startDate: date, endDate: date);
+      }
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -1205,6 +1282,10 @@ class InvoicesProvider extends ChangeNotifier {
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
+    final sid = returnShopProvider().userShop()?.shopId;
+    if (sid != null && !_isRangeFetched(sid, rangeStart, endOfrange)) {
+      loadInvoices(sid, startDate: rangeStart, endDate: endOfrange);
+    }
     notifyListeners();
   }
 
@@ -1398,8 +1479,7 @@ class InvoicesProvider extends ChangeNotifier {
             // Insert all at once
             await supabase
                 .from('invoices')
-                .insert(item.invoice.toJson())
-                .select();
+                .insert(item.invoice.toJson());
             count++;
             await CreatedInvoicesFunc().deleteInvoice(
               item.invoice.uuid!,

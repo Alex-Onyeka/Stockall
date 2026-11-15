@@ -63,7 +63,7 @@ class NotificationProvider with ChangeNotifier {
                 .from('notifications')
                 .delete()
                 .eq('uuid', notif.uuid!)
-                .select(); // confirm deletion
+                .select('uuid'); // confirm deletion
 
         debugPrint('Deleted rows: $response');
 
@@ -125,7 +125,7 @@ class NotificationProvider with ChangeNotifier {
                   .from('notifications')
                   .update({'is_viewed': true})
                   .eq('uuid', notifUuid)
-                  .select()
+                  .select('uuid')
                   .maybeSingle();
 
           if (response == null) {

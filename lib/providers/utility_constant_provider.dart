@@ -18,8 +18,18 @@ class UtilityConstantProvider extends ChangeNotifier {
   final String tableName = 'utility_constants';
 
   UtilityConstants? utilityConstants;
+  DateTime? _lastFetchedAt;
 
-  Future<UtilityConstants?> getUtilityConstants() async {
+  Future<UtilityConstants?> getUtilityConstants({
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh &&
+        _lastFetchedAt != null &&
+        DateTime.now().difference(_lastFetchedAt!) <
+            const Duration(minutes: 10) &&
+        utilityConstants != null) {
+      return utilityConstants;
+    }
     utilityConstants = UtilityConstantsFunc().getUtilityConstants();
     notifyListeners();
     bool isOnline = await ConnectivityProvider().isOnline();
@@ -28,6 +38,7 @@ class UtilityConstantProvider extends ChangeNotifier {
         var res = await _client.from(tableName).select().single();
 
         utilityConstants = UtilityConstants.fromJson(res);
+        _lastFetchedAt = DateTime.now();
 
         await mainLocalLog("💕💕👏${utilityConstants?.basicPlan}");
         await mainLocalLog("💕💕👏${utilityConstants?.vat}");

@@ -13,6 +13,7 @@ class AppVersionProvider extends ChangeNotifier {
   final String tableName = 'app_version';
 
   AppVersion? appVersion;
+  DateTime? _lastFetchedAt;
 
   bool isUpdated = true;
 
@@ -32,14 +33,27 @@ class AppVersionProvider extends ChangeNotifier {
     }
   }
 
-  Future<AppVersion?> getAppVersion(BuildContext context) async {
+  Future<AppVersion?> getAppVersion(
+    BuildContext context, {
+    bool forceRefresh = false,
+  }) async {
+    await returnPermissionProvider().getPermissions(
+      forceRefresh: forceRefresh,
+    );
+    if (!forceRefresh &&
+        _lastFetchedAt != null &&
+        DateTime.now().difference(_lastFetchedAt!) <
+            const Duration(minutes: 10) &&
+        appVersion != null) {
+      return appVersion;
+    }
     bool isOnline = await ConnectivityProvider().isOnline();
-    await returnPermissionProvider().getPermissions();
     if (isOnline) {
       try {
         var res = await _client.from(tableName).select().eq('id', 1).single();
 
         appVersion = AppVersion.fromJson(res);
+        _lastFetchedAt = DateTime.now();
         AppVersionFunc().insertVersion(AppVersion.fromJson(res));
         notifyListeners();
         await mainLocalLog('App Version gotten Successfully');

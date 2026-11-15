@@ -52,8 +52,13 @@ class CategoriesProvider extends ChangeNotifier {
   }
 
   final String tableName = 'categories';
+  DateTime? _lastSyncAt;
+  int? _lastSyncShopId;
+
   void clearCategories() {
     categoriesMain.clear();
+    _lastSyncAt = null;
+    _lastSyncShopId = null;
     mainLocalLog('Categories Cleared');
     notifyListeners();
   }
@@ -87,11 +92,63 @@ class CategoriesProvider extends ChangeNotifier {
   //
   //
 
-  Future<List<CategoryClass>> getCategories(int shopId) async {
+  Future<List<CategoryClass>> getCategories(
+    int shopId, {
+    bool forceRefresh = false,
+  }) async {
     bool isOnline = await connectivity.isOnline();
     await getCategoriesOffline(shopId);
     if (isOnline && CategoryFunc().isSynced()) {
       try {
+        if (!forceRefresh &&
+            _lastSyncAt != null &&
+            _lastSyncShopId == shopId &&
+            categoriesMain.isNotEmpty) {
+          final safeSince = _lastSyncAt!
+              .subtract(const Duration(seconds: 5))
+              .toUtc();
+          final res = await supabase
+              .from(tableName)
+              .select()
+              .eq('shop_id', shopId)
+              .gt('updated_at', safeSince.toIso8601String())
+              .order('updated_at', ascending: true);
+          if (res.isNotEmpty) {
+            final pendingUuids = {
+              ...UpdatedCategoriesFunc()
+                  .getCategories()
+                  .map((u) => u.category.uuid),
+              ...CreatedCategoriesFunc()
+                  .getCreateCategories()
+                  .map((c) => c.category.uuid),
+            };
+            final updated =
+                (res as List)
+                    .map((j) => CategoryClass.fromJson(j))
+                    .where((c) => !pendingUuids.contains(c.uuid))
+                    .toList();
+            for (final item in updated) {
+              final idx = categoriesMain.indexWhere(
+                (c) => c.uuid == item.uuid,
+              );
+              if (idx != -1) {
+                categoriesMain[idx] = item;
+              } else {
+                categoriesMain.add(item);
+              }
+            }
+            categoriesMain.sort(
+              (a, b) => a.name.toLowerCase().compareTo(
+                b.name.toLowerCase(),
+              ),
+            );
+            await CategoryFunc().insertAllCategories(categoriesMain);
+            notifyListeners();
+          }
+          _lastSyncAt = DateTime.now().toUtc();
+          return categoriesMain;
+        }
+
         final response = await supabase
             .from(tableName)
             .select()
@@ -103,6 +160,8 @@ class CategoriesProvider extends ChangeNotifier {
             (response as List).map((e) => CategoryClass.fromJson(e)).toList();
 
         await CategoryFunc().insertAllCategories(categoriesMain);
+        _lastSyncAt = DateTime.now().toUtc();
+        _lastSyncShopId = shopId;
         notifyListeners();
         return categoriesMain;
       } catch (e) {
@@ -240,13 +299,11 @@ class CategoriesProvider extends ChangeNotifier {
         final payload = tempCategories.map((p) => p.category.toJson()).toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select();
+        final data = await supabase.from(tableName).insert(payload).select('uuid');
 
         await mainLocalLog('${data.length} items added successfully ✅');
         await CreatedCategoriesFunc().clearCategories();
         await mainLocalLog('Unsynced Categories Cleared');
-        await mainLocalLog('Mounted, refreshing Categories ✅');
-        await getCategories(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
       await mainLocalLog('Batch Categories insert failed ❌: $e');
@@ -275,14 +332,12 @@ class CategoriesProvider extends ChangeNotifier {
                 .from(tableName)
                 .delete()
                 .inFilter('uuid', uuids) // delete where id is in the list
-                .select();
+                .select('uuid');
 
         await mainLocalLog('${data.length} items deleted successfully ✅');
 
         await DeletedCategoriesFunc().clearDeletedCategories();
         await mainLocalLog('Unsynced deleted Categories cleared');
-        await mainLocalLog('Mounted, refreshing Categories ✅');
-        await getCategories(returnShopProvider().userShop()!.shopId!);
       }
     } catch (e) {
       await mainLocalLog('Batch Categories delete failed ❌: $e');

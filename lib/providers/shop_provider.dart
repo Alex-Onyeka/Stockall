@@ -104,11 +104,7 @@ class ShopProvider extends ChangeNotifier {
         //   );
         // }
         shop.isHeadQuarters = true;
-        await supabase
-            .from('shops')
-            .insert(shop.toJson())
-            .select()
-            .maybeSingle();
+        await supabase.from('shops').insert(shop.toJson());
         await supabase
             .from('users')
             .update({'role': tempRole})
@@ -122,7 +118,9 @@ class ShopProvider extends ChangeNotifier {
             );
 
         // Fetch All Shops
-        final response = await getUserShops();
+        final response = await getUserShops(
+          forceRefresh: true,
+        );
 
         if (response.isNotEmpty) {
           setShops(response);
@@ -145,11 +143,7 @@ class ShopProvider extends ChangeNotifier {
           shop.userId = userShops.first.userId;
           shop.isHeadQuarters = false;
         }
-        await supabase
-            .from('shops')
-            .insert(shop.toJson())
-            .select()
-            .maybeSingle();
+        await supabase.from('shops').insert(shop.toJson());
       }
     } catch (e) {
       await mainLocalLog(
@@ -199,7 +193,7 @@ class ShopProvider extends ChangeNotifier {
                 .from('shops')
                 .delete()
                 .eq('shop_id', userShop()!.shopId!)
-                .select()
+                .select('shop_id')
                 .maybeSingle();
         if (res != null) {
           // ignore: use_build_context_synchronously
@@ -250,8 +244,18 @@ class ShopProvider extends ChangeNotifier {
   }
 
   TempUserClass? shopOwnerUser;
+  DateTime? _lastShopsFetchedAt;
 
-  Future<List<TempShopClass>> getUserShops() async {
+  Future<List<TempShopClass>> getUserShops({
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh &&
+        _lastShopsFetchedAt != null &&
+        DateTime.now().difference(_lastShopsFetchedAt!) <
+            const Duration(minutes: 2) &&
+        userShops.isNotEmpty) {
+      return userShops;
+    }
     bool isOnline = await connectivity.isOnline();
 
     try {
@@ -318,6 +322,7 @@ class ShopProvider extends ChangeNotifier {
         await ShopFunc().insertShops(shops);
 
         setShops(shops);
+        _lastShopsFetchedAt = DateTime.now();
         notifyListeners();
 
         var res =
@@ -563,12 +568,9 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         await mainLocalLog("✅ Updated response: $response");
-        final shop = await getUserShops();
 
         if (response != null && response.isNotEmpty) {
-          setShops(shop);
-          // userShops[ind] = TempShopClass.fromJson(response);
-          notifyListeners();
+          await _applyUpdatedShopResponse(response);
         } else {
           await mainLocalLog('No Shop Found');
         }
@@ -750,15 +752,15 @@ class ShopProvider extends ChangeNotifier {
                   .from('users')
                   .update({'department_uuids': []})
                   .eq('user_id', employeeIdToRemove)
-                  .select()
+                  .select('department_uuids')
                   .maybeSingle();
           if (res != null) {
-            var newRes = TempUserClass.fromJson(res);
             await mainLocalLog(
               'Staff Department updated Successfully',
             );
             await mainLocalLog(
-              newRes.departmentUuids?.length.toString(),
+              (res['department_uuids'] as List?)?.length
+                  .toString(),
             );
           }
         } catch (e) {
@@ -929,6 +931,7 @@ class ShopProvider extends ChangeNotifier {
 
   void clearShop() {
     userShops.clear();
+    _lastShopsFetchedAt = null;
     notifyListeners();
   }
 
@@ -950,6 +953,22 @@ class ShopProvider extends ChangeNotifier {
       );
     }
     notifyListeners();
+  }
+
+  Future<void> _applyUpdatedShopResponse(
+    Map<String, dynamic> res,
+  ) async {
+    final updated = TempShopClass.fromJson(res);
+    final idx = userShops.indexWhere(
+      (s) => s.shopId == updated.shopId,
+    );
+    if (idx != -1) {
+      userShops[idx] = updated;
+    } else {
+      userShops.add(updated);
+    }
+    await ShopFunc().updateShop(updated);
+    setShops(userShops);
   }
 
   bool isVatLoading = false;
@@ -976,8 +995,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         isVatLoading = false;
         notifyListeners();
         return 1;
@@ -1039,8 +1057,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         isWholeSaleLoading = false;
         notifyListeners();
         return 1;
@@ -1104,8 +1121,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         ismanageInventoryStorageLoading = false;
         notifyListeners();
         return 1;
@@ -1168,8 +1184,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         isUpdatePin = false;
         notifyListeners();
         return 1;
@@ -1298,8 +1313,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         isTrackCartLoading = false;
         notifyListeners();
         return 1;
@@ -1392,8 +1406,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         allowBulkSale = false;
         returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1459,8 +1472,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         manageProductions = false;
         returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1527,8 +1539,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         manageProductionsStorage = false;
         returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1594,8 +1605,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         manageProductionItems = false;
         returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1661,8 +1671,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         manageCustomerReward = false;
         returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1728,8 +1737,7 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         manageCustomerAccount = false;
         returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1829,8 +1837,7 @@ class ShopProvider extends ChangeNotifier {
           await returnDepartmentProvider()
               .clearDepartments();
         }
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         manageDepartmentsLoading = false;
         // returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1903,8 +1910,7 @@ class ShopProvider extends ChangeNotifier {
         // if (userShop()!.useCloseSale!) {
         //   returnDepartmentProvider().selectDepartment();
         // }
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         isSetCloseSaleTimeLoading = false;
         // returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -1979,8 +1985,7 @@ class ShopProvider extends ChangeNotifier {
         // if (userShop()!.printSalesDocket!) {
         //   returnDepartmentProvider().selectDepartment();
         // }
-        var shops = await getUserShops();
-        setShops(shops);
+        await _applyUpdatedShopResponse(res);
         printSalesDocketLoading = false;
         // returnSalesProvider().selectFistMainCart();
         notifyListeners();
@@ -2089,8 +2094,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res != null) {
-          var shops = await getUserShops();
-          setShops(shops);
+          await _applyUpdatedShopResponse(res);
         }
       } catch (e) {
         await mainLocalLog(
@@ -2138,8 +2142,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         if (res != null) {
-          var shops = await getUserShops();
-          setShops(shops);
+          await _applyUpdatedShopResponse(res);
         }
         clearDiscountsCache();
       } catch (e) {
@@ -3151,7 +3154,9 @@ class ShopProvider extends ChangeNotifier {
     PaymentMethod method,
   ) async {
     final list = getCustomPaymentMethods();
-    final index = list.indexWhere((item) => item.uuid == method.uuid);
+    final index = list.indexWhere(
+      (item) => item.uuid == method.uuid,
+    );
     if (index != -1) {
       list[index] = method;
       await updateCustomPaymentMethods(list);

@@ -28,9 +28,13 @@ class CustomersProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<TempCustomersClass> customers = [];
+  DateTime? _lastSyncAt;
+  int? _lastSyncShopId;
 
   void clearCustomers() {
     customers.clear();
+    _lastSyncAt = null;
+    _lastSyncShopId = null;
     mainLocalLog('Customers Cleared');
     notifyListeners();
   }
@@ -79,11 +83,67 @@ class CustomersProvider extends ChangeNotifier {
 
   /// Fetch all customers by shop ID
   Future<List<TempCustomersClass>> fetchCustomers(
-    int shopId,
-  ) async {
+    int shopId, {
+    bool forceRefresh = false,
+  }) async {
     await fetchCustomersOffline();
     bool isOnline = await connectivity.isOnline();
     if (isOnline && CustomerFunc().isSynced()) {
+      if (!forceRefresh &&
+          _lastSyncAt != null &&
+          _lastSyncShopId == shopId &&
+          customers.isNotEmpty) {
+        try {
+          final safeSince = _lastSyncAt!
+              .subtract(const Duration(seconds: 5))
+              .toUtc();
+          final res = await supabase
+              .from('customers')
+              .select()
+              .eq('shop_id', shopId)
+              .gt('updated_at', safeSince.toIso8601String())
+              .order('updated_at', ascending: true);
+          if (res.isNotEmpty) {
+            final pendingUuids = {
+              ...UpdatedCustomersFunc()
+                  .getCustomers()
+                  .map((u) => u.customer.uuid),
+              ...CreatedCustomersFunc()
+                  .getCustomers()
+                  .map((c) => c.customer.uuid),
+            };
+            final updated =
+                (res as List)
+                    .map((j) => TempCustomersClass.fromJson(j))
+                    .where((c) => !pendingUuids.contains(c.uuid))
+                    .toList();
+            for (final item in updated) {
+              final idx = customers.indexWhere(
+                (c) => c.uuid == item.uuid,
+              );
+              if (idx != -1) {
+                customers[idx] = item;
+              } else {
+                customers.add(item);
+              }
+            }
+            customers.sort(
+              (a, b) => a.name.toLowerCase().compareTo(
+                b.name.toLowerCase(),
+              ),
+            );
+            await CustomerFunc().insertAllCustomers(customers);
+            notifyListeners();
+          }
+          _lastSyncAt = DateTime.now().toUtc();
+          await returnCustomerAccountReceiptsProvider()
+              .getCustomerAccountReceipts(shopId);
+          return customers;
+        } catch (e) {
+          await mainLocalLog('Incremental Customers Sync error: $e');
+        }
+      }
+
       final data = await supabase
           .from('customers')
           .select()
@@ -99,6 +159,8 @@ class CustomersProvider extends ChangeNotifier {
               .toList();
 
       await CustomerFunc().insertAllCustomers(customers);
+      _lastSyncAt = DateTime.now().toUtc();
+      _lastSyncShopId = shopId;
       await mainLocalLog('Customer Gotten Successfully');
       await returnCustomerAccountReceiptsProvider()
           .getCustomerAccountReceipts(shopId);
@@ -286,7 +348,6 @@ class CustomersProvider extends ChangeNotifier {
   //
 
   Future<void> createCustomersSync() async {
-    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -311,23 +372,16 @@ class CustomersProvider extends ChangeNotifier {
                 .toList();
 
         // Insert all at once
-        final data =
-            await supabase
-                .from('customers')
-                .insert(payload)
-                .select();
+        final data = await supabase
+            .from('customers')
+            .insert(payload)
+            .select('uuid');
 
         await mainLocalLog(
           '${data.length} items added successfully ✅',
         );
         await CreatedCustomersFunc().clearCustomers();
         await mainLocalLog('Unsynced Customers Cleared');
-        await mainLocalLog(
-          'Mounted, refreshing Customers ✅',
-        );
-        await fetchCustomers(
-          shopProvider.userShop()!.shopId!,
-        );
       }
     } catch (e) {
       await mainLocalLog(
@@ -343,7 +397,6 @@ class CustomersProvider extends ChangeNotifier {
   //
 
   Future<void> updateCustomersSync() async {
-    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
@@ -445,12 +498,6 @@ class CustomersProvider extends ChangeNotifier {
         await mainLocalLog(
           'Unsynced updated Customers cleared',
         );
-        await mainLocalLog(
-          'Mounted, refreshing Customers ✅',
-        );
-        await fetchCustomers(
-          shopProvider.userShop()!.shopId!,
-        );
       }
     } catch (e) {
       await mainLocalLog(
@@ -465,7 +512,6 @@ class CustomersProvider extends ChangeNotifier {
   //
 
   Future<void> deletedCustomersSync() async {
-    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
 
@@ -479,15 +525,14 @@ class CustomersProvider extends ChangeNotifier {
                 .map((p) => p.customerUuid)
                 .toList();
 
-        final data =
-            await supabase
-                .from('customers')
-                .delete()
-                .inFilter(
-                  'uuid',
-                  uuids,
-                ) // delete where id is in the list
-                .select();
+        final data = await supabase
+            .from('customers')
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select('uuid');
 
         await mainLocalLog(
           '${data.length} items deleted successfully ✅',
@@ -497,12 +542,6 @@ class CustomersProvider extends ChangeNotifier {
             .clearDeletedCustomers();
         await mainLocalLog(
           'Unsynced deleted Customers cleared',
-        );
-        await mainLocalLog(
-          'Mounted, refreshing Customers ✅',
-        );
-        await fetchCustomers(
-          shopProvider.userShop()!.shopId!,
         );
       }
     } catch (e) {

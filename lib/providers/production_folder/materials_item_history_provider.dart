@@ -289,7 +289,7 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
             await client
                 .from(tableName)
                 .insert(payload)
-                .select();
+                .select('uuid');
 
         await mainLocalLog(
           '${data.length} Materials Item Histories added successfully ✅',
@@ -299,10 +299,6 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
         await mainLocalLog(
           'Unsynced Materials Item Histories Cleared',
         );
-        await mainLocalLog(
-          'Mounted, refreshing Materials Item Histories ✅',
-        );
-        await getMaterialsItemHistories();
       }
     } catch (e) {
       await mainLocalLog(

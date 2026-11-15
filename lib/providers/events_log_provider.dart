@@ -23,6 +23,34 @@ class EventsLogProvider with ChangeNotifier {
   EventsLogProvider._internal();
 
   List<TempEventLogClass> logs = [];
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
 
   DateTime? dateSet;
 
@@ -39,6 +67,7 @@ class EventsLogProvider with ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      getEventLogs(startDate: date, endDate: date);
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -54,6 +83,7 @@ class EventsLogProvider with ChangeNotifier {
     rangeEndDate = endOfrange;
     mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
     dateSet = null;
+    getEventLogs(startDate: rangeStart, endDate: endOfrange);
     notifyListeners();
   }
 
@@ -108,24 +138,70 @@ class EventsLogProvider with ChangeNotifier {
     }
   }
 
-  Future<List<TempEventLogClass>> getEventLogs() async {
+  Future<List<TempEventLogClass>> getEventLogs({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     bool isOnline = await ConnectivityProvider().isOnline();
     var shopId = returnShopProvider().userShop()!.shopId!;
     if (isOnline && EventsLogFunc().isSynced()) {
+      final effectiveStart =
+          startDate ??
+          dateSet ??
+          rangeStartDate ??
+          resolveBusinessDate(DateTime.now());
+      final effectiveEnd =
+          endDate ?? (dateSet ?? rangeEndDate ?? effectiveStart);
+
+      if (!fetchAll &&
+          !forceRefresh &&
+          _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {
+        return logs;
+      }
+
+      final windowStart = fourAm(effectiveStart);
+      final windowEnd = fourAmNextDay(effectiveEnd);
+
       try {
-        var res = await client
+        var query = client
             .from(tableName)
             .select()
-            .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
-        if (res.isEmpty) {
-          await mainLocalLog('No Event Logs Returned');
-          logs.clear();
-          EventsLogFunc().clearEventsLog();
-          notifyListeners();
-          return [];
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          query = query
+              .gte('created_at', windowStart.toUtc().toIso8601String())
+              .lt('created_at', windowEnd.toUtc().toIso8601String());
         }
-        logs = res.map((m) => TempEventLogClass.fromJson(m)).toList();
+        var res = await query.order('created_at', ascending: false);
+        final fetched = res.map((m) => TempEventLogClass.fromJson(m)).toList();
+        if (fetchAll) {
+          if (fetched.isEmpty) {
+            await mainLocalLog('No Event Logs Returned');
+            logs.clear();
+            EventsLogFunc().clearEventsLog();
+            notifyListeners();
+            return [];
+          }
+          logs = fetched;
+        } else {
+          final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+          final outsideWindow = logs.where((rec) {
+            if (fetchedUuids.contains(rec.uuid)) return false;
+            final created = rec.createdAt;
+            if (created == null) return true;
+            final inWindow =
+                !created.isBefore(windowStart) && created.isBefore(windowEnd);
+            return !inWindow;
+          }).toList();
+          logs = [...fetched, ...outsideWindow]
+            ..sort(
+              (a, b) => (b.createdAt ?? DateTime(1970))
+                  .compareTo(a.createdAt ?? DateTime(1970)),
+            );
+          _markRangeFetched(shopId, effectiveStart, effectiveEnd);
+        }
 
         await EventsLogFunc().insertAllEventsLog(logs);
         await mainLocalLog('✅✅ Events Gotten Successfully Online');
@@ -417,8 +493,7 @@ class EventsLogProvider with ChangeNotifier {
             // Insert all at once
             await client
                 .from(tableName)
-                .insert(item.eventLog.toJson())
-                .select();
+                .insert(item.eventLog.toJson());
             count++;
             await CreatedEventsLogFunc().deleteEventLog(item.eventLog.uuid!);
           } on PostgrestException catch (e) {

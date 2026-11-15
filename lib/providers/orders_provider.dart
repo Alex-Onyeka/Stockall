@@ -52,11 +52,41 @@ class OrdersProvider extends ChangeNotifier {
       ConnectivityProvider();
   List<Orders> _orders = [];
   List<Orders> get orders => _orders;
+  final Set<String> _fetchedDateKeys = {};
+  int? _fetchedShopId;
+
+  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+
+  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) return false;
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      cursor = cursor.add(const Duration(days: 1));
+    }
+    return true;
+  }
+
+  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+    if (_fetchedShopId != shopId) {
+      _fetchedDateKeys.clear();
+      _fetchedShopId = shopId;
+    }
+    var cursor = DateTime(start.year, start.month, start.day);
+    final last = DateTime(end.year, end.month, end.day);
+    while (!cursor.isAfter(last)) {
+      _fetchedDateKeys.add(_dateKey(cursor));
+      cursor = cursor.add(const Duration(days: 1));
+    }
+  }
 
   final String tableName = 'orders';
 
   void clearOrders() {
     _orders.clear();
+    _fetchedDateKeys.clear();
+    _fetchedShopId = null;
     // clearRecords();
     mainLocalLog('Orders Cleared');
     notifyListeners();
@@ -179,17 +209,44 @@ class OrdersProvider extends ChangeNotifier {
     }
   }
 
-  // READ all orders for a shop
-  Future<List<Orders>> loadOrders(int shopId) async {
+  // READ orders for a shop (defaults to current business day; fetches older ranges on demand)
+  Future<List<Orders>> loadOrders(
+    int shopId, {
+    bool forceRefresh = false,
+    bool fetchAll = false,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     await loadOrdersOffline(shopId);
+    final effectiveStart =
+        startDate ??
+        rangeStartDate ??
+        dateSet ??
+        resolveBusinessDate(DateTime.now());
+    final effectiveEnd =
+        endDate ?? rangeEndDate ?? dateSet ?? effectiveStart;
+    final windowStart = fourAm(effectiveStart);
+    final windowEnd = fourAmNextDay(effectiveEnd);
+
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
     if (isOnline && OrdersFunc().isSynced()) {
+      if (!forceRefresh &&
+          !fetchAll &&
+          _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {
+        return _orders;
+      }
       try {
-        final data = await supabase
+        var baseQuery = supabase
             .from(tableName)
             .select()
-            .eq('shop_id', shopId)
+            .eq('shop_id', shopId);
+        if (!fetchAll) {
+          baseQuery = baseQuery
+              .gte('created_at', windowStart.toUtc().toIso8601String())
+              .lt('created_at', windowEnd.toUtc().toIso8601String());
+        }
+        final data = await baseQuery
             .order('created_at', ascending: false)
             .range(0, 1000);
         tempList.addAll(data);
@@ -198,10 +255,16 @@ class OrdersProvider extends ChangeNotifier {
         );
 
         if (data.length >= 1000) {
-          final data2 = await supabase
+          var baseQuery2 = supabase
               .from(tableName)
               .select()
-              .eq('shop_id', shopId)
+              .eq('shop_id', shopId);
+          if (!fetchAll) {
+            baseQuery2 = baseQuery2
+                .gte('created_at', windowStart.toUtc().toIso8601String())
+                .lt('created_at', windowEnd.toUtc().toIso8601String());
+          }
+          final data2 = await baseQuery2
               .order('created_at', ascending: false)
               .range(1001, 2000);
           tempList.addAll(data2);
@@ -216,7 +279,7 @@ class OrdersProvider extends ChangeNotifier {
                 .map((e) => e.orderUuid)
                 .toSet();
 
-        _orders =
+        final fetched =
             (tempList as List)
                 .map((json) => Orders.fromJson(json))
                 .where(
@@ -225,7 +288,24 @@ class OrdersProvider extends ChangeNotifier {
                       !deletedOrderUuids.contains(ord.uuid),
                 )
                 .toList();
-        await OrdersFunc().clearOrders();
+
+        if (fetchAll) {
+          _orders = fetched;
+        } else {
+          final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              _orders.where((ord) {
+                if (fetchedUuids.contains(ord.uuid)) return false;
+                final inWindow =
+                    !ord.createdAt.isBefore(windowStart) &&
+                    ord.createdAt.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          _orders = [...fetched, ...outsideWindow]
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          _markRangeFetched(shopId, effectiveStart, effectiveEnd);
+        }
+
         await OrdersFunc().insertAllOrders(_orders);
         await mainLocalLog('Loaded');
         notifyListeners();
@@ -266,6 +346,10 @@ class OrdersProvider extends ChangeNotifier {
       rangeStartDate = null;
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
+      final sid = returnShopProvider().userShop()?.shopId;
+      if (sid != null && !_isRangeFetched(sid, date, date)) {
+        loadOrders(sid, startDate: date, endDate: date);
+      }
     } else {
       dateSet = null;
       mainLocalLog('Date Cleared');
@@ -283,6 +367,10 @@ class OrdersProvider extends ChangeNotifier {
       'Date Range set: Start: $rangeStart End: $endOfrange ',
     );
     dateSet = null;
+    final sid = returnShopProvider().userShop()?.shopId;
+    if (sid != null && !_isRangeFetched(sid, rangeStart, endOfrange)) {
+      loadOrders(sid, startDate: rangeStart, endDate: endOfrange);
+    }
     notifyListeners();
   }
 
@@ -353,8 +441,7 @@ class OrdersProvider extends ChangeNotifier {
             // Insert all at once
             await supabase
                 .from(tableName)
-                .insert(item.order.toJson())
-                .select();
+                .insert(item.order.toJson());
             count++;
             await CreatedOrdersFunc().deleteOrder(
               item.order.uuid!,

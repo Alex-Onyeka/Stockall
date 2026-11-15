@@ -39,7 +39,7 @@ class AuthService extends ChangeNotifier {
       var account =
           await client
               .from('users')
-              .select()
+              .select('user_id')
               .eq('email', email)
               .maybeSingle();
       if (account == null) {
@@ -461,13 +461,10 @@ class AuthService extends ChangeNotifier {
       );
 
       // ✅ Step 2: Update password in your 'users' table
-      final updateResponse =
-          await _client
-              .from('users')
-              .update({'password': newPassword})
-              .eq('user_id', user.id)
-              .select()
-              .maybeSingle();
+      await _client
+          .from('users')
+          .update({'password': newPassword})
+          .eq('user_id', user.id);
 
       // 4. Store the user in local DB
       await mainLocalLog(
@@ -480,7 +477,7 @@ class AuthService extends ChangeNotifier {
         await returnUserProvider(
           context,
           listen: false,
-        ).fetchCurrentUser(context);
+        ).fetchCurrentUser(context, forceRefresh: true);
         return 'Success';
       } else {
         await mainLocalLog(
@@ -489,7 +486,7 @@ class AuthService extends ChangeNotifier {
       }
 
       await mainLocalLog(
-        "✅ Password updated in 'users' table: $updateResponse",
+        "✅ Password updated in 'users' table",
       );
       return 'Success';
     } on AuthException catch (e) {
