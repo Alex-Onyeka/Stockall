@@ -545,7 +545,61 @@ class RefreshFunctions {
   //
   //
 
-  Future<void> refreshDashboard(BuildContext context) async {
+  Future<void> _fetchDashboardOnline(BuildContext safeContext) async {
+    if (safeContext.mounted) {
+      await returnUserProviderSingle().fetchCurrentUser(safeContext);
+    }
+    await utilityConstantProvider.getUtilityConstants();
+
+    var subs = await loadSubscription();
+    await mainLocalLog(
+      "Subscription Plan RefreshDashboard: ${subs?.plan}",
+    );
+    if (safeContext.mounted) {
+      dataProvider.setAllowedRange(plan: subs?.plan);
+    }
+
+    await returnDepartmentProvider().getDepartments();
+    await getProducts();
+    if (safeContext.mounted) {
+      await getMainReceipts();
+    }
+    await getInvoices();
+    await getExpenses();
+    await getCustomers();
+    await getEmployees();
+    await fetchNotifications();
+  }
+
+  Future<void> _fetchDashboardStartup(BuildContext safeContext) async {
+    await loadDashboardDataOffline();
+    await getUserShop();
+    await utilityConstantProvider.getUtilityConstants();
+    var subs = await loadSubscription();
+    await mainLocalLog(
+      "Subscription Plan RefreshDashboard: ${subs?.plan}",
+    );
+    if (safeContext.mounted) {
+      dataProvider.setAllowedRange(plan: subs?.plan);
+    }
+    await returnDepartmentProvider().getDepartments();
+    if (safeContext.mounted) {
+      await getMainReceipts();
+    }
+    await getExpenses();
+    if (safeContext.mounted) {
+      await returnUserProvider(
+        safeContext,
+        listen: false,
+      ).fetchCurrentUser(safeContext);
+    }
+    await fetchNotifications();
+  }
+
+  Future<void> refreshDashboard(
+    BuildContext context, {
+    bool isManualRefresh = false,
+  }) async {
     if (!isSyncing()) {
       var safeContext = context;
       var navPro = returnNavProvider(
@@ -578,64 +632,28 @@ class RefreshFunctions {
                 title: 'Unsynced Records Detected',
                 action: () async {
                   Navigator.of(confirmDialog).pop();
+                  dataProvider.toggleRefreshing(true);
                   if (safeContext.mounted) {
                     await returnData().syncData(
                       context: safeContext,
                     );
                   }
-                  await loadDashboardDataOffline();
-                  if (context.mounted) {
-                    await returnUserProviderSingle()
-                        .fetchCurrentUser(safeContext);
+                  if (isManualRefresh) {
+                    await _fetchDashboardOnline(safeContext);
+                  } else {
+                    await _fetchDashboardStartup(safeContext);
                   }
-                  await utilityConstantProvider
-                      .getUtilityConstants();
-
-                  var subs = await loadSubscription();
-                  await mainLocalLog(
-                    "Subscription Plan RefreshDashboard: ${subs?.plan}",
-                  );
-                  if (safeContext.mounted) {
-                    dataProvider.setAllowedRange(
-                      plan: subs?.plan,
-                    );
-                  }
-
-                  await returnDepartmentProvider()
-                      .getDepartments();
-                  if (safeContext.mounted) {
-                    await getMainReceipts();
-                  }
-                  await getExpenses();
-                  await fetchNotifications();
+                  dataProvider.toggleRefreshing(false);
                 },
               );
             },
           );
         } else {
-          await loadDashboardDataOffline();
-          await getUserShop();
-          await utilityConstantProvider
-              .getUtilityConstants();
-          var subs = await loadSubscription();
-          await mainLocalLog(
-            "Subscription Plan RefreshDashboard: ${subs?.plan}",
-          );
-          if (safeContext.mounted) {
-            dataProvider.setAllowedRange(plan: subs?.plan);
+          if (isManualRefresh) {
+            await _fetchDashboardOnline(safeContext);
+          } else {
+            await _fetchDashboardStartup(safeContext);
           }
-          await returnDepartmentProvider().getDepartments();
-          if (safeContext.mounted) {
-            await getMainReceipts();
-          }
-          await getExpenses();
-          if (context.mounted) {
-            await returnUserProvider(
-              context,
-              listen: false,
-            ).fetchCurrentUser(safeContext);
-          }
-          await fetchNotifications();
         }
       }
 
@@ -685,25 +703,13 @@ class RefreshFunctions {
                       context: safeContext,
                     );
                   }
-                  //
-                  //
-                  //
-                  //
-                  await loadAllDataOffline(
-                    context: context,
-                  );
-                  //
-                  //
-                  //
-                  //
-                  if (context.mounted) {
+                  if (safeContext.mounted) {
                     await returnUserProviderSingle()
                         .fetchCurrentUser(safeContext);
                   }
                   await utilityConstantProvider
                       .getUtilityConstants();
 
-                  // await getProductSalesRecord();
                   var subs = await loadSubscription();
                   await mainLocalLog(
                     "Subscription Plan RefreshAll: ${subs?.plan}",
@@ -719,10 +725,11 @@ class RefreshFunctions {
 
                   await returnDepartmentProvider()
                       .getDepartments();
+                  await getProducts();
                   if (safeContext.mounted) {
                     await getMainReceipts();
                   }
-                  // await getInvoices();
+                  await getInvoices();
                   if (shopProvider.userShop()?.bulkSale ==
                       true) {
                     await returnSubStaffProvider()
@@ -732,7 +739,6 @@ class RefreshFunctions {
                   await getErrorLogs();
                   await getExpenses();
                   await getEmployees();
-                  // await getProducts();
                   await fetchNotifications();
                   await getCustomers();
                   await purchaseProvider.loadPurchases(
@@ -755,15 +761,6 @@ class RefreshFunctions {
             },
           );
         } else {
-          //
-          //
-          //
-          //
-          await loadAllDataOffline(context: context);
-          //
-          //
-          //
-          //
           await getUserShop();
           await utilityConstantProvider
               .getUtilityConstants();
@@ -778,9 +775,11 @@ class RefreshFunctions {
             "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
           );
           await returnDepartmentProvider().getDepartments();
+          await getProducts();
           if (safeContext.mounted) {
             await getMainReceipts();
           }
+          await getInvoices();
           if (shopProvider.userShop()?.bulkSale == true) {
             await returnSubStaffProvider().getSubStaffs();
           }
@@ -788,13 +787,12 @@ class RefreshFunctions {
           await getErrorLogs();
           await getExpenses();
           await getEmployees();
-          if (context.mounted) {
+          if (safeContext.mounted) {
             await returnUserProvider(
-              context,
+              safeContext,
               listen: false,
             ).fetchCurrentUser(safeContext);
           }
-          // await getProducts();
           await fetchNotifications();
           await getCustomers();
           await returnDepartmentProvider().getDepartments();

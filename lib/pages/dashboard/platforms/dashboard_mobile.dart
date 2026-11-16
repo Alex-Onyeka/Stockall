@@ -228,7 +228,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                         onRefresh: () async {
                           return await RefreshFunctions(
                             context,
-                          ).refreshDashboard(context);
+                          ).refreshDashboard(
+                            context,
+                            isManualRefresh: true,
+                          );
                         },
                         backgroundColor: Colors.white,
                         color:

@@ -272,6 +272,7 @@ class _DashboardDesktopState
                                           context,
                                         ).refreshDashboard(
                                           context,
+                                          isManualRefresh: true,
                                         );
                                       },
                                       backgroundColor:
