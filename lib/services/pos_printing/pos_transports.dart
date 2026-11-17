@@ -57,15 +57,15 @@ Future<void> _sendBluetooth(
   PosPrinterConfig printer,
   List<Uint8List> chunks,
 ) async {
-  if (!BluetoothPrintPlus.isBlueOn) {
-    throw const PosSendException(
-      'Bluetooth is off. Turn it on and try again.',
-    );
-  }
   final hasPermission = await ensureBluetoothPermissions();
   if (!hasPermission) {
     throw const PosSendException(
       'Bluetooth permission was not granted. Please enable it in Settings.',
+    );
+  }
+  if (!BluetoothPrintPlus.isBlueOn) {
+    throw const PosSendException(
+      'Bluetooth is off. Turn it on and try again.',
     );
   }
   await _ensureBluetoothConnected(printer);

@@ -386,6 +386,7 @@ class AuthService extends ChangeNotifier {
         await CurrentShopFunc().clearCurrentShop();
         returnSalesProvider().clearCart();
         await CartFunc().clearMainCart();
+        await returnMultiDisplayProvider().closeAllWindows();
         bool isOnline = ConnectivityProvider().isConnected;
 
         if (isOnline) {

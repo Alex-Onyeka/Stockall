@@ -93,11 +93,6 @@ class _PosPrinterSetupDialogState
   void initState() {
     super.initState();
     if (_transports.contains(PosTransport.bluetooth)) {
-      _scanSubscription = BluetoothPrintPlus.scanResults
-          .listen((devices) {
-            if (mounted)
-              setState(() => _bluetoothDevices = devices);
-          });
       _scan();
     }
     if (_transports.contains(PosTransport.windowsSpooler)) {
@@ -121,13 +116,16 @@ class _PosPrinterSetupDialogState
 
   Future<void> _scan() async {
     try {
-      if (!BluetoothPrintPlus.isBlueOn) {
-        if (mounted) setState(() {});
-        return;
-      }
       final hasPermission = await ensureBluetoothPermissions();
       if (!hasPermission) {
         if (mounted) setState(() => _scanning = false);
+        return;
+      }
+      _scanSubscription ??= BluetoothPrintPlus.scanResults.listen((devices) {
+        if (mounted) setState(() => _bluetoothDevices = devices);
+      });
+      if (!BluetoothPrintPlus.isBlueOn) {
+        if (mounted) setState(() {});
         return;
       }
       if (mounted) setState(() => _scanning = true);

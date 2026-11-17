@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_retriever/screen_retriever.dart';
-import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 
@@ -11,77 +11,75 @@ class MultiDisplayProvider extends ChangeNotifier {
   factory MultiDisplayProvider() => _instance;
   MultiDisplayProvider._internal();
 
+  WindowController? _activeController;
+  List<WindowInfo> windows = [];
+  List<int> displayIds = [];
+  Display? altDisplay;
+
   Future<bool> isAllowed() async {
     if (returnShopProvider().isDesktop() &&
         currentUser().role != 'Store Keeper') {
-      var screen = await getAltDisplay();
-      if (screen == null) {
-        return false;
-      }
-      for (var win in windows) {
-        await win.controller.setFrame(
-          screen.visiblePosition! & screen.visibleSize!,
-        );
-      }
-      return true;
-    } else {
-      return false;
+      final screen = await getAltDisplay();
+      return screen != null;
     }
+    return false;
   }
-
-  List<WindowInfo> windows = [];
 
   void deleteWindow(String cartId) {
     windows.removeWhere((win) => win.id == cartId);
     notifyListeners();
   }
 
-  List<int> displayIds = [];
-
   Future<void> getAllSubWindows() async {
-    var yes = await isAllowed();
-    if (yes) {
-      displayIds =
-          await DesktopMultiWindow.getAllSubWindowIds();
+    final yes = await isAllowed();
+    if (!yes) return;
+    final ids =
+        await DesktopMultiWindow.getAllSubWindowIds();
+    final changed =
+        ids.length != displayIds.length ||
+        !ids.every((id) => displayIds.contains(id));
+    displayIds = ids;
+    if (_activeController != null &&
+        !displayIds.contains(_activeController!.windowId)) {
+      _activeController = null;
+      windows.clear();
+    }
+    if (changed) {
       notifyListeners();
     }
   }
 
-  Display? altDisplay;
   Future<Display?> getAltDisplay() async {
-    var displays = await screenRetriever.getAllDisplays();
-    if (displays.length > 1) {
-      altDisplay = displays[1];
+    final displays = await screenRetriever.getAllDisplays();
+    final Display? next =
+        displays.length > 1 ? displays[1] : null;
+    final changed =
+        altDisplay?.id != next?.id ||
+        altDisplay?.size != next?.size;
+    altDisplay = next;
+    if (changed) {
       notifyListeners();
-      return displays[1];
-    } else {
-      altDisplay = null;
-      notifyListeners();
-      return null;
     }
+    return next;
+  }
+
+  Rect _fullScreenFrame(Display display) {
+    final pos = display.visiblePosition ?? Offset.zero;
+    return pos & display.size;
   }
 
   bool checkIfWindowExists(String cartId) {
-    if (returnShopProvider().isDesktop()) {
-      try {
-        var displayId =
-            windows
-                    .where((win) => win.id == cartId)
-                    .isNotEmpty
-                ? windows
-                    .firstWhere((win) => win.id == cartId)
-                    .controller
-                    .windowId
-                : [];
-        return displayIds.contains(displayId);
-      } catch (e) {
-        mainLocalLog(
-          'Error Occured Checking if Window Exists: ${e.toString()}',
-        );
-        return true;
-      }
-    } else {
-      return true;
+    if (!returnShopProvider().isDesktop()) return true;
+    try {
+      if (_activeController == null) return false;
+      return displayIds.contains(
+        _activeController!.windowId,
+      );
+    } catch (e) {
+      mainLocalLog(
+        'Error Occured Checking if Window Exists: ${e.toString()}',
+      );
+      return false;
     }
   }
 
@@ -89,105 +87,110 @@ class MultiDisplayProvider extends ChangeNotifier {
     required String cartId,
     int? newCartIndex,
   }) async {
-    var yes = await isAllowed();
-    if (yes) {
-      try {
-        final name =
-            'Cart ${newCartIndex ?? windows.length + 1}';
-        final windowConfig = {
-          'name': name,
-          'type': 'alt',
-          'cart_id': cartId,
-        };
-        final windowController =
-            await DesktopMultiWindow.createWindow(
-              jsonEncode(windowConfig),
-            );
+    final yes = await isAllowed();
+    if (!yes || altDisplay == null) return;
 
-        windowController
-          ..setFrame(
-            Offset(
-                  altDisplay!.visiblePosition!.dx - 10,
-                  altDisplay!.visiblePosition!.dy - 25,
-                ) &
-                Size(
-                  altDisplay!.visibleSize!.width + 20,
-                  altDisplay!.visibleSize!.height + 35,
-                ),
-          )
-          ..setTitle(name)
-          ..show();
+    try {
+      final name = 'Cart ${newCartIndex ?? 1}';
+      displayIds =
+          await DesktopMultiWindow.getAllSubWindowIds();
 
-        windows.add(
+      if (_activeController != null &&
+          displayIds.contains(
+            _activeController!.windowId,
+          )) {
+        await _activeController!.setFrame(
+          _fullScreenFrame(altDisplay!),
+        );
+        await _activeController!.setTitle(name);
+        await _activeController!.show();
+        windows = [
           WindowInfo(
             id: cartId,
             name: name,
-            controller: windowController,
+            controller: _activeController!,
           ),
-        );
+        ];
         notifyListeners();
-        for (var win in windows.where(
-          (win) =>
-              win.controller.windowId !=
-              windowController.windowId,
-        )) {
-          await win.controller.hide();
-        }
-      } catch (e) {
-        await mainLocalLog(
-          'Failed to Create Window: ${e.toString()}',
-        );
+        return;
       }
+
+      final windowConfig = {
+        'name': name,
+        'type': 'alt',
+        'cart_id': cartId,
+      };
+      final windowController =
+          await DesktopMultiWindow.createWindow(
+            jsonEncode(windowConfig),
+          );
+
+      await windowController.setFrame(
+        _fullScreenFrame(altDisplay!),
+      );
+      await windowController.setTitle(name);
+      await windowController.show();
+
+      _activeController = windowController;
+      windows = [
+        WindowInfo(
+          id: cartId,
+          name: name,
+          controller: windowController,
+        ),
+      ];
+      displayIds =
+          await DesktopMultiWindow.getAllSubWindowIds();
+      notifyListeners();
+    } catch (e) {
+      await mainLocalLog(
+        'Failed to Create Window: ${e.toString()}',
+      );
     }
-    await getAllSubWindows();
   }
 
   Future<void> updateWindow({
     required AltCartClass cartClass,
     bool? showCart,
   }) async {
-    var yes = await isAllowed();
-    if (yes) {
-      int? windowId =
-          windows
-                  .where(
-                    (win) => win.id == cartClass.cartId,
-                  )
-                  .toList()
-                  .isNotEmpty
-              ? windows
-                  .where(
-                    (win) => win.id == cartClass.cartId,
-                  )
-                  .toList()
-                  .first
-                  .controller
-                  .windowId
-              : null;
-      if (windowId != null) {
-        try {
-          if (showCart == null) {
-            await DesktopMultiWindow.invokeMethod(
-              windowId,
-              'update_cart',
-              jsonEncode(cartClass.toJson()),
-            );
-          } else {
-            await DesktopMultiWindow.invokeMethod(
-              windowId,
-              'show_cart',
-              jsonEncode(cartClass.toJson()),
-            );
-          }
-        } catch (e) {
-          await mainLocalLog(
-            'Error Updating Cart: ${e.toString()}',
-          );
-        }
-      } else {
-        await mainLocalLog(
-          'Error: Window Id does not exists',
+    final yes = await isAllowed();
+    if (!yes) return;
+
+    final windowId = _activeController?.windowId;
+    if (windowId == null) {
+      await mainLocalLog(
+        'Error: Window Id does not exists',
+      );
+      return;
+    }
+
+    try {
+      if (showCart == null) {
+        await DesktopMultiWindow.invokeMethod(
+          windowId,
+          'update_cart',
+          jsonEncode(cartClass.toJson()),
         );
+      } else {
+        await DesktopMultiWindow.invokeMethod(
+          windowId,
+          'show_cart',
+          jsonEncode({
+            'show_cart': showCart,
+            'cart': cartClass.toJson(),
+          }),
+        );
+      }
+    } catch (e) {
+      await mainLocalLog(
+        'Error Updating Cart: ${e.toString()}',
+      );
+      displayIds =
+          await DesktopMultiWindow.getAllSubWindowIds();
+      if (!displayIds.contains(windowId)) {
+        _activeController = null;
+        windows.clear();
+        notifyListeners();
       }
     }
   }
@@ -197,70 +200,81 @@ class MultiDisplayProvider extends ChangeNotifier {
     int? cartIndex,
     required AltCartClass cartClass,
   }) async {
-    var yes = await isAllowed();
+    final yes = await isAllowed();
+    if (!yes || altDisplay == null) return;
+
     await getAllSubWindows();
-    // await mainLocalLog(cartId);
-    // await mainLocalLog(cartIndex);
-    if (yes) {
-      var selWins = windows.where(
-        (win) => win.id == cartId,
+    if (_activeController == null ||
+        !displayIds.contains(_activeController!.windowId)) {
+      await createWindow(
+        cartId: cartId,
+        newCartIndex: cartIndex,
       );
-      if (selWins.isEmpty) {
-        await returnSalesProvider().createWindow();
+    } else {
+      final name = 'Cart ${cartIndex ?? 1}';
+      if (windows.isEmpty) {
+        windows = [
+          WindowInfo(
+            id: cartId,
+            name: name,
+            controller: _activeController!,
+          ),
+        ];
       } else {
-        var selWin = selWins.first;
-        if (cartIndex !=
-            int.parse(selWin.name.split(' ').last)) {
-          await selWin.controller.setTitle(
-            'Cart $cartIndex',
-          );
-          selWin.name = 'Cart $cartIndex';
-          await mainLocalLog(
-            'Updated Window Name and Title Numbers to $cartIndex',
-          );
-        }
-        await updateWindow(
-          cartClass: cartClass,
-          // showCart: true,
+        windows.first = WindowInfo(
+          id: cartId,
+          name: name,
+          controller: _activeController!,
         );
-        await selWin.controller.setFrame(
-          Offset(
-                altDisplay!.visiblePosition!.dx - 10,
-                altDisplay!.visiblePosition!.dy - 25,
-              ) &
-              Size(
-                altDisplay!.visibleSize!.width + 20,
-                altDisplay!.visibleSize!.height + 35,
-              ),
+      }
+      try {
+        await _activeController!.setTitle(name);
+        await _activeController!.setFrame(
+          _fullScreenFrame(altDisplay!),
         );
-        await selWin.controller.show();
-
-        for (var win in windows.where(
-          (win) =>
-              win.controller.windowId !=
-              selWin.controller.windowId,
-        )) {
-          await win.controller.hide();
-        }
-
-        notifyListeners();
+        await _activeController!.show();
+      } catch (e) {
+        await mainLocalLog(
+          'Error selecting window: ${e.toString()}',
+        );
       }
     }
+
+    await updateWindow(cartClass: cartClass);
+    notifyListeners();
   }
 
   Future<void> closeWindow({required String cartId}) async {
-    var yes = await isAllowed();
-    await getAllSubWindows();
-    if (yes) {
-      await mainLocalLog(windows.length.toString());
-      await windows
-          .where((win) => win.id == cartId)
-          .first
-          .controller
-          .close();
-      windows.removeWhere((win) => win.id == cartId);
-      notifyListeners();
+    final hasMatchingCart = windows.any(
+      (win) => win.id == cartId,
+    );
+    if (!hasMatchingCart) return;
+    await closeAllWindows();
+  }
+
+  Future<void> closeAllWindows() async {
+    try {
+      if (_activeController != null) {
+        await _activeController!.close();
+      }
+    } catch (e) {
+      await mainLocalLog(
+        'Error Closing Window: ${e.toString()}',
+      );
     }
+    _activeController = null;
+    windows.clear();
+    try {
+      if (returnShopProvider().isDesktop()) {
+        displayIds =
+            await DesktopMultiWindow.getAllSubWindowIds();
+      } else {
+        displayIds.clear();
+      }
+    } catch (_) {
+      displayIds.clear();
+    }
+    notifyListeners();
   }
 }
 
@@ -274,32 +288,4 @@ class WindowInfo {
     required this.name,
     required this.controller,
   });
-}
-
-class UserClass {
-  String name;
-  String email;
-  String phoneNumber;
-
-  UserClass({
-    required this.name,
-    required this.email,
-    required this.phoneNumber,
-  });
-
-  // Convert to JSON
-  Map<String, dynamic> toJson() => {
-    'name': name,
-    'email': email,
-    'phoneNumber': phoneNumber,
-  };
-
-  // Create from JSON
-  factory UserClass.fromJson(Map<String, dynamic> json) {
-    return UserClass(
-      name: json['name'],
-      email: json['email'],
-      phoneNumber: json['phoneNumber'],
-    );
-  }
 }

@@ -690,18 +690,6 @@ class SalesProvider extends ChangeNotifier {
       cartClass: cartClass,
       cartIndex: (getIndexOfCartItem(cartId) + 1),
     );
-    notifyListeners();
-    // if (currentCart().receiptUuidEdit == null) {
-    //   currentCart().departmentUuid =
-    //       returnDepartmentProvider()
-    //           .currentDepartment()
-    //           ?.uuid;
-    //   currentCart().departmentName =
-    //       returnDepartmentProvider()
-    //           .currentDepartment()
-    //           ?.name;
-    // }
-    // }
     await mainLocalLog(
       returnMultiDisplayProvider().windows.length
           .toString(),
@@ -711,13 +699,39 @@ class SalesProvider extends ChangeNotifier {
 
   Future<void> createWindow() async {
     try {
-      returnMultiDisplayProvider().deleteWindow(
-        cartIdCache,
-      );
       await returnMultiDisplayProvider().createWindow(
         cartId: cartIdCache,
         newCartIndex: (getIndexOfCartItem(cartIdCache) + 1),
       );
+      final cart = currentCart();
+      if (cart.id != null &&
+          returnShopProvider().userShop() != null) {
+        await returnMultiDisplayProvider().updateWindow(
+          cartClass: AltCartClass(
+            manageCustomerReward:
+                returnShopProvider()
+                    .userShop()!
+                    .manageCustomerReward ??
+                false,
+            cashBack:
+                returnShopProvider()
+                    .userShop()!
+                    .customerPercentageReward,
+            cartId: cart.id!,
+            cartItems:
+                cart.getCartItemsAll().reversed.toList(),
+            fixedDiscount: cart.fixedDiscount,
+            percentDiscount: cart.discount,
+            vat:
+                returnShopProvider().userShop()?.applyVAT ==
+                        true
+                    ? vat
+                    : 0,
+            currency:
+                returnShopProvider().userShop()!.currency,
+          ),
+        );
+      }
     } catch (e) {
       await mainLocalLog(
         'An Error Occured: ${e.toString()}',
@@ -1700,11 +1714,14 @@ class SalesProvider extends ChangeNotifier {
         shopId: shopId,
         staffId: staffUuid(), // staffId,
         staffName: staffName(), // staffName,
-        paymentMethod: breakdown.label == PaymentMethods.bank
-            ? (currentCart().selectedBank?.displayName ??
-                currentCart().selectedBankName ??
-                breakdown.label)
-            : breakdown.label,
+        paymentMethod:
+            breakdown.label == PaymentMethods.bank
+                ? (currentCart()
+                        .selectedBank
+                        ?.displayName ??
+                    currentCart().selectedBankName ??
+                    breakdown.label)
+                : breakdown.label,
         customerAccount: breakdown.account,
         bank: breakdown.bank,
         cashAlt: breakdown.cash,
@@ -1724,9 +1741,12 @@ class SalesProvider extends ChangeNotifier {
         subStaffUuid: currentMainCart().subStaff?.uuid,
         cartName: currentCart().cartName,
         paymentEntries: payments,
-        selectedBank: currentCart().selectedBank ??
+        selectedBank:
+            currentCart().selectedBank ??
             (currentCart().selectedBankName != null
-                ? PaymentMethod(bankName: currentCart().selectedBankName!)
+                ? PaymentMethod(
+                  bankName: currentCart().selectedBankName!,
+                )
                 : null),
       );
       // Built before the receipt is saved so the same lines are
@@ -3655,17 +3675,23 @@ class SalesProvider extends ChangeNotifier {
       case 1:
         return [
           PaymentEntry(
-            method: selectedBankMethod ?? currentCart().selectedBankName ?? PaymentMethods.bank,
+            method:
+                selectedBankMethod ??
+                currentCart().selectedBankName ??
+                PaymentMethods.bank,
             amount: total,
           ),
         ];
       case 2:
-        if (splitPayments != null && splitPayments.isNotEmpty) {
+        if (splitPayments != null &&
+            splitPayments.isNotEmpty) {
           return PaymentBreakdown(splitPayments).compact;
         }
         if (currentCart().splitPayments != null &&
             currentCart().splitPayments!.isNotEmpty) {
-          return PaymentBreakdown(currentCart().splitPayments!).compact;
+          return PaymentBreakdown(
+            currentCart().splitPayments!,
+          ).compact;
         }
         return PaymentBreakdown.fromAmounts(
           cash: cash,
@@ -5023,11 +5049,15 @@ class SalesProvider extends ChangeNotifier {
     if (name == null) {
       currentCart().selectedBank = null;
     } else {
-      final customBanks = returnShopProvider().getCustomPaymentMethods();
-      final match = customBanks
-          .where((b) => b.displayName == name || b.bankName == name);
+      final customBanks =
+          returnShopProvider().getCustomPaymentMethods();
+      final match = customBanks.where(
+        (b) => b.displayName == name || b.bankName == name,
+      );
       currentCart().selectedBank =
-          match.isNotEmpty ? match.first : PaymentMethod(bankName: name);
+          match.isNotEmpty
+              ? match.first
+              : PaymentMethod(bankName: name);
     }
     CartFunc().updateMainCart(currentMainCart());
     notifyListeners();

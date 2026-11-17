@@ -157,7 +157,7 @@ const String contactPhoneNumberCountryCodeRaw =
     '08128735130';
 const String contactPhoneNumberCountryCode =
     '+2348128735130';
-const String contactPhoneNumberCpountryCodeFormatted =
+const String contactPhoneNumberCountryCodeFormatted =
     '+234 812 8735 130';
 
 String getContactPhoneNumber({required int formatIndex}) {
@@ -165,7 +165,7 @@ String getContactPhoneNumber({required int formatIndex}) {
       ? contactPhoneNumberCountryCodeRaw
       : formatIndex == 2
       ? contactPhoneNumberCountryCode
-      : contactPhoneNumberCpountryCodeFormatted;
+      : contactPhoneNumberCountryCodeFormatted;
 }
 
 const String appVersionMobile = '1.1.11+107';

@@ -140,9 +140,25 @@ class AltDisplayState extends State<AltDisplay> {
           });
           break;
         case 'show_cart':
-          setState(() {
-            showCart = false;
-          });
+          final decoded = jsonDecode(
+            call.arguments as String,
+          );
+          if (decoded is Map<String, dynamic> &&
+              decoded.containsKey('cart')) {
+            final cart = AltCartClass.fromJson(
+              decoded['cart'] as Map<String, dynamic>,
+            );
+            final bool? show =
+                decoded['show_cart'] as bool?;
+            setState(() {
+              cartClass = cart;
+              showCart = show == true ? null : false;
+            });
+          } else {
+            setState(() {
+              showCart = false;
+            });
+          }
           break;
 
         default:

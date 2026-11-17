@@ -1937,6 +1937,15 @@ void selectProductSales({
     return null;
   }
 
+  // Defer live stock validation for 2D slab/sheet items when custom
+  // dimensions are being entered or the item has no default dimensions yet;
+  // final validation runs on submit once custom dimensions are entered.
+  bool deferQuantityValidation() {
+    return is2DItem &&
+        !isAreaUnit &&
+        (quantityTypeTemp == 2 || !itemHasDimensions);
+  }
+
   // Wastage is entered for 2D items that manage it.
   bool showWastage() {
     return is2DItem &&
@@ -2325,6 +2334,7 @@ void selectProductSales({
     final double derived =
         perUnit > 0 ? amount / perUnit : 0;
     if ((cartItem.getItem()?.isManaged ?? false) &&
+        !deferQuantityValidation() &&
         !returnSalesProvider().canAddProductToCart(
           isEdit: isEdit,
           newCartItem: cartItem,
@@ -2560,11 +2570,7 @@ void selectProductSales({
                                           .getItem()
                                           ?.isManaged ??
                                       false) {
-                                    // In custom dimensions mode, do not prematurely wipe out
-                                    // quantity while custom width/height are still being entered.
-                                    // Final check is performed when adding to cart.
-                                    if (quantityTypeTemp !=
-                                            2 &&
+                                    if (!deferQuantityValidation() &&
                                         !returnSalesProvider()
                                             .canAddProductToCart(
                                               isEdit:
@@ -3540,7 +3546,8 @@ void selectProductSales({
                                                   .getItem()
                                                   ?.isManaged ??
                                               false) {
-                                            if (!returnSalesProvider().canAddProductToCart(
+                                            if (!deferQuantityValidation() &&
+                                                !returnSalesProvider().canAddProductToCart(
                                               isEdit:
                                                   isEdit,
                                               newCartItem:
@@ -4206,8 +4213,7 @@ void selectProductSales({
                                                   .getItem()
                                                   ?.isManaged ??
                                               false) {
-                                            if (quantityTypeTemp !=
-                                                    2 &&
+                                            if (!deferQuantityValidation() &&
                                                 !returnSalesProvider().canAddProductToCart(
                                                   isEdit:
                                                       isEdit,
