@@ -9,12 +9,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
-import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
-
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('getPlatformVersion test', (WidgetTester tester) async {
+  testWidgets('getPlatformVersion test',
+      (WidgetTester tester) async {
     // final BluetoothPrintPlus plugin = BluetoothPrintPlus.instance;
     // The version string depends on the host platform running the test, so
     // just assert that some non-empty string is returned.

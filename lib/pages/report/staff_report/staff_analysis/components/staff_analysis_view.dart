@@ -76,7 +76,11 @@ class _StaffAnalysisViewState extends State<StaffAnalysisView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       if (!mounted) return;
       _rebuild();
       setState(() => _loading = false);
@@ -116,6 +120,9 @@ class _StaffAnalysisViewState extends State<StaffAnalysisView> {
         _error = e.toString();
       }
     });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   /// Runs a navigation hook, then rebuilds: whatever was changed

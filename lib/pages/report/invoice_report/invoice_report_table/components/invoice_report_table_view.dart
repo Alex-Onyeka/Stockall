@@ -182,13 +182,27 @@ class _InvoiceReportTableViewState
       final currentShop = shopSingle();
       final sid = currentShop?.shopId;
 
+      final fetchAll = _range == null;
+      final startDate = _range?.start;
+      final endDate = _range?.end;
+
       if (refreshFromStore && sid != null) {
-        await RefreshFunctions(
+        await RefreshFunctions(context).refreshInvoices(
           context,
-        ).refreshInvoices(context);
-        await RefreshFunctions(
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        if (!mounted) return;
+        await RefreshFunctions(context).refreshReceipts(
           context,
-        ).refreshReceipts(context);
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        if (!mounted) return;
         await RefreshFunctions(
           context,
         ).refreshCustomers(context);
@@ -200,6 +214,20 @@ class _InvoiceReportTableViewState
             .loadReceiptsOffline(sid);
         await returnCustomersSingle()
             .fetchCustomersOffline();
+        if (!fetchAll) {
+          await returnInvoicesProvider().loadInvoices(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
+          await returnReceiptProviderSingle().loadReceipts(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
+        }
       }
 
       _rebuildBase();
@@ -320,7 +348,8 @@ class _InvoiceReportTableViewState
       groupBy: _groupBy,
       filters: _filters,
       departmentNames: {
-        for (final d in returnDepartmentProvider().departments)
+        for (final d
+            in returnDepartmentProvider().departments)
           d.uuid: d.name,
       },
       sortField: _sortField,
@@ -428,6 +457,7 @@ class _InvoiceReportTableViewState
           _range = DateTimeRange(start: day, end: day);
           _filters.dateRange = _range;
         });
+        _load(refreshFromStore: false);
       },
       rangeDate: (firstDate, lastDate) {
         if (firstDate == null) return;
@@ -451,6 +481,7 @@ class _InvoiceReportTableViewState
           _range = DateTimeRange(start: s, end: e);
           _filters.dateRange = _range;
         });
+        _load(refreshFromStore: false);
       },
     );
   }
@@ -857,8 +888,13 @@ class _InvoiceReportTableViewState
             onChanged: (g) => _apply(() => _groupBy = g),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            padding: const EdgeInsets.only(
+              left: 5,
+              right: 5,
+            ),
+            child: ReportExportButton(
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             Material(

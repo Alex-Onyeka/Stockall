@@ -19,7 +19,8 @@ import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/r
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/components/receipts_report_filter_widgets.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-typedef _Col = StockCol<ProductionStockRow, ProductionStockPage>;
+typedef _Col =
+    StockCol<ProductionStockRow, ProductionStockPage>;
 
 /// The stock table (I1 / M1), shared by desktop and mobile.
 ///
@@ -44,7 +45,8 @@ class StockItemsView extends StatefulWidget {
   });
 
   @override
-  State<StockItemsView> createState() => _StockItemsViewState();
+  State<StockItemsView> createState() =>
+      _StockItemsViewState();
 }
 
 class _StockItemsViewState extends State<StockItemsView> {
@@ -65,7 +67,8 @@ class _StockItemsViewState extends State<StockItemsView> {
   List<ProductionStockRow> _baseRows = [];
   List<ProductionStockRow> _sorted = [];
   ProductionStockPage? _result;
-  ProductionStockFilterChoices _choices = ProductionStockFilterChoices.empty;
+  ProductionStockFilterChoices _choices =
+      ProductionStockFilterChoices.empty;
   Map<String, String> _categoryNames = const {};
   String _signature = '';
 
@@ -75,10 +78,15 @@ class _StockItemsViewState extends State<StockItemsView> {
   @override
   void initState() {
     super.initState();
-    _env = widget.env ?? ProductionStockEnv.live(widget.kind);
-    _state = ProductionStockTableState(filters: widget.initialFilters?.copy());
+    _env =
+        widget.env ?? ProductionStockEnv.live(widget.kind);
+    _state = ProductionStockTableState(
+      filters: widget.initialFilters?.copy(),
+    );
     _searchCtrl.text = _filters.search;
-    _period = widget.initialPeriod ?? ReceiptsReportPeriod.today();
+    _period =
+        widget.initialPeriod ??
+        ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
     });
@@ -107,13 +115,19 @@ class _StockItemsViewState extends State<StockItemsView> {
   bool get _canSeeQuantity => _env.canSeeQuantity();
   bool get _historyAllowed => _env.historyAllowed();
 
-  Future<void> _load({required bool refreshFromStore}) async {
+  Future<void> _load({
+    required bool refreshFromStore,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -147,7 +161,9 @@ class _StockItemsViewState extends State<StockItemsView> {
               )
               : null,
     );
-    _choices = ProductionStockFilterChoices.fromRows(_baseRows);
+    _choices = ProductionStockFilterChoices.fromRows(
+      _baseRows,
+    );
     _signature = _env.signature();
   }
 
@@ -160,12 +176,19 @@ class _StockItemsViewState extends State<StockItemsView> {
       canSeeCost: _canSeeCost,
       canSeeQuantity: _canSeeQuantity,
     );
-    final page = ProductionStockQuery.paginate(_sorted, _state.page);
+    final page = ProductionStockQuery.paginate(
+      _sorted,
+      _state.page,
+    );
     _state.page = page.page;
     _result = page;
   }
 
-  void _apply(VoidCallback change, {bool resetPage = true, bool rebuild = false}) {
+  void _apply(
+    VoidCallback change, {
+    bool resetPage = true,
+    bool rebuild = false,
+  }) {
     setState(() {
       change();
       if (resetPage) _state.page = 1;
@@ -181,18 +204,25 @@ class _StockItemsViewState extends State<StockItemsView> {
 
   void _applyAndSync(VoidCallback change) {
     _apply(change);
-    if (_filters.costMin == null && _filters.costMax == null) {
+    if (_filters.costMin == null &&
+        _filters.costMax == null) {
       _costMinCtrl.clear();
       _costMaxCtrl.clear();
     }
-    if (_filters.quantityMin == null && _filters.quantityMax == null) {
+    if (_filters.quantityMin == null &&
+        _filters.quantityMax == null) {
       _qtyMinCtrl.clear();
       _qtyMaxCtrl.clear();
     }
     if (_filters.search.isEmpty) _searchCtrl.clear();
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() => _period = p, rebuild: true);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p, rebuild: true);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   void _resetAll() {
     for (final c in [
@@ -209,13 +239,22 @@ class _StockItemsViewState extends State<StockItemsView> {
 
   void _goToPage(int p) {
     final r = _result;
-    if (r == null || p < 1 || p > r.totalPages || p == r.page) return;
+    if (r == null ||
+        p < 1 ||
+        p > r.totalPages ||
+        p == r.page)
+      return;
     _apply(() => _state.page = p, resetPage: false);
   }
 
   /// Names and labels A-Z first; numbers and dates largest first.
   void _onSort(Object key) {
-    final (field, movement) = key as (ProductionStockSortField, ProductionMovementKind?);
+    final (field, movement) =
+        key
+            as (
+              ProductionStockSortField,
+              ProductionMovementKind?,
+            );
     _apply(() {
       final s = _state.sort;
       if (s.sameColumn(field, movement)) {
@@ -256,21 +295,23 @@ class _StockItemsViewState extends State<StockItemsView> {
   }
 
   String _money(num v) => _env.money(context, v);
-  String _number(num v) => formatLargeNumberDouble(v.toDouble());
+  String _number(num v) =>
+      formatLargeNumberDouble(v.toDouble());
 
-  ReportExportSpec _exportSpec() => productionStockItemsExportSpec(
-    kind: _kind,
-    rows: _sorted,
-    state: _state,
-    choices: _choices,
-    categoryNames: _categoryNames,
-    period: _period,
-    currency: currencySymbol(context: context),
-    departmentsEnabled: _departmentsEnabled,
-    canSeeCost: _canSeeCost,
-    canSeeQuantity: _canSeeQuantity,
-    historyAllowed: _historyAllowed,
-  );
+  ReportExportSpec _exportSpec() =>
+      productionStockItemsExportSpec(
+        kind: _kind,
+        rows: _sorted,
+        state: _state,
+        choices: _choices,
+        categoryNames: _categoryNames,
+        period: _period,
+        currency: currencySymbol(context: context),
+        departmentsEnabled: _departmentsEnabled,
+        canSeeCost: _canSeeCost,
+        canSeeQuantity: _canSeeQuantity,
+        historyAllowed: _historyAllowed,
+      );
 
   // ---------------------------------------------------------------
   // build
@@ -280,7 +321,9 @@ class _StockItemsViewState extends State<StockItemsView> {
   Widget build(BuildContext context) {
     final theme = returnTheme(context);
     _env.listen(context);
-    if (!_loading && _error == null && _env.signature() != _signature) {
+    if (!_loading &&
+        _error == null &&
+        _env.signature() != _signature) {
       try {
         _rebuildBase();
         _recompute();
@@ -298,7 +341,9 @@ class _StockItemsViewState extends State<StockItemsView> {
         onRefresh: () => _load(refreshFromStore: true),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: widget.isDesktop ? 20 : 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: widget.isDesktop ? 20 : 12,
+        ),
         child: Column(
           children: [
             const SizedBox(height: 8),
@@ -330,7 +375,9 @@ class _StockItemsViewState extends State<StockItemsView> {
                 page: ProductionStockReportPage.items,
                 period: _period,
                 historyAllowed: _historyAllowed,
-                notNormalised: productionStockNotNormalised(_sorted),
+                notNormalised: productionStockNotNormalised(
+                  _sorted,
+                ),
               ),
             ),
             Expanded(child: _content(theme)),
@@ -353,9 +400,15 @@ class _StockItemsViewState extends State<StockItemsView> {
   }
 
   Widget _content(ThemeProvider theme) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading)
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     if (_error != null) {
-      return stockErrorView(theme, () => _load(refreshFromStore: false));
+      return stockErrorView(
+        theme,
+        () => _load(refreshFromStore: false),
+      );
     }
     final res = _result;
     if (res == null || res.totalCount == 0) {
@@ -369,7 +422,10 @@ class _StockItemsViewState extends State<StockItemsView> {
       );
     }
     final s = _state.sort;
-    return StockTableFrame<ProductionStockRow, ProductionStockPage>(
+    return StockTableFrame<
+      ProductionStockRow,
+      ProductionStockPage
+    >(
       key: ValueKey('stock-page-${res.page}'),
       theme: theme,
       cols: _columns(theme),
@@ -396,9 +452,13 @@ class _StockItemsViewState extends State<StockItemsView> {
           isDesktop: widget.isDesktop,
           controller: _searchCtrl,
           hint: 'Search name, category or department',
-          onChanged: (v) => _apply(() => _filters.search = v),
+          onChanged:
+              (v) => _apply(() => _filters.search = v),
           toolbarOpen: _toolbarOpen,
-          onToggleToolbar: () => setState(() => _toolbarOpen = !_toolbarOpen),
+          onToggleToolbar:
+              () => setState(
+                () => _toolbarOpen = !_toolbarOpen,
+              ),
         ),
         if (stockToolbarVisible(context, _toolbarOpen)) ...[
           ReceiptsReportPeriodButton(
@@ -408,18 +468,32 @@ class _StockItemsViewState extends State<StockItemsView> {
             onChanged: _setPeriod,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 6.0, right: 5),
+            padding: const EdgeInsets.only(
+              left: 6.0,
+              right: 5,
+            ),
             child: ReportPill(
               theme: theme,
               icon: Icons.tune_rounded,
-              label: active == 0 ? 'Filters' : 'Filters ($active)',
+              label:
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
               highlighted: _showFilters || active > 0,
-              onTap: () => setState(() => _showFilters = !_showFilters),
+              onTap:
+                  () => setState(
+                    () => _showFilters = !_showFilters,
+                  ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            padding: const EdgeInsets.only(
+              left: 5,
+              right: 5,
+            ),
+            child: ReportExportButton(
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             ReportPill(
@@ -442,7 +516,12 @@ class _StockItemsViewState extends State<StockItemsView> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 5)],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 5,
+          ),
+        ],
       ),
       child: Wrap(
         spacing: 8,
@@ -494,10 +573,18 @@ class _StockItemsViewState extends State<StockItemsView> {
   List<_Col> _columns(ThemeProvider theme) {
     final seeQty = _canSeeQuantity;
     Widget bold(String t) => stockTxt(theme, t, bold: true);
-    Widget qtyCell(ProductionStockRow r, double? v, {bool signed = false}) {
+    Widget qtyCell(
+      ProductionStockRow r,
+      double? v, {
+      bool signed = false,
+    }) {
       if (!seeQty) return stockTxt(theme, productionMasked);
-      if (!r.isManaged || v == null) return stockDash(theme);
-      return stockTxt(theme, signed && v > 0 ? '+${_number(v)}' : _number(v));
+      if (!r.isManaged || v == null)
+        return stockDash(theme);
+      return stockTxt(
+        theme,
+        signed && v > 0 ? '+${_number(v)}' : _number(v),
+      );
     }
 
     _Col qtyCol(
@@ -519,15 +606,29 @@ class _StockItemsViewState extends State<StockItemsView> {
         width: 210,
         sortKey: (ProductionStockSortField.name, null),
         align: TextAlign.start,
-        cell: (r) => stockTxt(theme, r.name, bold: true, align: TextAlign.start),
-        total: (_) => stockTxt(theme, 'TOTAL', bold: true, align: TextAlign.start),
+        cell:
+            (r) => stockTxt(
+              theme,
+              r.name,
+              bold: true,
+              align: TextAlign.start,
+            ),
+        total:
+            (_) => stockTxt(
+              theme,
+              'TOTAL',
+              bold: true,
+              align: TextAlign.start,
+            ),
       ),
       _Col(
         label: 'Primary Unit',
         width: 120,
         sortKey: (ProductionStockSortField.unit, null),
         cell: (r) => stockTxt(theme, r.primaryUnit),
-        total: (t) => bold('${t.totalCount} ${_kind.countNoun}'),
+        total:
+            (t) =>
+                bold('${t.totalCount} ${_kind.countNoun}'),
       ),
       _Col(
         label: 'Stock',
@@ -536,34 +637,58 @@ class _StockItemsViewState extends State<StockItemsView> {
         cell:
             (r) => stockTxt(
               theme,
-              productionStockQuantityText(r, _number, canSeeQuantity: seeQty),
-              color: r.stockLevel == ProductionStockLevel.out ? Colors.red.shade700 : null,
+              productionStockQuantityText(
+                r,
+                _number,
+                canSeeQuantity: seeQty,
+              ),
+              color:
+                  r.stockLevel == ProductionStockLevel.out
+                      ? Colors.red.shade700
+                      : null,
             ),
       ),
       if (_kind == ProductionStockKind.material)
         _Col(
           label: 'Low Stock Qty',
           width: 130,
-          sortKey: (ProductionStockSortField.lowQuantity, null),
+          sortKey: (
+            ProductionStockSortField.lowQuantity,
+            null,
+          ),
           cell:
               (r) =>
                   !seeQty
                       ? stockTxt(theme, productionMasked)
                       : r.lowQuantity == null
                       ? stockDash(theme)
-                      : stockTxt(theme, _number(r.lowQuantity!)),
+                      : stockTxt(
+                        theme,
+                        _number(r.lowQuantity!),
+                      ),
         ),
       if (_canSeeCost) ...[
         _Col(
           label: 'Cost Price',
           width: 140,
-          sortKey: (ProductionStockSortField.costPrice, null),
-          cell: (r) => stockTxt(theme, _money(r.costPrice), tooltip: 'Per ${r.primaryUnit}'),
+          sortKey: (
+            ProductionStockSortField.costPrice,
+            null,
+          ),
+          cell:
+              (r) => stockTxt(
+                theme,
+                _money(r.costPrice),
+                tooltip: 'Per ${r.primaryUnit}',
+              ),
         ),
         _Col(
           label: 'Stock Value',
           width: 160,
-          sortKey: (ProductionStockSortField.stockValue, null),
+          sortKey: (
+            ProductionStockSortField.stockValue,
+            null,
+          ),
           cell:
               (r) =>
                   !seeQty
@@ -582,14 +707,20 @@ class _StockItemsViewState extends State<StockItemsView> {
         _Col(
           label: 'Department',
           width: 160,
-          sortKey: (ProductionStockSortField.department, null),
+          sortKey: (
+            ProductionStockSortField.department,
+            null,
+          ),
           align: TextAlign.start,
           cell:
               (r) => stockTxt(
                 theme,
                 r.departmentLabel,
                 align: TextAlign.start,
-                color: r.departmentKey == null ? Colors.grey : null,
+                color:
+                    r.departmentKey == null
+                        ? Colors.grey
+                        : null,
               ),
         ),
       _Col(
@@ -602,7 +733,10 @@ class _StockItemsViewState extends State<StockItemsView> {
               theme,
               r.categoryLabel,
               align: TextAlign.start,
-              color: r.categoryKeys.isEmpty ? Colors.grey : null,
+              color:
+                  r.categoryKeys.isEmpty
+                      ? Colors.grey
+                      : null,
             ),
       ),
       _Col(
@@ -618,7 +752,10 @@ class _StockItemsViewState extends State<StockItemsView> {
                       r.isExpired
                           ? '${formatDateTime(r.expiryDate!)} (Expired)'
                           : formatDateTime(r.expiryDate!),
-                      color: r.isExpired ? Colors.red.shade700 : null,
+                      color:
+                          r.isExpired
+                              ? Colors.red.shade700
+                              : null,
                     ),
       ),
       _Col(
@@ -640,10 +777,17 @@ class _StockItemsViewState extends State<StockItemsView> {
             (r) =>
                 r.createdAt == null
                     ? stockDash(theme)
-                    : stockTxt(theme, formatDateTime(r.createdAt!)),
+                    : stockTxt(
+                      theme,
+                      formatDateTime(r.createdAt!),
+                    ),
       ),
       if (_historyAllowed) ...[
-        qtyCol('Opening', ProductionStockSortField.opening, (r) => r.balance.opening),
+        qtyCol(
+          'Opening',
+          ProductionStockSortField.opening,
+          (r) => r.balance.opening,
+        ),
         for (final m in productionMovementColumns(_kind))
           qtyCol(
             m.label,
@@ -651,8 +795,17 @@ class _StockItemsViewState extends State<StockItemsView> {
             (r) => r.movement.of(m),
             movement: m,
           ),
-        qtyCol('Net', ProductionStockSortField.net, (r) => r.movement.net, signed: true),
-        qtyCol('Closing', ProductionStockSortField.closing, (r) => r.balance.closing),
+        qtyCol(
+          'Net',
+          ProductionStockSortField.net,
+          (r) => r.movement.net,
+          signed: true,
+        ),
+        qtyCol(
+          'Closing',
+          ProductionStockSortField.closing,
+          (r) => r.balance.closing,
+        ),
       ],
       if (_kind == ProductionStockKind.material) ...[
         _usageCol(
@@ -671,8 +824,14 @@ class _StockItemsViewState extends State<StockItemsView> {
           _Col(
             label: 'Usage Cost',
             width: 150,
-            sortKey: (ProductionStockSortField.usageCost, null),
-            cell: (r) => bold(_money(r.materialUsage?.totalCost ?? 0)),
+            sortKey: (
+              ProductionStockSortField.usageCost,
+              null,
+            ),
+            cell:
+                (r) => bold(
+                  _money(r.materialUsage?.totalCost ?? 0),
+                ),
             total: (t) => bold(_money(t.totalUsageCost)),
           ),
       ],
@@ -691,9 +850,12 @@ class _StockItemsViewState extends State<StockItemsView> {
       width: 150,
       sortKey: (field, null),
       cell: (r) {
-        if (!_canSeeQuantity) return stockTxt(theme, productionMasked);
+        if (!_canSeeQuantity)
+          return stockTxt(theme, productionMasked);
         final u = r.materialUsage;
-        return u == null ? stockDash(theme) : stockTxt(theme, _number(pick(u)));
+        return u == null
+            ? stockDash(theme)
+            : stockTxt(theme, _number(pick(u)));
       },
     );
   }

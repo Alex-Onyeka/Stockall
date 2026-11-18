@@ -149,16 +149,32 @@ class _StorageItemHistoryReportViewState
     });
     try {
       final sId = shopId();
+      final fetchAll = _period.isAllTime;
+      final startDate = _period.start;
+      final endDate = _period.end ?? _period.start;
       if (refreshFromStore) {
         await returnStorageProductProvider()
             .getStorageProducts(sId);
         await returnStorageItemHistoryProvider()
-            .getItemHistories();
+            .getItemHistories(
+              startDate: startDate,
+              endDate: endDate,
+              fetchAll: fetchAll,
+              forceRefresh: true,
+            );
       } else {
         await returnStorageProductProvider()
             .getStorageProductsOffline(sId);
         await returnStorageItemHistoryProvider()
             .getItemHistoriesOffline();
+        if (!fetchAll) {
+          await returnStorageItemHistoryProvider()
+              .getItemHistories(
+                startDate: startDate,
+                endDate: endDate,
+                forceRefresh: false,
+              );
+        }
       }
       _rebuildBase();
       _recompute();
@@ -447,10 +463,15 @@ class _StorageItemHistoryReportViewState
     });
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() {
-    _period = p;
-    _syncDateRange();
-  });
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() {
+      _period = p;
+      _syncDateRange();
+    });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   void _resetAll() {
     _searchCtrl.clear();

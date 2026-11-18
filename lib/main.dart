@@ -172,18 +172,168 @@ void maxWindow() {
   }
 }
 
-Future<void> initMainLog() async {
-  if (kIsWeb) {
-    return;
-  } else {
-    if (Platform.isLinux ||
+bool get _isDesktopLogPlatform =>
+    !kIsWeb &&
+    (Platform.isLinux ||
         Platform.isMacOS ||
-        Platform.isWindows) {
-      final dir = await getApplicationSupportDirectory();
+        Platform.isWindows);
+
+Future<void> _logIoQueue = Future<void>.value();
+Directory? _cachedLogDir;
+
+Future<T> _enqueueLogOp<T>(Future<T> Function() op) {
+  final completer = Completer<T>();
+  _logIoQueue = _logIoQueue.then((_) async {
+    try {
+      completer.complete(await op());
+    } catch (e, s) {
+      completer.completeError(e, s);
+    }
+  });
+  return completer.future;
+}
+
+String _joinLogPath(String dirPath, String fileName) {
+  final sep = Platform.pathSeparator;
+  return dirPath.endsWith(sep)
+      ? '$dirPath$fileName'
+      : '$dirPath$sep$fileName';
+}
+
+Future<Directory> _resolveWritableLogDirectory() async {
+  if (_cachedLogDir != null &&
+      await _cachedLogDir!.exists()) {
+    return _cachedLogDir!;
+  }
+
+  final candidates = <Future<Directory> Function()>[
+    getApplicationSupportDirectory,
+    () async {
+      final docs = await getApplicationDocumentsDirectory();
+      return Directory(
+        _joinLogPath(docs.path, 'StockallLogs'),
+      );
+    },
+    () async => Directory(
+      _joinLogPath(
+        Directory.systemTemp.path,
+        'StockallLogs',
+      ),
+    ),
+  ];
+
+  for (final getDir in candidates) {
+    try {
+      final dir = await getDir();
       if (!await dir.exists()) {
         await dir.create(recursive: true);
       }
-      final file = File('${dir.path}/mainLog.log');
+      _cachedLogDir = dir;
+      return dir;
+    } catch (_) {
+      continue;
+    }
+  }
+
+  final fallback = Directory(
+    _joinLogPath(Directory.systemTemp.path, 'StockallLogs'),
+  );
+  if (!await fallback.exists()) {
+    await fallback.create(recursive: true);
+  }
+  _cachedLogDir = fallback;
+  return fallback;
+}
+
+Future<File?> _findWindowsFallbackLogFile() async {
+  if (!Platform.isWindows) return null;
+
+  final candidates = <String>[];
+  final appData = Platform.environment['APPDATA'];
+  if (appData != null && appData.isNotEmpty) {
+    candidates.add(
+      _joinLogPath(
+        _joinLogPath(
+          _joinLogPath(appData, 'com.stockallsolutions'),
+          'stockall',
+        ),
+        'mainLog.log',
+      ),
+    );
+  }
+
+  final localAppData = Platform.environment['LOCALAPPDATA'];
+  if (localAppData != null && localAppData.isNotEmpty) {
+    final packagesDir = Directory(
+      _joinLogPath(localAppData, 'Packages'),
+    );
+    try {
+      if (await packagesDir.exists()) {
+        await for (final entity in packagesDir.list(
+          followLinks: false,
+        )) {
+          if (entity is Directory) {
+            final name =
+                entity.path
+                    .split(Platform.pathSeparator)
+                    .last;
+            if (name.startsWith(
+              'StockallSolutions.Stockall',
+            )) {
+              candidates.add(
+                _joinLogPath(
+                  _joinLogPath(
+                    _joinLogPath(
+                      _joinLogPath(
+                        _joinLogPath(
+                          entity.path,
+                          'LocalCache',
+                        ),
+                        'Roaming',
+                      ),
+                      'com.stockallsolutions',
+                    ),
+                    'stockall',
+                  ),
+                  'mainLog.log',
+                ),
+              );
+            }
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
+  candidates.add(
+    _joinLogPath(
+      _joinLogPath(
+        Directory.systemTemp.path,
+        'StockallLogs',
+      ),
+      'mainLog.log',
+    ),
+  );
+
+  for (final path in candidates) {
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        return file;
+      }
+    } catch (_) {}
+  }
+  return null;
+}
+
+Future<void> initMainLog() async {
+  if (!_isDesktopLogPlatform) return;
+  await _enqueueLogOp(() async {
+    try {
+      final dir = await _resolveWritableLogDirectory();
+      final file = File(
+        _joinLogPath(dir.path, 'mainLog.log'),
+      );
 
       // Check file size to avoid unbounded growth (5 MB limit)
       if (await file.exists()) {
@@ -191,7 +341,10 @@ Future<void> initMainLog() async {
           final length = await file.length();
           if (length > 5 * 1024 * 1024) {
             final prevFile = File(
-              '${dir.path}/mainLog_previous.log',
+              _joinLogPath(
+                dir.path,
+                'mainLog_previous.log',
+              ),
             );
             if (await prevFile.exists()) {
               await prevFile.delete();
@@ -213,75 +366,79 @@ Future<void> initMainLog() async {
         sessionHeader,
         mode: FileMode.append,
       );
-    }
-  }
+    } catch (_) {}
+  });
 }
 
 Future<String?> getMainLogFilePath() async {
-  if (kIsWeb) return null;
-  if (Platform.isLinux ||
-      Platform.isMacOS ||
-      Platform.isWindows) {
-    final dir = await getApplicationSupportDirectory();
-    return '${dir.path}/mainLog.log';
+  if (!_isDesktopLogPlatform) return null;
+  final dir = await _resolveWritableLogDirectory();
+  final primaryPath = _joinLogPath(dir.path, 'mainLog.log');
+  if (await File(primaryPath).exists()) {
+    return primaryPath;
   }
-  return null;
+  final fallback = await _findWindowsFallbackLogFile();
+  return fallback?.path ?? primaryPath;
 }
 
 Future<String?> getMainLogDirectoryPath() async {
-  if (kIsWeb) return null;
-  if (Platform.isLinux ||
-      Platform.isMacOS ||
-      Platform.isWindows) {
-    final dir = await getApplicationSupportDirectory();
-    return dir.path;
-  }
-  return null;
+  if (!_isDesktopLogPlatform) return null;
+  final filePath = await getMainLogFilePath();
+  if (filePath == null) return null;
+  return File(filePath).parent.path;
 }
 
 Future<String> readMainLogContent({
   int maxLines = 500,
 }) async {
   if (kIsWeb) return 'Logs are not stored on web.';
-  try {
-    final path = await getMainLogFilePath();
-    if (path == null) {
-      return 'Local logs are only available on desktop platforms.';
+  return _enqueueLogOp(() async {
+    try {
+      final path = await getMainLogFilePath();
+      if (path == null) {
+        return 'Local logs are only available on desktop platforms.';
+      }
+      final file = File(path);
+      if (!await file.exists()) {
+        return 'No logs recorded yet.\nStorage path: ${file.parent.path}';
+      }
+      final bytes = await file.readAsBytes();
+      final content = utf8.decode(
+        bytes,
+        allowMalformed: true,
+      );
+      if (content.trim().isEmpty) {
+        return 'Log file is currently empty.\nStorage path: $path';
+      }
+      final lines = content.split('\n');
+      if (lines.length > maxLines) {
+        return '... [Older ${lines.length - maxLines} lines omitted] ...\n\n${lines.sublist(lines.length - maxLines).join('\n')}';
+      }
+      return content;
+    } catch (e) {
+      return 'Failed to read logs: $e';
     }
-    final file = File(path);
-    if (!await file.exists()) {
-      return 'No logs recorded yet.\nStorage path: ${file.parent.path}';
-    }
-    final content = await file.readAsString();
-    if (content.trim().isEmpty) {
-      return 'Log file is currently empty.\nStorage path: $path';
-    }
-    final lines = content.split('\n');
-    if (lines.length > maxLines) {
-      return '... [Older ${lines.length - maxLines} lines omitted] ...\n\n${lines.sublist(lines.length - maxLines).join('\n')}';
-    }
-    return content;
-  } catch (e) {
-    return 'Failed to read logs: $e';
-  }
+  });
 }
 
 Future<void> clearMainLog() async {
-  if (kIsWeb) return;
-  try {
-    final path = await getMainLogFilePath();
-    if (path != null) {
-      final file = File(path);
-      if (await file.exists()) {
-        await file.writeAsString(
-          '========== STOCKALL LOCAL LOG CLEARED ==========\n'
-          'TIME: ${DateTime.now().toString().split('.').first}\n'
-          'VERSION: $appVersionDesktop\n'
-          '===============================================\n\n',
-        );
+  if (!_isDesktopLogPlatform) return;
+  await _enqueueLogOp(() async {
+    try {
+      final path = await getMainLogFilePath();
+      if (path != null) {
+        final file = File(path);
+        if (await file.exists()) {
+          await file.writeAsString(
+            '========== STOCKALL LOCAL LOG CLEARED ==========\n'
+            'TIME: ${DateTime.now().toString().split('.').first}\n'
+            'VERSION: $appVersionDesktop\n'
+            '===============================================\n\n',
+          );
+        }
       }
-    }
-  } catch (_) {}
+    } catch (_) {}
+  });
 }
 
 Future<bool> openLogDirectory() async {
@@ -315,19 +472,13 @@ Future<void> mainLocalLog(
   StackTrace? stackTrace,
 }) async {
   print('Log: ${message ?? 'Not Set'}');
-  if (kIsWeb) {
-    return;
-  } else {
-    if (Platform.isLinux ||
-        Platform.isMacOS ||
-        Platform.isWindows) {
-      final dir = await getApplicationSupportDirectory();
-      if (!await dir.exists()) {
-        await dir.create(recursive: true);
-      }
-
-      // startup.log goes directly inside the app support directory
-      final file = File('${dir.path}/mainLog.log');
+  if (!_isDesktopLogPlatform) return;
+  await _enqueueLogOp(() async {
+    try {
+      final dir = await _resolveWritableLogDirectory();
+      final file = File(
+        _joinLogPath(dir.path, 'mainLog.log'),
+      );
 
       final buffer =
           StringBuffer()..writeln(
@@ -348,8 +499,8 @@ Future<void> mainLocalLog(
         buffer.toString(),
         mode: FileMode.append,
       );
-    }
-  }
+    } catch (_) {}
+  });
 }
 
 TempUserClass currentUser() {

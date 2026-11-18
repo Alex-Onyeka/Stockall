@@ -44,13 +44,40 @@ class OrderReportTableEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+            context,
+            refreshFromStore: refreshFromStore,
+            period: period,
+          )
+          : load(
+            context,
+            refreshFromStore: refreshFromStore,
+          );
+
   /// Changes whenever the source data or the user's scope does.
   final String Function() signature;
 
   /// Subscribes the view to the providers it reads.
   final void Function(BuildContext context) listen;
-  final String Function(BuildContext context, num amount) money;
-  final Future<void> Function(BuildContext context, Orders order)
+  final String Function(BuildContext context, num amount)
+  money;
+  final Future<void> Function(
+    BuildContext context,
+    Orders order,
+  )
   openOrder;
 
   /// Used by the order summary to open the table. Null in the
@@ -71,6 +98,7 @@ class OrderReportTableEnv {
     required this.receipts,
     required this.productSales,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -81,6 +109,63 @@ class OrderReportTableEnv {
   factory OrderReportTableEnv.live() {
     bool departmentsEnabled() =>
         shopSingle()?.manageDepartments == true;
+    Future<void> loadPeriod(
+      BuildContext context, {
+      required bool refreshFromStore,
+      ReceiptsReportPeriod? period,
+    }) async {
+      final sid = shopSingle()?.shopId;
+      if (sid == null) return;
+      final receipts = returnReceiptProviderSingle();
+      final orders = returnOrdersProvider();
+      final fetchAll = period?.isAllTime ?? false;
+      final startDate = period?.start;
+      final endDate = period?.end ?? period?.start;
+      if (refreshFromStore) {
+        await orders.loadOrders(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        if (!context.mounted) return;
+        await RefreshFunctions(context).refreshReceipts(
+          context,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        return;
+      }
+      // Local (offline) reads, only when nothing is loaded yet.
+      if (orders.orders.isEmpty) {
+        await orders.loadOrdersOffline(sid);
+      }
+      if (receipts.receipts.isEmpty) {
+        await receipts.loadReceiptsOffline(sid);
+      }
+      if (receipts.mainSales.isEmpty) {
+        await receipts.loadProductSalesRecordOffline(sid);
+      }
+      if (period != null && !period.isAllTime) {
+        await orders.loadOrders(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+        if (!context.mounted) return;
+        await receipts.loadReceipts(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+      }
+    }
+
     return OrderReportTableEnv(
       departmentsEnabled: departmentsEnabled,
       subStaffEnabled: () => shopSingle()?.bulkSale == true,
@@ -98,38 +183,34 @@ class OrderReportTableEnv {
             shopId: shopSingle()?.shopId ?? 0,
             departmentsEnabled: departmentsEnabled(),
             canViewAllDepartments: authorization(
-              authorized: Authorizations().viewAllDepartments,
+              authorized:
+                  Authorizations().viewAllDepartments,
             ),
             currentDepartmentUuid:
                 returnDepartmentProvider()
                     .currentDepartment()
                     ?.uuid,
           ),
-      receipts: () => returnReceiptProviderSingle().receipts,
+      receipts:
+          () => returnReceiptProviderSingle().receipts,
       productSales:
           () => returnReceiptProviderSingle().mainSales,
       load: (context, {required refreshFromStore}) async {
-        final sid = shopSingle()?.shopId;
-        if (sid == null) return;
-        final receipts = returnReceiptProviderSingle();
-        if (refreshFromStore) {
-          await returnOrdersProvider().loadOrders(sid);
-          if (!context.mounted) return;
-          await RefreshFunctions(
-            context,
-          ).refreshReceipts(context);
-          return;
-        }
-        // Local (offline) reads, only when nothing is loaded yet.
-        if (returnOrdersProvider().orders.isEmpty) {
-          await returnOrdersProvider().loadOrdersOffline(sid);
-        }
-        if (receipts.receipts.isEmpty) {
-          await receipts.loadReceiptsOffline(sid);
-        }
-        if (receipts.mainSales.isEmpty) {
-          await receipts.loadProductSalesRecordOffline(sid);
-        }
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
       },
       signature: () {
         int latestOrder = 0;
@@ -158,8 +239,10 @@ class OrderReportTableEnv {
         shop(context);
       },
       money:
-          (context, amount) =>
-              formatMoneyBig(amount: amount, context: context),
+          (context, amount) => formatMoneyBig(
+            amount: amount,
+            context: context,
+          ),
       openOrder: (context, order) {
         return Navigator.push(
           context,
@@ -296,7 +379,8 @@ class _OrderReportTableViewState
     super.initState();
     _env = widget.env ?? OrderReportTableEnv.live();
     _filters =
-        widget.initialFilters?.copy() ?? OrderReportFilters();
+        widget.initialFilters?.copy() ??
+        OrderReportFilters();
     _searchCtrl.text = _filters.search;
     _totalMinCtrl.text = _numText(_filters.totalMin);
     _totalMaxCtrl.text = _numText(_filters.totalMax);
@@ -307,7 +391,8 @@ class _OrderReportTableViewState
     _profitMinCtrl.text = _numText(_filters.profitMin);
     _profitMaxCtrl.text = _numText(_filters.profitMax);
     _period =
-        widget.initialPeriod ?? ReceiptsReportPeriod.today();
+        widget.initialPeriod ??
+        ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
     });
@@ -341,15 +426,18 @@ class _OrderReportTableViewState
   bool get _subStaffEnabled => _env.subStaffEnabled();
   bool get _canSeeCost => _env.canSeeCost();
 
-  Future<void> _load({required bool refreshFromStore}) async {
+  Future<void> _load({
+    required bool refreshFromStore,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      await _env.load(
+      await _env.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuildBase();
       _recompute();
@@ -371,8 +459,12 @@ class _OrderReportTableViewState
       allProductSales: _env.productSales(),
     );
     _staffOptions = OrderReportOptions.staff(_baseRows);
-    _customerOptions = OrderReportOptions.customers(_baseRows);
-    _subStaffOptions = OrderReportOptions.subStaff(_baseRows);
+    _customerOptions = OrderReportOptions.customers(
+      _baseRows,
+    );
+    _subStaffOptions = OrderReportOptions.subStaff(
+      _baseRows,
+    );
     _departmentOptions = OrderReportOptions.departments(
       _baseRows,
     );
@@ -442,7 +534,10 @@ class _OrderReportTableViewState
     );
   }
 
-  void _apply(VoidCallback change, {bool resetPage = true}) {
+  void _apply(
+    VoidCallback change, {
+    bool resetPage = true,
+  }) {
     setState(() {
       change();
       if (resetPage) _page = 1;
@@ -537,8 +632,12 @@ class _OrderReportTableViewState
     }
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) =>
-      _apply(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   /// Clears a range's fields once its filter was removed (chip).
   void _applyAndSyncFields(VoidCallback change) {
@@ -644,11 +743,15 @@ class _OrderReportTableViewState
                     Text(
                       'Refresh',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.refresh_rounded, size: 18),
+                    const Icon(
+                      Icons.refresh_rounded,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -705,7 +808,9 @@ class _OrderReportTableViewState
 
   Widget _content(ThemeProvider theme) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     if (_error != null) {
       return Center(
@@ -726,7 +831,8 @@ class _OrderReportTableViewState
               ),
             ),
             OutlinedButton.icon(
-              onPressed: () => _load(refreshFromStore: false),
+              onPressed:
+                  () => _load(refreshFromStore: false),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Try again'),
             ),
@@ -744,7 +850,9 @@ class _OrderReportTableViewState
         padding: const EdgeInsets.only(top: 60),
         child: EmptyWidgetDisplayOnly(
           title:
-              hasFilters ? 'No Matching Orders' : 'Empty List',
+              hasFilters
+                  ? 'No Matching Orders'
+                  : 'Empty List',
           subText:
               hasFilters
                   ? 'No order matches your search and filters'
@@ -753,7 +861,8 @@ class _OrderReportTableViewState
           height: 35,
           icon: Icons.clear,
           altAction: hasFilters ? _resetAll : null,
-          altActionText: hasFilters ? 'Clear all filters' : null,
+          altActionText:
+              hasFilters ? 'Clear all filters' : null,
           altIcon: hasFilters ? Icons.filter_alt_off : null,
         ),
       );
@@ -785,14 +894,17 @@ class _OrderReportTableViewState
                   child: TextField(
                     controller: _searchCtrl,
                     onChanged:
-                        (v) => _apply(() => _filters.search = v),
+                        (v) => _apply(
+                          () => _filters.search = v,
+                        ),
                     decoration: InputDecoration(
                       hintText:
                           _departmentsEnabled
                               ? 'Search customer, staff, department or ID'
                               : 'Search customer, staff or ID',
                       hintStyle: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                       ),
                       prefixIcon: const Icon(
                         Icons.search,
@@ -809,7 +921,9 @@ class _OrderReportTableViewState
                                 onPressed: () {
                                   _searchCtrl.clear();
                                   _apply(
-                                    () => _filters.search = '',
+                                    () =>
+                                        _filters.search =
+                                            '',
                                   );
                                 },
                               ),
@@ -817,18 +931,23 @@ class _OrderReportTableViewState
                       filled: true,
                       fillColor: Colors.grey.shade100,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
                         borderSide: BorderSide.none,
                       ),
                     ),
                   ),
                 ),
-                if (screenWidth(context) < mobileScreen) ...[
+                if (screenWidth(context) <
+                    mobileScreen) ...[
                   const SizedBox(width: 5),
                   InkWell(
                     onTap:
                         () => setState(
-                          () => _toolbarIsOpen = !_toolbarIsOpen,
+                          () =>
+                              _toolbarIsOpen =
+                                  !_toolbarIsOpen,
                         ),
                     mouseCursor: SystemMouseCursors.click,
                     child: Padding(
@@ -844,9 +963,14 @@ class _OrderReportTableViewState
                           Text(
                             style: TextStyle(
                               fontSize:
-                                  theme.mobileTexts.b4.fontSize,
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
                             ),
-                            _toolbarIsOpen ? 'Hide' : 'View',
+                            _toolbarIsOpen
+                                ? 'Hide'
+                                : 'View',
                           ),
                           Icon(
                             _toolbarIsOpen
@@ -871,12 +995,17 @@ class _OrderReportTableViewState
             onChanged: _setPeriod,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 6.0, right: 5),
+            padding: const EdgeInsets.only(
+              left: 6.0,
+              right: 5,
+            ),
             child: ReportPill(
               theme: theme,
               icon: Icons.tune_rounded,
               label:
-                  active == 0 ? 'Filters' : 'Filters ($active)',
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
               highlighted: _showFilters || active > 0,
               onTap:
                   () => setState(
@@ -891,8 +1020,13 @@ class _OrderReportTableViewState
             onChanged: (g) => _apply(() => _groupBy = g),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            padding: const EdgeInsets.only(
+              left: 5,
+              right: 5,
+            ),
+            child: ReportExportButton(
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             ReportPill(
@@ -922,7 +1056,10 @@ class _OrderReportTableViewState
         title: title,
         value: value,
         options: [
-          ReportSearchableOption(value: null, label: allLabel),
+          ReportSearchableOption(
+            value: null,
+            label: allLabel,
+          ),
           ...options.map(
             (o) => ReportSearchableOption<String?>(
               value: o.key,
@@ -946,7 +1083,10 @@ class _OrderReportTableViewState
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: const [
-          BoxShadow(color: Color(0x14000000), blurRadius: 5),
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 5,
+          ),
         ],
       ),
       child: Wrap(
@@ -956,7 +1096,9 @@ class _OrderReportTableViewState
           ReportLabeledField(
             label: 'Delivery status',
             width: 200,
-            child: ReportSearchableDropdown<OrderDeliveryStatus?>(
+            child: ReportSearchableDropdown<
+              OrderDeliveryStatus?
+            >(
               title: 'Delivery status',
               value: _filters.deliveryStatus,
               showSearch: false,
@@ -966,15 +1108,15 @@ class _OrderReportTableViewState
                   label: 'All statuses',
                 ),
                 ...OrderDeliveryStatus.values.reversed.map(
-                  (s) =>
-                      ReportSearchableOption<OrderDeliveryStatus?>(
-                        value: s,
-                        label: s.label,
-                      ),
+                  (s) => ReportSearchableOption<
+                    OrderDeliveryStatus?
+                  >(value: s, label: s.label),
                 ),
               ],
               onChanged:
-                  (v) => _apply(() => _filters.deliveryStatus = v),
+                  (v) => _apply(
+                    () => _filters.deliveryStatus = v,
+                  ),
               theme: theme,
             ),
           ),
@@ -1002,7 +1144,9 @@ class _OrderReportTableViewState
           ReportLabeledField(
             label: 'Channel',
             width: 180,
-            child: ReportSearchableDropdown<OrderPaymentChannel?>(
+            child: ReportSearchableDropdown<
+              OrderPaymentChannel?
+            >(
               title: 'Channel',
               value: _filters.channel,
               showSearch: false,
@@ -1012,14 +1156,13 @@ class _OrderReportTableViewState
                   label: 'All channels',
                 ),
                 ...OrderPaymentChannel.values.map(
-                  (c) =>
-                      ReportSearchableOption<OrderPaymentChannel?>(
-                        value: c,
-                        label: c.label,
-                      ),
+                  (c) => ReportSearchableOption<
+                    OrderPaymentChannel?
+                  >(value: c, label: c.label),
                 ),
               ],
-              onChanged: (v) => _apply(() => _filters.channel = v),
+              onChanged:
+                  (v) => _apply(() => _filters.channel = v),
               theme: theme,
             ),
           ),
@@ -1113,7 +1256,10 @@ class _OrderReportTableViewState
     void chip(String text, VoidCallback clear) {
       chips.add(
         InputChip(
-          label: Text(text, style: const TextStyle(fontSize: 10)),
+          label: Text(
+            text,
+            style: const TextStyle(fontSize: 10),
+          ),
           onDeleted: () => _applyAndSyncFields(clear),
           deleteIcon: const Icon(Icons.close, size: 12),
           visualDensity: VisualDensity.compact,
@@ -1197,14 +1343,24 @@ class _OrderReportTableViewState
         () => _filters.departmentKey = null,
       );
     }
-    rangeChip('Total', _filters.totalMin, _filters.totalMax, () {
-      _filters.totalMin = null;
-      _filters.totalMax = null;
-    });
-    rangeChip('Paid', _filters.paidMin, _filters.paidMax, () {
-      _filters.paidMin = null;
-      _filters.paidMax = null;
-    });
+    rangeChip(
+      'Total',
+      _filters.totalMin,
+      _filters.totalMax,
+      () {
+        _filters.totalMin = null;
+        _filters.totalMax = null;
+      },
+    );
+    rangeChip(
+      'Paid',
+      _filters.paidMin,
+      _filters.paidMax,
+      () {
+        _filters.paidMin = null;
+        _filters.paidMax = null;
+      },
+    );
     rangeChip(
       'Balance',
       _filters.balanceMin,
@@ -1230,7 +1386,11 @@ class _OrderReportTableViewState
       padding: const EdgeInsets.only(top: 8),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Wrap(spacing: 6, runSpacing: 4, children: chips),
+        child: Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          children: chips,
+        ),
       ),
     );
   }
@@ -1274,7 +1434,8 @@ class _OrderReportTableViewState
   static const String _disagreeTip =
       'The order\'s stored quantities and its delivery receipts '
       'disagree. The larger delivered quantity is used.';
-  static const String _linesNote = 'Receipt lines unavailable';
+  static const String _linesNote =
+      'Receipt lines unavailable';
   static const String _linesTip =
       'A delivery receipt has no item data, so only the order\'s '
       'stored quantities are used.';
@@ -1333,7 +1494,9 @@ class _OrderReportTableViewState
   Color? _signColor(ThemeProvider theme, double v) =>
       v > 0
           ? Colors.green.shade700
-          : (v < 0 ? theme.lightModeColor.errorColor200 : null);
+          : (v < 0
+              ? theme.lightModeColor.errorColor200
+              : null);
 
   Color _statusColor(OrderDeliveryStatus s) {
     switch (s) {
@@ -1385,7 +1548,8 @@ class _OrderReportTableViewState
             theme,
             '—',
             color: Colors.grey,
-            tooltip: 'Delivery status could not be worked out',
+            tooltip:
+                'Delivery status could not be worked out',
           )
           : _txt(theme, _money(v));
 
@@ -1455,7 +1619,8 @@ class _OrderReportTableViewState
               theme,
               r.staffLabel,
               align: TextAlign.start,
-              color: r.staffName == null ? Colors.grey : null,
+              color:
+                  r.staffName == null ? Colors.grey : null,
             ),
       ),
       if (_subStaffEnabled)
@@ -1469,7 +1634,10 @@ class _OrderReportTableViewState
                 theme,
                 r.subStaffLabel,
                 align: TextAlign.start,
-                color: r.subStaffName == null ? Colors.grey : null,
+                color:
+                    r.subStaffName == null
+                        ? Colors.grey
+                        : null,
               ),
         ),
       _Col(
@@ -1482,14 +1650,18 @@ class _OrderReportTableViewState
               theme,
               r.customerLabel,
               align: TextAlign.start,
-              color: r.customerName == null ? Colors.grey : null,
+              color:
+                  r.customerName == null
+                      ? Colors.grey
+                      : null,
             ),
       ),
       _Col(
         label: 'Date',
         width: 120,
         sort: OrderSortField.createdAt,
-        cell: (r) => _txt(theme, formatDateTime(r.createdAt)),
+        cell:
+            (r) => _txt(theme, formatDateTime(r.createdAt)),
       ),
       _Col(
         label: 'Time',
@@ -1508,7 +1680,10 @@ class _OrderReportTableViewState
                 theme,
                 r.departmentLabel,
                 align: TextAlign.start,
-                color: r.departmentKey == null ? Colors.grey : null,
+                color:
+                    r.departmentKey == null
+                        ? Colors.grey
+                        : null,
               ),
         ),
       _Col(
@@ -1540,7 +1715,8 @@ class _OrderReportTableViewState
         label: 'Delivered',
         width: 100,
         sort: OrderSortField.delivered,
-        cell: (r) => _items(theme, r.delivery.deliveredItems),
+        cell:
+            (r) => _items(theme, r.delivery.deliveredItems),
       ),
       _Col(
         label: 'Channel',
@@ -1565,7 +1741,8 @@ class _OrderReportTableViewState
           }
           final pct = r.order.generalDiscount;
           final showPct =
-              (r.order.fixedDiscount ?? 0) <= 0 && pct != null;
+              (r.order.fixedDiscount ?? 0) <= 0 &&
+              pct != null;
           return _txt(
             theme,
             showPct
@@ -1585,7 +1762,10 @@ class _OrderReportTableViewState
           return _txt(
             theme,
             _money(r.vatAmount),
-            tooltip: rate == null ? null : '${_percent(rate)} VAT',
+            tooltip:
+                rate == null
+                    ? null
+                    : '${_percent(rate)} VAT',
           );
         },
       ),
@@ -1632,12 +1812,20 @@ class _OrderReportTableViewState
           cell:
               (r) =>
                   r.cost == null
-                      ? _txt(theme, 'N/A', color: Colors.grey)
+                      ? _txt(
+                        theme,
+                        'N/A',
+                        color: Colors.grey,
+                      )
                       : _txt(theme, _money(r.cost!)),
           total:
               (t) =>
                   t.cost == null
-                      ? _txt(theme, 'N/A', color: Colors.grey)
+                      ? _txt(
+                        theme,
+                        'N/A',
+                        color: Colors.grey,
+                      )
                       : bold(_money(t.cost!)),
         ),
       if (cost)
@@ -1672,7 +1860,8 @@ class _OrderReportTableViewState
               theme,
               _percent(m),
               color: _signColor(theme, m),
-              tooltip: r.profitIsEstimate ? _estimateTip : null,
+              tooltip:
+                  r.profitIsEstimate ? _estimateTip : null,
             );
           },
         ),
@@ -1718,7 +1907,9 @@ class _OrderReportTableViewState
               align: TextAlign.start,
               color: r.comment == null ? Colors.grey : null,
               tooltip:
-                  (r.comment?.length ?? 0) > 40 ? r.comment : null,
+                  (r.comment?.length ?? 0) > 40
+                      ? r.comment
+                      : null,
             ),
       ),
     ];
@@ -1777,7 +1968,10 @@ class _OrderReportTableViewState
     );
     final padded = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Align(alignment: _alignment(align), child: content),
+      child: Align(
+        alignment: _alignment(align),
+        child: content,
+      ),
     );
     return SizedBox(
       width: width,
@@ -1804,7 +1998,9 @@ class _OrderReportTableViewState
           SizedBox(
             width: width(c),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
               child: Align(
                 alignment: _alignment(align(c)),
                 child: cell(c),
@@ -1825,12 +2021,15 @@ class _OrderReportTableViewState
       color: i.isEven ? Colors.white : Colors.grey.shade50,
       child: InkWell(
         mouseCursor: SystemMouseCursors.click,
-        hoverColor: theme.lightModeColor.prColor300.withAlpha(20),
+        hoverColor: theme.lightModeColor.prColor300
+            .withAlpha(20),
         onTap: () => _openOrder(r),
         child: Container(
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: Colors.grey.shade100),
+              bottom: BorderSide(
+                color: Colors.grey.shade100,
+              ),
             ),
           ),
           child: _cells<_Col>(
@@ -1845,10 +2044,7 @@ class _OrderReportTableViewState
   }
 
   /// Totals of the whole filtered set, as the Invoice Report.
-  Widget _totalsRow(
-    ThemeProvider theme,
-    Widget content,
-  ) {
+  Widget _totalsRow(ThemeProvider theme, Widget content) {
     return Container(
       height: 46,
       color: theme.lightModeColor.prColor300.withAlpha(25),
@@ -1872,7 +2068,10 @@ class _OrderReportTableViewState
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade200),
           boxShadow: const [
-            BoxShadow(color: Color(0x14000000), blurRadius: 12),
+            BoxShadow(
+              color: Color(0x14000000),
+              blurRadius: 12,
+            ),
           ],
         ),
         clipBehavior: Clip.antiAlias,
@@ -1886,13 +2085,15 @@ class _OrderReportTableViewState
               controller: _vScroll,
               thumbVisibility: true,
               notificationPredicate:
-                  (notif) => notif.metrics.axis == Axis.vertical,
+                  (notif) =>
+                      notif.metrics.axis == Axis.vertical,
               child: Scrollbar(
                 controller: _hScroll,
                 thumbVisibility: true,
                 notificationPredicate:
                     (notif) =>
-                        notif.metrics.axis == Axis.horizontal,
+                        notif.metrics.axis ==
+                        Axis.horizontal,
                 child: SingleChildScrollView(
                   controller: _hScroll,
                   scrollDirection: Axis.horizontal,
@@ -1903,25 +2104,34 @@ class _OrderReportTableViewState
                       children: [
                         Container(
                           height: 48,
-                          color: theme.lightModeColor.prColor300
+                          color: theme
+                              .lightModeColor
+                              .prColor300
                               .withAlpha(22),
                           child: header,
                         ),
                         const Divider(height: 1),
                         Expanded(
                           child: ScrollConfiguration(
-                            behavior: ScrollConfiguration.of(
-                              context,
-                            ).copyWith(scrollbars: false),
+                            behavior:
+                                ScrollConfiguration.of(
+                                  context,
+                                ).copyWith(
+                                  scrollbars: false,
+                                ),
                             child: ListView.builder(
                               controller: _vScroll,
                               itemCount: itemCount,
                               itemExtent: 52,
-                              itemBuilder: (context, i) => item(i),
+                              itemBuilder:
+                                  (context, i) => item(i),
                             ),
                           ),
                         ),
-                        const Divider(height: 1, thickness: 1),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
                         totals,
                       ],
                     ),
@@ -1939,7 +2149,10 @@ class _OrderReportTableViewState
     final cols = _columns(theme);
     return _frame(
       theme,
-      totalWidth: cols.fold<double>(0, (s, c) => s + c.width),
+      totalWidth: cols.fold<double>(
+        0,
+        (s, c) => s + c.width,
+      ),
       header: Row(
         children: [
           for (final c in cols)
@@ -1949,7 +2162,8 @@ class _OrderReportTableViewState
               width: c.width,
               align: c.align,
               sortable: c.sort != null,
-              isSorted: c.sort != null && c.sort == _sortField,
+              isSorted:
+                  c.sort != null && c.sort == _sortField,
               ascending: _ascending,
               onTap: () => _setSort(c.sort!),
             ),
@@ -1964,7 +2178,8 @@ class _OrderReportTableViewState
           (c) => c.width,
           (c) => c.align,
           (c) =>
-              c.total?.call(res.totals) ?? const SizedBox.shrink(),
+              c.total?.call(res.totals) ??
+              const SizedBox.shrink(),
         ),
       ),
     );
@@ -1990,7 +2205,10 @@ class _OrderReportTableViewState
               g.label,
               bold: true,
               align: TextAlign.start,
-              color: g.isNone || g.name == null ? Colors.grey : null,
+              color:
+                  g.isNone || g.name == null
+                      ? Colors.grey
+                      : null,
             ),
         total:
             (_) => _txt(
@@ -2025,7 +2243,8 @@ class _OrderReportTableViewState
         label: 'Undelivered Value',
         width: 160,
         sort: OrderGroupSortField.undeliveredValue,
-        cell: (g) => _txt(theme, _money(g.undeliveredValue)),
+        cell:
+            (g) => _txt(theme, _money(g.undeliveredValue)),
         total: (t) => bold(_money(t.undeliveredValue)),
       ),
       _GCol(
@@ -2063,10 +2282,15 @@ class _OrderReportTableViewState
   }
 
   /// No row tap: a group has no single order to open.
-  Widget _groupRow(List<_GCol> cols, OrderReportGroupRow g, int i) {
+  Widget _groupRow(
+    List<_GCol> cols,
+    OrderReportGroupRow g,
+    int i,
+  ) {
     return Container(
       decoration: BoxDecoration(
-        color: i.isEven ? Colors.white : Colors.grey.shade50,
+        color:
+            i.isEven ? Colors.white : Colors.grey.shade50,
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade100),
         ),
@@ -2087,7 +2311,10 @@ class _OrderReportTableViewState
     final cols = _groupColumns(theme);
     return _frame(
       theme,
-      totalWidth: cols.fold<double>(0, (s, c) => s + c.width),
+      totalWidth: cols.fold<double>(
+        0,
+        (s, c) => s + c.width,
+      ),
       header: Row(
         children: [
           for (final c in cols)
@@ -2098,7 +2325,8 @@ class _OrderReportTableViewState
               align: c.align,
               sortable: c.sort != null,
               isSorted:
-                  c.sort != null && c.sort == _groupSortField,
+                  c.sort != null &&
+                  c.sort == _groupSortField,
               ascending: _groupAscending,
               onTap: () => _setGroupSort(c.sort!),
             ),
@@ -2113,7 +2341,8 @@ class _OrderReportTableViewState
           (c) => c.width,
           (c) => c.align,
           (c) =>
-              c.total?.call(res.totals) ?? const SizedBox.shrink(),
+              c.total?.call(res.totals) ??
+              const SizedBox.shrink(),
         ),
       ),
     );

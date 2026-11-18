@@ -215,9 +215,10 @@ class _SupplierReportTableViewState
       _error = null;
     });
     try {
-      await _purchaseEnv.load(
+      await _purchaseEnv.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuildBase();
       _recompute();
@@ -310,8 +311,12 @@ class _SupplierReportTableViewState
     _apply(_state.resetAll);
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) =>
-      _apply(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   Future<void> _pushAnalysis(
     BuildContext context,

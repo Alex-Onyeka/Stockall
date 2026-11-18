@@ -87,7 +87,11 @@ class _StockHistorySummaryViewState extends State<StockHistorySummaryView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -327,7 +331,12 @@ class _StockHistorySummaryViewState extends State<StockHistorySummaryView> {
             theme: theme,
             period: _period,
             enabled: _env.canPickDate(),
-            onChanged: (p) => _apply(() => _period = p, rebuild: true),
+            onChanged: (p) {
+              _apply(() => _period = p, rebuild: true);
+              if (!p.isAllTime) {
+                _load(refreshFromStore: false);
+              }
+            },
           ),
           Padding(
             padding: const EdgeInsets.only(left: 6.0, right: 5),

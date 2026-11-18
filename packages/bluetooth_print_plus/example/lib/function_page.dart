@@ -33,7 +33,7 @@ class _FunctionPageState extends State<FunctionPage> {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.device.name ?? ""),
+        title: Text(widget.device.name),
       ),
       body: Column(
         children: [
@@ -43,34 +43,42 @@ class _FunctionPageState extends State<FunctionPage> {
           ),
           if (cmdType == CmdType.Tsc)
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceAround,
               children: [
                 OutlinedButton(
                     onPressed: () async {
-                      final cmd = await CommandTool.tscSelfTestCmd();
+                      final cmd = await CommandTool
+                          .tscSelfTestCmd();
                       BluetoothPrintPlus.write(cmd);
                     },
                     child: Text("selfTest")),
               ],
             ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceAround,
             children: [
               OutlinedButton(
                   onPressed: () async {
-                    final ByteData bytes =
-                        await rootBundle.load("assets/dithered-image.png");
-                    final Uint8List image = bytes.buffer.asUint8List();
+                    final ByteData bytes = await rootBundle
+                        .load("assets/dithered-image.png");
+                    final Uint8List image =
+                        bytes.buffer.asUint8List();
                     Uint8List? cmd;
                     switch (cmdType) {
                       case CmdType.Tsc:
-                        cmd = await CommandTool.tscImageCmd(image);
+                        cmd = await CommandTool.tscImageCmd(
+                            image);
                         break;
                       case CmdType.Cpcl:
-                        cmd = await CommandTool.cpclImageCmd(image);
+                        cmd =
+                            await CommandTool.cpclImageCmd(
+                                image);
                         break;
                       case CmdType.Esc:
-                        cmd = await CommandTool.escImageCmd(image);
+                        cmd = await CommandTool.escImageCmd(
+                            image);
                         break;
                     }
                     await BluetoothPrintPlus.write(cmd);
@@ -79,20 +87,24 @@ class _FunctionPageState extends State<FunctionPage> {
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceAround,
             children: [
               OutlinedButton(
                   onPressed: () async {
                     Uint8List? cmd;
                     switch (cmdType) {
                       case CmdType.Tsc:
-                        cmd = await CommandTool.tscTemplateCmd();
+                        cmd = await CommandTool
+                            .tscTemplateCmd();
                         break;
                       case CmdType.Cpcl:
-                        cmd = await CommandTool.cpclTemplateCmd();
+                        cmd = await CommandTool
+                            .cpclTemplateCmd();
                         break;
                       case CmdType.Esc:
-                        cmd = await CommandTool.escTemplateCmd();
+                        cmd = await CommandTool
+                            .escTemplateCmd();
                         break;
                     }
                     await BluetoothPrintPlus.write(cmd);

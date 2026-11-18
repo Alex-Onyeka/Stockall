@@ -65,15 +65,42 @@ class UsageRecordsEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+            context,
+            refreshFromStore: refreshFromStore,
+            period: period,
+          )
+          : load(
+            context,
+            refreshFromStore: refreshFromStore,
+          );
+
   /// Changes whenever the source data or the user's scope does.
   final String Function() signature;
 
   /// Subscribes the view to the providers it reads.
   final void Function(BuildContext context) listen;
-  final String Function(BuildContext context, num amount) money;
+  final String Function(BuildContext context, num amount)
+  money;
 
   /// Opens the production a usage came from.
-  final Future<void> Function(BuildContext context, String productionUuid)
+  final Future<void> Function(
+    BuildContext context,
+    String productionUuid,
+  )
   openProduction;
 
   /// Opens the usage details dialog of the usage records page.
@@ -103,6 +130,7 @@ class UsageRecordsEnv {
     required this.pendingDeletedUuids,
     required this.pendingDeletedRecordUuids,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -126,49 +154,114 @@ class UsageRecordsEnv {
       }
     }
 
+    Future<void> loadPeriod(
+      BuildContext context, {
+      required bool refreshFromStore,
+      ReceiptsReportPeriod? period,
+    }) async {
+      if (period != null) {
+        await production.loadWithPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
+      } else {
+        await production.load(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      }
+      final sid = shopSingle()?.shopId;
+      if (sid == null) return;
+      final provider = returnMaterialsUsageProvider();
+      final fetchAll = period?.isAllTime ?? false;
+      final startDate = period?.start;
+      final endDate = period?.end ?? period?.start;
+      if (refreshFromStore) {
+        await provider.getProductionMaterialsUsage(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        return;
+      }
+      // Local (offline) reads, only when nothing is loaded yet.
+      if (provider.productionMaterialsUsage.isEmpty) {
+        await provider.getProductionMaterialsUsageOffline();
+      }
+      if (period != null && !period.isAllTime) {
+        await provider.getProductionMaterialsUsage(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+      }
+    }
+
     return UsageRecordsEnv(
       departmentsEnabled: production.departmentsEnabled,
       canPickDate: production.canPickDate,
       canSeeCost: production.canSeeCost,
       canSeeQuantity: production.canSeeQuantity,
-      manageProductionItems: production.manageProductionItems,
+      manageProductionItems:
+          production.manageProductionItems,
       usages:
           () => ProductionReportAccess.scopeUsages(
-            usages: returnMaterialsUsageProvider().productionMaterialsUsage,
-            departmentsEnabled: production.departmentsEnabled(),
+            usages:
+                returnMaterialsUsageProvider()
+                    .productionMaterialsUsage,
+            departmentsEnabled:
+                production.departmentsEnabled(),
             canViewAllDepartments: authorization(
-              authorized: Authorizations().viewAllDepartments,
+              authorized:
+                  Authorizations().viewAllDepartments,
             ),
             currentDepartmentUuid:
-                returnDepartmentProvider().currentDepartment()?.uuid,
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
             canViewAllTransactions: authorization(
-              authorized: Authorizations().viewAllTransactionRecords,
+              authorized:
+                  Authorizations()
+                      .viewAllTransactionRecords,
             ),
             currentUserId: currentUser().userId,
           ),
       records: production.records,
       pendingDeletedUuids: pendingDeleted,
-      pendingDeletedRecordUuids: production.pendingDeletedUuids,
+      pendingDeletedRecordUuids:
+          production.pendingDeletedUuids,
       load: (context, {required refreshFromStore}) async {
-        await production.load(context, refreshFromStore: refreshFromStore);
-        final sid = shopSingle()?.shopId;
-        if (sid == null) return;
-        final provider = returnMaterialsUsageProvider();
-        if (refreshFromStore) {
-          await provider.getProductionMaterialsUsage(sid);
-          return;
-        }
-        // Local (offline) reads, only when nothing is loaded yet.
-        if (provider.productionMaterialsUsage.isEmpty) {
-          await provider.getProductionMaterialsUsageOffline();
-        }
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
       },
       signature: () {
-        final usages = returnMaterialsUsageProvider().productionMaterialsUsage;
+        final usages =
+            returnMaterialsUsageProvider()
+                .productionMaterialsUsage;
         int latest = 0;
         double cost = 0;
         for (final u in usages) {
-          final t = (u.updatedAt ?? u.createdAt)?.millisecondsSinceEpoch ?? 0;
+          final t =
+              (u.updatedAt ?? u.createdAt)
+                  ?.millisecondsSinceEpoch ??
+              0;
           if (t > latest) latest = t;
           cost += u.getTotalCost();
         }
@@ -185,7 +278,9 @@ class UsageRecordsEnv {
             context,
             MaterialPageRoute(
               builder:
-                  (context) => ProductionDetailsPage(productionRecordUuid: uuid),
+                  (context) => ProductionDetailsPage(
+                    productionRecordUuid: uuid,
+                  ),
             ),
           ),
       openUsage: (context, usage) {
@@ -203,7 +298,8 @@ class UsageRecordsEnv {
               topRightWidget: IconButton(
                 mouseCursor: SystemMouseCursors.click,
                 padding: EdgeInsets.zero,
-                onPressed: () => Navigator.of(dialogContext).pop(),
+                onPressed:
+                    () => Navigator.of(dialogContext).pop(),
                 icon: const Icon(size: 26, Icons.clear),
               ),
               widget: SizedBox(
@@ -220,6 +316,7 @@ class UsageRecordsEnv {
     );
   }
 }
+
 class _Col {
   final String label;
   final double width;
@@ -315,7 +412,6 @@ class _UsageRecordsTableViewState
   List<UsageGroupRow> _sortedGroups = [];
   List<ProductionRecordRow> _recordRows = [];
 
-
   UsageRecordsFilterChoices _choices =
       UsageRecordsFilterChoices.empty;
 
@@ -326,13 +422,17 @@ class _UsageRecordsTableViewState
   void initState() {
     super.initState();
     _env = widget.env ?? UsageRecordsEnv.live();
-    _state = UsageRecordsTableState(filters: widget.initialFilters?.copy());
+    _state = UsageRecordsTableState(
+      filters: widget.initialFilters?.copy(),
+    );
     _searchCtrl.text = _filters.search;
     _qtyMinCtrl.text = _numText(_filters.quantityMin);
     _qtyMaxCtrl.text = _numText(_filters.quantityMax);
     _costMinCtrl.text = _numText(_filters.costMin);
     _costMaxCtrl.text = _numText(_filters.costMax);
-    _period = widget.initialPeriod ?? ReceiptsReportPeriod.today();
+    _period =
+        widget.initialPeriod ??
+        ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
     });
@@ -362,13 +462,19 @@ class _UsageRecordsTableViewState
   bool get _canSeeCost => _env.canSeeCost();
   bool get _canSeeQuantity => _env.canSeeQuantity();
 
-  Future<void> _load({required bool refreshFromStore}) async {
+  Future<void> _load({
+    required bool refreshFromStore,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -393,7 +499,9 @@ class _UsageRecordsTableViewState
       recordRows: _recordRows,
       pendingDeletedUuids: _env.pendingDeletedUuids(),
     );
-    _choices = UsageRecordsFilterChoices.fromRows(_baseRows);
+    _choices = UsageRecordsFilterChoices.fromRows(
+      _baseRows,
+    );
     _signature = _env.signature();
   }
 
@@ -416,7 +524,10 @@ class _UsageRecordsTableViewState
         ascending: _state.groupAscending,
       );
       _sortedGroups = groups;
-      final page = UsageGrouping.paginate(groups, _state.page);
+      final page = UsageGrouping.paginate(
+        groups,
+        _state.page,
+      );
       _state.page = page.page;
       _groupResult = page;
     } else {
@@ -430,7 +541,10 @@ class _UsageRecordsTableViewState
     }
   }
 
-  void _apply(VoidCallback change, {bool resetPage = true}) {
+  void _apply(
+    VoidCallback change, {
+    bool resetPage = true,
+  }) {
     setState(() {
       change();
       if (resetPage) _state.page = 1;
@@ -445,9 +559,15 @@ class _UsageRecordsTableViewState
 
   void _goToPage(int p) {
     final totalPages =
-        _grouped ? _groupResult?.totalPages : _result?.totalPages;
-    final current = _grouped ? _groupResult?.page : _result?.page;
-    if (totalPages == null || p < 1 || p > totalPages || p == current) {
+        _grouped
+            ? _groupResult?.totalPages
+            : _result?.totalPages;
+    final current =
+        _grouped ? _groupResult?.page : _result?.page;
+    if (totalPages == null ||
+        p < 1 ||
+        p > totalPages ||
+        p == current) {
       return;
     }
     _apply(() => _state.page = p, resetPage: false);
@@ -475,7 +595,8 @@ class _UsageRecordsTableViewState
         _state.groupAscending = !_state.groupAscending;
       } else {
         _state.groupSortField = f;
-        _state.groupAscending = f == UsageGroupSortField.name;
+        _state.groupAscending =
+            f == UsageGroupSortField.name;
       }
     });
   }
@@ -518,16 +639,23 @@ class _UsageRecordsTableViewState
     }
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   /// Clears a range's fields once its filter was removed (chip).
   void _applyAndSyncFields(VoidCallback change) {
     _apply(change);
-    if (_filters.quantityMin == null && _filters.quantityMax == null) {
+    if (_filters.quantityMin == null &&
+        _filters.quantityMax == null) {
       _qtyMinCtrl.clear();
       _qtyMaxCtrl.clear();
     }
-    if (_filters.costMin == null && _filters.costMax == null) {
+    if (_filters.costMin == null &&
+        _filters.costMax == null) {
       _costMinCtrl.clear();
       _costMaxCtrl.clear();
     }
@@ -539,7 +667,8 @@ class _UsageRecordsTableViewState
   // ---------------------------------------------------------------
 
   String _money(num v) => _env.money(context, v);
-  String _number(num v) => formatLargeNumberDouble(v.toDouble());
+  String _number(num v) =>
+      formatLargeNumberDouble(v.toDouble());
 
   ReportExportSpec _exportSpec() {
     return usageRecordsExportSpec(
@@ -559,7 +688,9 @@ class _UsageRecordsTableViewState
 
   static String _numText(double? v) {
     if (v == null) return '';
-    return v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
+    return v == v.roundToDouble()
+        ? v.toStringAsFixed(0)
+        : v.toString();
   }
 
   // ---------------------------------------------------------------
@@ -595,7 +726,10 @@ class _UsageRecordsTableViewState
             child: InkWell(
               mouseCursor: SystemMouseCursors.click,
               borderRadius: BorderRadius.circular(10),
-              onTap: _loading ? null : () => _load(refreshFromStore: true),
+              onTap:
+                  _loading
+                      ? null
+                      : () => _load(refreshFromStore: true),
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Row(
@@ -605,11 +739,15 @@ class _UsageRecordsTableViewState
                     Text(
                       'Refresh',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.refresh_rounded, size: 18),
+                    const Icon(
+                      Icons.refresh_rounded,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -618,7 +756,9 @@ class _UsageRecordsTableViewState
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: widget.isDesktop ? 20 : 12),
+        padding: EdgeInsets.symmetric(
+          horizontal: widget.isDesktop ? 20 : 12,
+        ),
         child: Column(
           children: [
             const SizedBox(height: 8),
@@ -642,7 +782,10 @@ class _UsageRecordsTableViewState
             ),
             _notes(),
             Expanded(child: _content(theme)),
-            if (!_loading && _error == null && _grouped && _groupResult != null)
+            if (!_loading &&
+                _error == null &&
+                _grouped &&
+                _groupResult != null)
               ReportPager(
                 theme: theme,
                 page: _groupResult!.page,
@@ -653,7 +796,10 @@ class _UsageRecordsTableViewState
                 itemLabel: _state.groupBy.pagerLabel,
                 onPage: _goToPage,
               ),
-            if (!_loading && _error == null && !_grouped && _result != null)
+            if (!_loading &&
+                _error == null &&
+                !_grouped &&
+                _result != null)
               ReportPager(
                 theme: theme,
                 page: _result!.page,
@@ -673,7 +819,9 @@ class _UsageRecordsTableViewState
 
   Widget _content(ThemeProvider theme) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     if (_error != null) {
       return Center(
@@ -694,7 +842,8 @@ class _UsageRecordsTableViewState
               ),
             ),
             OutlinedButton.icon(
-              onPressed: () => _load(refreshFromStore: false),
+              onPressed:
+                  () => _load(refreshFromStore: false),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Try again'),
             ),
@@ -704,13 +853,17 @@ class _UsageRecordsTableViewState
     }
     final res = _result;
     final groups = _groupResult;
-    final count = _grouped ? groups?.totalCount : res?.totalCount;
+    final count =
+        _grouped ? groups?.totalCount : res?.totalCount;
     if (count == null || count == 0) {
       final hasFilters = _filters.hasAnything;
       return Padding(
         padding: const EdgeInsets.only(top: 60),
         child: EmptyWidgetDisplayOnly(
-          title: hasFilters ? 'No Matching Records' : 'Empty List',
+          title:
+              hasFilters
+                  ? 'No Matching Records'
+                  : 'Empty List',
           subText:
               hasFilters
                   ? 'No usage record matches your search and filters'
@@ -719,7 +872,8 @@ class _UsageRecordsTableViewState
           height: 35,
           icon: Icons.clear,
           altAction: hasFilters ? _resetAll : null,
-          altActionText: hasFilters ? 'Clear all filters' : null,
+          altActionText:
+              hasFilters ? 'Clear all filters' : null,
           altIcon: hasFilters ? Icons.filter_alt_off : null,
         ),
       );
@@ -750,44 +904,82 @@ class _UsageRecordsTableViewState
                 Expanded(
                   child: TextField(
                     controller: _searchCtrl,
-                    onChanged: (v) => _apply(() => _filters.search = v),
+                    onChanged:
+                        (v) => _apply(
+                          () => _filters.search = v,
+                        ),
                     decoration: InputDecoration(
-                      hintText: 'Search material, staff, production or ID',
-                      hintStyle: TextStyle(fontSize: theme.mobileTexts.b3.fontSize),
-                      prefixIcon: const Icon(Icons.search, size: 20),
+                      hintText:
+                          'Search material, staff, production or ID',
+                      hintStyle: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                      ),
                       suffixIcon:
                           _searchCtrl.text.isEmpty
                               ? null
                               : IconButton(
-                                icon: const Icon(Icons.close, size: 18),
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                ),
                                 onPressed: () {
                                   _searchCtrl.clear();
-                                  _apply(() => _filters.search = '');
+                                  _apply(
+                                    () =>
+                                        _filters.search =
+                                            '',
+                                  );
                                 },
                               ),
                       contentPadding: EdgeInsets.zero,
                       filled: true,
                       fillColor: Colors.grey.shade100,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
                         borderSide: BorderSide.none,
                       ),
                     ),
                   ),
                 ),
-                if (screenWidth(context) < mobileScreen) ...[
+                if (screenWidth(context) <
+                    mobileScreen) ...[
                   const SizedBox(width: 5),
                   InkWell(
-                    onTap: () => setState(() => _toolbarIsOpen = !_toolbarIsOpen),
+                    onTap:
+                        () => setState(
+                          () =>
+                              _toolbarIsOpen =
+                                  !_toolbarIsOpen,
+                        ),
                     mouseCursor: SystemMouseCursors.click,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10.0, 6, 6, 6),
+                      padding: const EdgeInsets.fromLTRB(
+                        10.0,
+                        6,
+                        6,
+                        6,
+                      ),
                       child: Row(
                         spacing: 1,
                         children: [
                           Text(
-                            style: TextStyle(fontSize: theme.mobileTexts.b4.fontSize),
-                            _toolbarIsOpen ? 'Hide' : 'View',
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                            _toolbarIsOpen
+                                ? 'Hide'
+                                : 'View',
                           ),
                           Icon(
                             _toolbarIsOpen
@@ -803,7 +995,8 @@ class _UsageRecordsTableViewState
             ),
           ),
         ),
-        if (_toolbarIsOpen || screenWidth(context) > mobileScreen) ...[
+        if (_toolbarIsOpen ||
+            screenWidth(context) > mobileScreen) ...[
           ReceiptsReportPeriodButton(
             theme: theme,
             period: _period,
@@ -811,13 +1004,22 @@ class _UsageRecordsTableViewState
             onChanged: _setPeriod,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 6.0, right: 5),
+            padding: const EdgeInsets.only(
+              left: 6.0,
+              right: 5,
+            ),
             child: ReportPill(
               theme: theme,
               icon: Icons.tune_rounded,
-              label: active == 0 ? 'Filters' : 'Filters ($active)',
+              label:
+                  active == 0
+                      ? 'Filters'
+                      : 'Filters ($active)',
               highlighted: _showFilters || active > 0,
-              onTap: () => setState(() => _showFilters = !_showFilters),
+              onTap:
+                  () => setState(
+                    () => _showFilters = !_showFilters,
+                  ),
             ),
           ),
           // A view option, not a filter: Reset All keeps it.
@@ -825,11 +1027,17 @@ class _UsageRecordsTableViewState
             theme: theme,
             value: _state.groupBy,
             departmentsEnabled: _departmentsEnabled,
-            onChanged: (g) => _apply(() => _state.groupBy = g),
+            onChanged:
+                (g) => _apply(() => _state.groupBy = g),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            padding: const EdgeInsets.only(
+              left: 5,
+              right: 5,
+            ),
+            child: ReportExportButton(
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             ReportPill(
@@ -852,7 +1060,12 @@ class _UsageRecordsTableViewState
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 5)],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 5,
+          ),
+        ],
       ),
       child: Wrap(
         spacing: 8,
@@ -909,11 +1122,18 @@ class _UsageRecordsTableViewState
           mainAxisSize: MainAxisSize.min,
           spacing: 4,
           children: [
-            Icon(Icons.info_outline_rounded, size: 13, color: Colors.grey.shade600),
+            Icon(
+              Icons.info_outline_rounded,
+              size: 13,
+              color: Colors.grey.shade600,
+            ),
             Flexible(
               child: Text(
                 notes.join('\n'),
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey.shade700,
+                ),
               ),
             ),
           ],
@@ -926,12 +1146,15 @@ class _UsageRecordsTableViewState
   // table
   // ---------------------------------------------------------------
 
-  TextStyle _cellStyle(ThemeProvider theme, {bool bold = false, Color? color}) =>
-      TextStyle(
-        fontSize: theme.mobileTexts.b3.fontSize,
-        fontWeight: bold ? FontWeight.bold : FontWeight.w500,
-        color: color ?? Colors.black87,
-      );
+  TextStyle _cellStyle(
+    ThemeProvider theme, {
+    bool bold = false,
+    Color? color,
+  }) => TextStyle(
+    fontSize: theme.mobileTexts.b3.fontSize,
+    fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+    color: color ?? Colors.black87,
+  );
 
   Widget _txt(
     ThemeProvider theme,
@@ -948,13 +1171,17 @@ class _UsageRecordsTableViewState
       textAlign: align,
       style: _cellStyle(theme, bold: bold, color: color),
     );
-    return tooltip == null ? t : Tooltip(message: tooltip, child: t);
+    return tooltip == null
+        ? t
+        : Tooltip(message: tooltip, child: t);
   }
 
-  Widget _dash(ThemeProvider theme) => _txt(theme, '—', color: Colors.grey);
+  Widget _dash(ThemeProvider theme) =>
+      _txt(theme, '—', color: Colors.grey);
 
   List<_Col> _columns(ThemeProvider theme) {
-    Widget bold(String text) => _txt(theme, text, bold: true);
+    Widget bold(String text) =>
+        _txt(theme, text, bold: true);
     final single = _filters.singleMaterialKey != null;
 
     return [
@@ -962,14 +1189,27 @@ class _UsageRecordsTableViewState
         label: 'ID',
         width: 170,
         align: TextAlign.start,
-        cell: (r) => _txt(theme, r.displayId, bold: true, align: TextAlign.start),
-        total: (_) => _txt(theme, 'TOTAL', bold: true, align: TextAlign.start),
+        cell:
+            (r) => _txt(
+              theme,
+              r.displayId,
+              bold: true,
+              align: TextAlign.start,
+            ),
+        total:
+            (_) => _txt(
+              theme,
+              'TOTAL',
+              bold: true,
+              align: TextAlign.start,
+            ),
       ),
       _Col(
         label: 'Date',
         width: 120,
         sort: UsageRecordsSortField.createdAt,
-        cell: (r) => _txt(theme, formatDateTime(r.createdAt)),
+        cell:
+            (r) => _txt(theme, formatDateTime(r.createdAt)),
       ),
       _Col(
         label: 'Time',
@@ -982,19 +1222,32 @@ class _UsageRecordsTableViewState
         width: 190,
         sort: UsageRecordsSortField.material,
         align: TextAlign.start,
-        cell: (r) => _txt(theme, r.materialName, bold: true, align: TextAlign.start),
+        cell:
+            (r) => _txt(
+              theme,
+              r.materialName,
+              bold: true,
+              align: TextAlign.start,
+            ),
       ),
       if (_canSeeQuantity)
         _Col(
           label: 'Quantity',
           width: 170,
           sort: UsageRecordsSortField.quantity,
-          cell: (r) => _txt(theme, usageRecordQuantityText(r, _number)),
+          cell:
+              (r) => _txt(
+                theme,
+                usageRecordQuantityText(r, _number),
+              ),
           total:
               (t) =>
                   t.totalQuantity == null
                       ? const SizedBox.shrink()
-                      : bold('${_number(t.totalQuantity!)} ${t.quantityUnit ?? ''}'.trim()),
+                      : bold(
+                        '${_number(t.totalQuantity!)} ${t.quantityUnit ?? ''}'
+                            .trim(),
+                      ),
         ),
       if (_canSeeCost) ...[
         // Cost ÷ unit cost gives the quantity, so it needs both.
@@ -1044,7 +1297,10 @@ class _UsageRecordsTableViewState
                       theme,
                       r.productionLabel!,
                       align: TextAlign.start,
-                      color: r.productionOutputName == null ? Colors.grey : null,
+                      color:
+                          r.productionOutputName == null
+                              ? Colors.grey
+                              : null,
                     ),
       ),
       if (_departmentsEnabled)
@@ -1057,7 +1313,10 @@ class _UsageRecordsTableViewState
                 theme,
                 r.departmentLabel,
                 align: TextAlign.start,
-                color: r.departmentKey == null ? Colors.grey : null,
+                color:
+                    r.departmentKey == null
+                        ? Colors.grey
+                        : null,
               ),
         ),
       _Col(
@@ -1070,7 +1329,8 @@ class _UsageRecordsTableViewState
               theme,
               r.staffLabel,
               align: TextAlign.start,
-              color: r.staffName == null ? Colors.grey : null,
+              color:
+                  r.staffName == null ? Colors.grey : null,
             ),
       ),
       _Col(
@@ -1089,7 +1349,9 @@ class _UsageRecordsTableViewState
   Alignment _alignment(TextAlign a) =>
       a == TextAlign.start
           ? Alignment.centerLeft
-          : (a == TextAlign.end ? Alignment.centerRight : Alignment.center);
+          : (a == TextAlign.end
+              ? Alignment.centerRight
+              : Alignment.center);
 
   Widget _header(
     ThemeProvider theme, {
@@ -1104,7 +1366,9 @@ class _UsageRecordsTableViewState
     final accent = theme.lightModeColor.prColor300;
     final content = Row(
       mainAxisAlignment:
-          align == TextAlign.start ? MainAxisAlignment.start : MainAxisAlignment.center,
+          align == TextAlign.start
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       spacing: 3,
       children: [
@@ -1124,7 +1388,9 @@ class _UsageRecordsTableViewState
         if (sortable)
           Icon(
             isSorted
-                ? (ascending ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded)
+                ? (ascending
+                    ? Icons.arrow_upward_rounded
+                    : Icons.arrow_downward_rounded)
                 : Icons.unfold_more_rounded,
             size: 14,
             color: isSorted ? accent : Colors.grey,
@@ -1133,7 +1399,10 @@ class _UsageRecordsTableViewState
     );
     final padded = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Align(alignment: _alignment(align), child: content),
+      child: Align(
+        alignment: _alignment(align),
+        child: content,
+      ),
     );
     return SizedBox(
       width: width,
@@ -1160,26 +1429,46 @@ class _UsageRecordsTableViewState
           SizedBox(
             width: width(c),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Align(alignment: _alignment(align(c)), child: cell(c)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Align(
+                alignment: _alignment(align(c)),
+                child: cell(c),
+              ),
             ),
           ),
       ],
     );
   }
 
-  Widget _row(ThemeProvider theme, List<_Col> cols, UsageRecordRow r, int i) {
+  Widget _row(
+    ThemeProvider theme,
+    List<_Col> cols,
+    UsageRecordRow r,
+    int i,
+  ) {
     return Material(
       color: i.isEven ? Colors.white : Colors.grey.shade50,
       child: InkWell(
         mouseCursor: SystemMouseCursors.click,
-        hoverColor: theme.lightModeColor.prColor300.withAlpha(20),
+        hoverColor: theme.lightModeColor.prColor300
+            .withAlpha(20),
         onTap: () => _openRow(r),
         child: Container(
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey.shade100,
+              ),
+            ),
           ),
-          child: _cells<_Col>(cols, (c) => c.width, (c) => c.align, (c) => c.cell(r)),
+          child: _cells<_Col>(
+            cols,
+            (c) => c.width,
+            (c) => c.align,
+            (c) => c.cell(r),
+          ),
         ),
       ),
     );
@@ -1209,21 +1498,31 @@ class _UsageRecordsTableViewState
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade200),
-          boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 12)],
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x14000000),
+              blurRadius: 12,
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final w =
-                totalWidth > constraints.maxWidth ? totalWidth : constraints.maxWidth;
+                totalWidth > constraints.maxWidth
+                    ? totalWidth
+                    : constraints.maxWidth;
             return Scrollbar(
               controller: _vScroll,
               thumbVisibility: true,
-              notificationPredicate: (n) => n.metrics.axis == Axis.vertical,
+              notificationPredicate:
+                  (n) => n.metrics.axis == Axis.vertical,
               child: Scrollbar(
                 controller: _hScroll,
                 thumbVisibility: true,
-                notificationPredicate: (n) => n.metrics.axis == Axis.horizontal,
+                notificationPredicate:
+                    (n) =>
+                        n.metrics.axis == Axis.horizontal,
                 child: SingleChildScrollView(
                   controller: _hScroll,
                   scrollDirection: Axis.horizontal,
@@ -1234,24 +1533,34 @@ class _UsageRecordsTableViewState
                       children: [
                         Container(
                           height: 48,
-                          color: theme.lightModeColor.prColor300.withAlpha(22),
+                          color: theme
+                              .lightModeColor
+                              .prColor300
+                              .withAlpha(22),
                           child: header,
                         ),
                         const Divider(height: 1),
                         Expanded(
                           child: ScrollConfiguration(
-                            behavior: ScrollConfiguration.of(
-                              context,
-                            ).copyWith(scrollbars: false),
+                            behavior:
+                                ScrollConfiguration.of(
+                                  context,
+                                ).copyWith(
+                                  scrollbars: false,
+                                ),
                             child: ListView.builder(
                               controller: _vScroll,
                               itemCount: itemCount,
                               itemExtent: 52,
-                              itemBuilder: (context, i) => item(i),
+                              itemBuilder:
+                                  (context, i) => item(i),
                             ),
                           ),
                         ),
-                        const Divider(height: 1, thickness: 1),
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
                         totals,
                       ],
                     ),
@@ -1269,7 +1578,10 @@ class _UsageRecordsTableViewState
     final cols = _columns(theme);
     return _frame(
       theme,
-      totalWidth: cols.fold<double>(0, (s, c) => s + c.width),
+      totalWidth: cols.fold<double>(
+        0,
+        (s, c) => s + c.width,
+      ),
       header: Row(
         children: [
           for (final c in cols)
@@ -1279,7 +1591,9 @@ class _UsageRecordsTableViewState
               width: c.width,
               align: c.align,
               sortable: c.sort != null,
-              isSorted: c.sort != null && c.sort == _state.sortField,
+              isSorted:
+                  c.sort != null &&
+                  c.sort == _state.sortField,
               ascending: _state.ascending,
               onTap: () => _setSort(c.sort!),
             ),
@@ -1293,7 +1607,8 @@ class _UsageRecordsTableViewState
           cols,
           (c) => c.width,
           (c) => c.align,
-          (c) => c.total?.call(res) ?? const SizedBox.shrink(),
+          (c) =>
+              c.total?.call(res) ?? const SizedBox.shrink(),
         ),
       ),
     );
@@ -1304,7 +1619,8 @@ class _UsageRecordsTableViewState
   // ---------------------------------------------------------------
 
   List<_GCol> _groupColumns(ThemeProvider theme) {
-    Widget bold(String text) => _txt(theme, text, bold: true);
+    Widget bold(String text) =>
+        _txt(theme, text, bold: true);
     final by = _state.groupBy;
     final byMaterial = by == UsageGroupBy.material;
     final showQty = _canSeeQuantity && byMaterial;
@@ -1321,9 +1637,18 @@ class _UsageRecordsTableViewState
               g.label,
               bold: true,
               align: TextAlign.start,
-              color: g.isNone || g.name == null ? Colors.grey : null,
+              color:
+                  g.isNone || g.name == null
+                      ? Colors.grey
+                      : null,
             ),
-        total: (_) => _txt(theme, 'TOTAL', bold: true, align: TextAlign.start),
+        total:
+            (_) => _txt(
+              theme,
+              'TOTAL',
+              bold: true,
+              align: TextAlign.start,
+            ),
       ),
       _GCol(
         label: 'Records',
@@ -1341,7 +1666,11 @@ class _UsageRecordsTableViewState
               (g) =>
                   g.quantity == null
                       ? _dash(theme)
-                      : _txt(theme, '${_number(g.quantity!)} ${g.unit ?? ''}'.trim()),
+                      : _txt(
+                        theme,
+                        '${_number(g.quantity!)} ${g.unit ?? ''}'
+                            .trim(),
+                      ),
         ),
       if (_canSeeCost)
         _GCol(
@@ -1370,27 +1699,48 @@ class _UsageRecordsTableViewState
             (g) =>
                 g.lastDate == null
                     ? _dash(theme)
-                    : _txt(theme, formatDateTime(g.lastDate!)),
+                    : _txt(
+                      theme,
+                      formatDateTime(g.lastDate!),
+                    ),
       ),
     ];
   }
 
   /// No row tap: a group has no single record to open.
-  Widget _groupRow(List<_GCol> cols, UsageGroupRow g, int i) {
+  Widget _groupRow(
+    List<_GCol> cols,
+    UsageGroupRow g,
+    int i,
+  ) {
     return Container(
       decoration: BoxDecoration(
-        color: i.isEven ? Colors.white : Colors.grey.shade50,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+        color:
+            i.isEven ? Colors.white : Colors.grey.shade50,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade100),
+        ),
       ),
-      child: _cells<_GCol>(cols, (c) => c.width, (c) => c.align, (c) => c.cell(g)),
+      child: _cells<_GCol>(
+        cols,
+        (c) => c.width,
+        (c) => c.align,
+        (c) => c.cell(g),
+      ),
     );
   }
 
-  Widget _groupTable(ThemeProvider theme, UsageGroupPage res) {
+  Widget _groupTable(
+    ThemeProvider theme,
+    UsageGroupPage res,
+  ) {
     final cols = _groupColumns(theme);
     return _frame(
       theme,
-      totalWidth: cols.fold<double>(0, (s, c) => s + c.width),
+      totalWidth: cols.fold<double>(
+        0,
+        (s, c) => s + c.width,
+      ),
       header: Row(
         children: [
           for (final c in cols)
@@ -1400,7 +1750,9 @@ class _UsageRecordsTableViewState
               width: c.width,
               align: c.align,
               sortable: c.sort != null,
-              isSorted: c.sort != null && c.sort == _state.groupSortField,
+              isSorted:
+                  c.sort != null &&
+                  c.sort == _state.groupSortField,
               ascending: _state.groupAscending,
               onTap: () => _setGroupSort(c.sort!),
             ),
@@ -1414,10 +1766,10 @@ class _UsageRecordsTableViewState
           cols,
           (c) => c.width,
           (c) => c.align,
-          (c) => c.total?.call(res) ?? const SizedBox.shrink(),
+          (c) =>
+              c.total?.call(res) ?? const SizedBox.shrink(),
         ),
       ),
     );
   }
 }
-

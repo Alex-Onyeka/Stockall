@@ -104,14 +104,29 @@ class _InvoiceSummaryViewState
       final currentShop = shopSingle();
       final sid = currentShop?.shopId ?? 0;
 
+      final isAllTime =
+          _period == InvoiceSummaryPeriod.allTime;
+      final resolvedRange =
+          isAllTime ? null : _currentResolvedDateRange();
+      final startDate = resolvedRange?.start;
+      final endDate = resolvedRange?.end;
+
       if (refreshFromStore && sid != 0 && mounted) {
-        await RefreshFunctions(
+        await RefreshFunctions(context).refreshInvoices(
           context,
-        ).refreshInvoices(context);
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: isAllTime,
+          forceRefresh: true,
+        );
         if (!mounted) return;
-        await RefreshFunctions(
+        await RefreshFunctions(context).refreshReceipts(
           context,
-        ).refreshReceipts(context);
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: isAllTime,
+          forceRefresh: true,
+        );
         if (!mounted) return;
         await RefreshFunctions(
           context,
@@ -124,6 +139,22 @@ class _InvoiceSummaryViewState
             .loadReceiptsOffline(sid);
         await returnCustomersSingle()
             .fetchCustomersOffline();
+        if (!isAllTime &&
+            startDate != null &&
+            endDate != null) {
+          await returnInvoicesProvider().loadInvoices(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
+          await returnReceiptProviderSingle().loadReceipts(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
+        }
       }
 
       // Shop scoped invoices
@@ -217,6 +248,7 @@ class _InvoiceSummaryViewState
           _customRange = DateTimeRange(start: d, end: d);
           _recompute();
         });
+        _load(refreshFromStore: false);
       },
       rangeDate: (start, end) {
         if (start == null) return;
@@ -234,6 +266,7 @@ class _InvoiceSummaryViewState
           _customRange = DateTimeRange(start: s, end: e);
           _recompute();
         });
+        _load(refreshFromStore: false);
       },
     );
   }
@@ -573,6 +606,9 @@ class _InvoiceSummaryViewState
                     _customRange = null;
                     _recompute();
                   });
+                  if (val != InvoiceSummaryPeriod.allTime) {
+                    _load(refreshFromStore: false);
+                  }
                 }
               },
             ),

@@ -52,6 +52,26 @@ class ProductionRecordsEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+              context,
+              refreshFromStore: refreshFromStore,
+              period: period,
+            )
+          : load(context, refreshFromStore: refreshFromStore);
+
   /// Changes whenever the source data or the user's scope does.
   final String Function() signature;
 
@@ -79,6 +99,7 @@ class ProductionRecordsEnv {
     required this.records,
     required this.pendingDeletedUuids,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -104,6 +125,41 @@ class ProductionRecordsEnv {
       }
     }
 
+    Future<void> loadPeriod(
+      BuildContext context, {
+      required bool refreshFromStore,
+      ReceiptsReportPeriod? period,
+    }) async {
+      final sid = shopSingle()?.shopId;
+      if (sid == null) return;
+      final provider = returnProductionRecordsProvider();
+      final fetchAll = period?.isAllTime ?? false;
+      final startDate = period?.start;
+      final endDate = period?.end ?? period?.start;
+      if (refreshFromStore) {
+        await provider.getProductionRecords(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        return;
+      }
+      // Local (offline) reads, only when nothing is loaded yet.
+      if (provider.productionRecords.isEmpty) {
+        await provider.getProductionRecordsOffline();
+      }
+      if (period != null && !period.isAllTime) {
+        await provider.getProductionRecords(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+      }
+    }
+
     return ProductionRecordsEnv(
       departmentsEnabled: departmentsEnabled,
       canPickDate: () => authorization(authorized: Authorizations().viewDate),
@@ -126,17 +182,21 @@ class ProductionRecordsEnv {
           ),
       pendingDeletedUuids: pendingDeleted,
       load: (context, {required refreshFromStore}) async {
-        final sid = shopSingle()?.shopId;
-        if (sid == null) return;
-        final provider = returnProductionRecordsProvider();
-        if (refreshFromStore) {
-          await provider.getProductionRecords(sid);
-          return;
-        }
-        // Local (offline) reads, only when nothing is loaded yet.
-        if (provider.productionRecords.isEmpty) {
-          await provider.getProductionRecordsOffline();
-        }
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
       },
       signature: () {
         final records = returnProductionRecordsProvider().productionRecords;
@@ -320,7 +380,11 @@ class _ProductionRecordsTableViewState
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -460,7 +524,12 @@ class _ProductionRecordsTableViewState
     }
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   /// Clears a range's fields once its filter was removed (chip).
   void _applyAndSyncFields(VoidCallback change) {

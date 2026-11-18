@@ -59,12 +59,36 @@ class GeneralReportEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+            context,
+            refreshFromStore: refreshFromStore,
+            period: period,
+          )
+          : load(
+            context,
+            refreshFromStore: refreshFromStore,
+          );
+
   /// Changes whenever the source data or the user's scope does.
   final String Function() signature;
 
   /// Subscribes the view to the providers it reads.
   final void Function(BuildContext context) listen;
-  final String Function(BuildContext context, num amount) money;
+  final String Function(BuildContext context, num amount)
+  money;
 
   final Future<void> Function(
     BuildContext context,
@@ -89,6 +113,7 @@ class GeneralReportEnv {
     required this.pendingDeletedPurchaseUuids,
     required this.expenses,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -104,9 +129,12 @@ class GeneralReportEnv {
       authorized: Authorizations().viewAllDepartments,
     );
     String? currentDepartmentUuid() =>
-        returnDepartmentProvider().currentDepartment()?.uuid;
+        returnDepartmentProvider()
+            .currentDepartment()
+            ?.uuid;
     bool canViewAllTransactions() => authorization(
-      authorized: Authorizations().viewAllTransactionRecords,
+      authorized:
+          Authorizations().viewAllTransactionRecords,
     );
 
     return GeneralReportEnv(
@@ -120,7 +148,8 @@ class GeneralReportEnv {
           ),
       canOpenReceipts:
           () => authorization(
-            authorized: Authorizations().viewReceiptSalesReport,
+            authorized:
+                Authorizations().viewReceiptSalesReport,
           ),
       canOpenPurchases:
           () => authorization(
@@ -128,24 +157,29 @@ class GeneralReportEnv {
           ),
       receipts:
           () => ReceiptsReportAccess.scope(
-            receipts: returnReceiptProviderSingle().receipts,
+            receipts:
+                returnReceiptProviderSingle().receipts,
             departmentsEnabled: departmentsEnabled(),
             canViewAllDepartments: canViewAllDepartments(),
             currentDepartmentUuid: currentDepartmentUuid(),
-            canViewAllTransactions: canViewAllTransactions(),
+            canViewAllTransactions:
+                canViewAllTransactions(),
             currentUserId: currentUser().userId,
           ),
-      legacySales: () => returnReceiptProviderSingle().mainSales,
+      legacySales:
+          () => returnReceiptProviderSingle().mainSales,
       purchases: purchaseEnv.purchases,
       pendingDeletedPurchaseUuids:
           purchaseEnv.pendingDeletedUuids,
       expenses:
           () => GeneralReportExpenses.scope(
-            expenses: returnExpensesProviderSingle().expensesMain,
+            expenses:
+                returnExpensesProviderSingle().expensesMain,
             departmentsEnabled: departmentsEnabled(),
             canViewAllDepartments: canViewAllDepartments(),
             currentDepartmentUuid: currentDepartmentUuid(),
-            canViewAllTransactions: canViewAllTransactions(),
+            canViewAllTransactions:
+                canViewAllTransactions(),
             currentUserId: currentUser().userId,
           ),
       load: (context, {required refreshFromStore}) async {
@@ -156,10 +190,18 @@ class GeneralReportEnv {
         if (refreshFromStore) {
           // Only this one can ask about unsynced records; the
           // expenses below go online only when they are synced.
-          await RefreshFunctions(context).refreshReceipts(context);
+          await RefreshFunctions(
+            context,
+          ).refreshReceipts(context, forceRefresh: true);
           if (!context.mounted) return;
-          await purchaseEnv.load(context, refreshFromStore: true);
-          await expenses.getExpenses(sid);
+          await purchaseEnv.load(
+            context,
+            refreshFromStore: true,
+          );
+          await expenses.getExpenses(
+            sid,
+            forceRefresh: true,
+          );
           return;
         }
         // Local (offline) reads, only when nothing is loaded yet.
@@ -170,9 +212,92 @@ class GeneralReportEnv {
           await receipts.loadProductSalesRecordOffline(sid);
         }
         if (!context.mounted) return;
-        await purchaseEnv.load(context, refreshFromStore: false);
+        await purchaseEnv.load(
+          context,
+          refreshFromStore: false,
+        );
         if (expenses.expensesMain.isEmpty) {
           await expenses.getExpensesOffline(sid);
+        }
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        final sid = shopSingle()?.shopId;
+        if (sid == null) return;
+        final receipts = returnReceiptProviderSingle();
+        final expenses = returnExpensesProviderSingle();
+        final fetchAll = period?.isAllTime ?? false;
+        final startDate = period?.start;
+        final endDate = period?.end ?? period?.start;
+        if (refreshFromStore) {
+          await RefreshFunctions(context).refreshReceipts(
+            context,
+            startDate: startDate,
+            endDate: endDate,
+            fetchAll: fetchAll,
+            forceRefresh: true,
+          );
+          if (!context.mounted) return;
+          if (period != null) {
+            await purchaseEnv.loadWithPeriod(
+              context,
+              refreshFromStore: true,
+              period: period,
+            );
+          } else {
+            await purchaseEnv.load(
+              context,
+              refreshFromStore: true,
+            );
+          }
+          await expenses.getExpenses(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            fetchAll: fetchAll,
+            forceRefresh: true,
+          );
+          return;
+        }
+        // Local (offline) reads, only when nothing is loaded yet.
+        if (receipts.receipts.isEmpty) {
+          await receipts.loadReceiptsOffline(sid);
+        }
+        if (receipts.mainSales.isEmpty) {
+          await receipts.loadProductSalesRecordOffline(sid);
+        }
+        if (!context.mounted) return;
+        if (period != null) {
+          await purchaseEnv.loadWithPeriod(
+            context,
+            refreshFromStore: false,
+            period: period,
+          );
+        } else {
+          await purchaseEnv.load(
+            context,
+            refreshFromStore: false,
+          );
+        }
+        if (expenses.expensesMain.isEmpty) {
+          await expenses.getExpensesOffline(sid);
+        }
+        if (period != null && !period.isAllTime) {
+          await receipts.loadReceipts(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
+          await expenses.getExpenses(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
         }
       },
       signature: () {
@@ -211,15 +336,18 @@ class GeneralReportEnv {
         returnExpensesProvider(context);
       },
       money:
-          (context, amount) =>
-              formatMoneyBig(amount: amount, context: context),
+          (context, amount) => formatMoneyBig(
+            amount: amount,
+            context: context,
+          ),
       openReceipts:
           (context, period) => Navigator.push(
             context,
             MaterialPageRoute(
               builder:
-                  (context) =>
-                      ReceiptsReportMainPage(initialPeriod: period),
+                  (context) => ReceiptsReportMainPage(
+                    initialPeriod: period,
+                  ),
             ),
           ),
       openPurchases:
@@ -227,8 +355,9 @@ class GeneralReportEnv {
             context,
             MaterialPageRoute(
               builder:
-                  (context) =>
-                      PurchaseReportTablePage(initialPeriod: period),
+                  (context) => PurchaseReportTablePage(
+                    initialPeriod: period,
+                  ),
             ),
           ),
     );
@@ -257,7 +386,8 @@ class GeneralReportView extends StatefulWidget {
       _GeneralReportViewState();
 }
 
-class _GeneralReportViewState extends State<GeneralReportView> {
+class _GeneralReportViewState
+    extends State<GeneralReportView> {
   late final GeneralReportEnv _env;
   late ReceiptsReportPeriod _period;
 
@@ -280,7 +410,8 @@ class _GeneralReportViewState extends State<GeneralReportView> {
     // Without View Date the page only shows today.
     _period =
         _env.canPickDate()
-            ? widget.initialPeriod ?? ReceiptsReportPeriod.today()
+            ? widget.initialPeriod ??
+                ReceiptsReportPeriod.today()
             : ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
@@ -293,15 +424,18 @@ class _GeneralReportViewState extends State<GeneralReportView> {
 
   bool get _profitVisible => _env.canSeeCost();
 
-  Future<void> _load({required bool refreshFromStore}) async {
+  Future<void> _load({
+    required bool refreshFromStore,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      await _env.load(
+      await _env.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuild();
       if (mounted) setState(() => _loading = false);
@@ -322,19 +456,21 @@ class _GeneralReportViewState extends State<GeneralReportView> {
     );
     final purchaseRows = PurchaseReportRowBuilder.buildAll(
       purchases: _env.purchases(),
-      pendingDeletedUuids: _env.pendingDeletedPurchaseUuids(),
+      pendingDeletedUuids:
+          _env.pendingDeletedPurchaseUuids(),
     );
     final expenses = _env.expenses();
     final profitVisible = _profitVisible;
 
-    GeneralReportFigures figuresFor(ReceiptsReportPeriod p) =>
-        GeneralReportFigures.build(
-          receiptRows: receiptRows,
-          purchaseRows: purchaseRows,
-          expenses: expenses,
-          period: p,
-          profitVisible: profitVisible,
-        );
+    GeneralReportFigures figuresFor(
+      ReceiptsReportPeriod p,
+    ) => GeneralReportFigures.build(
+      receiptRows: receiptRows,
+      purchaseRows: purchaseRows,
+      expenses: expenses,
+      period: p,
+      profitVisible: profitVisible,
+    );
 
     final figures = figuresFor(_period);
     final previous = GeneralReportPeriods.previous(_period);
@@ -366,6 +502,9 @@ class _GeneralReportViewState extends State<GeneralReportView> {
       _period = p;
       _rebuildInState();
     });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   Future<void> _open(
@@ -385,7 +524,6 @@ class _GeneralReportViewState extends State<GeneralReportView> {
   // ---------------------------------------------------------------
 
   String _money(num v) => _env.money(context, v);
-
 
   static String _count(int n, String noun) =>
       '$n $noun${n == 1 ? '' : 's'}';
@@ -420,7 +558,12 @@ class _GeneralReportViewState extends State<GeneralReportView> {
     }
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 252, 253, 255),
+      backgroundColor: const Color.fromARGB(
+        255,
+        252,
+        253,
+        255,
+      ),
       appBar: appBar(
         context: context,
         title: 'General Report',
@@ -444,11 +587,15 @@ class _GeneralReportViewState extends State<GeneralReportView> {
                     Text(
                       'Refresh',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.refresh_rounded, size: 18),
+                    const Icon(
+                      Icons.refresh_rounded,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -462,7 +609,9 @@ class _GeneralReportViewState extends State<GeneralReportView> {
 
   Widget _body(ThemeProvider theme) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     final figures = _figures;
     if (_error != null || figures == null) {
@@ -484,7 +633,8 @@ class _GeneralReportViewState extends State<GeneralReportView> {
               ),
             ),
             OutlinedButton.icon(
-              onPressed: () => _load(refreshFromStore: false),
+              onPressed:
+                  () => _load(refreshFromStore: false),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Try again'),
             ),
@@ -516,7 +666,9 @@ class _GeneralReportViewState extends State<GeneralReportView> {
         ),
       ],
     );
-    final gap = SizedBox(height: widget.isDesktop ? 16 : 12);
+    final gap = SizedBox(
+      height: widget.isDesktop ? 16 : 12,
+    );
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: widget.isDesktop ? 20 : 12,
@@ -690,7 +842,9 @@ class _GeneralReportViewState extends State<GeneralReportView> {
   }) {
     return Padding(
       key: ValueKey('general-section-$id'),
-      padding: EdgeInsets.only(bottom: widget.isDesktop ? 16 : 12),
+      padding: EdgeInsets.only(
+        bottom: widget.isDesktop ? 16 : 12,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 8,
@@ -708,7 +862,8 @@ class _GeneralReportViewState extends State<GeneralReportView> {
               const spacing = 10.0;
               final perRow = widget.isDesktop ? 2 : 1;
               final width =
-                  (constraints.maxWidth - spacing * (perRow - 1)) /
+                  (constraints.maxWidth -
+                      spacing * (perRow - 1)) /
                   perRow;
               return Wrap(
                 spacing: spacing,
@@ -753,7 +908,8 @@ class _GeneralReportViewState extends State<GeneralReportView> {
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
                   Row(
                     spacing: 8,
@@ -763,9 +919,14 @@ class _GeneralReportViewState extends State<GeneralReportView> {
                         height: 28,
                         decoration: BoxDecoration(
                           color: color.withAlpha(25),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius:
+                              BorderRadius.circular(6),
                         ),
-                        child: Icon(icon, size: 16, color: color),
+                        child: Icon(
+                          icon,
+                          size: 16,
+                          color: color,
+                        ),
                       ),
                       Expanded(
                         child: Text(
@@ -773,7 +934,11 @@ class _GeneralReportViewState extends State<GeneralReportView> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: theme.mobileTexts.b4.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
                             color: Colors.grey.shade600,
                             fontWeight: FontWeight.w500,
                           ),
@@ -789,7 +954,8 @@ class _GeneralReportViewState extends State<GeneralReportView> {
                       _money(amount),
                       key: ValueKey('$key-amount'),
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.h4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.h4.fontSize,
                         fontWeight: FontWeight.bold,
                         color:
                             negativeIsRed && amount < 0
@@ -803,7 +969,8 @@ class _GeneralReportViewState extends State<GeneralReportView> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       color: Colors.grey.shade500,
                     ),
                   ),
@@ -840,7 +1007,10 @@ class _GeneralReportViewState extends State<GeneralReportView> {
     if (flat || higherIsBetter == null) {
       color = Colors.grey.shade600;
     } else {
-      color = change.isUp == higherIsBetter ? _upColor : _downColor;
+      color =
+          change.isUp == higherIsBetter
+              ? _upColor
+              : _downColor;
     }
     return Padding(
       padding: const EdgeInsets.only(top: 4),
@@ -863,7 +1033,10 @@ class _GeneralReportViewState extends State<GeneralReportView> {
   // ---------------------------------------------------------------
 
   /// [profitVisible] as the trend was built with.
-  Widget _trendCard(ThemeProvider theme, bool profitVisible) {
+  Widget _trendCard(
+    ThemeProvider theme,
+    bool profitVisible,
+  ) {
     final trend = _trend;
     final points = trend.points;
     return Container(
@@ -918,24 +1091,33 @@ class _GeneralReportViewState extends State<GeneralReportView> {
                 ReportTrendSeries(
                   label: 'Revenue',
                   color: theme.lightModeColor.prColor300,
-                  values: [for (final p in points) p.revenue],
+                  values: [
+                    for (final p in points) p.revenue,
+                  ],
                 ),
                 if (profitVisible)
                   ReportTrendSeries(
                     label: 'Gross profit',
                     color: _upColor,
-                    values: [for (final p in points) p.grossProfit!],
+                    values: [
+                      for (final p in points)
+                        p.grossProfit!,
+                    ],
                   ),
                 ReportTrendSeries(
                   label: 'Expenses',
                   color: _expenseColor,
-                  values: [for (final p in points) p.expenses],
+                  values: [
+                    for (final p in points) p.expenses,
+                  ],
                 ),
                 if (profitVisible)
                   ReportTrendSeries(
                     label: 'Net profit',
                     color: _netColor,
-                    values: [for (final p in points) p.netProfit!],
+                    values: [
+                      for (final p in points) p.netProfit!,
+                    ],
                   ),
               ],
             ),

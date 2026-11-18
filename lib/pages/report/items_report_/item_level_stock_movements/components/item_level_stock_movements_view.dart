@@ -158,15 +158,39 @@ class _ItemLevelStockMovementsViewState
     });
 
     try {
+      final isAllTime =
+          _period == ItemHistoryPeriod.allTime;
+      final resolvedRange =
+          isAllTime
+              ? null
+              : ItemHistorySummaryBuilder.resolveDateRange(
+                period: _period,
+                businessNow: resolveBusinessDate(
+                  DateTime.now(),
+                ),
+                customRange: _customRange,
+              );
       if (refreshFromStore && mounted) {
         final refresh = RefreshFunctions(context);
         await refresh.refreshProducts(context);
         if (!mounted) return;
-        await returnItemHistoryProvider()
-            .getItemHistories();
+        await returnItemHistoryProvider().getItemHistories(
+          startDate: resolvedRange?.start,
+          endDate: resolvedRange?.end,
+          fetchAll: isAllTime,
+          forceRefresh: true,
+        );
       } else {
         await returnItemHistoryProvider()
             .getItemHistoriesOffline();
+        if (!isAllTime && resolvedRange != null) {
+          await returnItemHistoryProvider()
+              .getItemHistories(
+                startDate: resolvedRange.start,
+                endDate: resolvedRange.end,
+                forceRefresh: false,
+              );
+        }
       }
 
       _categories =
@@ -272,8 +296,12 @@ class _ItemLevelStockMovementsViewState
       currency: currencySymbol(context: context),
       manageProductions: _manageProductions,
       departmentsEnabled: _departmentsEnabled,
-      categoryNames: {for (final c in _categories) c.uuid: c.name},
-      departmentNames: {for (final d in _departments) d.uuid: d.name},
+      categoryNames: {
+        for (final c in _categories) c.uuid: c.name,
+      },
+      departmentNames: {
+        for (final d in _departments) d.uuid: d.name,
+      },
       sizeLabels: stockMovementsSizeLabels(_products),
     );
   }
@@ -318,6 +346,7 @@ class _ItemLevelStockMovementsViewState
           _page = 1;
           _recompute();
         });
+        _load(refreshFromStore: false);
       },
       rangeDate: (start, end) {
         if (start == null) return;
@@ -336,6 +365,7 @@ class _ItemLevelStockMovementsViewState
           _page = 1;
           _recompute();
         });
+        _load(refreshFromStore: false);
       },
     );
   }
@@ -627,7 +657,9 @@ class _ItemLevelStockMovementsViewState
                       _categoryDropdown(theme),
                       if (_departmentsEnabled)
                         _departmentDropdown(theme),
-                      ReportExportButton(buildSpec: _exportSpec),
+                      ReportExportButton(
+                        buildSpec: _exportSpec,
+                      ),
                       if (!widget.isDesktop)
                         IconButton(
                           tooltip:
@@ -719,6 +751,9 @@ class _ItemLevelStockMovementsViewState
                 _page = 1;
                 _recompute();
               });
+              if (val != ItemHistoryPeriod.allTime) {
+                _load(refreshFromStore: false);
+              }
             }
           },
         ),

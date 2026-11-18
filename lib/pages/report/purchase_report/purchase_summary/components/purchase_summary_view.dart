@@ -87,9 +87,10 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
       _error = null;
     });
     try {
-      await _env.load(
+      await _env.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuild();
       if (mounted) setState(() => _loading = false);
@@ -128,6 +129,9 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
         _error = e.toString();
       }
     });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   Future<void> _pushTable(

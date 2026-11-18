@@ -49,7 +49,8 @@ class _StorageReportAnalysisViewState
       StoragePerformanceMetric.transferredOut;
   StorageHistoryPeriod _period = StorageHistoryPeriod.today;
   DateTimeRange? _customRange;
-  int _distribTabIndex = 0; // 0 = Department, 1 = Quantity Type
+  int _distribTabIndex =
+      0; // 0 = Department, 1 = Quantity Type
 
   @override
   void initState() {
@@ -83,17 +84,44 @@ class _StorageReportAnalysisViewState
 
     try {
       final sId = shopId();
+      final isAllTime =
+          _period == StorageHistoryPeriod.allTime;
+      final resolvedRange =
+          isAllTime
+              ? null
+              : StorageHistorySummaryBuilder.resolveDateRange(
+                period: _period,
+                businessNow: resolveBusinessDate(
+                  DateTime.now(),
+                ),
+                customRange: _customRange,
+              );
       if (refreshFromStore && mounted) {
-        await RefreshFunctions(context).refreshProducts(context);
+        await RefreshFunctions(
+          context,
+        ).refreshProducts(context);
         await returnStorageProductProvider()
             .getStorageProducts(sId);
         await returnStorageItemHistoryProvider()
-            .getItemHistories();
+            .getItemHistories(
+              startDate: resolvedRange?.start,
+              endDate: resolvedRange?.end,
+              fetchAll: isAllTime,
+              forceRefresh: true,
+            );
       } else {
         await returnStorageProductProvider()
             .getStorageProductsOffline(sId);
         await returnStorageItemHistoryProvider()
             .getItemHistoriesOffline();
+        if (!isAllTime && resolvedRange != null) {
+          await returnStorageItemHistoryProvider()
+              .getItemHistories(
+                startDate: resolvedRange.start,
+                endDate: resolvedRange.end,
+                forceRefresh: false,
+              );
+        }
       }
 
       _departments = returnDepartmentProvider().departments;
@@ -139,10 +167,15 @@ class _StorageReportAnalysisViewState
           _period = StorageHistoryPeriod.custom;
           _customRange = DateTimeRange(start: d, end: d);
         });
+        _load(refreshFromStore: false);
       },
       rangeDate: (start, end) {
         if (start == null) return;
-        final s = DateTime(start.year, start.month, start.day);
+        final s = DateTime(
+          start.year,
+          start.month,
+          start.day,
+        );
         final e =
             end == null
                 ? s
@@ -151,11 +184,13 @@ class _StorageReportAnalysisViewState
           _period = StorageHistoryPeriod.custom;
           _customRange = DateTimeRange(start: s, end: e);
         });
+        _load(refreshFromStore: false);
       },
     );
   }
 
-  String _money(num v) => formatMoneyBig(amount: v, context: context);
+  String _money(num v) =>
+      formatMoneyBig(amount: v, context: context);
 
   /// One-way click-through to the main table, searched by name.
   void _openInMainTable(String name) {
@@ -163,7 +198,8 @@ class _StorageReportAnalysisViewState
       context,
       MaterialPageRoute(
         builder:
-            (context) => StorageReportMainPage(initialSearch: name),
+            (context) =>
+                StorageReportMainPage(initialSearch: name),
       ),
     ).then((_) {
       if (mounted) _load(refreshFromStore: false);
@@ -176,7 +212,8 @@ class _StorageReportAnalysisViewState
       context,
       MaterialPageRoute(
         builder:
-            (context) => StorageDetailsPage(productUuid: uuid),
+            (context) =>
+                StorageDetailsPage(productUuid: uuid),
       ),
     ).then((_) {
       if (mounted) _load(refreshFromStore: false);
@@ -188,7 +225,12 @@ class _StorageReportAnalysisViewState
     final theme = returnTheme(context);
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 252, 253, 255),
+      backgroundColor: const Color.fromARGB(
+        255,
+        252,
+        253,
+        255,
+      ),
       appBar: appBar(
         context: context,
         title: 'Storage Report Analysis',
@@ -196,7 +238,10 @@ class _StorageReportAnalysisViewState
           padding: const EdgeInsets.only(right: 10.0),
           child: IconButton(
             tooltip: 'Refresh Data',
-            icon: const Icon(Icons.refresh_rounded, size: 18),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              size: 18,
+            ),
             mouseCursor: SystemMouseCursors.click,
             onPressed:
                 _loading
@@ -207,7 +252,9 @@ class _StorageReportAnalysisViewState
       ),
       body:
           _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                child: CircularProgressIndicator(),
+              )
               : _error != null
               ? _buildErrorView(theme)
               : _buildContent(theme),
@@ -257,16 +304,19 @@ class _StorageReportAnalysisViewState
   /// The same figures [_buildContent] draws.
   ReportExportSpec _exportSpec() {
     final now = resolveBusinessDate(DateTime.now());
-    final records = StorageReportAnalysisBuilder.computePerformance(
-      rows: _rows,
-      storageProducts: _storageProducts,
-      histories: _histories,
-      period: _period,
-      businessNow: now,
-      customRange: _customRange,
-    );
+    final records =
+        StorageReportAnalysisBuilder.computePerformance(
+          rows: _rows,
+          storageProducts: _storageProducts,
+          histories: _histories,
+          period: _period,
+          businessNow: now,
+          customRange: _customRange,
+        );
     return storageAnalysisExportSpec(
-      summary: StorageReportAnalysisBuilder.buildSummary(_rows),
+      summary: StorageReportAnalysisBuilder.buildSummary(
+        _rows,
+      ),
       records: records,
       best3: StorageReportAnalysisBuilder.getBest3(
         records: records,
@@ -276,7 +326,9 @@ class _StorageReportAnalysisViewState
         records: records,
         metric: _metric,
       ),
-      idle: StorageReportAnalysisBuilder.getIdleItems(records),
+      idle: StorageReportAnalysisBuilder.getIdleItems(
+        records,
+      ),
       metric: _metric,
       departmentDist:
           StorageReportAnalysisBuilder.computeDepartmentDistribution(
@@ -287,17 +339,19 @@ class _StorageReportAnalysisViewState
           StorageReportAnalysisBuilder.computeQuantityTypeDistribution(
             _rows,
           ),
-      recentItems: StorageReportAnalysisBuilder.getNewlyCreatedItems(
-        _rows,
-        limit: 10,
-      ),
+      recentItems:
+          StorageReportAnalysisBuilder.getNewlyCreatedItems(
+            _rows,
+            limit: 10,
+          ),
       period: _period,
       customRange: _customRange,
-      resolvedRange: StorageHistorySummaryBuilder.resolveDateRange(
-        period: _period,
-        businessNow: now,
-        customRange: _customRange,
-      ),
+      resolvedRange:
+          StorageHistorySummaryBuilder.resolveDateRange(
+            period: _period,
+            businessNow: now,
+            customRange: _customRange,
+          ),
       canSeeCost: _canSeeCost,
       departmentsEnabled: _departmentsEnabled,
       currency: currencySymbol(context: context),
@@ -305,17 +359,19 @@ class _StorageReportAnalysisViewState
   }
 
   Widget _buildContent(ThemeProvider theme) {
-    final summary = StorageReportAnalysisBuilder.buildSummary(_rows);
+    final summary =
+        StorageReportAnalysisBuilder.buildSummary(_rows);
     final now = resolveBusinessDate(DateTime.now());
 
-    final records = StorageReportAnalysisBuilder.computePerformance(
-      rows: _rows,
-      storageProducts: _storageProducts,
-      histories: _histories,
-      period: _period,
-      businessNow: now,
-      customRange: _customRange,
-    );
+    final records =
+        StorageReportAnalysisBuilder.computePerformance(
+          rows: _rows,
+          storageProducts: _storageProducts,
+          histories: _histories,
+          period: _period,
+          businessNow: now,
+          customRange: _customRange,
+        );
     final best3 = StorageReportAnalysisBuilder.getBest3(
       records: records,
       metric: _metric,
@@ -324,7 +380,9 @@ class _StorageReportAnalysisViewState
       records: records,
       metric: _metric,
     );
-    final idle = StorageReportAnalysisBuilder.getIdleItems(records);
+    final idle = StorageReportAnalysisBuilder.getIdleItems(
+      records,
+    );
 
     final departmentDist =
         StorageReportAnalysisBuilder.computeDepartmentDistribution(
@@ -405,7 +463,10 @@ class _StorageReportAnalysisViewState
 
   Widget _buildPeriodSelector(ThemeProvider theme) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(6),
@@ -446,7 +507,8 @@ class _StorageReportAnalysisViewState
                       child: Text(
                         p.label,
                         style: TextStyle(
-                          fontSize: theme.mobileTexts.b3.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
                         ),
                       ),
                     );
@@ -460,6 +522,9 @@ class _StorageReportAnalysisViewState
                     _period = val;
                     _customRange = null;
                   });
+                  if (val != StorageHistoryPeriod.allTime) {
+                    _load(refreshFromStore: false);
+                  }
                 }
               },
             ),
@@ -486,9 +551,11 @@ class _StorageReportAnalysisViewState
                     Text(
                       '${formatDateTime(_customRange!.start)} - ${formatDateTime(_customRange!.end)}',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
-                        color: theme.lightModeColor.prColor300,
+                        color:
+                            theme.lightModeColor.prColor300,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -522,7 +589,11 @@ class _StorageReportAnalysisViewState
     );
   }
 
-  Widget _cardTitle(ThemeProvider theme, String title, String subtitle) {
+  Widget _cardTitle(
+    ThemeProvider theme,
+    String title,
+    String subtitle,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -592,7 +663,8 @@ class _StorageReportAnalysisViewState
       _buildKpiCard(
         theme: theme,
         title: 'Linked To Sales Items',
-        value: '${summary.linkedCount} of ${summary.totalDistinctItems}',
+        value:
+            '${summary.linkedCount} of ${summary.totalDistinctItems}',
         subtitle:
             '${summary.linkedSalesItemsCount} Sales Item${summary.linkedSalesItemsCount == 1 ? '' : 's'} Supplied',
         badgeText: '${summary.unlinkedCount} Unlinked',
@@ -605,7 +677,9 @@ class _StorageReportAnalysisViewState
         theme: theme,
         title: 'Stock In Storage',
         value: stockText,
-        tooltip: formatQuantitiesByUnit(summary.stockByPrimaryUnit),
+        tooltip: formatQuantitiesByUnit(
+          summary.stockByPrimaryUnit,
+        ),
         subtitle: 'In each item\'s primary unit',
         badgeText: '${summary.inStockCount} In Stock',
         badgeColor: const Color(0xFFD97706),
@@ -618,7 +692,8 @@ class _StorageReportAnalysisViewState
     if (widget.isDesktop) {
       return Row(
         spacing: 10,
-        children: cards.map((c) => Expanded(child: c)).toList(),
+        children:
+            cards.map((c) => Expanded(child: c)).toList(),
       );
     } else {
       return GridView.count(
@@ -651,7 +726,8 @@ class _StorageReportAnalysisViewState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               if (screenWidth(context) > mobileScreen)
                 Container(
@@ -661,7 +737,11 @@ class _StorageReportAnalysisViewState
                     color: iconBg,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Icon(icon, color: iconColor, size: 17),
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 17,
+                  ),
                 ),
               Flexible(
                 child: Container(
@@ -677,7 +757,8 @@ class _StorageReportAnalysisViewState
                     badgeText,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: badgeColor,
                     ),
@@ -709,7 +790,8 @@ class _StorageReportAnalysisViewState
                   child: Text(
                     value,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b1.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b1.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -742,7 +824,12 @@ class _StorageReportAnalysisViewState
     ThemeProvider theme,
     StorageReportAnalysisSummary summary,
   ) {
-    Widget stat(IconData icon, Color color, String label, String value) {
+    Widget stat(
+      IconData icon,
+      Color color,
+      String label,
+      String value,
+    ) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -768,7 +855,10 @@ class _StorageReportAnalysisViewState
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -791,7 +881,11 @@ class _StorageReportAnalysisViewState
             'Out of Stock: ',
             '${summary.outOfStockCount}',
           ),
-          Container(width: 1, height: 14, color: Colors.grey.shade300),
+          Container(
+            width: 1,
+            height: 14,
+            color: Colors.grey.shade300,
+          ),
           stat(
             Icons.straighten_rounded,
             Colors.blueGrey,
@@ -827,7 +921,10 @@ class _StorageReportAnalysisViewState
       least3: least3,
       idle: idle,
     );
-    final donutCard = _buildStockDonutCard(theme: theme, summary: summary);
+    final donutCard = _buildStockDonutCard(
+      theme: theme,
+      summary: summary,
+    );
 
     if (widget.isDesktop) {
       return Row(
@@ -869,35 +966,53 @@ class _StorageReportAnalysisViewState
                 'Most & least active storage items for ${_period.label}',
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade50,
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(
+                    color: Colors.grey.shade200,
+                  ),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: DropdownButtonHideUnderline(
-                  child: DropdownButton<StoragePerformanceMetric>(
+                  child: DropdownButton<
+                    StoragePerformanceMetric
+                  >(
                     value: _metric,
-                    icon: const Icon(Icons.arrow_drop_down, size: 16),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      size: 16,
+                    ),
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.w600,
-                      color: theme.lightModeColor.prColor300,
+                      color:
+                          theme.lightModeColor.prColor300,
                     ),
                     items:
-                        StoragePerformanceMetric.values.map((m) {
-                          return DropdownMenuItem(
-                            value: m,
-                            child: Text(
-                              m.label,
-                              style: TextStyle(
-                                fontSize: theme.mobileTexts.b4.fontSize,
+                        StoragePerformanceMetric.values.map(
+                          (m) {
+                            return DropdownMenuItem(
+                              value: m,
+                              child: Text(
+                                m.label,
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                ),
                               ),
-                            ),
-                          );
-                        }).toList(),
+                            );
+                          },
+                        ).toList(),
                     onChanged: (val) {
-                      if (val != null) setState(() => _metric = val);
+                      if (val != null)
+                        setState(() => _metric = val);
                     },
                   ),
                 ),
@@ -931,7 +1046,8 @@ class _StorageReportAnalysisViewState
                 );
               }
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 spacing: 10,
                 children: [
                   Expanded(child: bestWidget),
@@ -952,7 +1068,10 @@ class _StorageReportAnalysisViewState
               Expanded(
                 child: Text(
                   storageAnalysisIdleNote(records, idle),
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
               ),
             ],
@@ -981,7 +1100,8 @@ class _StorageReportAnalysisViewState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -991,7 +1111,8 @@ class _StorageReportAnalysisViewState
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -1011,7 +1132,8 @@ class _StorageReportAnalysisViewState
                   child: Text(
                     badgeText,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: badgeColor,
                     ),
@@ -1022,7 +1144,9 @@ class _StorageReportAnalysisViewState
           const SizedBox(height: 8),
           if (items.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+              ),
               child: Center(
                 child: Text(
                   'No storage items',
@@ -1038,9 +1162,14 @@ class _StorageReportAnalysisViewState
               Material(
                 color: Colors.transparent,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 4,
+                  ),
                   child: InkWell(
-                    onTap: () => _openInMainTable(items[idx].name),
+                    onTap:
+                        () => _openInMainTable(
+                          items[idx].name,
+                        ),
                     mouseCursor: SystemMouseCursors.click,
                     child: Row(
                       children: [
@@ -1055,7 +1184,11 @@ class _StorageReportAnalysisViewState
                           child: Text(
                             '${idx + 1}',
                             style: TextStyle(
-                              fontSize: theme.mobileTexts.b4.fontSize,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
                               fontWeight: FontWeight.bold,
                               color: badgeColor,
                             ),
@@ -1064,43 +1197,64 @@ class _StorageReportAnalysisViewState
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
                             children: [
                               Text(
                                 items[idx].name,
                                 style: TextStyle(
-                                  fontSize: theme.mobileTexts.b4.fontSize,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.w600,
                                   color: Colors.black87,
                                 ),
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                overflow:
+                                    TextOverflow.ellipsis,
                               ),
                               Text(
-                                items[idx].currentQuantity == null
+                                items[idx].currentQuantity ==
+                                        null
                                     ? 'In storage: —'
                                     : 'In storage: ${formatLargeNumberDouble(items[idx].currentQuantity!)} ${items[idx].primaryUnit}',
                                 style: TextStyle(
-                                  fontSize: theme.mobileTexts.b5.fontSize,
-                                  color: Colors.grey.shade500,
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b5
+                                          .fontSize,
+                                  color:
+                                      Colors.grey.shade500,
                                 ),
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                overflow:
+                                    TextOverflow.ellipsis,
                               ),
                             ],
                           ),
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          items[idx].formattedMetricValue(_metric),
+                          items[idx].formattedMetricValue(
+                            _metric,
+                          ),
                           style: TextStyle(
-                            fontSize: theme.mobileTexts.b4.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
                             fontWeight: FontWeight.bold,
                             color: badgeColor,
                           ),
                         ),
                         Icon(
-                          Icons.keyboard_arrow_right_outlined,
+                          Icons
+                              .keyboard_arrow_right_outlined,
                           size: 18,
                           color: Colors.grey.shade400,
                         ),
@@ -1119,19 +1273,33 @@ class _StorageReportAnalysisViewState
     required StorageReportAnalysisSummary summary,
   }) {
     final total = summary.totalDistinctItems;
-    final inPct = total > 0 ? summary.inStockCount / total * 100 : 0.0;
-    final outPct = total > 0 ? summary.outOfStockCount / total * 100 : 0.0;
-    final units = <String>{
-      ...summary.stockByPrimaryUnit.keys,
-      ...summary.quantityInSalesByUnit.keys,
-    }.toList()
-      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    final inPct =
+        total > 0
+            ? summary.inStockCount / total * 100
+            : 0.0;
+    final outPct =
+        total > 0
+            ? summary.outOfStockCount / total * 100
+            : 0.0;
+    final units =
+        <String>{
+            ...summary.stockByPrimaryUnit.keys,
+            ...summary.quantityInSalesByUnit.keys,
+          }.toList()
+          ..sort(
+            (a, b) =>
+                a.toLowerCase().compareTo(b.toLowerCase()),
+          );
 
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardTitle(theme, 'Stock Status', 'Storage items in and out of stock'),
+          _cardTitle(
+            theme,
+            'Stock Status',
+            'Storage items in and out of stock',
+          ),
           const SizedBox(height: 12),
           SizedBox(
             height: 150,
@@ -1156,15 +1324,25 @@ class _StorageReportAnalysisViewState
                             : [
                               if (summary.inStockCount > 0)
                                 PieChartSectionData(
-                                  color: const Color(0xFF16A34A),
-                                  value: summary.inStockCount.toDouble(),
+                                  color: const Color(
+                                    0xFF16A34A,
+                                  ),
+                                  value:
+                                      summary.inStockCount
+                                          .toDouble(),
                                   radius: 20,
                                   showTitle: false,
                                 ),
-                              if (summary.outOfStockCount > 0)
+                              if (summary.outOfStockCount >
+                                  0)
                                 PieChartSectionData(
-                                  color: const Color(0xFFDC2626),
-                                  value: summary.outOfStockCount.toDouble(),
+                                  color: const Color(
+                                    0xFFDC2626,
+                                  ),
+                                  value:
+                                      summary
+                                          .outOfStockCount
+                                          .toDouble(),
                                   radius: 20,
                                   showTitle: false,
                                 ),
@@ -1177,7 +1355,8 @@ class _StorageReportAnalysisViewState
                     Text(
                       '$total',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b1.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b1.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -1185,7 +1364,8 @@ class _StorageReportAnalysisViewState
                     Text(
                       'Items',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade500,
                       ),
                     ),
@@ -1223,14 +1403,17 @@ class _StorageReportAnalysisViewState
             const SizedBox(height: 6),
             for (final u in units)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 2,
+                ),
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
                         u,
                         style: TextStyle(
-                          fontSize: theme.mobileTexts.b4.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -1239,7 +1422,8 @@ class _StorageReportAnalysisViewState
                       'Storage ${formatLargeNumberDouble(summary.stockByPrimaryUnit[u] ?? 0)}'
                       '  •  Sales ${formatLargeNumberDouble(summary.quantityInSalesByUnit[u] ?? 0)}',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade700,
                       ),
                     ),
@@ -1263,7 +1447,10 @@ class _StorageReportAnalysisViewState
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
         ),
         const SizedBox(width: 6),
         Expanded(
@@ -1335,9 +1522,15 @@ class _StorageReportAnalysisViewState
       mouseCursor: SystemMouseCursors.click,
       borderRadius: BorderRadius.circular(4),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 4,
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color:
+              isSelected
+                  ? Colors.white
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(4),
           boxShadow:
               isSelected
@@ -1354,7 +1547,10 @@ class _StorageReportAnalysisViewState
           title,
           style: TextStyle(
             fontSize: theme.mobileTexts.b4.fontSize,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            fontWeight:
+                isSelected
+                    ? FontWeight.bold
+                    : FontWeight.w500,
             color:
                 isSelected
                     ? theme.lightModeColor.prColor300
@@ -1404,13 +1600,19 @@ class _StorageReportAnalysisViewState
                       _tabButton(
                         title: 'Departments',
                         isSelected: tab == 0,
-                        onTap: () => setState(() => _distribTabIndex = 0),
+                        onTap:
+                            () => setState(
+                              () => _distribTabIndex = 0,
+                            ),
                         theme: theme,
                       ),
                       _tabButton(
                         title: 'Quantity Type',
                         isSelected: tab == 1,
-                        onTap: () => setState(() => _distribTabIndex = 1),
+                        onTap:
+                            () => setState(
+                              () => _distribTabIndex = 1,
+                            ),
                         theme: theme,
                       ),
                     ],
@@ -1420,7 +1622,10 @@ class _StorageReportAnalysisViewState
           ),
           const SizedBox(height: 10),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 4,
+              vertical: 6,
+            ),
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
               borderRadius: BorderRadius.circular(5),
@@ -1432,7 +1637,8 @@ class _StorageReportAnalysisViewState
                   child: Text(
                     '#',
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade600,
                     ),
@@ -1440,9 +1646,12 @@ class _StorageReportAnalysisViewState
                 ),
                 Expanded(
                   child: Text(
-                    tab == 0 ? 'Department' : 'Quantity Type',
+                    tab == 0
+                        ? 'Department'
+                        : 'Quantity Type',
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade600,
                     ),
@@ -1454,7 +1663,8 @@ class _StorageReportAnalysisViewState
                     'Items',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade600,
                     ),
@@ -1466,7 +1676,8 @@ class _StorageReportAnalysisViewState
                     'Share',
                     textAlign: TextAlign.end,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade600,
                     ),
@@ -1477,7 +1688,10 @@ class _StorageReportAnalysisViewState
           ),
           for (final item in list)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              padding: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 4,
+              ),
               child: Row(
                 children: [
                   SizedBox(
@@ -1485,7 +1699,8 @@ class _StorageReportAnalysisViewState
                     child: Text(
                       '${item.index}',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade600,
                       ),
                     ),
@@ -1496,11 +1711,14 @@ class _StorageReportAnalysisViewState
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.w600,
                         color:
-                            item.key == storageAnalysisUnlinkedKey ||
-                                    item.key == storageAnalysisNoDepartmentKey
+                            item.key ==
+                                        storageAnalysisUnlinkedKey ||
+                                    item.key ==
+                                        storageAnalysisNoDepartmentKey
                                 ? Colors.grey.shade600
                                 : Colors.black87,
                       ),
@@ -1512,7 +1730,8 @@ class _StorageReportAnalysisViewState
                       '${item.itemCount}',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -1523,7 +1742,8 @@ class _StorageReportAnalysisViewState
                       '${item.percentage.toStringAsFixed(1)}%',
                       textAlign: TextAlign.end,
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade700,
                       ),
                     ),
@@ -1535,7 +1755,10 @@ class _StorageReportAnalysisViewState
             const SizedBox(height: 4),
             Text(
               storageAnalysisDepartmentFootnote,
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey.shade600,
+              ),
             ),
           ],
         ],
@@ -1552,7 +1775,8 @@ class _StorageReportAnalysisViewState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               _cardTitle(
                 theme,
@@ -1560,7 +1784,10 @@ class _StorageReportAnalysisViewState
                 'Latest additions to your storage',
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(4),
@@ -1579,7 +1806,9 @@ class _StorageReportAnalysisViewState
           const SizedBox(height: 10),
           if (recentItems.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+              ),
               child: Center(
                 child: Text(
                   'No storage items created yet',
@@ -1596,11 +1825,16 @@ class _StorageReportAnalysisViewState
               physics: const NeverScrollableScrollPhysics(),
               itemCount: recentItems.length,
               separatorBuilder:
-                  (_, __) => Divider(height: 1, color: Colors.grey.shade100),
+                  (_, __) => Divider(
+                    height: 1,
+                    color: Colors.grey.shade100,
+                  ),
               itemBuilder: (context, idx) {
                 final item = recentItems[idx];
                 final initial =
-                    item.name.isNotEmpty ? item.name[0].toUpperCase() : 'S';
+                    item.name.isNotEmpty
+                        ? item.name[0].toUpperCase()
+                        : 'S';
                 final inStock = (item.quantity ?? 0) > 0;
                 final stockColor =
                     inStock
@@ -1615,7 +1849,8 @@ class _StorageReportAnalysisViewState
                   child: InkWell(
                     borderRadius: BorderRadius.circular(6),
                     mouseCursor: SystemMouseCursors.click,
-                    onTap: () => _openStorageItem(item.uuid),
+                    onTap:
+                        () => _openStorageItem(item.uuid),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         vertical: 8,
@@ -1625,61 +1860,93 @@ class _StorageReportAnalysisViewState
                         children: [
                           CircleAvatar(
                             radius: 14,
-                            backgroundColor: theme.lightModeColor.prColor300
+                            backgroundColor: theme
+                                .lightModeColor
+                                .prColor300
                                 .withAlpha(25),
                             child: Text(
                               initial,
                               style: TextStyle(
-                                fontSize: theme.mobileTexts.b4.fontSize,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
                                 fontWeight: FontWeight.bold,
-                                color: theme.lightModeColor.prColor300,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor300,
                               ),
                             ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   item.name,
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  overflow:
+                                      TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontSize: theme.mobileTexts.b3.fontSize,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.w600,
                                   ),
                                 ),
                                 Text(
                                   '${item.createdAt != null ? formatDateTime(item.createdAt!) : 'Date not set'} • ${item.quantityTypeLabel}',
                                   style: TextStyle(
-                                    fontSize: theme.mobileTexts.b5.fontSize,
-                                    color: Colors.grey.shade500,
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b5
+                                            .fontSize,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade500,
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                             decoration: BoxDecoration(
-                              color: stockColor.withAlpha(20),
-                              borderRadius: BorderRadius.circular(4),
+                              color: stockColor.withAlpha(
+                                20,
+                              ),
+                              borderRadius:
+                                  BorderRadius.circular(4),
                             ),
                             child: Text(
                               stockLabel,
                               style: TextStyle(
-                                fontSize: theme.mobileTexts.b4.fontSize,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
                                 fontWeight: FontWeight.bold,
                                 color: stockColor,
                               ),
                             ),
                           ),
                           Icon(
-                            Icons.keyboard_arrow_right_outlined,
+                            Icons
+                                .keyboard_arrow_right_outlined,
                             size: 18,
                             color: Colors.grey.shade400,
                           ),

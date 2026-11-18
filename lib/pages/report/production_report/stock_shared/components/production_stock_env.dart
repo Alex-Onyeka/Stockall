@@ -91,6 +91,26 @@ class ProductionStockEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+              context,
+              refreshFromStore: refreshFromStore,
+              period: period,
+            )
+          : load(context, refreshFromStore: refreshFromStore);
+
   /// Changes whenever the source data or the user's scope does.
   final String Function() signature;
   final void Function(BuildContext context) listen;
@@ -130,6 +150,7 @@ class ProductionStockEnv {
     this.usages = _noUsages,
     required this.categoryNames,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -187,6 +208,69 @@ class ProductionStockEnv {
       );
     }
 
+    Future<void> loadPeriod(
+      BuildContext context, {
+      required bool refreshFromStore,
+      ReceiptsReportPeriod? period,
+    }) async {
+      final sid = shopSingle()?.shopId;
+      if (sid == null) return;
+      if (produced) {
+        final p = returnProductionItemsProvider();
+        if (refreshFromStore) {
+          await p.getProductionItems();
+        } else if (p.productionItemListMain.isEmpty) {
+          await p.getProductionItemsOffline(sid);
+        }
+        if (historyAllowed()) {
+          final h = returnProductionItemHistoryProvider();
+          if (refreshFromStore) {
+            await h.getProductionItemHistories();
+          } else if (h.productionItemHistories.isEmpty) {
+            await h.getProductionItemHistoriesOffline();
+          }
+        }
+        if (context.mounted) {
+          if (period != null) {
+            await production.loadWithPeriod(
+              context,
+              refreshFromStore: refreshFromStore,
+              period: period,
+            );
+          } else {
+            await production.load(context, refreshFromStore: refreshFromStore);
+          }
+        }
+      } else {
+        final m = returnMaterialsProvider();
+        if (refreshFromStore) {
+          await m.getMaterials();
+        } else if (m.materialListMain.isEmpty) {
+          await m.getMaterialsOffline(sid);
+        }
+        if (historyAllowed()) {
+          final h = returnMaterialsItemHistoryProvider();
+          if (refreshFromStore) {
+            await h.getMaterialsItemHistories();
+          } else if (h.materialsItemHistories.isEmpty) {
+            await h.getMaterialsItemHistoriesOffline();
+          }
+        }
+        // Usage records and the production records behind them.
+        if (context.mounted) {
+          if (period != null) {
+            await usage.loadWithPeriod(
+              context,
+              refreshFromStore: refreshFromStore,
+              period: period,
+            );
+          } else {
+            await usage.load(context, refreshFromStore: refreshFromStore);
+          }
+        }
+      }
+    }
+
     return ProductionStockEnv(
       kind: kind,
       departmentsEnabled: departmentsEnabled,
@@ -216,46 +300,21 @@ class ProductionStockEnv {
               c.uuid: c.name,
           },
       load: (context, {required refreshFromStore}) async {
-        final sid = shopSingle()?.shopId;
-        if (sid == null) return;
-        if (produced) {
-          final p = returnProductionItemsProvider();
-          if (refreshFromStore) {
-            await p.getProductionItems();
-          } else if (p.productionItemListMain.isEmpty) {
-            await p.getProductionItemsOffline(sid);
-          }
-          if (historyAllowed()) {
-            final h = returnProductionItemHistoryProvider();
-            if (refreshFromStore) {
-              await h.getProductionItemHistories();
-            } else if (h.productionItemHistories.isEmpty) {
-              await h.getProductionItemHistoriesOffline();
-            }
-          }
-          if (context.mounted) {
-            await production.load(context, refreshFromStore: refreshFromStore);
-          }
-        } else {
-          final m = returnMaterialsProvider();
-          if (refreshFromStore) {
-            await m.getMaterials();
-          } else if (m.materialListMain.isEmpty) {
-            await m.getMaterialsOffline(sid);
-          }
-          if (historyAllowed()) {
-            final h = returnMaterialsItemHistoryProvider();
-            if (refreshFromStore) {
-              await h.getMaterialsItemHistories();
-            } else if (h.materialsItemHistories.isEmpty) {
-              await h.getMaterialsItemHistoriesOffline();
-            }
-          }
-          // Usage records and the production records behind them.
-          if (context.mounted) {
-            await usage.load(context, refreshFromStore: refreshFromStore);
-          }
-        }
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
       },
       signature: () {
         final list = items();

@@ -9,7 +9,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/pages/report/components/report_period_loader.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/export/report_export_button.dart';
 import 'package:stockall/pages/report/components/export/report_export_spec.dart';
@@ -139,25 +139,11 @@ class _ItemSalesAnalysisViewState
       _error = null;
     });
     try {
-      final provider = returnReceiptProviderSingle();
-      if (refreshFromStore) {
-        await RefreshFunctions(
-          context,
-        ).refreshReceipts(context);
-      } else {
-        // Local (offline) reads, only when nothing is loaded yet.
-        final sid = shopSingle()?.shopId;
-        if (sid != null) {
-          if (provider.receipts.isEmpty) {
-            await provider.loadReceiptsOffline(sid);
-          }
-          if (provider.mainSales.isEmpty) {
-            await provider.loadProductSalesRecordOffline(
-              sid,
-            );
-          }
-        }
-      }
+      await loadReceiptsForReportPeriod(
+        context,
+        period: _period,
+        refreshFromStore: refreshFromStore,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -634,7 +620,12 @@ class _ItemSalesAnalysisViewState
           theme: theme,
           period: _period,
           enabled: _canPickDate,
-          onChanged: (p) => _apply(() => _period = p),
+          onChanged: (p) {
+            _apply(() => _period = p);
+            if (!p.isAllTime) {
+              _load(refreshFromStore: false);
+            }
+          },
         ),
         Padding(
           padding: const EdgeInsets.only(

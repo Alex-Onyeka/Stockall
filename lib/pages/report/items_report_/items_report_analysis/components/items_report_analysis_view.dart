@@ -74,11 +74,39 @@ class _ItemsReportAnalysisViewState
     });
 
     try {
+      final isAllTime =
+          _period == ItemAnalysisPeriod.allTime;
+      final resolvedRange =
+          isAllTime
+              ? null
+              : ItemsReportAnalysisBuilder.resolveDateRange(
+                period: _period,
+                businessNow: resolveBusinessDate(
+                  DateTime.now(),
+                ),
+                customRange: _customRange,
+              );
       if (refreshFromStore && mounted) {
         final refresh = RefreshFunctions(context);
         await refresh.refreshProducts(context);
         if (!mounted) return;
-        await refresh.refreshProductSalesRecord(context);
+        await refresh.refreshReceipts(
+          context,
+          startDate: resolvedRange?.start,
+          endDate: resolvedRange?.end,
+          fetchAll: isAllTime,
+          forceRefresh: true,
+        );
+      } else if (!isAllTime && resolvedRange != null) {
+        final sid = shopSingle()?.shopId;
+        if (sid != null) {
+          await returnReceiptProviderSingle().loadReceipts(
+            sid,
+            startDate: resolvedRange.start,
+            endDate: resolvedRange.end,
+            forceRefresh: false,
+          );
+        }
       }
 
       _categories =
@@ -117,6 +145,7 @@ class _ItemsReportAnalysisViewState
           _period = ItemAnalysisPeriod.custom;
           _customRange = DateTimeRange(start: d, end: d);
         });
+        _load(refreshFromStore: false);
       },
       rangeDate: (start, end) {
         if (start == null) return;
@@ -133,6 +162,7 @@ class _ItemsReportAnalysisViewState
           _period = ItemAnalysisPeriod.custom;
           _customRange = DateTimeRange(start: s, end: e);
         });
+        _load(refreshFromStore: false);
       },
     );
   }
@@ -155,7 +185,9 @@ class _ItemsReportAnalysisViewState
         );
     final currency = currencySymbol(context: context);
     return itemsAnalysisExportSpec(
-      summary: ItemsReportAnalysisBuilder.buildSummary(_rows),
+      summary: ItemsReportAnalysisBuilder.buildSummary(
+        _rows,
+      ),
       best3: ItemsReportAnalysisBuilder.getBest3(
         records: performanceRecords,
         metric: _metric,
@@ -175,10 +207,11 @@ class _ItemsReportAnalysisViewState
             rows: _rows,
             departments: _departments,
           ),
-      recentItems: ItemsReportAnalysisBuilder.getNewlyCreatedItems(
-        _rows,
-        limit: 10,
-      ),
+      recentItems:
+          ItemsReportAnalysisBuilder.getNewlyCreatedItems(
+            _rows,
+            limit: 10,
+          ),
       periodLabel: itemsAnalysisPeriodLabel(
         _period,
         _customRange,
@@ -491,6 +524,9 @@ class _ItemsReportAnalysisViewState
                     _period = val;
                     _customRange = null;
                   });
+                  if (val != ItemAnalysisPeriod.allTime) {
+                    _load(refreshFromStore: false);
+                  }
                 }
               },
             ),
