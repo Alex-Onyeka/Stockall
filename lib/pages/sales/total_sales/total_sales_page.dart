@@ -9,6 +9,7 @@ class TotalSalesPage extends StatefulWidget {
   final bool? turnOff;
   final String? customerUuid;
   final String? subStaffId;
+  final bool isMainTab;
   // final bool? isInvoice;
   const TotalSalesPage({
     super.key,
@@ -17,6 +18,7 @@ class TotalSalesPage extends StatefulWidget {
     this.subStaffId,
     // this.isInvoice,
     this.turnOff,
+    this.isMainTab = false,
   });
 
   @override
@@ -42,6 +44,7 @@ class _TotalSalesPageState extends State<TotalSalesPage> {
             id: widget.id,
             customerUuid: widget.customerUuid,
             subStaffId: widget.subStaffId,
+            turnOff: widget.turnOff,
             // isInvoice: isInvoice,
           );
         } else {
@@ -50,6 +53,7 @@ class _TotalSalesPageState extends State<TotalSalesPage> {
             turnOff: widget.turnOff,
             subStaffId: widget.subStaffId,
             id: widget.id,
+            isMainTab: widget.isMainTab,
             // isInvoice: isInvoice,
           );
         }

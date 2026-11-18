@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/sales/sales_page/platforms/sales_page_desktop.dart';
-import 'package:stockall/pages/sales/sales_page/platforms/sales_page_mobile.dart';
+import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 
 class SalesPage extends StatefulWidget {
   const SalesPage({super.key});
@@ -12,6 +10,16 @@ class SalesPage extends StatefulWidget {
 }
 
 class _SalesPageState extends State<SalesPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        returnNavProvider(context, listen: false).navigate(2);
+      }
+    });
+  }
+
   void clearDate() {
     returnReceiptProvider(
       context,
@@ -29,15 +37,7 @@ class _SalesPageState extends State<SalesPage> {
           listen: false,
         ).navigate(0);
       },
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < mobileScreen) {
-            return SalesPageMobile();
-          } else {
-            return SalesPageDesktop();
-          }
-        },
-      ),
+      child: TotalSalesPage(turnOff: true, isMainTab: true),
     );
   }
 }

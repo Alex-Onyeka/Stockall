@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/expenses/platforms/expenses_desktop.dart';
-import 'package:stockall/pages/expenses/platforms/expenses_moblie.dart';
+import 'package:stockall/pages/expenses/total_expenses/total_expenses.dart';
 
 class ExpensesPage extends StatefulWidget {
   final bool? turnOnBackNavButton;
@@ -35,17 +33,8 @@ class _ExpensesPageState extends State<ExpensesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < mobileScreen) {
-          return ExpensesMoblie(isMain: widget.isMain);
-        } else {
-          return ExpensesDesktop(
-            isMain: widget.isMain,
-            turnOnBackNavButton: widget.turnOnBackNavButton,
-          );
-        }
-      },
+    return TotalExpenses(
+      turnOff: widget.turnOnBackNavButton == false,
     );
   }
 }

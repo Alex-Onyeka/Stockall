@@ -19,12 +19,14 @@ class TotalSalesMobile extends StatefulWidget {
   final String? id;
   final String? customerUuid;
   final String? subStaffId;
+  final bool? turnOff;
   // final bool? isInvoice;
   const TotalSalesMobile({
     super.key,
     this.id,
     this.customerUuid,
     this.subStaffId,
+    this.turnOff,
     // this.isInvoice,
   });
 
@@ -77,6 +79,7 @@ class _TotalSalesMobileState
       },
       child: Scaffold(
         appBar: appBar(
+          turnOff: widget.turnOff,
           context: context,
           title:
               !returnInvoice ? 'All Sales' : 'All Invoices',
@@ -324,89 +327,130 @@ class _TotalSalesMobileState
                                     child: SingleChildScrollView(
                                       scrollDirection:
                                           Axis.horizontal,
-                                      child: Row(
-                                        spacing: 6,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-                                        children: [
-                                          ProductsFilterButton(
-                                            action: () {
-                                              returnReceiptProviderSingle()
-                                                  .selectPaymentMethod(
-                                                    0,
-                                                  );
-                                            },
-                                            currentSelected:
-                                                returnReceiptProvider(
-                                                  context,
-                                                ).paymentMethod,
-                                            number: 0,
-                                            title: 'All',
-                                            theme: theme,
-                                          ),
-                                          ProductsFilterButton(
-                                            action: () {
-                                              returnReceiptProviderSingle()
-                                                  .selectPaymentMethod(
-                                                    1,
-                                                  );
-                                            },
-                                            currentSelected:
-                                                returnReceiptProvider(
-                                                  context,
-                                                ).paymentMethod,
-                                            number: 1,
-                                            title: 'Cash',
-                                            theme: theme,
-                                          ),
-                                          ProductsFilterButton(
-                                            action: () {
-                                              returnReceiptProviderSingle()
-                                                  .selectPaymentMethod(
-                                                    2,
-                                                  );
-                                            },
-                                            currentSelected:
-                                                returnReceiptProvider(
-                                                  context,
-                                                ).paymentMethod,
-                                            number: 2,
-                                            title: 'Bank',
-                                            theme: theme,
-                                          ),
-                                          ProductsFilterButton(
-                                            currentSelected:
-                                                returnReceiptProvider(
-                                                  context,
-                                                ).paymentMethod,
-                                            action: () {
-                                              returnReceiptProviderSingle()
-                                                  .selectPaymentMethod(
-                                                    3,
-                                                  );
-                                            },
-                                            number: 3,
-                                            title: 'Split',
-                                            theme: theme,
-                                          ),
-                                          ProductsFilterButton(
-                                            currentSelected:
-                                                returnReceiptProvider(
-                                                  context,
-                                                ).paymentMethod,
-                                            action: () {
-                                              returnReceiptProviderSingle()
-                                                  .selectPaymentMethod(
-                                                    4,
-                                                  );
-                                            },
-                                            number: 4,
-                                            title:
-                                                'Account',
-                                            theme: theme,
-                                          ),
-                                        ],
+                                      child: Builder(
+                                        builder: (context) {
+                                          final customMethods =
+                                              returnShopProvider()
+                                                  .userShop()
+                                                  ?.customPaymentMethods;
+                                          final selected =
+                                              returnReceiptProvider(
+                                                context,
+                                              ).paymentMethod;
+                                          return Row(
+                                            spacing: 6,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              ProductsFilterButton(
+                                                action: () {
+                                                  returnReceiptProviderSingle()
+                                                      .selectPaymentMethod(
+                                                        0,
+                                                      );
+                                                },
+                                                currentSelected:
+                                                    selected,
+                                                number: 0,
+                                                title:
+                                                    'All',
+                                                theme:
+                                                    theme,
+                                              ),
+                                              ProductsFilterButton(
+                                                action: () {
+                                                  returnReceiptProviderSingle()
+                                                      .selectPaymentMethod(
+                                                        1,
+                                                      );
+                                                },
+                                                currentSelected:
+                                                    selected,
+                                                number: 1,
+                                                title:
+                                                    'Cash',
+                                                theme:
+                                                    theme,
+                                              ),
+                                              if (customMethods ==
+                                                      null ||
+                                                  customMethods
+                                                      .isEmpty)
+                                                ProductsFilterButton(
+                                                  action: () {
+                                                    returnReceiptProviderSingle()
+                                                        .selectPaymentMethod(
+                                                          2,
+                                                        );
+                                                  },
+                                                  currentSelected:
+                                                      selected,
+                                                  number: 2,
+                                                  title:
+                                                      'Bank',
+                                                  theme:
+                                                      theme,
+                                                )
+                                              else
+                                                for (
+                                                  var i = 0;
+                                                  i <
+                                                      customMethods
+                                                          .length;
+                                                  i++
+                                                )
+                                                  ProductsFilterButton(
+                                                    action: () {
+                                                      returnReceiptProviderSingle().selectPaymentMethod(
+                                                        5 + i,
+                                                        customMethodName:
+                                                            customMethods[i].displayName,
+                                                      );
+                                                    },
+                                                    currentSelected:
+                                                        selected,
+                                                    number:
+                                                        5 +
+                                                        i,
+                                                    title:
+                                                        customMethods[i].displayName,
+                                                    theme:
+                                                        theme,
+                                                  ),
+                                              ProductsFilterButton(
+                                                currentSelected:
+                                                    selected,
+                                                action: () {
+                                                  returnReceiptProviderSingle()
+                                                      .selectPaymentMethod(
+                                                        3,
+                                                      );
+                                                },
+                                                number: 3,
+                                                title:
+                                                    'Split',
+                                                theme:
+                                                    theme,
+                                              ),
+                                              ProductsFilterButton(
+                                                currentSelected:
+                                                    selected,
+                                                action: () {
+                                                  returnReceiptProviderSingle()
+                                                      .selectPaymentMethod(
+                                                        4,
+                                                      );
+                                                },
+                                                number: 4,
+                                                title:
+                                                    'Account',
+                                                theme:
+                                                    theme,
+                                              ),
+                                            ],
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
