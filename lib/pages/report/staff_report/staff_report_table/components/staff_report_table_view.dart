@@ -56,6 +56,26 @@ class StaffReportEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+              context,
+              refreshFromStore: refreshFromStore,
+              period: period,
+            )
+          : load(context, refreshFromStore: refreshFromStore);
+
   /// Changes whenever the source data, settings or the user's
   /// scope do.
   final String Function(BuildContext context) signature;
@@ -124,6 +144,7 @@ class StaffReportEnv {
     required this.access,
     required this.source,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -167,6 +188,139 @@ class StaffReportEnv {
       );
     }
 
+    Future<void> loadPeriod(
+      BuildContext context, {
+      required bool refreshFromStore,
+      ReceiptsReportPeriod? period,
+    }) async {
+      final sid = shopSingle()?.shopId;
+      if (sid == null) return;
+      final a = access(context);
+      final receipts = returnReceiptProviderSingle();
+      final expenses = returnExpensesProviderSingle();
+      final fetchAll = period?.isAllTime ?? false;
+      final startDate = period?.start;
+      final endDate = period?.end ?? period?.start;
+      if (refreshFromStore) {
+        final refresh = RefreshFunctions(context);
+        await refresh.refreshReceipts(
+          context,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        if (!context.mounted) return;
+        await refresh.refreshInvoices(
+          context,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        if (!context.mounted) return;
+        // Also refreshes the owner (getUserShops).
+        await refresh.refreshEmployees(context);
+        if (!context.mounted) return;
+        if (a.showExpenses) {
+          await refresh.refreshExpenses(
+            context,
+            startDate: startDate,
+            endDate: endDate,
+            fetchAll: fetchAll,
+            forceRefresh: true,
+          );
+          if (!context.mounted) return;
+        }
+        if (a.showOrders) {
+          await returnOrdersProvider().loadOrders(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            fetchAll: fetchAll,
+            forceRefresh: true,
+          );
+        }
+        if (!context.mounted) return;
+        if (a.showPurchases) {
+          if (period != null) {
+            await purchaseEnv.loadWithPeriod(
+              context,
+              refreshFromStore: true,
+              period: period,
+            );
+          } else {
+            await purchaseEnv.load(context, refreshFromStore: true);
+          }
+        }
+        return;
+      }
+      // Local (offline) reads, only when nothing is loaded yet.
+      final users = returnUserProviderSingle();
+      if (users.usersMain.isEmpty) {
+        await users.fetchUsersByShopOffline();
+      }
+      if (receipts.receipts.isEmpty) {
+        await receipts.loadReceiptsOffline(sid);
+      }
+      if (receipts.mainSales.isEmpty) {
+        await receipts.loadProductSalesRecordOffline(sid);
+      }
+      if (returnInvoicesProvider().invoicesMain.isEmpty) {
+        await returnInvoicesProvider().loadInvoicesOffline(sid);
+      }
+      if (a.showOrders && returnOrdersProvider().orders.isEmpty) {
+        await returnOrdersProvider().loadOrdersOffline(sid);
+      }
+      if (a.showPurchases && context.mounted) {
+        if (period != null) {
+          await purchaseEnv.loadWithPeriod(
+            context,
+            refreshFromStore: false,
+            period: period,
+          );
+        } else {
+          await purchaseEnv.load(context, refreshFromStore: false);
+        }
+      }
+      if (a.showExpenses && expenses.expensesMain.isEmpty) {
+        await expenses.getExpensesOffline(sid);
+      }
+      if (returnCustomersSingle().customers.isEmpty) {
+        await returnCustomersSingle().fetchCustomersOffline();
+      }
+      if (period != null && !period.isAllTime) {
+        await receipts.loadReceipts(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+        await returnInvoicesProvider().loadInvoices(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+        if (a.showExpenses) {
+          await expenses.getExpenses(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
+        }
+        if (a.showOrders) {
+          await returnOrdersProvider().loadOrders(
+            sid,
+            startDate: startDate,
+            endDate: endDate,
+            forceRefresh: false,
+          );
+        }
+      }
+    }
+
     return StaffReportEnv(
       access: access,
       source: () {
@@ -192,57 +346,21 @@ class StaffReportEnv {
         );
       },
       load: (context, {required refreshFromStore}) async {
-        final sid = shopSingle()?.shopId;
-        if (sid == null) return;
-        final a = access(context);
-        final receipts = returnReceiptProviderSingle();
-        final expenses = returnExpensesProviderSingle();
-        if (refreshFromStore) {
-          final refresh = RefreshFunctions(context);
-          await refresh.refreshReceipts(context);
-          if (!context.mounted) return;
-          await refresh.refreshInvoices(context);
-          if (!context.mounted) return;
-          // Also refreshes the owner (getUserShops).
-          await refresh.refreshEmployees(context);
-          if (!context.mounted) return;
-          if (a.showExpenses) {
-            await refresh.refreshExpenses(context);
-            if (!context.mounted) return;
-          }
-          if (a.showOrders) await returnOrdersProvider().loadOrders(sid);
-          if (!context.mounted) return;
-          if (a.showPurchases) {
-            await purchaseEnv.load(context, refreshFromStore: true);
-          }
-          return;
-        }
-        // Local (offline) reads, only when nothing is loaded yet.
-        final users = returnUserProviderSingle();
-        if (users.usersMain.isEmpty) {
-          await users.fetchUsersByShopOffline();
-        }
-        if (receipts.receipts.isEmpty) {
-          await receipts.loadReceiptsOffline(sid);
-        }
-        if (receipts.mainSales.isEmpty) {
-          await receipts.loadProductSalesRecordOffline(sid);
-        }
-        if (returnInvoicesProvider().invoicesMain.isEmpty) {
-          await returnInvoicesProvider().loadInvoicesOffline(sid);
-        }
-        if (a.showOrders && returnOrdersProvider().orders.isEmpty) {
-          await returnOrdersProvider().loadOrdersOffline(sid);
-        }
-        if (a.showPurchases && context.mounted) {
-          await purchaseEnv.load(context, refreshFromStore: false);
-        }
-        if (a.showExpenses && expenses.expensesMain.isEmpty) {
-          await expenses.getExpensesOffline(sid);
-        }
-        if (returnCustomersSingle().customers.isEmpty) {
-          await returnCustomersSingle().fetchCustomersOffline();
-        }
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
       },
       signature: (context) {
         int latest(Iterable<DateTime?> times) {
@@ -503,7 +621,11 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       if (!mounted) return;
       _rebuildBase();
       _recompute();
@@ -604,10 +726,15 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
     _apply(_filters.clearAll);
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() {
-    _period = p;
-    _rebuildRows();
-  });
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() {
+      _period = p;
+      _rebuildRows();
+    });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   Future<void> _openAnalysis(StaffReportRow row) async {
     await _env.openAnalysis(context, row, _period);

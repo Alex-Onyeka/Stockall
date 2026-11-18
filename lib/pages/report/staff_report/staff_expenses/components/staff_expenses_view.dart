@@ -129,7 +129,11 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       if (!mounted) return;
       _rebuildBase();
       _recompute();
@@ -241,10 +245,15 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
     });
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() {
-    _period = p;
-    _rebuildStaff();
-  });
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() {
+      _period = p;
+      _rebuildStaff();
+    });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   Future<void> _openExpense(StaffExpenseRow row) async {
     await _env.openExpense(context, row.expense);

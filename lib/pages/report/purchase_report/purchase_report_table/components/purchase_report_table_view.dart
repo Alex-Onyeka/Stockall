@@ -49,6 +49,26 @@ class PurchaseReportEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+              context,
+              refreshFromStore: refreshFromStore,
+              period: period,
+            )
+          : load(context, refreshFromStore: refreshFromStore);
+
   /// Changes whenever the source data or the user's scope does.
   final String Function() signature;
 
@@ -78,6 +98,7 @@ class PurchaseReportEnv {
     required this.supplierNames,
     required this.pendingDeletedUuids,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -96,6 +117,42 @@ class PurchaseReportEnv {
             .toSet();
       } catch (_) {
         return const {};
+      }
+    }
+
+    Future<void> loadPeriod(
+      BuildContext context, {
+      required bool refreshFromStore,
+      ReceiptsReportPeriod? period,
+    }) async {
+      final sid = shopSingle()?.shopId;
+      if (sid == null) return;
+      final provider = returnPurchaseProvider();
+      final fetchAll = period?.isAllTime ?? false;
+      final startDate = period?.start;
+      final endDate = period?.end ?? period?.start;
+      if (refreshFromStore) {
+        await provider.loadPurchases(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        await returnSuppliersProvider().fetchSuppliers(sid);
+        return;
+      }
+      // Local (offline) reads, only when nothing is loaded yet.
+      if (provider.purchases.isEmpty) {
+        await provider.loadPurchasesOffline();
+      }
+      if (period != null && !period.isAllTime) {
+        await provider.loadPurchases(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
       }
     }
 
@@ -138,18 +195,21 @@ class PurchaseReportEnv {
       },
       pendingDeletedUuids: pendingDeleted,
       load: (context, {required refreshFromStore}) async {
-        final sid = shopSingle()?.shopId;
-        if (sid == null) return;
-        final provider = returnPurchaseProvider();
-        if (refreshFromStore) {
-          await provider.loadPurchases(sid);
-          await returnSuppliersProvider().fetchSuppliers(sid);
-          return;
-        }
-        // Local (offline) reads, only when nothing is loaded yet.
-        if (provider.purchases.isEmpty) {
-          await provider.loadPurchasesOffline();
-        }
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
       },
       signature: () {
         final purchases = returnPurchaseProvider().purchases;
@@ -344,9 +404,10 @@ class _PurchaseReportTableViewState
       _error = null;
     });
     try {
-      await _env.load(
+      await _env.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuildBase();
       _recompute();
@@ -493,8 +554,12 @@ class _PurchaseReportTableViewState
     }
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) =>
-      _apply(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   /// Clears a range's fields once its filter was removed (chip).
   void _applyAndSyncFields(VoidCallback change) {

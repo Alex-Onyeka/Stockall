@@ -25,7 +25,12 @@ class _Slice {
   final int count;
   final Color color;
 
-  const _Slice(this.status, this.label, this.count, this.color);
+  const _Slice(
+    this.status,
+    this.label,
+    this.count,
+    this.color,
+  );
 }
 
 /// One breakdown table row, from a group or a status.
@@ -65,7 +70,14 @@ class _BRow {
   });
 }
 
-enum _Tab { customers, staff, departments, subStaff, status, channel }
+enum _Tab {
+  customers,
+  staff,
+  departments,
+  subStaff,
+  status,
+  channel,
+}
 
 extension on _Tab {
   String get label {
@@ -104,10 +116,12 @@ class OrderSummaryView extends StatefulWidget {
   });
 
   @override
-  State<OrderSummaryView> createState() => _OrderSummaryViewState();
+  State<OrderSummaryView> createState() =>
+      _OrderSummaryViewState();
 }
 
-class _OrderSummaryViewState extends State<OrderSummaryView> {
+class _OrderSummaryViewState
+    extends State<OrderSummaryView> {
   late final OrderReportTableEnv _env;
   late ReceiptsReportPeriod _period;
   _Tab _tab = _Tab.customers;
@@ -130,7 +144,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
     super.initState();
     _env = widget.env ?? OrderReportTableEnv.live();
     _period =
-        widget.initialPeriod ?? ReceiptsReportPeriod.today();
+        widget.initialPeriod ??
+        ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
     });
@@ -144,15 +159,18 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
   bool get _subStaffEnabled => _env.subStaffEnabled();
   bool get _canSeeCost => _env.canSeeCost();
 
-  Future<void> _load({required bool refreshFromStore}) async {
+  Future<void> _load({
+    required bool refreshFromStore,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      await _env.load(
+      await _env.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuild();
       if (mounted) setState(() => _loading = false);
@@ -192,6 +210,9 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
         _error = e.toString();
       }
     });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   Future<void> _pushTable(
@@ -211,7 +232,9 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
     );
   }
 
-  Future<void> _openTable(OrderReportFilters filters) async {
+  Future<void> _openTable(
+    OrderReportFilters filters,
+  ) async {
     final open = _env.openTable ?? _pushTable;
     await open(context, filters, _period);
     // Picks up deliveries or edits made from the table.
@@ -227,9 +250,13 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
     }
   }
 
-  void _openStatus(OrderDeliveryStatus status) => _openTable(
-    OrderSummaryBuilder.filtersForStatus(base: _base, status: status),
-  );
+  void _openStatus(OrderDeliveryStatus status) =>
+      _openTable(
+        OrderSummaryBuilder.filtersForStatus(
+          base: _base,
+          status: status,
+        ),
+      );
 
   // ---------------------------------------------------------------
   // formatting
@@ -254,7 +281,9 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
   Color? _signColor(ThemeProvider theme, double v) =>
       v > 0
           ? Colors.green.shade700
-          : (v < 0 ? theme.lightModeColor.errorColor200 : null);
+          : (v < 0
+              ? theme.lightModeColor.errorColor200
+              : null);
 
   BoxDecoration get _card => BoxDecoration(
     color: Colors.white,
@@ -269,7 +298,11 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
     ],
   );
 
-  Widget _title(ThemeProvider theme, String text, String sub) {
+  Widget _title(
+    ThemeProvider theme,
+    String text,
+    String sub,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -318,7 +351,12 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
     }
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 252, 253, 255),
+      backgroundColor: const Color.fromARGB(
+        255,
+        252,
+        253,
+        255,
+      ),
       appBar: appBar(
         context: context,
         title: 'Order Summary and Analysis',
@@ -342,11 +380,15 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
                     Text(
                       'Refresh',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.refresh_rounded, size: 18),
+                    const Icon(
+                      Icons.refresh_rounded,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -360,7 +402,9 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
 
   Widget _body(ThemeProvider theme) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     final result = _result;
     if (_error != null || result == null) {
@@ -382,7 +426,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
               ),
             ),
             OutlinedButton.icon(
-              onPressed: () => _load(refreshFromStore: false),
+              onPressed:
+                  () => _load(refreshFromStore: false),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Try again'),
             ),
@@ -390,7 +435,9 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
         ),
       );
     }
-    final gap = SizedBox(height: widget.isDesktop ? 16 : 12);
+    final gap = SizedBox(
+      height: widget.isDesktop ? 16 : 12,
+    );
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: widget.isDesktop ? 20 : 12,
@@ -416,7 +463,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
               ],
             ),
           ),
-          if (orderReportNotes(period: _period).isNotEmpty) _note(),
+          if (orderReportNotes(period: _period).isNotEmpty)
+            _note(),
           gap,
           _kpis(theme, result.stats),
           gap,
@@ -528,8 +576,10 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
         _kpi(
           theme,
           id: 'profit',
-          title: s.profitIsEstimate ? 'Est. Profit' : 'Profit',
-          value: s.profit == null ? 'N/A' : _money(s.profit!),
+          title:
+              s.profitIsEstimate ? 'Est. Profit' : 'Profit',
+          value:
+              s.profit == null ? 'N/A' : _money(s.profit!),
           subtitle:
               s.margin == null
                   ? 'No cost price on the items'
@@ -537,7 +587,9 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
           icon: Icons.trending_up_rounded,
           color: const Color(0xFF16A34A),
           valueColor:
-              s.profit == null ? null : _signColor(theme, s.profit!),
+              s.profit == null
+                  ? null
+                  : _signColor(theme, s.profit!),
           tooltip:
               s.profitIsEstimate
                   ? 'Estimated until every order is Fully Delivered'
@@ -566,13 +618,15 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
         const spacing = 10.0;
         final perRow = widget.isDesktop ? 4 : 2;
         final width =
-            (constraints.maxWidth - spacing * (perRow - 1)) /
+            (constraints.maxWidth -
+                spacing * (perRow - 1)) /
             perRow;
         return Wrap(
           spacing: spacing,
           runSpacing: spacing,
           children: [
-            for (final c in cards) SizedBox(width: width, child: c),
+            for (final c in cards)
+              SizedBox(width: width, child: c),
           ],
         );
       },
@@ -619,7 +673,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       color: Colors.grey.shade600,
                       fontWeight: FontWeight.w500,
                     ),
@@ -663,7 +718,10 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
   // donut + top customers
   // ---------------------------------------------------------------
 
-  Widget _middle(ThemeProvider theme, OrderSummaryResult result) {
+  Widget _middle(
+    ThemeProvider theme,
+    OrderSummaryResult result,
+  ) {
     final donut = _donut(theme, result.stats);
     final top = _topCustomers(theme, result);
     if (widget.isDesktop) {
@@ -702,7 +760,12 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
         _undeliveredColor,
       ),
       if (s.unavailable > 0)
-        _Slice(null, 'Unknown', s.unavailable, _unknownColor),
+        _Slice(
+          null,
+          'Unknown',
+          s.unavailable,
+          _unknownColor,
+        ),
     ];
     final shown = all.where((e) => e.count > 0).toList();
     final total = s.orderCount;
@@ -737,9 +800,11 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
                                 ?.touchedSection
                                 ?.touchedSectionIndex ??
                             -1;
-                        if (i < 0 || i >= shown.length) return;
+                        if (i < 0 || i >= shown.length)
+                          return;
                         final status = shown[i].status;
-                        if (status != null) _openStatus(status);
+                        if (status != null)
+                          _openStatus(status);
                       },
                     ),
                     sections:
@@ -769,7 +834,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
                     Text(
                       '$total',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b1.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b1.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -777,7 +843,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
                     Text(
                       'Orders',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade500,
                       ),
                     ),
@@ -799,7 +866,10 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
       key: ValueKey(
         'order-status-legend-${e.status?.name ?? 'unknown'}',
       ),
-      onTap: e.status == null ? null : () => _openStatus(e.status!),
+      onTap:
+          e.status == null
+              ? null
+              : () => _openStatus(e.status!),
       borderRadius: BorderRadius.circular(4),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -936,14 +1006,16 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
             ),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
                   Text(
                     g.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -953,7 +1025,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       color: Colors.grey.shade600,
                     ),
                   ),
@@ -1050,12 +1123,20 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
       case _Tab.customers:
         return [
           for (final g in r.customers)
-            _groupRow('customer', OrderSummaryDimension.customer, g),
+            _groupRow(
+              'customer',
+              OrderSummaryDimension.customer,
+              g,
+            ),
         ];
       case _Tab.staff:
         return [
           for (final g in r.staff)
-            _groupRow('staff', OrderSummaryDimension.staff, g),
+            _groupRow(
+              'staff',
+              OrderSummaryDimension.staff,
+              g,
+            ),
         ];
       case _Tab.departments:
         return [
@@ -1069,22 +1150,35 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
       case _Tab.subStaff:
         return [
           for (final g in r.subStaff)
-            _groupRow('substaff', OrderSummaryDimension.subStaff, g),
+            _groupRow(
+              'substaff',
+              OrderSummaryDimension.subStaff,
+              g,
+            ),
         ];
       case _Tab.channel:
         return [
           for (final g in r.channels)
-            _groupRow('channel', OrderSummaryDimension.channel, g),
+            _groupRow(
+              'channel',
+              OrderSummaryDimension.channel,
+              g,
+            ),
         ];
       case _Tab.status:
         final unknown =
-            r.rows.where((row) => row.status == null).toList();
+            r.rows
+                .where((row) => row.status == null)
+                .toList();
         return [
-          for (final s in OrderDeliveryStatus.values.reversed)
+          for (final s
+              in OrderDeliveryStatus.values.reversed)
             _statusRow(
               s.name,
               s.label,
-              r.rows.where((row) => row.status == s).toList(),
+              r.rows
+                  .where((row) => row.status == s)
+                  .toList(),
               OrderSummaryBuilder.filtersForStatus(
                 base: _base,
                 status: s,
@@ -1104,7 +1198,10 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
     }
   }
 
-  Widget _breakdown(ThemeProvider theme, OrderSummaryResult result) {
+  Widget _breakdown(
+    ThemeProvider theme,
+    OrderSummaryResult result,
+  ) {
     final tabs = _tabs;
     final tab = tabs.contains(_tab) ? _tab : tabs.first;
     final rows = _rowsFor(tab, result);
@@ -1123,34 +1220,51 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
       if (showLast) (label: 'Last order', width: 130),
     ];
 
-    Widget cell(double width, Widget child, {bool start = false}) {
+    Widget cell(
+      double width,
+      Widget child, {
+      bool start = false,
+    }) {
       return SizedBox(
         width: width,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+          ),
           child: Align(
             alignment:
-                start ? Alignment.centerLeft : Alignment.center,
+                start
+                    ? Alignment.centerLeft
+                    : Alignment.center,
             child: child,
           ),
         ),
       );
     }
 
-    Widget txt(String s, {bool bold = false, Color? color}) => Text(
+    Widget txt(
+      String s, {
+      bool bold = false,
+      Color? color,
+    }) => Text(
       s,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontSize: theme.mobileTexts.b3.fontSize,
-        fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+        fontWeight:
+            bold ? FontWeight.bold : FontWeight.w500,
         color: color ?? Colors.black87,
       ),
     );
 
     Widget rowWidget(_BRow r, int i) {
       final values = <Widget>[
-        txt(r.label, bold: true, color: r.muted ? Colors.grey : null),
+        txt(
+          r.label,
+          bold: true,
+          color: r.muted ? Colors.grey : null,
+        ),
         txt('${r.count}'),
         txt(_money(r.total), bold: true),
         txt(_money(r.delivered)),
@@ -1177,7 +1291,8 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
       final content = Container(
         height: 46,
         decoration: BoxDecoration(
-          color: i.isEven ? Colors.white : Colors.grey.shade50,
+          color:
+              i.isEven ? Colors.white : Colors.grey.shade50,
           border: Border(
             bottom: BorderSide(color: Colors.grey.shade100),
           ),
@@ -1232,23 +1347,35 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
                     children: [
                       for (final t in tabs)
                         ChoiceChip(
-                          key: ValueKey('order-tab-${t.name}'),
+                          key: ValueKey(
+                            'order-tab-${t.name}',
+                          ),
                           label: Text(t.label),
                           selected: t == tab,
                           onSelected:
-                              (_) => setState(() => _tab = t),
+                              (_) =>
+                                  setState(() => _tab = t),
                           selectedColor:
-                              theme.lightModeColor.prColor50,
-                          backgroundColor: Colors.grey.shade100,
+                              theme
+                                  .lightModeColor
+                                  .prColor50,
+                          backgroundColor:
+                              Colors.grey.shade100,
                           labelStyle: TextStyle(
-                            fontSize: theme.mobileTexts.b4.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
                             fontWeight:
                                 t == tab
                                     ? FontWeight.bold
                                     : FontWeight.w500,
                             color:
                                 t == tab
-                                    ? theme.lightModeColor.prColor300
+                                    ? theme
+                                        .lightModeColor
+                                        .prColor300
                                     : Colors.grey.shade700,
                           ),
                         ),
@@ -1276,16 +1403,20 @@ class _OrderSummaryViewState extends State<OrderSummaryView> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
                   Container(
                     height: 44,
-                    color: theme.lightModeColor.prColor300.withAlpha(
-                      22,
-                    ),
+                    color: theme.lightModeColor.prColor300
+                        .withAlpha(22),
                     child: Row(
                       children: [
-                        for (var c = 0; c < cols.length; c++)
+                        for (
+                          var c = 0;
+                          c < cols.length;
+                          c++
+                        )
                           cell(
                             cols[c].width,
                             txt(cols[c].label, bold: true),

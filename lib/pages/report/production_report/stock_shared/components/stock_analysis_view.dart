@@ -76,7 +76,11 @@ class _StockAnalysisViewState extends State<StockAnalysisView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuild();
       if (mounted) setState(() => _loading = false);
     } catch (e) {
@@ -145,6 +149,9 @@ class _StockAnalysisViewState extends State<StockAnalysisView> {
         _error = e.toString();
       }
     });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   List<ProductionStockAnalysisTab> get _tabs => productionStockAnalysisTabs(

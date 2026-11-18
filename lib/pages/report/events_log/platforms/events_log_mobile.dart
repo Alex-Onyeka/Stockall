@@ -193,7 +193,7 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
                         icon: Icons.clear,
                         altAction: () async {
                           await returnEventsLogProvider()
-                              .getEventLogs();
+                              .getEventLogs(forceRefresh: true);
                         },
                         altActionText: 'Refresh',
                         altIcon: Icons.refresh,
@@ -211,7 +211,7 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
                             child: RefreshIndicator(
                               onRefresh: () async {
                                 await returnEventsLogProvider()
-                                    .getEventLogs();
+                                    .getEventLogs(forceRefresh: true);
                               },
                               backgroundColor: Colors.white,
                               color:

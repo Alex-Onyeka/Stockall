@@ -185,7 +185,11 @@ class _CustomerLedgerTableViewState extends State<CustomerLedgerTableView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -298,7 +302,12 @@ class _CustomerLedgerTableViewState extends State<CustomerLedgerTableView> {
     _apply(_filters.clearAll);
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   /// Runs a navigation hook, then rebuilds: whatever was changed
   /// on the page that was opened shows here.

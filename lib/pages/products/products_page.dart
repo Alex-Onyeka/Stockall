@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/platforms/product_page_desktop.dart';
-import 'package:stockall/pages/products/platforms/product_page_mobile.dart';
+import 'package:stockall/pages/products/total_products/total_products_page.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -15,16 +13,11 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   if (mounted) {
-    //     await returnNavProvider(
-    //       context,
-    //       listen: false,
-    //     ).validate(context);
-
-    //     setState(() {});
-    //   }
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        returnNavProvider(context, listen: false).navigate(1);
+      }
+    });
   }
 
   @override
@@ -32,20 +25,21 @@ class _ProductsPageState extends State<ProductsPage> {
     var theme = returnTheme(context);
     return SafeArea(
       child: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        onTap:
+            () =>
+                FocusManager.instance.primaryFocus
+                    ?.unfocus(),
         child: PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, result) {
-            returnNavProvider(context, listen: false).navigate(0);
+            returnNavProvider(
+              context,
+              listen: false,
+            ).navigate(0);
           },
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth < mobileScreen) {
-                return ProductPageMobile(theme: theme);
-              } else {
-                return ProductPageDesktop(theme: theme);
-              }
-            },
+          child: TotalProductsPage(
+            theme: theme,
+            isMainTab: true,
           ),
         ),
       ),

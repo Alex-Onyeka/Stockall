@@ -35,13 +35,16 @@ class ProductionSummaryView extends StatefulWidget {
   });
 
   @override
-  State<ProductionSummaryView> createState() => _ProductionSummaryViewState();
+  State<ProductionSummaryView> createState() =>
+      _ProductionSummaryViewState();
 }
 
-class _ProductionSummaryViewState extends State<ProductionSummaryView> {
+class _ProductionSummaryViewState
+    extends State<ProductionSummaryView> {
   late final ProductionRecordsEnv _env;
   late ReceiptsReportPeriod _period;
-  ProductionBreakdownTab _tab = ProductionBreakdownTab.outputItems;
+  ProductionBreakdownTab _tab =
+      ProductionBreakdownTab.outputItems;
 
   /// Null: the built order.
   ProductionBreakdownField? _sortField;
@@ -53,7 +56,8 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
   String _signature = '';
 
   /// The summary has no filters of its own.
-  final ProductionRecordsFilters _base = ProductionRecordsFilters();
+  final ProductionRecordsFilters _base =
+      ProductionRecordsFilters();
 
   static const Color _recordedColor = Color(0xFF2563EB);
   static const Color _materialColor = Color(0xFF059669);
@@ -62,7 +66,9 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
   void initState() {
     super.initState();
     _env = widget.env ?? ProductionRecordsEnv.live();
-    _period = widget.initialPeriod ?? ReceiptsReportPeriod.today();
+    _period =
+        widget.initialPeriod ??
+        ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: false);
     });
@@ -76,13 +82,19 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
   bool get _canSeeCost => _env.canSeeCost();
   bool get _canSeeQuantity => _env.canSeeQuantity();
 
-  Future<void> _load({required bool refreshFromStore}) async {
+  Future<void> _load({
+    required bool refreshFromStore,
+  }) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuild();
       if (mounted) setState(() => _loading = false);
     } catch (e) {
@@ -121,6 +133,9 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
         _error = e.toString();
       }
     });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   Future<void> _pushTable(
@@ -141,7 +156,9 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
   }
 
   /// One-way: the table opens on the row's records and period.
-  Future<void> _openTable(ProductionRecordsFilters filters) async {
+  Future<void> _openTable(
+    ProductionRecordsFilters filters,
+  ) async {
     final open = _env.openTable ?? _pushTable;
     await open(context, filters, _period);
     // Picks up edits or deletes made from the table.
@@ -164,12 +181,14 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
   // ---------------------------------------------------------------
 
   String _money(num v) => _env.money(context, v);
-  String _number(num v) => formatLargeNumberDouble(v.toDouble());
+  String _number(num v) =>
+      formatLargeNumberDouble(v.toDouble());
 
-  List<ProductionBreakdownTab> get _tabs => productionBreakdownTabs(
-    departmentsEnabled: _departmentsEnabled,
-    canSeeQuantity: _canSeeQuantity,
-  );
+  List<ProductionBreakdownTab> get _tabs =>
+      productionBreakdownTabs(
+        departmentsEnabled: _departmentsEnabled,
+        canSeeQuantity: _canSeeQuantity,
+      );
 
   ReportExportSpec _exportSpec() {
     final tabs = _tabs;
@@ -188,11 +207,15 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
 
   /// The screen's cell text: the export's, with the screen's money and
   /// number formats.
-  String _cellText(ProductionBreakdownRow r, ProductionBreakdownColumn c) {
+  String _cellText(
+    ProductionBreakdownRow r,
+    ProductionBreakdownColumn c,
+  ) {
     final v = r.valueOf(c.field);
     if (v == null) return '—';
     final unit = r.unitOf(c.field);
-    String withUnit(String s) => unit == null ? s : '$s $unit';
+    String withUnit(String s) =>
+        unit == null ? s : '$s $unit';
     switch (c.kind) {
       case ProductionBreakdownKind.text:
         return v as String;
@@ -201,13 +224,20 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
       case ProductionBreakdownKind.quantity:
         return withUnit(_number(v as num));
       case ProductionBreakdownKind.ratio:
-        return withUnit(productionRatioText((v as num).toDouble(), _number));
+        return withUnit(
+          productionRatioText(
+            (v as num).toDouble(),
+            _number,
+          ),
+        );
       case ProductionBreakdownKind.money:
         return _money(v as num);
       case ProductionBreakdownKind.date:
         return formatDateTime(v as DateTime);
       case ProductionBreakdownKind.percent:
-        return ExportFormatter(currency: '').percent(v as num);
+        return ExportFormatter(
+          currency: '',
+        ).percent(v as num);
     }
   }
 
@@ -224,7 +254,11 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
     ],
   );
 
-  Widget _title(ThemeProvider theme, String text, String sub) {
+  Widget _title(
+    ThemeProvider theme,
+    String text,
+    String sub,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -289,7 +323,12 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
     }
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 252, 253, 255),
+      backgroundColor: const Color.fromARGB(
+        255,
+        252,
+        253,
+        255,
+      ),
       appBar: appBar(
         context: context,
         title: 'Production Summary',
@@ -300,7 +339,10 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
             child: InkWell(
               mouseCursor: SystemMouseCursors.click,
               borderRadius: BorderRadius.circular(10),
-              onTap: _loading ? null : () => _load(refreshFromStore: true),
+              onTap:
+                  _loading
+                      ? null
+                      : () => _load(refreshFromStore: true),
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Row(
@@ -310,11 +352,15 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
                     Text(
                       'Refresh',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Icon(Icons.refresh_rounded, size: 18),
+                    const Icon(
+                      Icons.refresh_rounded,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -328,7 +374,9 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
 
   Widget _body(ThemeProvider theme) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
     final result = _result;
     if (_error != null || result == null) {
@@ -350,7 +398,8 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
               ),
             ),
             OutlinedButton.icon(
-              onPressed: () => _load(refreshFromStore: false),
+              onPressed:
+                  () => _load(refreshFromStore: false),
               icon: const Icon(Icons.refresh_rounded),
               label: const Text('Try again'),
             ),
@@ -363,7 +412,9 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
       rows: result.rows,
       canSeeCost: _canSeeCost,
     );
-    final gap = SizedBox(height: widget.isDesktop ? 16 : 12);
+    final gap = SizedBox(
+      height: widget.isDesktop ? 16 : 12,
+    );
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
         horizontal: widget.isDesktop ? 20 : 12,
@@ -409,11 +460,18 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [
-          Icon(Icons.info_outline_rounded, size: 13, color: Colors.grey.shade600),
+          Icon(
+            Icons.info_outline_rounded,
+            size: 13,
+            color: Colors.grey.shade600,
+          ),
           Flexible(
             child: Text(
               notes.join('\n'),
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey.shade700,
+              ),
             ),
           ),
         ],
@@ -426,37 +484,75 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
   // ---------------------------------------------------------------
 
   static const Map<String, (IconData, Color)> _cardStyle = {
-    'runs': (Icons.precision_manufacturing_outlined, Color(0xFF7E22CE)),
-    'recordedCost': (Icons.receipt_long_rounded, _recordedColor),
-    'materialCost': (Icons.inventory_2_outlined, _materialColor),
-    'averageCost': (Icons.functions_rounded, Color(0xFF0891B2)),
-    'variance': (Icons.compare_arrows_rounded, Color(0xFFD97706)),
-    'outputs': (Icons.bakery_dining_outlined, Color(0xFFDB2777)),
+    'runs': (
+      Icons.precision_manufacturing_outlined,
+      Color(0xFF7E22CE),
+    ),
+    'recordedCost': (
+      Icons.receipt_long_rounded,
+      _recordedColor,
+    ),
+    'materialCost': (
+      Icons.inventory_2_outlined,
+      _materialColor,
+    ),
+    'averageCost': (
+      Icons.functions_rounded,
+      Color(0xFF0891B2),
+    ),
+    'variance': (
+      Icons.compare_arrows_rounded,
+      Color(0xFFD97706),
+    ),
+    'outputs': (
+      Icons.bakery_dining_outlined,
+      Color(0xFFDB2777),
+    ),
     'materials': (Icons.grain_rounded, Color(0xFF65A30D)),
-    'staff': (Icons.people_outline_rounded, Color(0xFF64748B)),
+    'staff': (
+      Icons.people_outline_rounded,
+      Color(0xFF64748B),
+    ),
   };
 
-  Widget _kpis(ThemeProvider theme, ProductionSummaryResult r) {
+  Widget _kpis(
+    ThemeProvider theme,
+    ProductionSummaryResult r,
+  ) {
     final cards = [
-      for (final c in productionSummaryCards(r, canSeeCost: _canSeeCost))
+      for (final c in productionSummaryCards(
+        r,
+        canSeeCost: _canSeeCost,
+      ))
         _kpi(theme, c),
     ];
     return LayoutBuilder(
       builder: (context, constraints) {
         const spacing = 10.0;
         final perRow = widget.isDesktop ? 4 : 2;
-        final width = (constraints.maxWidth - spacing * (perRow - 1)) / perRow;
+        final width =
+            (constraints.maxWidth -
+                spacing * (perRow - 1)) /
+            perRow;
         return Wrap(
           spacing: spacing,
           runSpacing: spacing,
-          children: [for (final c in cards) SizedBox(width: width, child: c)],
+          children: [
+            for (final c in cards)
+              SizedBox(width: width, child: c),
+          ],
         );
       },
     );
   }
 
-  Widget _kpi(ThemeProvider theme, ProductionSummaryCard c) {
-    final (icon, color) = _cardStyle[c.id] ?? (Icons.info_outline, Colors.grey);
+  Widget _kpi(
+    ThemeProvider theme,
+    ProductionSummaryCard c,
+  ) {
+    final (icon, color) =
+        _cardStyle[c.id] ??
+        (Icons.info_outline, Colors.grey);
     final change = c.change;
     final changeText =
         change == null
@@ -503,7 +599,8 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       color: Colors.grey.shade600,
                       fontWeight: FontWeight.w500,
                     ),
@@ -516,7 +613,9 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
               child: Text(
-                c.isMoney ? _money(c.value) : _number(c.value),
+                c.isMoney
+                    ? _money(c.value)
+                    : _number(c.value),
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b1.fontSize,
                   fontWeight: FontWeight.bold,
@@ -555,13 +654,23 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
   // trend
   // ---------------------------------------------------------------
 
-  Widget _trendCard(ThemeProvider theme, ProductionSummaryResult r) {
+  Widget _trendCard(
+    ThemeProvider theme,
+    ProductionSummaryResult r,
+  ) {
     final trend = r.trend;
-    final subtitle = '${reportTrendIntervalLabel(r.interval)}, by business day';
-    final title = _canSeeCost ? 'Production Cost Trend' : 'Production Runs Trend';
+    final subtitle =
+        '${reportTrendIntervalLabel(r.interval)}, by business day';
+    final title =
+        _canSeeCost
+            ? 'Production Cost Trend'
+            : 'Production Runs Trend';
     final Widget child;
     if (trend.isEmpty) {
-      child = _emptyText(theme, 'No production in this period.');
+      child = _emptyText(
+        theme,
+        'No production in this period.',
+      );
     } else if (_canSeeCost) {
       child = ReportTrendChart(
         starts: [for (final p in trend) p.start],
@@ -590,7 +699,9 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
           ReportTrendSeries(
             label: 'Production Runs',
             color: theme.lightModeColor.prColor300,
-            values: [for (final p in trend) p.runs.toDouble()],
+            values: [
+              for (final p in trend) p.runs.toDouble(),
+            ],
           ),
         ],
       );
@@ -633,7 +744,10 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
     });
   }
 
-  Widget _breakdown(ThemeProvider theme, ProductionSummaryResult result) {
+  Widget _breakdown(
+    ThemeProvider theme,
+    ProductionSummaryResult result,
+  ) {
     final tabs = _tabs;
     final tab = tabs.contains(_tab) ? _tab : tabs.first;
     final rows = ProductionSummaryBuilder.sortBreakdown(
@@ -647,26 +761,40 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
       canSeeQuantity: _canSeeQuantity,
     );
 
-    Widget cell(double width, Widget child, {bool start = false}) {
+    Widget cell(
+      double width,
+      Widget child, {
+      bool start = false,
+    }) {
       return SizedBox(
         width: width,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+          ),
           child: Align(
-            alignment: start ? Alignment.centerLeft : Alignment.center,
+            alignment:
+                start
+                    ? Alignment.centerLeft
+                    : Alignment.center,
             child: child,
           ),
         ),
       );
     }
 
-    Widget txt(String s, {bool bold = false, Color? color}) => Text(
+    Widget txt(
+      String s, {
+      bool bold = false,
+      Color? color,
+    }) => Text(
       s,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontSize: theme.mobileTexts.b3.fontSize,
-        fontWeight: bold ? FontWeight.bold : FontWeight.w500,
+        fontWeight:
+            bold ? FontWeight.bold : FontWeight.w500,
         color: color ?? Colors.black87,
       ),
     );
@@ -688,7 +816,11 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
             spacing: 3,
             children: [
               Flexible(
-                child: txt(c.label, bold: true, color: sorted ? accent : null),
+                child: txt(
+                  c.label,
+                  bold: true,
+                  color: sorted ? accent : null,
+                ),
               ),
               Icon(
                 sorted
@@ -716,8 +848,15 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
           child: Container(
             height: 46,
             decoration: BoxDecoration(
-              color: i.isEven ? Colors.white : Colors.grey.shade50,
-              border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+              color:
+                  i.isEven
+                      ? Colors.white
+                      : Colors.grey.shade50,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade100,
+                ),
+              ),
             ),
             child: Row(
               children: [
@@ -726,9 +865,14 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
                     c.width,
                     txt(
                       _cellText(r, c),
-                      bold: c.field == ProductionBreakdownField.name,
+                      bold:
+                          c.field ==
+                          ProductionBreakdownField.name,
                       color:
-                          c.field == ProductionBreakdownField.name && r.isNone
+                          c.field ==
+                                      ProductionBreakdownField
+                                          .name &&
+                                  r.isNone
                               ? Colors.grey
                               : null,
                     ),
@@ -764,19 +908,33 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
                     children: [
                       for (final t in tabs)
                         ChoiceChip(
-                          key: ValueKey('production-tab-${t.name}'),
+                          key: ValueKey(
+                            'production-tab-${t.name}',
+                          ),
                           label: Text(t.label),
                           selected: t == tab,
                           onSelected: (_) => _setTab(t),
-                          selectedColor: theme.lightModeColor.prColor50,
-                          backgroundColor: Colors.grey.shade100,
+                          selectedColor:
+                              theme
+                                  .lightModeColor
+                                  .prColor50,
+                          backgroundColor:
+                              Colors.grey.shade100,
                           labelStyle: TextStyle(
-                            fontSize: theme.mobileTexts.b4.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b4
+                                    .fontSize,
                             fontWeight:
-                                t == tab ? FontWeight.bold : FontWeight.w500,
+                                t == tab
+                                    ? FontWeight.bold
+                                    : FontWeight.w500,
                             color:
                                 t == tab
-                                    ? theme.lightModeColor.prColor300
+                                    ? theme
+                                        .lightModeColor
+                                        .prColor300
                                     : Colors.grey.shade700,
                           ),
                         ),
@@ -788,19 +946,29 @@ class _ProductionSummaryViewState extends State<ProductionSummaryView> {
           ),
           const Divider(height: 1),
           if (rows.isEmpty)
-            _emptyText(theme, 'No production in this period.')
+            _emptyText(
+              theme,
+              'No production in this period.',
+            )
           else
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
                   Container(
                     height: 44,
-                    color: theme.lightModeColor.prColor300.withAlpha(22),
-                    child: Row(children: [for (final c in cols) header(c)]),
+                    color: theme.lightModeColor.prColor300
+                        .withAlpha(22),
+                    child: Row(
+                      children: [
+                        for (final c in cols) header(c),
+                      ],
+                    ),
                   ),
-                  for (var i = 0; i < rows.length; i++) rowWidget(rows[i], i),
+                  for (var i = 0; i < rows.length; i++)
+                    rowWidget(rows[i], i),
                 ],
               ),
             ),

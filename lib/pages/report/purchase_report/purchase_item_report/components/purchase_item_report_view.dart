@@ -175,9 +175,10 @@ class _PurchaseItemReportViewState
       _error = null;
     });
     try {
-      await _env.load(
+      await _env.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuildBase();
       _recompute();
@@ -596,7 +597,12 @@ class _PurchaseItemReportViewState
             theme: theme,
             period: _period,
             enabled: _env.canPickDate(),
-            onChanged: (p) => _apply(() => _period = p),
+            onChanged: (p) {
+              _apply(() => _period = p);
+              if (!p.isAllTime) {
+                _load(refreshFromStore: false);
+              }
+            },
           ),
           Padding(
             padding: const EdgeInsets.only(

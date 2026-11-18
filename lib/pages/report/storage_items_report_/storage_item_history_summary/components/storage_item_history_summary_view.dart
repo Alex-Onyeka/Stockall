@@ -100,16 +100,33 @@ class _StorageItemHistorySummaryViewState
 
     try {
       final sId = shopId();
+      final tablePeriod = _tablePeriod();
+      final fetchAll = tablePeriod.isAllTime;
+      final startDate = tablePeriod.start;
+      final endDate = tablePeriod.end ?? tablePeriod.start;
       if (refreshFromStore) {
         await returnStorageProductProvider()
             .getStorageProducts(sId);
         await returnStorageItemHistoryProvider()
-            .getItemHistories();
+            .getItemHistories(
+              startDate: startDate,
+              endDate: endDate,
+              fetchAll: fetchAll,
+              forceRefresh: true,
+            );
       } else {
         await returnStorageProductProvider()
             .getStorageProductsOffline(sId);
         await returnStorageItemHistoryProvider()
             .getItemHistoriesOffline();
+        if (!fetchAll) {
+          await returnStorageItemHistoryProvider()
+              .getItemHistories(
+                startDate: startDate,
+                endDate: endDate,
+                forceRefresh: false,
+              );
+        }
       }
 
       _storageProducts =
@@ -143,23 +160,25 @@ class _StorageItemHistorySummaryViewState
 
   void _recompute() {
     final now = resolveBusinessDate(DateTime.now());
-    final res = StorageHistorySummaryBuilder.buildSummaryAndRows(
-      storageProducts: _storageProducts,
-      salesProducts: _salesProducts,
-      histories: _histories,
-      period: _period,
-      businessNow: now,
-      customRange: _customRange,
-    );
+    final res =
+        StorageHistorySummaryBuilder.buildSummaryAndRows(
+          storageProducts: _storageProducts,
+          salesProducts: _salesProducts,
+          histories: _histories,
+          period: _period,
+          businessNow: now,
+          customRange: _customRange,
+        );
     _stats = res.stats;
     _allRows = res.rows;
-    _breakdowns = StorageHistorySummaryBuilder.buildBreakdowns(
-      storageProducts: _storageProducts,
-      histories: _histories,
-      period: _period,
-      businessNow: now,
-      customRange: _customRange,
-    );
+    _breakdowns =
+        StorageHistorySummaryBuilder.buildBreakdowns(
+          storageProducts: _storageProducts,
+          histories: _histories,
+          period: _period,
+          businessNow: now,
+          customRange: _customRange,
+        );
     _page = 1;
     _applyFilterAndSort();
   }
@@ -190,11 +209,14 @@ class _StorageItemHistorySummaryViewState
       ascending: _ascending,
       period: _period,
       customRange: _customRange,
-      resolvedRange: StorageHistorySummaryBuilder.resolveDateRange(
-        period: _period,
-        businessNow: resolveBusinessDate(DateTime.now()),
-        customRange: _customRange,
-      ),
+      resolvedRange:
+          StorageHistorySummaryBuilder.resolveDateRange(
+            period: _period,
+            businessNow: resolveBusinessDate(
+              DateTime.now(),
+            ),
+            customRange: _customRange,
+          ),
       departmentsEnabled: _departmentsEnabled,
       currency: currencySymbol(context: context),
       sizeLabels: storageSizeLabels(_storageProducts),
@@ -214,12 +236,18 @@ class _StorageItemHistorySummaryViewState
     });
   }
 
-  void _setPeriod(StorageHistoryPeriod p, {DateTimeRange? range}) {
+  void _setPeriod(
+    StorageHistoryPeriod p, {
+    DateTimeRange? range,
+  }) {
     setState(() {
       _period = p;
       _customRange = range;
       _recompute();
     });
+    if (p != StorageHistoryPeriod.allTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   void _pickCustomRange() {
@@ -237,7 +265,11 @@ class _StorageItemHistorySummaryViewState
       },
       rangeDate: (start, end) {
         if (start == null) return;
-        final s = DateTime(start.year, start.month, start.day);
+        final s = DateTime(
+          start.year,
+          start.month,
+          start.day,
+        );
         final e =
             end == null
                 ? s
@@ -255,12 +287,16 @@ class _StorageItemHistorySummaryViewState
     if (_period == StorageHistoryPeriod.allTime) {
       return const ReceiptsReportPeriod.allTime();
     }
-    final range = StorageHistorySummaryBuilder.resolveDateRange(
-      period: _period,
-      businessNow: resolveBusinessDate(DateTime.now()),
-      customRange: _customRange,
+    final range =
+        StorageHistorySummaryBuilder.resolveDateRange(
+          period: _period,
+          businessNow: resolveBusinessDate(DateTime.now()),
+          customRange: _customRange,
+        );
+    return ReceiptsReportPeriod.range(
+      range.start,
+      range.end,
     );
-    return ReceiptsReportPeriod.range(range.start, range.end);
   }
 
   /// One-way click-through: the history table for one storage item.
@@ -280,7 +316,8 @@ class _StorageItemHistorySummaryViewState
     });
   }
 
-  String _byUnit(Map<String, double> m) => formatQuantitiesByUnit(m);
+  String _byUnit(Map<String, double> m) =>
+      formatQuantitiesByUnit(m);
 
   String _signedByUnit(Map<String, double> m) =>
       storageSignedQuantitiesByUnit(m);
@@ -291,7 +328,12 @@ class _StorageItemHistorySummaryViewState
     returnShopProvider(context: context);
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 252, 253, 255),
+      backgroundColor: const Color.fromARGB(
+        255,
+        252,
+        253,
+        255,
+      ),
       appBar: appBar(
         context: context,
         title: 'Storage Item History Summary',
@@ -299,7 +341,10 @@ class _StorageItemHistorySummaryViewState
           padding: const EdgeInsets.only(right: 10.0),
           child: IconButton(
             tooltip: 'Refresh Data',
-            icon: const Icon(Icons.refresh_rounded, size: 18),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              size: 18,
+            ),
             mouseCursor: SystemMouseCursors.click,
             onPressed:
                 _loading
@@ -310,7 +355,9 @@ class _StorageItemHistorySummaryViewState
       ),
       body:
           _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                child: CircularProgressIndicator(),
+              )
               : _error != null
               ? _buildErrorView(theme)
               : _buildContent(theme),
@@ -358,11 +405,14 @@ class _StorageItemHistorySummaryViewState
   }
 
   Widget _buildContent(ThemeProvider theme) {
-    final topInflow = StorageHistorySummaryBuilder.getTopInflowItems(
-      _allRows,
-    );
+    final topInflow =
+        StorageHistorySummaryBuilder.getTopInflowItems(
+          _allRows,
+        );
     final topOutflow =
-        StorageHistorySummaryBuilder.getTopOutflowItems(_allRows);
+        StorageHistorySummaryBuilder.getTopOutflowItems(
+          _allRows,
+        );
 
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(
@@ -463,7 +513,8 @@ class _StorageItemHistorySummaryViewState
                       child: Text(
                         p.label,
                         style: TextStyle(
-                          fontSize: theme.mobileTexts.b3.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
                         ),
                       ),
                     );
@@ -500,9 +551,11 @@ class _StorageItemHistorySummaryViewState
                     Text(
                       '${formatDateTime(_customRange!.start)} - ${formatDateTime(_customRange!.end)}',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.bold,
-                        color: theme.lightModeColor.prColor300,
+                        color:
+                            theme.lightModeColor.prColor300,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -518,7 +571,10 @@ class _StorageItemHistorySummaryViewState
   }
 
   Widget _buildNotes(ThemeProvider theme) {
-    final notes = storageHistorySummaryNotes(period: _period, stats: _stats);
+    final notes = storageHistorySummaryNotes(
+      period: _period,
+      stats: _stats,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 2,
@@ -565,7 +621,8 @@ class _StorageItemHistorySummaryViewState
         title: 'Net Change',
         value: _signedByUnit(net),
         subtitle: 'Additions minus Reductions',
-        badgeText: netNegative ? '↘ Qtty Change' : '↗ Qtty Change',
+        badgeText:
+            netNegative ? '↘ Qtty Change' : '↗ Qtty Change',
         badgeColor:
             netNegative
                 ? const Color(0xFFDC2626)
@@ -587,7 +644,8 @@ class _StorageItemHistorySummaryViewState
         theme: theme,
         title: 'Total Stock Additions',
         value: _byUnit(_stats.additionsByUnit),
-        subtitle: 'Returns, Stock In, Purchases, Adjusted Up',
+        subtitle:
+            'Returns, Stock In, Purchases, Adjusted Up',
         badgeText: 'Total In',
         badgeColor: const Color(0xFF2563EB),
         icon: Icons.add_circle_outline_rounded,
@@ -598,7 +656,8 @@ class _StorageItemHistorySummaryViewState
         theme: theme,
         title: 'Total Stock Reductions',
         value: _byUnit(_stats.reductionsByUnit),
-        subtitle: 'Transfers Out, Purchases Deleted, Adjusted Down',
+        subtitle:
+            'Transfers Out, Purchases Deleted, Adjusted Down',
         badgeText: 'Total Out',
         badgeColor: const Color(0xFFD97706),
         icon: Icons.remove_circle_outline_rounded,
@@ -625,7 +684,8 @@ class _StorageItemHistorySummaryViewState
     if (widget.isDesktop) {
       return Row(
         spacing: 10,
-        children: cards.map((c) => Expanded(child: c)).toList(),
+        children:
+            cards.map((c) => Expanded(child: c)).toList(),
       );
     } else {
       return GridView.count(
@@ -707,14 +767,16 @@ class _StorageItemHistorySummaryViewState
       _buildMiniStatPill(
         theme: theme,
         label: 'Items Created',
-        value: '${_stats.countOf(StorageMovementKind.created)}',
+        value:
+            '${_stats.countOf(StorageMovementKind.created)}',
         icon: Icons.add_box_outlined,
         color: const Color(0xFF9333EA),
       ),
       _buildMiniStatPill(
         theme: theme,
         label: 'Items Deleted',
-        value: '${_stats.countOf(StorageMovementKind.deleted)}',
+        value:
+            '${_stats.countOf(StorageMovementKind.deleted)}',
         icon: Icons.delete_forever_outlined,
         color: const Color(0xFFEA580C),
       ),
@@ -739,13 +801,19 @@ class _StorageItemHistorySummaryViewState
                 runSpacing: 10,
                 children:
                     statWidgets
-                        .map((w) => SizedBox(width: 200, child: w))
+                        .map(
+                          (w) => SizedBox(
+                            width: 200,
+                            child: w,
+                          ),
+                        )
                         .toList(),
               )
               : GridView.count(
                 crossAxisCount: 2,
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+                physics:
+                    const NeverScrollableScrollPhysics(),
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
                 childAspectRatio: 2.2,
@@ -756,7 +824,10 @@ class _StorageItemHistorySummaryViewState
     );
   }
 
-  Widget _card({required Widget child, EdgeInsets? padding}) {
+  Widget _card({
+    required Widget child,
+    EdgeInsets? padding,
+  }) {
     return Container(
       padding: padding ?? const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -809,13 +880,15 @@ class _StorageItemHistorySummaryViewState
             ],
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b5.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b5.fontSize,
                       color: Colors.grey.shade600,
                     ),
                     maxLines: 1,
@@ -824,7 +897,8 @@ class _StorageItemHistorySummaryViewState
                   Text(
                     value,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b3.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -857,7 +931,8 @@ class _StorageItemHistorySummaryViewState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               if (screenWidth(context) > mobileScreen) ...[
                 Container(
@@ -867,7 +942,11 @@ class _StorageItemHistorySummaryViewState
                     color: iconBg,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Icon(icon, color: iconColor, size: 17),
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 17,
+                  ),
                 ),
               ],
               Container(
@@ -913,7 +992,8 @@ class _StorageItemHistorySummaryViewState
                   child: Text(
                     value,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b1.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b1.fontSize,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
@@ -975,11 +1055,17 @@ class _StorageItemHistorySummaryViewState
   /// quantities, because storage items use different units.
   Widget _buildMovementDonutCard(ThemeProvider theme) {
     const kinds = [
-      (StorageMovementKind.transferredOut, Color(0xFFE11D48)),
+      (
+        StorageMovementKind.transferredOut,
+        Color(0xFFE11D48),
+      ),
       (StorageMovementKind.returned, Color(0xFF16A34A)),
       (StorageMovementKind.stockIn, Color(0xFF0284C7)),
       (StorageMovementKind.purchase, Color(0xFF3B82F6)),
-      (StorageMovementKind.purchaseDeleted, Color(0xFFF43F5E)),
+      (
+        StorageMovementKind.purchaseDeleted,
+        Color(0xFFF43F5E),
+      ),
       (StorageMovementKind.adjustedUp, Color(0xFF10B981)),
       (StorageMovementKind.adjustedDown, Color(0xFF6B7280)),
     ];
@@ -1027,11 +1113,14 @@ class _StorageItemHistorySummaryViewState
                             ]
                             : [
                               for (final k in kinds)
-                                if (_stats.countOf(k.$1) > 0)
+                                if (_stats.countOf(k.$1) >
+                                    0)
                                   PieChartSectionData(
                                     color: k.$2,
                                     value:
-                                        _stats.countOf(k.$1).toDouble(),
+                                        _stats
+                                            .countOf(k.$1)
+                                            .toDouble(),
                                     radius: 20,
                                     showTitle: false,
                                   ),
@@ -1044,7 +1133,8 @@ class _StorageItemHistorySummaryViewState
                     Text(
                       '$total',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b1.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b1.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -1052,7 +1142,8 @@ class _StorageItemHistorySummaryViewState
                     Text(
                       total == 1 ? 'Movement' : 'Movements',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade500,
                         fontWeight: FontWeight.w500,
                       ),
@@ -1074,7 +1165,9 @@ class _StorageItemHistorySummaryViewState
                     label: k.$1.label,
                     percentage:
                         total > 0
-                            ? (_stats.countOf(k.$1) / total) * 100
+                            ? (_stats.countOf(k.$1) /
+                                    total) *
+                                100
                             : 0,
                     value: '${_stats.countOf(k.$1)}',
                   ),
@@ -1186,7 +1279,8 @@ class _StorageItemHistorySummaryViewState
                 );
               }
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 spacing: 10,
                 children: [
                   Expanded(child: additionsBox),
@@ -1327,7 +1421,8 @@ class _StorageItemHistorySummaryViewState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: Row(
@@ -1340,7 +1435,8 @@ class _StorageItemHistorySummaryViewState
                         title,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: theme.mobileTexts.b3.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
@@ -1363,7 +1459,8 @@ class _StorageItemHistorySummaryViewState
                   child: Text(
                     badgeText,
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b4.fontSize,
                       fontWeight: FontWeight.bold,
                       color: color,
                     ),
@@ -1409,7 +1506,8 @@ class _StorageItemHistorySummaryViewState
               subtitle: 'Unit: ${items[idx].primaryUnit}',
               trailing:
                   '${isInflow ? '+' : '-'}${items[idx].quantityText(isInflow ? items[idx].totalAdditions : items[idx].totalReductions)}',
-              onTap: () => _openItemHistory(items[idx].uuid),
+              onTap:
+                  () => _openItemHistory(items[idx].uuid),
             ),
       ],
     );
@@ -1446,9 +1544,11 @@ class _StorageItemHistorySummaryViewState
                 subtitle:
                     '${top[i].count} record${top[i].count == 1 ? '' : 's'}',
                 trailing: [
-                  if (showInflow && top[i].inflow.isNotEmpty)
+                  if (showInflow &&
+                      top[i].inflow.isNotEmpty)
                     'In: ${_byUnit(top[i].inflow)}',
-                  if (showOutflow && top[i].outflow.isNotEmpty)
+                  if (showOutflow &&
+                      top[i].outflow.isNotEmpty)
                     'Out: ${_byUnit(top[i].outflow)}',
                 ].join('\n'),
               ),
@@ -1514,7 +1614,8 @@ class _StorageItemHistorySummaryViewState
           const SizedBox(height: 10),
           LayoutBuilder(
             builder: (context, constraints) {
-              if (!widget.isDesktop || constraints.maxWidth < 700) {
+              if (!widget.isDesktop ||
+                  constraints.maxWidth < 700) {
                 return Column(spacing: 10, children: boxes);
               }
               final w = (constraints.maxWidth - 20) / 3;
@@ -1523,7 +1624,10 @@ class _StorageItemHistorySummaryViewState
                 runSpacing: 10,
                 children:
                     boxes
-                        .map((b) => SizedBox(width: w, child: b))
+                        .map(
+                          (b) =>
+                              SizedBox(width: w, child: b),
+                        )
                         .toList(),
               );
             },
@@ -1552,12 +1656,14 @@ class _StorageItemHistorySummaryViewState
               runSpacing: 8,
               children: [
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Storage Item Movements',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b1.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b1.fontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -1565,7 +1671,8 @@ class _StorageItemHistorySummaryViewState
                     Text(
                       'Closing Stock = Opening Stock + Net Change • Tap an item to see its history',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade600,
                       ),
                     ),
@@ -1578,7 +1685,9 @@ class _StorageItemHistorySummaryViewState
           const Divider(height: 1),
           if (res == null || res.rows.isEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 40),
+              padding: const EdgeInsets.symmetric(
+                vertical: 40,
+              ),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1592,7 +1701,8 @@ class _StorageItemHistorySummaryViewState
                     Text(
                       'No matching storage items found',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b3.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
                         color: Colors.grey.shade600,
                       ),
                     ),
@@ -1612,7 +1722,12 @@ class _StorageItemHistorySummaryViewState
             ),
             const Divider(height: 1),
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+              padding: const EdgeInsets.fromLTRB(
+                14,
+                0,
+                14,
+                8,
+              ),
               child: ReportPager(
                 theme: theme,
                 page: res.page,
@@ -1655,27 +1770,38 @@ class _StorageItemHistorySummaryViewState
                 _applyFilterAndSort();
               });
             },
-            style: TextStyle(fontSize: theme.mobileTexts.b4.fontSize),
+            style: TextStyle(
+              fontSize: theme.mobileTexts.b4.fontSize,
+            ),
             decoration: InputDecoration(
               hintText: 'Search storage items...',
-              prefixIcon: const Icon(Icons.search, size: 14),
+              prefixIcon: const Icon(
+                Icons.search,
+                size: 14,
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 8,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(6),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+                borderSide: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(6),
-                borderSide: BorderSide(color: Colors.grey.shade200),
+                borderSide: BorderSide(
+                  color: Colors.grey.shade200,
+                ),
               ),
             ),
           ),
         ),
         SizedBox(
           width: 170,
-          child: ReportSearchableDropdown<StorageHistoryMovementFilter>(
+          child: ReportSearchableDropdown<
+            StorageHistoryMovementFilter
+          >(
             title: 'Movement',
             value: _filters.movementFilter,
             showSearch: false,
@@ -1712,7 +1838,8 @@ class _StorageItemHistorySummaryViewState
     String? tooltip,
   }) {
     final isSelected = _sortField == field;
-    final arrow = isSelected ? (_ascending ? ' ↑' : ' ↓') : '';
+    final arrow =
+        isSelected ? (_ascending ? ' ↑' : ' ↓') : '';
     return DataColumn(
       tooltip: tooltip,
       label: InkWell(
@@ -1730,7 +1857,9 @@ class _StorageItemHistorySummaryViewState
               style: TextStyle(
                 fontSize: theme.mobileTexts.b4.fontSize,
                 fontWeight:
-                    isSelected ? FontWeight.bold : FontWeight.w600,
+                    isSelected
+                        ? FontWeight.bold
+                        : FontWeight.w600,
                 color:
                     isSelected
                         ? theme.lightModeColor.prColor300
@@ -1753,11 +1882,17 @@ class _StorageItemHistorySummaryViewState
     return DataCell(
       Center(
         child: Text(
-          v == null || v == 0 ? (v == null ? '—' : '0') : formatLargeNumberDouble(v),
+          v == null || v == 0
+              ? (v == null ? '—' : '0')
+              : formatLargeNumberDouble(v),
           style: TextStyle(
             fontSize: theme.mobileTexts.b4.fontSize,
-            fontWeight: bold ? FontWeight.bold : FontWeight.w600,
-            color: (v ?? 0) == 0 ? Colors.grey.shade500 : (color ?? Colors.black87),
+            fontWeight:
+                bold ? FontWeight.bold : FontWeight.w600,
+            color:
+                (v ?? 0) == 0
+                    ? Colors.grey.shade500
+                    : (color ?? Colors.black87),
           ),
         ),
       ),
@@ -1777,9 +1912,15 @@ class _StorageItemHistorySummaryViewState
       horizontalMargin: 12,
       columnSpacing: 16,
       showCheckboxColumn: false,
-      headingRowColor: WidgetStateProperty.all(Colors.grey.shade100),
+      headingRowColor: WidgetStateProperty.all(
+        Colors.grey.shade100,
+      ),
       columns: [
-        _dataCol('No.', StorageHistorySummarySortField.rowIndex, theme),
+        _dataCol(
+          'No.',
+          StorageHistorySummarySortField.rowIndex,
+          theme,
+        ),
         _dataCol(
           'Storage Item',
           StorageHistorySummarySortField.itemName,
@@ -1790,13 +1931,15 @@ class _StorageItemHistorySummaryViewState
           'Opening Stock',
           StorageHistorySummarySortField.openingStock,
           theme,
-          tooltip: 'Storage balance before the period (Primary Unit)',
+          tooltip:
+              'Storage balance before the period (Primary Unit)',
         ),
         _dataCol(
           'Closing Stock',
           StorageHistorySummarySortField.closingStock,
           theme,
-          tooltip: 'Storage balance at the end of the period (Primary Unit)',
+          tooltip:
+              'Storage balance at the end of the period (Primary Unit)',
         ),
         _dataCol(
           'Current Quantity',
@@ -1867,14 +2010,16 @@ class _StorageItemHistorySummaryViewState
           rows.map((r) {
             final net = r.netQuantityChange;
             return DataRow(
-              onSelectChanged: (_) => _openItemHistory(r.uuid),
+              onSelectChanged:
+                  (_) => _openItemHistory(r.uuid),
               cells: [
                 DataCell(
                   Center(
                     child: Text(
                       '${r.index}',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         color: Colors.grey.shade600,
                       ),
                     ),
@@ -1890,8 +2035,10 @@ class _StorageItemHistorySummaryViewState
                         '${r.notNormalised} record${r.notNormalised == 1 ? '' : 's'} not converted',
                     ].join('\n'),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
                       children: [
                         Row(
                           mainAxisSize: MainAxisSize.min,
@@ -1900,15 +2047,24 @@ class _StorageItemHistorySummaryViewState
                             Text(
                               r.name,
                               style: TextStyle(
-                                fontSize: theme.mobileTexts.b3.fontSize,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
                                 fontWeight: FontWeight.bold,
                                 color:
                                     r.exists
-                                        ? theme.lightModeColor.prColor300
-                                        : Colors.grey.shade600,
+                                        ? theme
+                                            .lightModeColor
+                                            .prColor300
+                                        : Colors
+                                            .grey
+                                            .shade600,
                               ),
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              overflow:
+                                  TextOverflow.ellipsis,
                             ),
                             if (r.currentName != null ||
                                 !r.exists ||
@@ -1925,7 +2081,11 @@ class _StorageItemHistorySummaryViewState
                               ? r.primaryUnit
                               : '${r.primaryUnit} • Deleted',
                           style: TextStyle(
-                            fontSize: theme.mobileTexts.b5.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b5
+                                    .fontSize,
                             color: Colors.grey.shade500,
                           ),
                         ),
@@ -1956,12 +2116,15 @@ class _StorageItemHistorySummaryViewState
                                 : net < 0
                                 ? red.withAlpha(20)
                                 : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(
+                          4,
+                        ),
                       ),
                       child: Text(
                         '${net > 0 ? '+' : ''}${formatLargeNumberDouble(net)}',
                         style: TextStyle(
-                          fontSize: theme.mobileTexts.b4.fontSize,
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
                           fontWeight: FontWeight.bold,
                           color:
                               net > 0
@@ -1974,21 +2137,69 @@ class _StorageItemHistorySummaryViewState
                     ),
                   ),
                 ),
-                _numCell(theme, r, r.transferredOut, color: red),
-                _numCell(theme, r, r.returned, color: green),
-                _numCell(theme, r, r.stockedIn, color: green),
-                _numCell(theme, r, r.purchased, color: green),
-                _numCell(theme, r, r.purchaseDeleted, color: red),
-                _numCell(theme, r, r.adjustedUp, color: green),
-                _numCell(theme, r, r.adjustedDown, color: red),
-                _numCell(theme, r, r.totalAdditions, color: green, bold: true),
-                _numCell(theme, r, r.totalReductions, color: red, bold: true),
+                _numCell(
+                  theme,
+                  r,
+                  r.transferredOut,
+                  color: red,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.returned,
+                  color: green,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.stockedIn,
+                  color: green,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.purchased,
+                  color: green,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.purchaseDeleted,
+                  color: red,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.adjustedUp,
+                  color: green,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.adjustedDown,
+                  color: red,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.totalAdditions,
+                  color: green,
+                  bold: true,
+                ),
+                _numCell(
+                  theme,
+                  r,
+                  r.totalReductions,
+                  color: red,
+                  bold: true,
+                ),
                 DataCell(
                   Center(
                     child: Text(
                       '${r.movementCount}',
                       style: TextStyle(
-                        fontSize: theme.mobileTexts.b4.fontSize,
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

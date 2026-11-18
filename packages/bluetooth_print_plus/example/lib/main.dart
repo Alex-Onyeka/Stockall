@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -35,9 +33,12 @@ class _HomePageState extends State<HomePage> {
   BluetoothDevice? _device;
   late StreamSubscription<bool> _isScanningSubscription;
   late StreamSubscription<BlueState> _blueStateSubscription;
-  late StreamSubscription<ConnectState> _connectStateSubscription;
-  late StreamSubscription<Uint8List> _receivedDataSubscription;
-  late StreamSubscription<List<BluetoothDevice>> _scanResultsSubscription;
+  late StreamSubscription<ConnectState>
+      _connectStateSubscription;
+  late StreamSubscription<Uint8List>
+      _receivedDataSubscription;
+  late StreamSubscription<List<BluetoothDevice>>
+      _scanResultsSubscription;
   List<BluetoothDevice> _scanResults = [];
 
   @override
@@ -59,7 +60,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> initBluetoothPrintPlusListen() async {
     /// listen scanResults
-    _scanResultsSubscription = BluetoothPrintPlus.scanResults.listen((event) {
+    _scanResultsSubscription =
+        BluetoothPrintPlus.scanResults.listen((event) {
       if (mounted) {
         setState(() {
           _scanResults = event;
@@ -68,7 +70,8 @@ class _HomePageState extends State<HomePage> {
     });
 
     /// listen isScanning
-    _isScanningSubscription = BluetoothPrintPlus.isScanning.listen((event) {
+    _isScanningSubscription =
+        BluetoothPrintPlus.isScanning.listen((event) {
       print('********** isScanning: $event **********');
       if (mounted) {
         setState(() {});
@@ -76,16 +79,20 @@ class _HomePageState extends State<HomePage> {
     });
 
     /// listen blue state
-    _blueStateSubscription = BluetoothPrintPlus.blueState.listen((event) {
-      print('********** blueState change: $event **********');
+    _blueStateSubscription =
+        BluetoothPrintPlus.blueState.listen((event) {
+      print(
+          '********** blueState change: $event **********');
       if (mounted) {
         setState(() {});
       }
     });
 
     /// listen connect state
-    _connectStateSubscription = BluetoothPrintPlus.connectState.listen((event) {
-      print('********** connectState change: $event **********');
+    _connectStateSubscription =
+        BluetoothPrintPlus.connectState.listen((event) {
+      print(
+          '********** connectState change: $event **********');
       switch (event) {
         case ConnectState.connected:
           setState(() {
@@ -93,7 +100,8 @@ class _HomePageState extends State<HomePage> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => FunctionPage(_device!)));
+                    builder: (context) =>
+                        FunctionPage(_device!)));
           });
           break;
         case ConnectState.disconnected:
@@ -105,7 +113,8 @@ class _HomePageState extends State<HomePage> {
     });
 
     /// listen received data
-    _receivedDataSubscription = BluetoothPrintPlus.receivedData.listen((data) {
+    _receivedDataSubscription =
+        BluetoothPrintPlus.receivedData.listen((data) {
       print('********** received data: $data **********');
 
       /// do something...
@@ -124,22 +133,30 @@ class _HomePageState extends State<HomePage> {
                     children: _scanResults
                         .map((device) => Container(
                               padding: EdgeInsets.only(
-                                  left: 10, right: 10, bottom: 5),
+                                  left: 10,
+                                  right: 10,
+                                  bottom: 5),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment
+                                        .spaceBetween,
                                 children: [
                                   Expanded(
                                       child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        CrossAxisAlignment
+                                            .start,
                                     children: [
                                       Text(device.name),
                                       Text(
                                         device.address,
-                                        overflow: TextOverflow.ellipsis,
+                                        overflow:
+                                            TextOverflow
+                                                .ellipsis,
                                         style: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
+                                            fontSize: 12,
+                                            color: Colors
+                                                .grey),
                                       ),
                                       Divider(),
                                     ],
@@ -150,9 +167,11 @@ class _HomePageState extends State<HomePage> {
                                   OutlinedButton(
                                     onPressed: () async {
                                       _device = device;
-                                      await BluetoothPrintPlus.connect(device);
+                                      await BluetoothPrintPlus
+                                          .connect(device);
                                     },
-                                    child: const Text("connect"),
+                                    child: const Text(
+                                        "connect"),
                                   )
                                 ],
                               ),
@@ -160,8 +179,9 @@ class _HomePageState extends State<HomePage> {
                         .toList(),
                   )
                 : buildBlueOffWidget()),
-        floatingActionButton:
-            BluetoothPrintPlus.isBlueOn ? buildScanButton(context) : null);
+        floatingActionButton: BluetoothPrintPlus.isBlueOn
+            ? buildScanButton(context)
+            : null);
   }
 
   Widget buildBlueOffWidget() {
@@ -169,7 +189,9 @@ class _HomePageState extends State<HomePage> {
         child: Text(
       "Bluetooth is turned off\nPlease turn on Bluetooth...",
       style: TextStyle(
-          fontWeight: FontWeight.w700, fontSize: 16, color: Colors.red),
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+          color: Colors.red),
       textAlign: TextAlign.center,
     ));
   }
@@ -191,7 +213,8 @@ class _HomePageState extends State<HomePage> {
 
   Future onScanPressed() async {
     try {
-      await BluetoothPrintPlus.startScan(timeout: Duration(seconds: 10));
+      await BluetoothPrintPlus.startScan(
+          timeout: Duration(seconds: 10));
     } catch (e) {
       print("onScanPressed error: $e");
     }

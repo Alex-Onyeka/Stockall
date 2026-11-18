@@ -101,15 +101,39 @@ class _ItemHistorySummaryViewState
     });
 
     try {
+      final isAllTime =
+          _period == ItemHistoryPeriod.allTime;
+      final resolvedRange =
+          isAllTime
+              ? null
+              : ItemHistorySummaryBuilder.resolveDateRange(
+                period: _period,
+                businessNow: resolveBusinessDate(
+                  DateTime.now(),
+                ),
+                customRange: _customRange,
+              );
       if (refreshFromStore && mounted) {
         final refresh = RefreshFunctions(context);
         await refresh.refreshProducts(context);
         if (!mounted) return;
-        await returnItemHistoryProvider()
-            .getItemHistories();
+        await returnItemHistoryProvider().getItemHistories(
+          startDate: resolvedRange?.start,
+          endDate: resolvedRange?.end,
+          fetchAll: isAllTime,
+          forceRefresh: true,
+        );
       } else {
         await returnItemHistoryProvider()
             .getItemHistoriesOffline();
+        if (!isAllTime && resolvedRange != null) {
+          await returnItemHistoryProvider()
+              .getItemHistories(
+                startDate: resolvedRange.start,
+                endDate: resolvedRange.end,
+                forceRefresh: false,
+              );
+        }
       }
 
       _categories =
@@ -208,8 +232,12 @@ class _ItemHistorySummaryViewState
       currency: currencySymbol(context: context),
       manageProductions: _manageProductions,
       departmentsEnabled: _departmentsEnabled,
-      categoryNames: {for (final c in _categories) c.uuid: c.name},
-      departmentNames: {for (final d in _departments) d.uuid: d.name},
+      categoryNames: {
+        for (final c in _categories) c.uuid: c.name,
+      },
+      departmentNames: {
+        for (final d in _departments) d.uuid: d.name,
+      },
       sizeLabels: stockMovementsSizeLabels(_products),
     );
   }
@@ -239,6 +267,7 @@ class _ItemHistorySummaryViewState
           _customRange = DateTimeRange(start: d, end: d);
           _recompute();
         });
+        _load(refreshFromStore: false);
       },
       rangeDate: (start, end) {
         if (start == null) return;
@@ -256,6 +285,7 @@ class _ItemHistorySummaryViewState
           _customRange = DateTimeRange(start: s, end: e);
           _recompute();
         });
+        _load(refreshFromStore: false);
       },
     );
   }
@@ -554,6 +584,9 @@ class _ItemHistorySummaryViewState
                     _customRange = null;
                     _recompute();
                   });
+                  if (val != ItemHistoryPeriod.allTime) {
+                    _load(refreshFromStore: false);
+                  }
                 }
               },
             ),

@@ -85,9 +85,10 @@ class _SupplierAnalysisViewState
       _error = null;
     });
     try {
-      await _purchaseEnv.load(
+      await _purchaseEnv.loadWithPeriod(
         context,
         refreshFromStore: refreshFromStore,
+        period: _period,
       );
       _rebuild();
       if (mounted) setState(() => _loading = false);
@@ -132,8 +133,12 @@ class _SupplierAnalysisViewState
     });
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) =>
-      _refresh(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _refresh(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   Future<void> _pushTable(
     BuildContext context,

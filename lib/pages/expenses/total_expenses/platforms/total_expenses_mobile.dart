@@ -14,7 +14,8 @@ import 'package:stockall/pages/expenses/components/expenses_tile.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 
 class TotalExpensesMobile extends StatefulWidget {
-  const TotalExpensesMobile({super.key});
+  final bool? turnOff;
+  const TotalExpensesMobile({super.key, this.turnOff});
 
   @override
   State<TotalExpensesMobile> createState() =>
@@ -60,19 +61,25 @@ class _TotalExpensesMobileState
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 60,
-          leading: IconButton(
-            mouseCursor: SystemMouseCursors.click,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Padding(
-              padding: const EdgeInsets.only(
-                left: 10.0,
-                right: 5,
-              ),
-              child: Icon(Icons.arrow_back_ios_new_rounded),
-            ),
-          ),
+          automaticallyImplyLeading: widget.turnOff != true,
+          leading:
+              widget.turnOff == true
+                  ? null
+                  : IconButton(
+                    mouseCursor: SystemMouseCursors.click,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 10.0,
+                        right: 5,
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                      ),
+                    ),
+                  ),
           centerTitle: true,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.center,

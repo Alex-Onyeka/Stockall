@@ -85,14 +85,29 @@ class RefreshFunctions {
   bool isUpdateLodaingWeb = false;
   bool isUpdateLodaingMobile = false;
 
-  Future<void> getMainReceipts() async {
+  Future<void> getMainReceipts({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     await mainLocalLog('Starting to get receipts');
     await receiptsProvider.loadReceipts(
       shopProvider.userShop()!.shopId!,
+      startDate: startDate,
+      endDate: endDate,
+      fetchAll: fetchAll,
+      forceRefresh: forceRefresh,
     );
   }
 
-  Future<void> refreshReceipts(context) async {
+  Future<void> refreshReceipts(
+    context, {
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
     await appVersionP.getAppVersion(context);
@@ -110,13 +125,23 @@ class RefreshFunctions {
               await returnData().syncData(
                 context: safeContext,
               );
-              await getMainReceipts();
+              await getMainReceipts(
+                startDate: startDate,
+                endDate: endDate,
+                fetchAll: fetchAll,
+                forceRefresh: forceRefresh,
+              );
             },
           );
         },
       );
     } else {
-      await getMainReceipts();
+      await getMainReceipts(
+        startDate: startDate,
+        endDate: endDate,
+        fetchAll: fetchAll,
+        forceRefresh: forceRefresh,
+      );
     }
   }
   //
@@ -125,14 +150,29 @@ class RefreshFunctions {
   //
   //
 
-  Future<void> getInvoices() async {
+  Future<void> getInvoices({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     await mainLocalLog('Starting to get receipts');
     await invoicesProvider.loadInvoices(
       shopProvider.userShop()!.shopId!,
+      startDate: startDate,
+      endDate: endDate,
+      fetchAll: fetchAll,
+      forceRefresh: forceRefresh,
     );
   }
 
-  Future<void> refreshInvoices(context) async {
+  Future<void> refreshInvoices(
+    context, {
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
     if (isOnline && isSynced() == 0) {
@@ -149,13 +189,23 @@ class RefreshFunctions {
               await returnData().syncData(
                 context: safeContext,
               );
-              await getInvoices();
+              await getInvoices(
+                startDate: startDate,
+                endDate: endDate,
+                fetchAll: fetchAll,
+                forceRefresh: forceRefresh,
+              );
             },
           );
         },
       );
     } else {
-      await getInvoices();
+      await getInvoices(
+        startDate: startDate,
+        endDate: endDate,
+        fetchAll: fetchAll,
+        forceRefresh: forceRefresh,
+      );
     }
   }
   //
@@ -353,9 +403,18 @@ class RefreshFunctions {
   //
   //
 
-  Future<List<TempExpensesClass>> getExpenses() async {
+  Future<List<TempExpensesClass>> getExpenses({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     var tempExp = await expensesProvider.getExpenses(
       shopProvider.userShop()!.shopId ?? 0,
+      startDate: startDate,
+      endDate: endDate,
+      fetchAll: fetchAll,
+      forceRefresh: forceRefresh,
     );
 
     return tempExp;
@@ -369,7 +428,13 @@ class RefreshFunctions {
     await returnErrorLogProvider().getErrorLogs();
   }
 
-  Future<void> refreshExpenses(context) async {
+  Future<void> refreshExpenses(
+    context, {
+    DateTime? startDate,
+    DateTime? endDate,
+    bool fetchAll = false,
+    bool forceRefresh = false,
+  }) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
     if (isOnline && isSynced() == 0) {
@@ -386,13 +451,23 @@ class RefreshFunctions {
               await returnData().syncData(
                 context: safeContext,
               );
-              await getExpenses();
+              await getExpenses(
+                startDate: startDate,
+                endDate: endDate,
+                fetchAll: fetchAll,
+                forceRefresh: forceRefresh,
+              );
             },
           );
         },
       );
     } else {
-      await getExpenses();
+      await getExpenses(
+        startDate: startDate,
+        endDate: endDate,
+        fetchAll: fetchAll,
+        forceRefresh: forceRefresh,
+      );
     }
   }
   //
@@ -545,9 +620,13 @@ class RefreshFunctions {
   //
   //
 
-  Future<void> _fetchDashboardOnline(BuildContext safeContext) async {
+  Future<void> _fetchDashboardOnline(
+    BuildContext safeContext,
+  ) async {
     if (safeContext.mounted) {
-      await returnUserProviderSingle().fetchCurrentUser(safeContext);
+      await returnUserProviderSingle().fetchCurrentUser(
+        safeContext,
+      );
     }
     await utilityConstantProvider.getUtilityConstants();
 
@@ -571,7 +650,9 @@ class RefreshFunctions {
     await fetchNotifications();
   }
 
-  Future<void> _fetchDashboardStartup(BuildContext safeContext) async {
+  Future<void> _fetchDashboardStartup(
+    BuildContext safeContext,
+  ) async {
     await loadDashboardDataOffline();
     await getUserShop();
     await utilityConstantProvider.getUtilityConstants();
@@ -639,9 +720,13 @@ class RefreshFunctions {
                     );
                   }
                   if (isManualRefresh) {
-                    await _fetchDashboardOnline(safeContext);
+                    await _fetchDashboardOnline(
+                      safeContext,
+                    );
                   } else {
-                    await _fetchDashboardStartup(safeContext);
+                    await _fetchDashboardStartup(
+                      safeContext,
+                    );
                   }
                   dataProvider.toggleRefreshing(false);
                 },
@@ -873,7 +958,5 @@ Future<void> loadDashboardDataOffline() async {
   await returnInvoicesProvider().loadInvoicesOffline(
     shopId(),
   );
-  await returnData().getProductsOffline(
-    shopId(),
-  );
+  await returnData().getProductsOffline(shopId());
 }

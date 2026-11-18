@@ -7,23 +7,33 @@ import 'package:stockall/providers/theme_provider.dart';
 class TotalProductsPage extends StatelessWidget {
   final ThemeProvider theme;
   final String? categoryUuid;
-  const TotalProductsPage({super.key, required this.theme, this.categoryUuid});
+  final bool isMainTab;
+  const TotalProductsPage({
+    super.key,
+    required this.theme,
+    this.categoryUuid,
+    this.isMainTab = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap:
+          () =>
+              FocusManager.instance.primaryFocus?.unfocus(),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
             return TotalProductsMobile(
               theme: theme,
               categoryUuid: categoryUuid,
+              isMainTab: isMainTab,
             );
           } else {
             return TotalProductsDesktop(
               theme: theme,
               categoryUuid: categoryUuid,
+              isMainTab: isMainTab,
             );
           }
         },

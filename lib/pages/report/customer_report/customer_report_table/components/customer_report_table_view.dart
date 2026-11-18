@@ -51,6 +51,26 @@ class CustomerReportEnv {
   })
   load;
 
+  final Future<void> Function(
+    BuildContext context, {
+    required bool refreshFromStore,
+    ReceiptsReportPeriod? period,
+  })?
+  loadForPeriod;
+
+  Future<void> loadWithPeriod(
+    BuildContext context, {
+    required bool refreshFromStore,
+    required ReceiptsReportPeriod period,
+  }) =>
+      loadForPeriod != null
+          ? loadForPeriod!(
+              context,
+              refreshFromStore: refreshFromStore,
+              period: period,
+            )
+          : load(context, refreshFromStore: refreshFromStore);
+
   /// Changes whenever the source data, settings or the user's
   /// scope do.
   final String Function() signature;
@@ -116,6 +136,7 @@ class CustomerReportEnv {
     required this.access,
     required this.source,
     required this.load,
+    this.loadForPeriod,
     required this.signature,
     required this.listen,
     required this.money,
@@ -153,6 +174,88 @@ class CustomerReportEnv {
       );
     }
 
+    Future<void> loadPeriod(
+      BuildContext context, {
+      required bool refreshFromStore,
+      ReceiptsReportPeriod? period,
+    }) async {
+      final sid = shopSingle()?.shopId;
+      if (sid == null) return;
+      final receipts = returnReceiptProviderSingle();
+      final fetchAll = period?.isAllTime ?? false;
+      final startDate = period?.start;
+      final endDate = period?.end ?? period?.start;
+      if (refreshFromStore) {
+        final refresh = RefreshFunctions(context);
+        await refresh.refreshReceipts(
+          context,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        if (!context.mounted) return;
+        await refresh.refreshInvoices(
+          context,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        if (!context.mounted) return;
+        // Also pulls the customer account ledger.
+        await refresh.refreshCustomers(context);
+        await returnOrdersProvider().loadOrders(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
+        return;
+      }
+      // Local (offline) reads, only when nothing is loaded yet.
+      if (returnCustomersSingle().customers.isEmpty) {
+        await returnCustomersSingle().fetchCustomersOffline();
+      }
+      final ledger = returnCustomerAccountReceiptsProvider();
+      if (ledger.customerAccountReceipts.isEmpty) {
+        await ledger.getCustomerAccountReceiptsOffline();
+      }
+      if (receipts.receipts.isEmpty) {
+        await receipts.loadReceiptsOffline(sid);
+      }
+      if (receipts.mainSales.isEmpty) {
+        await receipts.loadProductSalesRecordOffline(sid);
+      }
+      if (returnInvoicesProvider().invoicesMain.isEmpty) {
+        await returnInvoicesProvider().loadInvoicesOffline(sid);
+      }
+      if (returnOrdersProvider().orders.isEmpty) {
+        await returnOrdersProvider().loadOrdersOffline(sid);
+      }
+      if (period != null && !period.isAllTime) {
+        await receipts.loadReceipts(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+        await returnInvoicesProvider().loadInvoices(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+        await returnOrdersProvider().loadOrders(
+          sid,
+          startDate: startDate,
+          endDate: endDate,
+          forceRefresh: false,
+        );
+      }
+    }
+
     return CustomerReportEnv(
       access: access,
       source: () {
@@ -169,40 +272,21 @@ class CustomerReportEnv {
         );
       },
       load: (context, {required refreshFromStore}) async {
-        final sid = shopSingle()?.shopId;
-        if (sid == null) return;
-        final receipts = returnReceiptProviderSingle();
-        if (refreshFromStore) {
-          final refresh = RefreshFunctions(context);
-          await refresh.refreshReceipts(context);
-          if (!context.mounted) return;
-          await refresh.refreshInvoices(context);
-          if (!context.mounted) return;
-          // Also pulls the customer account ledger.
-          await refresh.refreshCustomers(context);
-          await returnOrdersProvider().loadOrders(sid);
-          return;
-        }
-        // Local (offline) reads, only when nothing is loaded yet.
-        if (returnCustomersSingle().customers.isEmpty) {
-          await returnCustomersSingle().fetchCustomersOffline();
-        }
-        final ledger = returnCustomerAccountReceiptsProvider();
-        if (ledger.customerAccountReceipts.isEmpty) {
-          await ledger.getCustomerAccountReceiptsOffline();
-        }
-        if (receipts.receipts.isEmpty) {
-          await receipts.loadReceiptsOffline(sid);
-        }
-        if (receipts.mainSales.isEmpty) {
-          await receipts.loadProductSalesRecordOffline(sid);
-        }
-        if (returnInvoicesProvider().invoicesMain.isEmpty) {
-          await returnInvoicesProvider().loadInvoicesOffline(sid);
-        }
-        if (returnOrdersProvider().orders.isEmpty) {
-          await returnOrdersProvider().loadOrdersOffline(sid);
-        }
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+        );
+      },
+      loadForPeriod: (
+        context, {
+        required refreshFromStore,
+        period,
+      }) async {
+        await loadPeriod(
+          context,
+          refreshFromStore: refreshFromStore,
+          period: period,
+        );
       },
       signature: () {
         int latest(Iterable<DateTime> times) {
@@ -475,7 +559,11 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -590,10 +678,15 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
     _apply(_filters.clearAll);
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) => _apply(() {
-    _period = p;
-    _rebuildRows();
-  });
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() {
+      _period = p;
+      _rebuildRows();
+    });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   Future<void> _openAnalysis(CustomerReportRow row) async {
     await _env.openAnalysis(context, row.customer, _period);

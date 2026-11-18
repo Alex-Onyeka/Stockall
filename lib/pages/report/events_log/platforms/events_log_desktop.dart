@@ -156,7 +156,7 @@ class _EventsLogDesktopState
                             SystemMouseCursors.click,
                         onTap: () async {
                           await returnEventsLogProvider()
-                              .getEventLogs();
+                              .getEventLogs(forceRefresh: true);
                         },
                         child: Padding(
                           padding:
@@ -345,7 +345,7 @@ class _EventsLogDesktopState
                                       icon: Icons.clear,
                                       altAction: () async {
                                         await returnEventsLogProvider()
-                                            .getEventLogs();
+                                            .getEventLogs(forceRefresh: true);
                                       },
                                       altActionText:
                                           'Refresh',

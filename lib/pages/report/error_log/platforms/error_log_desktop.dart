@@ -154,7 +154,9 @@ class _ErrorLogDesktopState extends State<ErrorLogDesktop> {
                             SystemMouseCursors.click,
                         onTap: () async {
                           await returnErrorLogProvider()
-                              .getErrorLogs();
+                              .getErrorLogs(
+                                forceRefresh: true,
+                              );
                         },
                         child: Padding(
                           padding:
@@ -343,7 +345,10 @@ class _ErrorLogDesktopState extends State<ErrorLogDesktop> {
                                       icon: Icons.clear,
                                       altAction: () async {
                                         await returnErrorLogProvider()
-                                            .getErrorLogs();
+                                            .getErrorLogs(
+                                              forceRefresh:
+                                                  true,
+                                            );
                                       },
                                       altActionText:
                                           'Refresh',

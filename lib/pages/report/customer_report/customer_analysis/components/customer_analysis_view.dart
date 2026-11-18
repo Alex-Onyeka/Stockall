@@ -79,7 +79,11 @@ class _CustomerAnalysisViewState extends State<CustomerAnalysisView> {
       _error = null;
     });
     try {
-      await _env.load(context, refreshFromStore: refreshFromStore);
+      await _env.loadWithPeriod(
+        context,
+        refreshFromStore: refreshFromStore,
+        period: _period,
+      );
       _rebuild();
       if (mounted) setState(() => _loading = false);
     } catch (e) {
@@ -125,6 +129,9 @@ class _CustomerAnalysisViewState extends State<CustomerAnalysisView> {
         _error = e.toString();
       }
     });
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
   }
 
   /// Runs a navigation hook, then rebuilds: whatever was changed

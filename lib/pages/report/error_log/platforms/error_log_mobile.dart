@@ -193,7 +193,7 @@ class _ErrorLogMobileState extends State<ErrorLogMobile> {
                         icon: Icons.clear,
                         altAction: () async {
                           await returnErrorLogProvider()
-                              .getErrorLogs();
+                              .getErrorLogs(forceRefresh: true);
                         },
                         altActionText: 'Refresh',
                         altIcon: Icons.refresh,
@@ -211,7 +211,7 @@ class _ErrorLogMobileState extends State<ErrorLogMobile> {
                             child: RefreshIndicator(
                               onRefresh: () async {
                                 await returnErrorLogProvider()
-                                    .getErrorLogs();
+                                    .getErrorLogs(forceRefresh: true);
                               },
                               backgroundColor: Colors.white,
                               color:

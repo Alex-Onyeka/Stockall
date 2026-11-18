@@ -135,12 +135,26 @@ class _ItemHistoryReportViewState
       _error = null;
     });
     try {
+      final range = _filters.dateRange;
+      final fetchAll = range == null;
       if (refreshFromStore) {
-        await returnItemHistoryProvider()
-            .getItemHistories();
+        await returnItemHistoryProvider().getItemHistories(
+          startDate: range?.start,
+          endDate: range?.end,
+          fetchAll: fetchAll,
+          forceRefresh: true,
+        );
       } else {
         await returnItemHistoryProvider()
             .getItemHistoriesOffline();
+        if (!fetchAll) {
+          await returnItemHistoryProvider()
+              .getItemHistories(
+                startDate: range.start,
+                endDate: range.end,
+                forceRefresh: false,
+              );
+        }
       }
       _rebuildBase();
       _recompute();
@@ -348,15 +362,27 @@ class _ItemHistoryReportViewState
       }
     }
     for (final h in _baseRecords) {
-      if (h.supplier != null && h.supplier!.trim().isNotEmpty) {
+      if (h.supplier != null &&
+          h.supplier!.trim().isNotEmpty) {
         suppliersSet.add(h.supplier!.trim());
       }
-      if (h.trackingNumber != null && h.trackingNumber!.trim().isNotEmpty) {
+      if (h.trackingNumber != null &&
+          h.trackingNumber!.trim().isNotEmpty) {
         trackingNumbersSet.add(h.trackingNumber!.trim());
       }
     }
-    _suppliersList.addAll(suppliersSet.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase())));
-    _trackingNumbersList.addAll(trackingNumbersSet.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase())));
+    _suppliersList.addAll(
+      suppliersSet.toList()..sort(
+        (a, b) =>
+            a.toLowerCase().compareTo(b.toLowerCase()),
+      ),
+    );
+    _trackingNumbersList.addAll(
+      trackingNumbersSet.toList()..sort(
+        (a, b) =>
+            a.toLowerCase().compareTo(b.toLowerCase()),
+      ),
+    );
 
     _destinationsList.addAll(destinationsSet);
     _destinationsList.sort(
@@ -412,13 +438,16 @@ class _ItemHistoryReportViewState
       currency: currencySymbol(context: context),
       departmentsEnabled: _departmentsEnabled,
       lockedItemName:
-          locked == null ? null : (_itemsMap[locked] ?? 'Item'),
+          locked == null
+              ? null
+              : (_itemsMap[locked] ?? 'Item'),
       itemNames: _itemsMap,
       staffNames: _staffMap,
       departmentNames: _departmentsMap,
       categoryIdsByItem: categoryIds,
       categoryNames: {
-        for (final c in returnCategoriesProvider().categoriesMain)
+        for (final c
+            in returnCategoriesProvider().categoriesMain)
           c.uuid: c.name,
       },
       sizeLabels: sizes,
@@ -490,6 +519,7 @@ class _ItemHistoryReportViewState
                 end: day,
               ),
         );
+        _load(refreshFromStore: false);
       },
       rangeDate: (firstDate, lastDate) {
         if (firstDate == null) return;
@@ -516,6 +546,7 @@ class _ItemHistoryReportViewState
                 end: e,
               ),
         );
+        _load(refreshFromStore: false);
       },
     );
   }
@@ -964,7 +995,9 @@ class _ItemHistoryReportViewState
             ),
           Padding(
             padding: const EdgeInsets.only(left: 6.0),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            child: ReportExportButton(
+              buildSpec: _exportSpec,
+            ),
           ),
           if (widget.embedded)
             Padding(
@@ -1248,14 +1281,13 @@ class _ItemHistoryReportViewState
                   label: 'All suppliers',
                 ),
                 ..._suppliersList.map(
-                  (s) => _SearchableOption(
-                    value: s,
-                    label: s,
-                  ),
+                  (s) =>
+                      _SearchableOption(value: s, label: s),
                 ),
               ],
               onChanged:
-                  (v) => _apply(() => _filters.supplier = v),
+                  (v) =>
+                      _apply(() => _filters.supplier = v),
               theme: theme,
               searchHint: 'Search suppliers...',
             ),
@@ -1279,7 +1311,9 @@ class _ItemHistoryReportViewState
                 ),
               ],
               onChanged:
-                  (v) => _apply(() => _filters.trackingNumber = v),
+                  (v) => _apply(
+                    () => _filters.trackingNumber = v,
+                  ),
               theme: theme,
               searchHint: 'Search tracking numbers...',
             ),
@@ -1476,7 +1510,8 @@ class _ItemHistoryReportViewState
       chips.add(
         chip(
           'Tracking: ${_filters.trackingNumber}',
-          () => _apply(() => _filters.trackingNumber = null),
+          () =>
+              _apply(() => _filters.trackingNumber = null),
         ),
       );
     }
@@ -2476,18 +2511,22 @@ class _ItemHistoryRecordDetailsModal
                   title: 'Supplier Name',
                   value:
                       (history.supplierName != null &&
-                              history.supplierName!.isNotEmpty)
+                              history
+                                  .supplierName!
+                                  .isNotEmpty)
                           ? history.supplierName!
                           : (history.supplier != null &&
-                                  history.supplier!.isNotEmpty)
-                              ? history.supplier!
-                              : dash,
+                              history.supplier!.isNotEmpty)
+                          ? history.supplier!
+                          : dash,
                 ),
                 _entry(
                   title: 'Tracking Number',
                   value:
                       (history.trackingNumber != null &&
-                              history.trackingNumber!.isNotEmpty)
+                              history
+                                  .trackingNumber!
+                                  .isNotEmpty)
                           ? history.trackingNumber!
                           : dash,
                   isSelectable: true,

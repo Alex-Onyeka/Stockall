@@ -4,16 +4,17 @@ import 'package:stockall/pages/expenses/total_expenses/platforms/total_expenses_
 import 'package:stockall/pages/expenses/total_expenses/platforms/total_expenses_mobile.dart';
 
 class TotalExpenses extends StatelessWidget {
-  const TotalExpenses({super.key});
+  final bool? turnOff;
+  const TotalExpenses({super.key, this.turnOff});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
-          return TotalExpensesMobile();
+          return TotalExpensesMobile(turnOff: turnOff);
         } else {
-          return TotalExpensesDesktop();
+          return TotalExpensesDesktop(turnOff: turnOff);
         }
       },
     );

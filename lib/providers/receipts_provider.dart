@@ -1184,13 +1184,22 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   int paymentMethod = 0;
+  String? selectedCustomPaymentMethod;
 
-  void selectPaymentMethod(int index) {
+  void selectPaymentMethod(
+    int index, {
+    String? customMethodName,
+  }) {
     paymentMethod = index;
+    selectedCustomPaymentMethod = customMethodName;
     notifyListeners();
   }
 
   String paymentMethodText() {
+    if (selectedCustomPaymentMethod != null &&
+        paymentMethod >= 5) {
+      return selectedCustomPaymentMethod!;
+    }
     String tempMeth = 'All';
     switch (paymentMethod) {
       case 0:
@@ -1322,7 +1331,16 @@ class ReceiptsProvider extends ChangeNotifier {
   // Filters by the amounts paid, not the saved label: Cash / Bank / Account
   // match any receipt that used that method, Split matches 2+ methods.
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeek() {
-    if (paymentMethod == 3) {
+    if (selectedCustomPaymentMethod != null &&
+        paymentMethod >= 5) {
+      return returnReceiptsBasedOnPaymentMethod()
+          .where(
+            (rec) => rec.showsPaymentMethod(
+              selectedCustomPaymentMethod!,
+            ),
+          )
+          .toList();
+    } else if (paymentMethod == 3) {
       return returnReceiptsBasedOnPaymentMethod()
           .where((rec) => rec.paymentBreakdown().isSplit)
           .toList();

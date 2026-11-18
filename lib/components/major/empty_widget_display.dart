@@ -111,47 +111,48 @@ class EmptyWidgetDisplay extends StatelessWidget {
                     buttonText: buttonText,
                   ),
                 ),
-                // Visibility(
-                //   visible: altAction != null,
-                //   child: Column(
-                //     children: [
-                //       SizedBox(height: 10),
-                //       InkWell(
-                //         mouseCursor: SystemMouseCursors.click,
-                //         onTap: () {
-                //           altAction!();
-                //         },
-                //         child: Container(
-                //           padding: EdgeInsets.symmetric(
-                //             horizontal: 50,
-                //             vertical: 15,
-                //           ),
-                //           child: Row(
-                //             spacing: 5,
-                //             mainAxisAlignment:
-                //                 MainAxisAlignment.center,
-                //             children: [
-                //               Text(
-                //                 style: TextStyle(
-                //                   fontSize:
-                //                       theme
-                //                           .mobileTexts
-                //                           .b2
-                //                           .fontSize,
-                //                 ),
-                //                 altActionText ?? '',
-                //               ),
-                //               Icon(
-                //                 size: 18,
-                //                 altIcon ?? Icons.refresh,
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+                Visibility(
+                  visible: altAction != null,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10),
+                      InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onTap: () {
+                          altAction!();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 50,
+                            vertical: 15,
+                          ),
+                          child: Row(
+                            spacing: 5,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                ),
+                                altActionText ?? 'Refresh',
+                              ),
+                              Icon(
+                                size: 18,
+                                altIcon ?? Icons.refresh,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Visibility(
                   visible: altAction == null,
                   child: Column(

@@ -5,7 +5,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/pages/report/components/report_period_loader.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
@@ -177,25 +177,11 @@ class _ReceiptsReportMainViewState
       _error = null;
     });
     try {
-      final provider = returnReceiptProviderSingle();
-      if (refreshFromStore) {
-        await RefreshFunctions(
-          context,
-        ).refreshReceipts(context);
-      } else {
-        // Local (offline) reads, only when nothing is loaded yet.
-        final sid = shopSingle()?.shopId;
-        if (sid != null) {
-          if (provider.receipts.isEmpty) {
-            await provider.loadReceiptsOffline(sid);
-          }
-          if (provider.mainSales.isEmpty) {
-            await provider.loadProductSalesRecordOffline(
-              sid,
-            );
-          }
-        }
-      }
+      await loadReceiptsForReportPeriod(
+        context,
+        period: _period,
+        refreshFromStore: refreshFromStore,
+      );
       _rebuildBase();
       _recompute();
       if (mounted) setState(() => _loading = false);
@@ -426,8 +412,12 @@ class _ReceiptsReportMainViewState
     });
   }
 
-  void _setPeriod(ReceiptsReportPeriod p) =>
-      _apply(() => _period = p);
+  void _setPeriod(ReceiptsReportPeriod p) {
+    _apply(() => _period = p);
+    if (!p.isAllTime) {
+      _load(refreshFromStore: false);
+    }
+  }
 
   /// Clears a range's fields once its filter was removed (chip).
   void _applyAndSyncFields(VoidCallback change) {
@@ -794,8 +784,13 @@ class _ReceiptsReportMainViewState
             onChanged: (g) => _apply(() => _groupBy = g),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 5, right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            padding: const EdgeInsets.only(
+              left: 5,
+              right: 5,
+            ),
+            child: ReportExportButton(
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             ReportPill(
