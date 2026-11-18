@@ -120,9 +120,13 @@ class _TotalExpensesMobileState
         ),
         body: Builder(
           builder: (context) {
-            final expProvider = returnExpensesProvider(context);
+            final expProvider = returnExpensesProvider(
+              context,
+            );
             var expenses = expProvider.applyCategoryFilter(
-              expProvider.returnExpensesByDayOrWeek(context),
+              expProvider.returnExpensesByDayOrWeek(
+                context,
+              ),
             );
             double getTotalExpenses() {
               double tempTotal = 0;
