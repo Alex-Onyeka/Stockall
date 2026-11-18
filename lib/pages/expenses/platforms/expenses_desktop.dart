@@ -16,6 +16,7 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:stockall/pages/expenses/components/expense_category_filter_bar.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 import 'package:stockall/pages/expenses/total_expenses/total_expenses.dart';
@@ -45,6 +46,10 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
     returnData().toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
+      returnExpensesProvider(
+        context,
+        listen: false,
+      ).getExpenseCategories(shopId());
     });
   }
 
@@ -75,9 +80,10 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
     //   context,
     //   listen: false,
     // );
-    var expenses = returnExpensesProvider(
-      context,
-    ).returnExpensesByDayOrWeek(context);
+    final expProvider = returnExpensesProvider(context);
+    var expenses = expProvider.applyCategoryFilter(
+      expProvider.returnExpensesByDayOrWeek(context),
+    );
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -468,6 +474,7 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                         ],
                                       ),
                                     ),
+                                    const ExpenseCategoryFilterBar(),
                                     Builder(
                                       builder: (context) {
                                         return Padding(

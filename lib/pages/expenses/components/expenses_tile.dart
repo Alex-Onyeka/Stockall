@@ -35,9 +35,24 @@ class _ExpensesTileState extends State<ExpensesTile> {
     }
   }
 
+  Color _categoryColor(TempExpensesClass exp) {
+    switch (exp.expenseType) {
+      case ExpenseType.staffSalary:
+        return Colors.indigo;
+      case ExpenseType.stockPurchase:
+        return Colors.teal;
+      case ExpenseType.custom:
+        return Colors.deepPurple;
+      case ExpenseType.simpleExpense:
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    final catColor = _categoryColor(widget.expense);
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
       child: Ink(
@@ -181,29 +196,150 @@ class _ExpensesTileState extends State<ExpensesTile> {
                 ),
                 SizedBox(height: 10),
                 Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        color: Colors.grey.shade600,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Row(
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Created By: ',
+                          ),
+                          Flexible(
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                color: Colors.grey.shade900,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              cutLongText2(
+                                widget.expense.creator ??
+                                    'Not Set',
+                              ),
+                              overflow:
+                                  TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
-                      'Created By: ',
                     ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b3.fontSize,
-                        color: Colors.grey.shade900,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      cutLongText2(
-                        widget.expense.creator ?? 'Not Set',
-                      ),
+                    Row(
+                      spacing: 6,
+                      children: [
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                          decoration: BoxDecoration(
+                            color: catColor.withValues(
+                              alpha: 0.1,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(4),
+                            border: Border.all(
+                              color: catColor.withValues(
+                                alpha: 0.35,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            widget.expense.categoryLabel,
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b5
+                                      .fontSize,
+                              color: catColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius:
+                                BorderRadius.circular(4),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                            ),
+                          ),
+                          child: Text(
+                            widget
+                                .expense
+                                .resolvedPaymentChannelLabel,
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b5
+                                      .fontSize,
+                              color: Colors.grey.shade800,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                if (widget.expense.isStaffSalary &&
+                    widget.expense.staffName != null &&
+                    widget
+                        .expense
+                        .staffName!
+                        .isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Staff: ${widget.expense.staffName}',
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color: Colors.indigo.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+                if (widget.expense.isStockPurchase &&
+                    widget.expense.purchaseUuid !=
+                        null) ...[
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Linked Purchase #${widget.expense.purchaseUuid!.split('-').first.toUpperCase()}',
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color: Colors.teal.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

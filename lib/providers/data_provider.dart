@@ -35,6 +35,7 @@ import 'package:stockall/local_database/department_func/unsync_funcs/deleted_dep
 import 'package:stockall/local_database/department_func/unsync_funcs/updated_department/updated_department_func.dart';
 import 'package:stockall/local_database/error_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
+import 'package:stockall/local_database/expenses/expense_categories_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
@@ -543,6 +544,7 @@ class DataProvider extends ChangeNotifier {
     await CreatedExpensesFunc().clearExpenses();
     await UpdatedExpensesFunc().clearupdatedExpenses();
     await DeletedExpensesFunc().clearDeletedExpenses();
+    await ExpenseCategoriesFunc().clearAllQueues();
 
     await CreatedProductFunc().clearProducts();
     await UpdatedProductsFunc().clearupdatedProducts();
@@ -833,6 +835,27 @@ class DataProvider extends ChangeNotifier {
                 'Finished Syncing Deleted Expenses',
               );
               setSyncProgress(16);
+            }
+            if (ExpenseCategoriesFunc()
+                    .getCreatedQueue()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .createExpenseCategoriesSync();
+            }
+            if (ExpenseCategoriesFunc()
+                    .getUpdatedQueue()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .updateExpenseCategoriesSync();
+            }
+            if (ExpenseCategoriesFunc()
+                    .getDeletedQueue()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .deleteExpenseCategoriesSync();
             }
             if (CreatedCustomersFunc()
                     .getCustomers()

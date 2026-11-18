@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/pages/employees/employee_page/components/staff_page_env.dart';
 import 'package:stockall/pages/employees/employee_page/components/staff_page_shell.dart';
+import 'package:stockall/pages/employees/employee_page/components/staff_salary_history_section.dart';
 
 /// Staff details, desktop: the details card beside today's summary
 /// card, then today's sections two per row (the customer details
@@ -78,6 +79,11 @@ class _EmployeePageDesktopState extends State<EmployeePageDesktop>
                       ),
                     ],
                   ),
+                ),
+              if (widget.env == null && data.canSeeRecords)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: StaffSalaryHistorySection(staffUuid: staffId),
                 ),
             ],
           ),

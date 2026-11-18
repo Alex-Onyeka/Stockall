@@ -1,6 +1,38 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/payment_entry/payment_entry.dart';
 
 part 'temp_expenses_class.g.dart';
+
+class ExpenseType {
+  static const String simpleExpense = 'simple_expense';
+  static const String staffSalary = 'staff_salary';
+  static const String stockPurchase = 'stock_purchase';
+  static const String custom = 'custom';
+
+  static const List<String> systemTypes = [
+    simpleExpense,
+    staffSalary,
+    stockPurchase,
+  ];
+
+  static String labelFor(String? type, {String? customCategoryName}) {
+    switch (type) {
+      case staffSalary:
+        return 'Staff Salary';
+      case stockPurchase:
+        return 'Stock Purchase';
+      case custom:
+        if (customCategoryName != null &&
+            customCategoryName.trim().isNotEmpty) {
+          return customCategoryName.trim();
+        }
+        return 'Custom Category';
+      case simpleExpense:
+      default:
+        return 'Simple Expense';
+    }
+  }
+}
 
 @HiveType(typeId: 2)
 class TempExpensesClass extends HiveObject {
@@ -49,6 +81,30 @@ class TempExpensesClass extends HiveObject {
   @HiveField(14)
   String? userName;
 
+  @HiveField(15, defaultValue: ExpenseType.simpleExpense)
+  String expenseType;
+
+  @HiveField(16)
+  String? expenseCategoryUuid;
+
+  @HiveField(17)
+  String? expenseCategoryName;
+
+  @HiveField(18)
+  String? staffUuid;
+
+  @HiveField(19)
+  String? staffName;
+
+  @HiveField(20)
+  String? purchaseUuid;
+
+  @HiveField(21)
+  String? paymentChannel;
+
+  @HiveField(22)
+  List<PaymentEntry>? paymentEntries;
+
   TempExpensesClass({
     required this.name,
     this.description,
@@ -65,19 +121,59 @@ class TempExpensesClass extends HiveObject {
     this.uuid,
     this.updatedAt,
     this.userName,
+    this.expenseType = ExpenseType.simpleExpense,
+    this.expenseCategoryUuid,
+    this.expenseCategoryName,
+    this.staffUuid,
+    this.staffName,
+    this.purchaseUuid,
+    this.paymentChannel,
+    this.paymentEntries,
   });
 
-  factory TempExpensesClass.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  String get categoryLabel => ExpenseType.labelFor(
+    expenseType,
+    customCategoryName: expenseCategoryName,
+  );
+
+  bool get isSimpleExpense => expenseType == ExpenseType.simpleExpense;
+  bool get isStaffSalary => expenseType == ExpenseType.staffSalary;
+  bool get isStockPurchase => expenseType == ExpenseType.stockPurchase;
+  bool get isCustomCategory => expenseType == ExpenseType.custom;
+
+  String get resolvedPaymentChannelLabel {
+    if (paymentEntries != null && paymentEntries!.isNotEmpty) {
+      return PaymentBreakdown(paymentEntries!).label;
+    }
+    if (paymentChannel != null && paymentChannel!.trim().isNotEmpty) {
+      return paymentChannel!.trim();
+    }
+    return PaymentMethods.cash;
+  }
+
+  factory TempExpensesClass.fromJson(Map<String, dynamic> json) {
+    final rawEntries = json['payment_entries'];
+    List<PaymentEntry>? parsedEntries;
+    if (rawEntries is List) {
+      parsedEntries =
+          rawEntries
+              .whereType<Map>()
+              .map(
+                (e) => PaymentEntry.fromJson(
+                  Map<String, dynamic>.from(e),
+                ),
+              )
+              .toList();
+    }
+
     return TempExpensesClass(
       id: json['id'] as int?,
       createdDate:
           json['created_date'] != null
-              ? DateTime.parse(json['created_date'])
+              ? DateTime.parse(json['created_date'].toString()).toLocal()
               : null,
-      shopId: json['shop_id'],
-      name: json['name'],
+      shopId: (json['shop_id'] as num).toInt(),
+      name: (json['name'] ?? '') as String,
       description: json['description'] as String?,
       amount: (json['amount'] as num).toDouble(),
       quantity:
@@ -92,16 +188,27 @@ class TempExpensesClass extends HiveObject {
       uuid: json['uuid'] as String?,
       updatedAt:
           json['updated_at'] != null
-              ? DateTime.parse(json['updated_at'])
+              ? DateTime.parse(json['updated_at'].toString()).toLocal()
               : null,
       userName: json['user_name'] as String?,
+      expenseType:
+          (json['expense_type'] as String?)?.trim().isNotEmpty == true
+              ? (json['expense_type'] as String).trim()
+              : ExpenseType.simpleExpense,
+      expenseCategoryUuid: json['expense_category_uuid'] as String?,
+      expenseCategoryName: json['expense_category_name'] as String?,
+      staffUuid: json['staff_uuid'] as String?,
+      staffName: json['staff_name'] as String?,
+      purchaseUuid: json['purchase_uuid'] as String?,
+      paymentChannel: json['payment_channel'] as String?,
+      paymentEntries: parsedEntries,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       // 'id': id,
-      'created_date': createdDate?.toIso8601String(),
+      'created_date': createdDate?.toUtc().toIso8601String(),
       'shop_id': shopId,
       'name': name,
       'description': description,
@@ -113,8 +220,17 @@ class TempExpensesClass extends HiveObject {
       'department_uuid': departmentUuid,
       'department_name': departmentName,
       'uuid': uuid,
-      'updated_at': updatedAt?.toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
       'user_name': userName,
+      'expense_type': expenseType,
+      'expense_category_uuid': expenseCategoryUuid,
+      'expense_category_name': expenseCategoryName,
+      'staff_uuid': staffUuid,
+      'staff_name': staffName,
+      'purchase_uuid': purchaseUuid,
+      'payment_channel': paymentChannel,
+      'payment_entries':
+          paymentEntries?.map((e) => e.toJson()).toList(),
     };
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/pages/employees/employee_page/components/staff_page_env.dart';
 import 'package:stockall/pages/employees/employee_page/components/staff_page_shell.dart';
+import 'package:stockall/pages/employees/employee_page/components/staff_salary_history_section.dart';
 
 /// Staff details, mobile: today's summary card, the details card,
 /// then today's sections, stacked (the customer details page's
@@ -46,6 +47,8 @@ class _EmployeePageMobileState extends State<EmployeePageMobile>
             detailsCard(user),
             if (note != null) note,
             ...sections(data),
+            if (widget.env == null && data.canSeeRecords)
+              StaffSalaryHistorySection(staffUuid: staffId),
           ],
         );
       },

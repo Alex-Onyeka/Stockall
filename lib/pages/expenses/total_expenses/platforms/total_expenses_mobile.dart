@@ -9,6 +9,7 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:stockall/pages/expenses/components/expense_category_filter_bar.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 
@@ -112,9 +113,10 @@ class _TotalExpensesMobileState
         ),
         body: Builder(
           builder: (context) {
-            var expenses = returnExpensesProvider(
-              context,
-            ).returnExpensesByDayOrWeek(context);
+            final expProvider = returnExpensesProvider(context);
+            var expenses = expProvider.applyCategoryFilter(
+              expProvider.returnExpensesByDayOrWeek(context),
+            );
             double getTotalExpenses() {
               double tempTotal = 0;
               for (var item in expenses) {
@@ -142,6 +144,8 @@ class _TotalExpensesMobileState
                           color: Colors.white,
                           child: Column(
                             children: [
+                              const ExpenseCategoryFilterBar(),
+                              const SizedBox(height: 8),
                               Row(
                                 spacing: 10,
                                 children: [

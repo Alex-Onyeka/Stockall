@@ -80,9 +80,15 @@ class _DetailsPageContainerState
 
   @override
   Widget build(BuildContext context) {
-    final matching = returnExpensesProvider(context)
+    final provider = returnExpensesProvider(context);
+    var matching = provider
         .returnExpensesByDayOrWeek(context)
         .where((e) => e.uuid == widget.expenseUuid);
+    if (matching.isEmpty) {
+      matching = provider.expensesMain.where(
+        (e) => e.uuid == widget.expenseUuid,
+      );
+    }
 
     if (matching.isEmpty) {
       return Scaffold(
@@ -419,6 +425,66 @@ class ExpenseDetailsContainer extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 15,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: TabBarUserInfoSection(
+                    mainText: expense.categoryLabel,
+                    text: 'Category',
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
+                  child: TabBarUserInfoSection(
+                    mainText:
+                        expense.paymentEntries != null &&
+                                expense
+                                        .paymentEntries!
+                                        .length >
+                                    1
+                            ? expense.paymentEntries!
+                                .map(
+                                  (p) =>
+                                      '${p.method}: ${formatMoneyMid(amount: p.amount, context: context)}',
+                                )
+                                .join(', ')
+                            : expense
+                                .resolvedPaymentChannelLabel,
+                    text: 'Payment Channel',
+                  ),
+                ),
+              ],
+            ),
+            if (expense.isStaffSalary &&
+                expense.staffName != null &&
+                expense.staffName!.isNotEmpty) ...[
+              SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TabBarUserInfoSection(
+                  mainText: expense.staffName!,
+                  text: 'Staff Member',
+                ),
+              ),
+            ],
+            if (expense.isStockPurchase &&
+                expense.purchaseUuid != null) ...[
+              SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TabBarUserInfoSection(
+                  mainText:
+                      'Purchase #${expense.purchaseUuid!.split('-').first.toUpperCase()}',
+                  text: 'Linked Purchase',
+                ),
+              ),
+            ],
             SizedBox(height: 40),
             Row(
               spacing: 15,

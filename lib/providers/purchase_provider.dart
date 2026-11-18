@@ -24,6 +24,7 @@ import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_p
 import 'package:stockall/local_database/storage_product/storage_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/expenses_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PurchaseProvider extends ChangeNotifier {
@@ -120,6 +121,7 @@ class PurchaseProvider extends ChangeNotifier {
             purchase.uuid!,
           );
         }
+        await ExpensesProvider().syncPurchaseExpense(newPurchase);
         notifyListeners();
         return newPurchase;
       } catch (e) {
@@ -133,6 +135,7 @@ class PurchaseProvider extends ChangeNotifier {
           await CreatedPurchasesFunc().createPurchases(
             CreatedPurchases(purchase: purchase),
           );
+          await ExpensesProvider().syncPurchaseExpense(purchase);
           notifyListeners();
           return purchase;
         } catch (e2) {
@@ -149,6 +152,7 @@ class PurchaseProvider extends ChangeNotifier {
         await CreatedPurchasesFunc().createPurchases(
           CreatedPurchases(purchase: purchase),
         );
+        await ExpensesProvider().syncPurchaseExpense(purchase);
         notifyListeners();
         // await loadPurchases(shopId());
         return purchase;
@@ -191,6 +195,7 @@ class PurchaseProvider extends ChangeNotifier {
           await UpdatedPurchasesFunc()
               .deleteUpdatedPurchase(purchase.uuid!);
         }
+        await ExpensesProvider().syncPurchaseExpense(newPurchase);
         notifyListeners();
         await loadPurchases(shopId());
         return newPurchase;
@@ -223,6 +228,7 @@ class PurchaseProvider extends ChangeNotifier {
               );
             }
           }
+          await ExpensesProvider().syncPurchaseExpense(purchase);
           await loadPurchases(shopId());
           syncData();
           return purchase;
@@ -262,6 +268,7 @@ class PurchaseProvider extends ChangeNotifier {
           notifyListeners();
           return null;
         }
+        await ExpensesProvider().syncPurchaseExpense(purchase);
         await loadPurchases(shopId());
         syncData();
         return purchase;
@@ -1090,6 +1097,7 @@ class PurchaseProvider extends ChangeNotifier {
           }
         }
       }
+      await ExpensesProvider().deletePurchaseExpense(purchaseUuid);
       returnData().syncData();
 
       await mainLocalLog('✅ Purchase successfully Delete.');
