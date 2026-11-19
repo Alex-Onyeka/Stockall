@@ -5,7 +5,9 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
+import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -35,10 +37,11 @@ class SubExpensesSection extends StatelessWidget {
     if (subExpenses.isEmpty) {
       return Align(
         alignment: Alignment.centerLeft,
-        child: TextButton.icon(
+        child: _SubExpenseAddButton(
+          theme: theme,
+          icon: Icons.call_split_outlined,
+          label: 'Add Sub-expense',
           onPressed: onAdd,
-          icon: const Icon(Icons.call_split_outlined),
-          label: const Text('Add Sub-expense'),
         ),
       );
     }
@@ -65,10 +68,11 @@ class SubExpensesSection extends StatelessWidget {
           ),
         Align(
           alignment: Alignment.centerLeft,
-          child: TextButton.icon(
+          child: _SubExpenseAddButton(
+            theme: theme,
+            icon: Icons.add,
+            label: 'Add Another Sub-expense',
             onPressed: onAdd,
-            icon: const Icon(Icons.add),
-            label: const Text('Add Another Sub-expense'),
           ),
         ),
         Container(
@@ -124,9 +128,12 @@ class _SubExpenseTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final qtyText =
+        sub.quantity != null
+            ? 'Qty ${formatLargeNumberDouble(sub.quantity!)}${sub.unit != null && sub.unit!.isNotEmpty ? ' ${sub.unit}' : ''}'
+            : (sub.unit != null && sub.unit!.isNotEmpty ? sub.unit! : null);
     final details = [
-      if (sub.quantity != null)
-        'Qty ${formatLargeNumberDouble(sub.quantity!)}',
+      if (qtyText != null) qtyText,
       sub.paymentChannel,
     ].join(' · ');
     return Container(
@@ -250,6 +257,8 @@ class _SubExpenseEditorState extends State<_SubExpenseEditor> {
   final _costController = TextEditingController();
   final _quantityController = TextEditingController();
   String _channel = PaymentMethods.cash;
+  String? _unit;
+  bool _isOpenUnit = false;
 
   @override
   void initState() {
@@ -265,6 +274,7 @@ class _SubExpenseEditorState extends State<_SubExpenseEditor> {
         _quantityController.text = initial.quantity.toString();
       }
       _channel = initial.paymentChannel;
+      _unit = initial.unit;
     }
   }
 
@@ -307,6 +317,7 @@ class _SubExpenseEditorState extends State<_SubExpenseEditor> {
           _quantityController.text.replaceAll(',', ''),
         ),
         paymentChannel: _channel,
+        unit: _unit,
       ),
     );
   }
@@ -365,6 +376,36 @@ class _SubExpenseEditorState extends State<_SubExpenseEditor> {
                     controller: _quantityController,
                     theme: theme,
                   ),
+                  const SizedBox(height: 15),
+                  MainDropdown(
+                    valueSet: _unit != null && _unit!.isNotEmpty,
+                    onTap: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      setState(() {
+                        _isOpenUnit = !_isOpenUnit;
+                      });
+                      unitsBottomSheet(
+                        context,
+                        () {
+                          if (!mounted) return;
+                          setState(() {
+                            _isOpenUnit = !_isOpenUnit;
+                          });
+                        },
+                        initialSelectedUnit: _unit,
+                        onUnitChanged: (u) {
+                          if (!mounted) return;
+                          setState(() {
+                            _unit = u;
+                          });
+                        },
+                      );
+                    },
+                    isOpen: _isOpenUnit,
+                    title: 'Unit (Optional)',
+                    hint: _unit ?? 'Select Unit',
+                    theme: theme,
+                  ),
                   const SizedBox(height: 10),
                   ExpensePaymentChannelSelector(
                     initialChannel: _channel,
@@ -383,6 +424,46 @@ class _SubExpenseEditorState extends State<_SubExpenseEditor> {
             action: _save,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SubExpenseAddButton extends StatelessWidget {
+  final ThemeProvider theme;
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _SubExpenseAddButton({
+    required this.theme,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: theme.lightModeColor.prColor250,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      icon: Icon(icon, size: 15, color: Colors.white),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: theme.mobileTexts.b4.fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
     );
   }

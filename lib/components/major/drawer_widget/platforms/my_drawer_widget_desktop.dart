@@ -6,6 +6,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_tablet.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/calculator_page/calculator_page.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
@@ -17,6 +18,7 @@ import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
@@ -268,6 +270,35 @@ class _MyDrawerWidgetDesktopMainState
                                 },
                                 title: 'Items',
                                 icon: Icons.book,
+                              ),
+                              Visibility(
+                                visible:
+                                    returnShopProvider(
+                                      context: context,
+                                    ).userShop()?.manageInventoryStorage ==
+                                    true,
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: -1,
+                                  height: 14,
+                                  action: () {
+                                    ItemsAuthAction()
+                                        .manageInventoryStorageAction(
+                                          context: context,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) {
+                                                  return StoragePage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        );
+                                  },
+                                  title: 'Storage',
+                                  icon: Icons.warehouse_outlined,
+                                ),
                               ),
                               Visibility(
                                 visible: !isStoreKeeper(),

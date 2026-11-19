@@ -101,7 +101,7 @@ class ExpenseStaffSelector extends StatelessWidget {
           },
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(10, 10, 8, 10),
+            padding: const EdgeInsets.fromLTRB(10, 6, 8, 6),
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: Colors.grey.shade300),

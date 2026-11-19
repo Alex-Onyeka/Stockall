@@ -14,7 +14,8 @@ class SubExpenseAdapter extends TypeAdapter<SubExpense> {
   SubExpense read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return SubExpense(
       uuid: fields[0] as String,
@@ -23,13 +24,14 @@ class SubExpenseAdapter extends TypeAdapter<SubExpense> {
       amount: fields[3] as double,
       quantity: fields[4] as double?,
       paymentChannel: fields[5] as String,
+      unit: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SubExpense obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -41,7 +43,9 @@ class SubExpenseAdapter extends TypeAdapter<SubExpense> {
       ..writeByte(4)
       ..write(obj.quantity)
       ..writeByte(5)
-      ..write(obj.paymentChannel);
+      ..write(obj.paymentChannel)
+      ..writeByte(6)
+      ..write(obj.unit);
   }
 
   @override

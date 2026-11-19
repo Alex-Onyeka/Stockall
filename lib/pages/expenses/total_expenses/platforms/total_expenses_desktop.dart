@@ -15,7 +15,8 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
-import 'package:stockall/pages/expenses/components/expense_category_filter_bar.dart';
+import 'package:stockall/pages/expenses/categories/expense_categories_page.dart';
+import 'package:stockall/pages/expenses/components/expense_category_filter_buttons.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -176,49 +177,80 @@ class TotalExpensesDesktopState
                         turnOff: widget.turnOff,
                         context: context,
                         title: 'All Expenses',
-                        widget: Visibility(
-                          visible:
-                              screenWidth(context) >
-                              mobileScreen,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              mouseCursor:
-                                  SystemMouseCursors.click,
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                              onTap: () async {
-                                await getExpenses();
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.all(
-                                      10,
+                        widget: Row(
+                          spacing: 10,
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Visibility(
+                              visible:
+                                  screenWidth(context) >
+                                  mobileScreen,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  mouseCursor:
+                                      SystemMouseCursors.click,
+                                  borderRadius:
+                                      BorderRadius.circular(10),
+                                  onTap: () async {
+                                    await getExpenses();
+                                  },
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(
+                                          10,
+                                        ),
+                                    child: Row(
+                                      spacing: 5,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight.bold,
+                                          ),
+                                          'Refresh',
+                                        ),
+                                        Icon(
+                                          size: 18,
+                                          Icons.refresh_rounded,
+                                        ),
+                                      ],
                                     ),
-                                child: Row(
-                                  spacing: 5,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      'Refresh',
-                                    ),
-                                    Icon(
-                                      size: 18,
-                                      Icons.refresh_rounded,
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                right: 10.0,
+                              ),
+                              child: IconButton(
+                                tooltip: 'Categories',
+                                mouseCursor:
+                                    SystemMouseCursors.click,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) =>
+                                              const ExpenseCategoriesPage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.category_outlined,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       floatingActionButton:
@@ -288,8 +320,6 @@ class TotalExpensesDesktopState
                                     color: Colors.white,
                                     child: Column(
                                       children: [
-                                        const ExpenseCategoryFilterBar(),
-                                        const SizedBox(height: 8),
                                         Row(
                                           spacing: 10,
                                           children: [
@@ -318,28 +348,60 @@ class TotalExpensesDesktopState
                                             ),
                                           ],
                                         ),
-                                        Visibility(
-                                          visible: authorization(
-                                            authorized:
-                                                Authorizations()
-                                                    .viewDate,
-                                          ),
-                                          child: SizedBox(
-                                            height: 30,
-                                          ),
-                                        ),
-                                        Visibility(
-                                          visible: authorization(
-                                            authorized:
-                                                Authorizations()
-                                                    .viewDate,
-                                          ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                vertical:
+                                                    10.0,
+                                              ),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment
-                                                    .end,
+                                                    .spaceBetween,
                                             children: [
-                                              MaterialButton(
+                                              Visibility(
+                                                visible: authorization(
+                                                  authorized:
+                                                      Authorizations()
+                                                          .viewDate,
+                                                ),
+                                                child: Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme
+                                                            .mobileTexts
+                                                            .b1
+                                                            .fontSize,
+                                                  ),
+                                                  returnExpensesProvider(
+                                                                context,
+                                                              ).dateSet !=
+                                                              null ||
+                                                          returnExpensesProvider(
+                                                                context,
+                                                              ).rangeStartDate !=
+                                                              null
+                                                      ? 'All Expenses'
+                                                      : 'For Today',
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              const Flexible(
+                                                child:
+                                                    ExpenseCategoryFilterButtons(),
+                                              ),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              Visibility(
+                                                visible: authorization(
+                                                  authorized:
+                                                      Authorizations()
+                                                          .viewDate,
+                                                ),
+                                                child: MaterialButton(
                                                 mouseCursor:
                                                     SystemMouseCursors
                                                         .click,
@@ -437,6 +499,7 @@ class TotalExpensesDesktopState
                                                     ),
                                                   ],
                                                 ),
+                                              ),
                                               ),
                                             ],
                                           ),

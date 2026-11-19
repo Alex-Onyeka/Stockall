@@ -10,10 +10,10 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/invoices/invoice_list/platforms/invoice_list_mobile.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:stockall/pages/sales/search_receipt/search_receipt_page.dart';
 
 class TotalSalesMobile extends StatefulWidget {
   final String? id;
@@ -59,14 +59,6 @@ class _TotalSalesMobileState
     ).clearDate();
   }
 
-  bool returnInvoice = false;
-
-  void switchReturnInvoice(bool value) {
-    setState(() {
-      returnInvoice = value;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -81,102 +73,81 @@ class _TotalSalesMobileState
         appBar: appBar(
           turnOff: widget.turnOff,
           context: context,
-          title:
-              !returnInvoice ? 'All Sales' : 'All Invoices',
-          widget: Padding(
-            padding: const EdgeInsets.only(right: 15.0),
-            child: PopupMenuButton(
-              offset: Offset(-20, 30),
-              color: Colors.white,
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    onTap: () {
-                      switchReturnInvoice(false);
-                    },
-                    child: Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight:
-                            !returnInvoice
-                                ? FontWeight.bold
-                                : null,
-                      ),
-                      'Receipts',
+          title: 'All Sales',
+          widget: Row(
+            children: [
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  mouseCursor: SystemMouseCursors.click,
+                  borderRadius: BorderRadius.circular(5),
+                  onTap: () {
+                    showSearchReceiptPage(context);
+                  },
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.all(6.5),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade700,
+                              ),
+                              'Search',
+                            ),
+                            SizedBox(width: 3),
+                          ],
+                        ),
+                        Icon(
+                          size: 20,
+                          Icons.manage_search_rounded,
+                        ),
+                      ],
                     ),
                   ),
-                  PopupMenuItem(
-                    onTap: () {
-                      switchReturnInvoice(true);
-                      returnData().toggleFloatingAction(
-                        context,
-                      );
-                    },
-                    child: Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b2.fontSize,
-                        fontWeight:
-                            returnInvoice
-                                ? FontWeight.bold
-                                : null,
-                      ),
-                      'Invoices',
-                    ),
-                  ),
-                ];
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b3.fontSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    !returnInvoice
-                        ? 'Receipts'
-                        : 'Invoices',
-                  ),
-                  Icon(Icons.more_vert_rounded),
-                ],
+                ),
               ),
-            ),
+              SizedBox(width: 20),
+            ],
           ),
         ),
         floatingActionButton: Visibility(
-          visible: returnInvoice,
+          visible: authorization(
+            authorized: Authorizations().makeSale,
+          ),
           child: FloatingActionButtonMain(
             action: () {
               SalesAuthAction().invoiceManagementAction(
                 context: context,
                 action: () {
-                  if (authorization(
-                    authorized: Authorizations().makeSale,
-                  )) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return MakeSalesPage(
-                            cartItemTypeIndex: 2,
-                          );
-                        },
-                      ),
-                    ).then((_) {
-                      setState(() {
-                        // getProductList(context);
-                      });
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MakeSalesPage(
+                          cartItemTypeIndex: 2,
+                        );
+                      },
+                    ),
+                  ).then((_) {
+                    setState(() {
+                      // getProductList(context);
                     });
-                  }
+                  });
                 },
               );
             },
             color: theme.lightModeColor.secColor100,
-            text: 'Create Invoice',
+            text: 'Create Sale',
             theme: theme,
           ),
         ),
@@ -184,8 +155,7 @@ class _TotalSalesMobileState
         //     FloatingActionButtonLocation.endFloat,
         body: Builder(
           builder: (context) {
-            if (!returnInvoice) {
-              return Padding(
+            return Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20.0,
                 ),
@@ -747,13 +717,6 @@ class _TotalSalesMobileState
                   ],
                 ),
               );
-            } else {
-              return InvoiceListBodyMobile(
-                agentUuid: widget.id,
-                subStaffId: widget.subStaffId,
-                customerUuid: widget.customerUuid,
-              );
-            }
           },
         ),
       ),

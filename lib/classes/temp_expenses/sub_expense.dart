@@ -29,6 +29,9 @@ class SubExpense {
   @HiveField(5)
   String paymentChannel;
 
+  @HiveField(6)
+  String? unit;
+
   SubExpense({
     required this.uuid,
     required this.name,
@@ -36,6 +39,7 @@ class SubExpense {
     required this.amount,
     this.quantity,
     this.paymentChannel = PaymentMethods.cash,
+    this.unit,
   });
 
   factory SubExpense.fromJson(Map<String, dynamic> json) {
@@ -51,6 +55,7 @@ class SubExpense {
               : null,
       paymentChannel:
           channel == null || channel.isEmpty ? PaymentMethods.cash : channel,
+      unit: json['unit'] as String?,
     );
   }
 
@@ -62,6 +67,7 @@ class SubExpense {
       'amount': amount,
       'quantity': quantity,
       'payment_channel': paymentChannel,
+      'unit': unit,
     };
   }
 
@@ -72,6 +78,7 @@ class SubExpense {
     amount: amount,
     quantity: quantity,
     paymentChannel: paymentChannel,
+    unit: unit,
   );
 
   /// Sum of the lines' amounts.

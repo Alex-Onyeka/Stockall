@@ -16,10 +16,10 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/invoices/invoice_list/platforms/invoice_list_desktop.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:stockall/pages/sales/search_receipt/search_receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class TotalSalesDesktop extends StatefulWidget {
@@ -60,14 +60,6 @@ class _TotalSalesDesktopState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
       returnNavProvider(context, listen: false).navigate(2);
-    });
-  }
-
-  bool returnInvoice = false;
-
-  void switchReturnInvoice(bool value) {
-    setState(() {
-      returnInvoice = value;
     });
   }
 
@@ -125,9 +117,13 @@ class _TotalSalesDesktopState
                 action: () => _confirmLogout(theme),
                 theme: theme,
                 notifications:
-                    returnNotificationProvider(context).notifications().isEmpty
+                    returnNotificationProvider(
+                          context,
+                        ).notifications().isEmpty
                         ? []
-                        : returnNotificationProvider(context).notifications(),
+                        : returnNotificationProvider(
+                          context,
+                        ).notifications(),
                 globalKey: _scaffoldKey,
               )
               : null,
@@ -153,7 +149,8 @@ class _TotalSalesDesktopState
               else
                 Container(
                   width:
-                      screenWidth(context) < tabletScreenSmall
+                      screenWidth(context) <
+                              tabletScreenSmall
                           ? 50
                           : (screenWidth(context) >
                                   tabletScreenSmall &&
@@ -168,16 +165,68 @@ class _TotalSalesDesktopState
                     appBar: appBar(
                       turnOff: widget.turnOff,
                       context: context,
-                      title:
-                          !returnInvoice
-                              ? 'All Sales'
-                              : 'All Invoices',
+                      title: 'All Sales',
                       widget: Row(
                         spacing: 15,
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment:
                             MainAxisAlignment.end,
                         children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              onTap: () {
+                                showSearchReceiptPage(
+                                  context,
+                                );
+                              },
+                              child: Padding(
+                                padding:
+                                    EdgeInsetsGeometry.all(
+                                      6.5,
+                                    ),
+                                child: Row(
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
+                                          ),
+                                          'Search${screenWidth(context) <= mobileScreen ? '' : ' Receipt'}',
+                                        ),
+                                        SizedBox(width: 3),
+                                      ],
+                                    ),
+                                    Icon(
+                                      size: 20,
+                                      Icons
+                                          .manage_search_rounded,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                           Visibility(
                             visible:
                                 screenWidth(context) >
@@ -227,143 +276,53 @@ class _TotalSalesDesktopState
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              right: 15.0,
-                            ),
-                            child: PopupMenuButton(
-                              offset: Offset(-20, 30),
-                              color: Colors.white,
-                              itemBuilder: (context) {
-                                return [
-                                  PopupMenuItem(
-                                    onTap: () {
-                                      switchReturnInvoice(
-                                        false,
-                                      );
-                                    },
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            !returnInvoice
-                                                ? FontWeight
-                                                    .bold
-                                                : null,
-                                      ),
-                                      'Receipts',
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    onTap: () {
-                                      switchReturnInvoice(
-                                        true,
-                                      );
-                                      returnData()
-                                          .toggleFloatingAction(
-                                            context,
-                                          );
-                                    },
-                                    child: Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            returnInvoice
-                                                ? FontWeight
-                                                    .bold
-                                                : null,
-                                      ),
-                                      'Invoices',
-                                    ),
-                                  ),
-                                ];
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                mainAxisSize:
-                                    MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    !returnInvoice
-                                        ? 'Receipts'
-                                        : 'Invoices',
-                                  ),
-                                  Icon(
-                                    Icons.more_vert_rounded,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
                     floatingActionButton: Visibility(
-                      visible: returnInvoice,
+                      visible: authorization(
+                        authorized:
+                            Authorizations().makeSale,
+                      ),
                       child: FloatingActionButtonMain(
                         action: () {
-                          SalesAuthAction().invoiceManagementAction(
-                            context: context,
-                            action: () {
-                              if (authorization(
-                                authorized:
-                                    Authorizations()
-                                        .makeSale,
-                              )) {
-                                returnNavProvider(
-                                  context,
-                                  listen: false,
-                                ).navigate(2);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return MakeSalesPage(
-                                        cartItemTypeIndex:
-                                            2,
-                                      );
-                                    },
-                                  ),
-                                ).then((_) {
-                                  setState(() {
-                                    // getProductList(context);
+                          SalesAuthAction()
+                              .invoiceManagementAction(
+                                context: context,
+                                action: () {
+                                  returnNavProvider(
+                                    context,
+                                    listen: false,
+                                  ).navigate(2);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return MakeSalesPage(
+                                          cartItemTypeIndex:
+                                              1,
+                                        );
+                                      },
+                                    ),
+                                  ).then((_) {
+                                    setState(() {
+                                      // getProductList(context);
+                                    });
                                   });
-                                });
-                              }
-                            },
-                          );
+                                },
+                              );
                         },
                         color:
                             theme
                                 .lightModeColor
                                 .secColor100,
-                        text: 'Create Invoice',
+                        text: 'Create Sale',
                         theme: theme,
                       ),
                     ),
                     body: Builder(
                       builder: (context) {
-                        if (!returnInvoice) {
-                          return Padding(
+                        return Padding(
                             padding:
                                 const EdgeInsets.symmetric(
                                   horizontal: 20.0,
@@ -970,14 +929,6 @@ class _TotalSalesDesktopState
                               ],
                             ),
                           );
-                        } else {
-                          return InvoiceListBodyDesktop(
-                            agentUuid: widget.id,
-                            customerUuid:
-                                widget.customerUuid,
-                            subStaffId: widget.subStaffId,
-                          );
-                        }
                       },
                     ),
                   ),
@@ -988,7 +939,8 @@ class _TotalSalesDesktopState
               else
                 Container(
                   width:
-                      screenWidth(context) < tabletScreenSmall
+                      screenWidth(context) <
+                              tabletScreenSmall
                           ? 50
                           : (screenWidth(context) >
                                   tabletScreenSmall &&

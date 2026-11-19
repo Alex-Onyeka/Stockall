@@ -55,13 +55,20 @@ class ExpenseCategorySelector extends StatelessWidget {
             ),
             if (onManageCategories != null)
               InkWell(
+                borderRadius: BorderRadius.circular(4),
                 onTap: onManageCategories,
-                child: Text(
-                  'Manage Categories',
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b4.fontSize,
-                    color: theme.lightModeColor.prColor250,
-                    fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 5,
+                  ),
+                  child: Text(
+                    'Manage Categories',
+                    style: TextStyle(
+                      fontSize: theme.mobileTexts.b4.fontSize,
+                      color: theme.lightModeColor.prColor250,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -121,7 +128,7 @@ class ExpenseCategorySelector extends StatelessWidget {
           },
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(10, 10, 8, 10),
+            padding: const EdgeInsets.fromLTRB(10, 6, 8, 6),
             decoration: BoxDecoration(
               color: enabled ? Colors.white : Colors.grey.shade100,
               border: Border.all(color: Colors.grey.shade300),

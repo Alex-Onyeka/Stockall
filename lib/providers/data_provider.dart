@@ -3461,6 +3461,18 @@ class DataProvider extends ChangeNotifier {
 
   String? selectedUnit;
 
+  void addUnit(String unit) {
+    final trimmed = unit.trim();
+    if (trimmed.isEmpty) return;
+    final exists = units.any(
+      (u) => u.toLowerCase() == trimmed.toLowerCase(),
+    );
+    if (!exists) {
+      units.add(trimmed);
+      notifyListeners();
+    }
+  }
+
   void clearUnit() {
     selectedUnit = null;
     notifyListeners();

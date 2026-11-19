@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
@@ -18,6 +19,7 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/on_screen_keyboard_pin.dart/on_screen_keyboard_pin.dart';
 import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
@@ -40,8 +42,10 @@ import 'package:stockall/providers/theme_provider.dart';
 
 void unitsBottomSheet(
   BuildContext context,
-  Function()? action,
-) async {
+  Function()? action, {
+  String? initialSelectedUnit,
+  ValueChanged<String?>? onUnitChanged,
+}) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -52,7 +56,10 @@ void unitsBottomSheet(
     ),
     backgroundColor: Colors.white,
     builder: (BuildContext sheetContext) {
-      return const _UnitsBottomSheetContent();
+      return _UnitsBottomSheetContent(
+        initialSelectedUnit: initialSelectedUnit,
+        onUnitChanged: onUnitChanged,
+      );
     },
   );
   if (action != null) {
@@ -61,7 +68,12 @@ void unitsBottomSheet(
 }
 
 class _UnitsBottomSheetContent extends StatefulWidget {
-  const _UnitsBottomSheetContent();
+  final String? initialSelectedUnit;
+  final ValueChanged<String?>? onUnitChanged;
+  const _UnitsBottomSheetContent({
+    this.initialSelectedUnit,
+    this.onUnitChanged,
+  });
 
   @override
   State<_UnitsBottomSheetContent> createState() =>
@@ -72,10 +84,14 @@ class _UnitsBottomSheetContentState
     extends State<_UnitsBottomSheetContent> {
   late final TextEditingController searchController;
   late final FocusNode searchFocusNode;
+  String? _localSelectedUnit;
+
+  bool get _usesLocalSelection => widget.onUnitChanged != null;
 
   @override
   void initState() {
     super.initState();
+    _localSelectedUnit = widget.initialSelectedUnit;
     searchController = TextEditingController();
     searchFocusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -83,6 +99,80 @@ class _UnitsBottomSheetContentState
         searchFocusNode.requestFocus();
       }
     });
+  }
+
+  void _toggleUnit(String unit) {
+    if (_usesLocalSelection) {
+      setState(() {
+        _localSelectedUnit = _localSelectedUnit == unit ? null : unit;
+      });
+      widget.onUnitChanged!(_localSelectedUnit);
+    } else {
+      returnData().selectUnit(unit);
+      setState(() {});
+    }
+  }
+
+  void _clearSelectedUnit() {
+    if (_usesLocalSelection) {
+      setState(() {
+        _localSelectedUnit = null;
+      });
+      widget.onUnitChanged!(null);
+    } else {
+      returnData().clearUnit();
+      setState(() {});
+    }
+  }
+
+  Future<void> _showAddUnitDialog() async {
+    final theme = returnTheme(context, listen: false);
+    final controller = TextEditingController();
+    await showDialog(
+      context: context,
+      builder: (dialogCtx) {
+        return DialogTemplate(
+          theme: theme,
+          title: 'Add Unit',
+          message: 'Enter custom unit name',
+          actionButtonText: 'Add',
+          action: () {
+            final name = controller.text.trim();
+            if (name.isEmpty) {
+              showDialog(
+                context: dialogCtx,
+                builder:
+                    (_) => InfoAlert(
+                      theme: theme,
+                      title: 'Empty Unit',
+                      message: 'Please enter a unit name.',
+                    ),
+              );
+              return;
+            }
+            returnData().addUnit(name);
+            _toggleUnit(name);
+            Navigator.of(dialogCtx).pop();
+          },
+          widget: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: GeneralTextField(
+                title: 'Unit Name *',
+                hint: 'e.g. Trip(s), Hour(s)',
+                controller: controller,
+                lines: 1,
+                theme: theme,
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -118,7 +208,9 @@ class _UnitsBottomSheetContentState
                     .toList();
 
         final selectedUnit =
-            returnData(context: context).selectedUnit;
+            _usesLocalSelection
+                ? _localSelectedUnit
+                : returnData(context: context).selectedUnit;
 
         return Container(
           padding: const EdgeInsets.fromLTRB(
@@ -172,12 +264,34 @@ class _UnitsBottomSheetContentState
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      TextButton.icon(
+                        onPressed: _showAddUnitDialog,
+                        icon: Icon(
+                          Icons.add_circle_outline,
+                          size: 16,
+                          color:
+                              returnTheme(
+                                context,
+                              ).lightModeColor.prColor250,
+                        ),
+                        label: Text(
+                          'Add Unit',
+                          style: TextStyle(
+                            fontSize:
+                                returnTheme(
+                                  context,
+                                ).mobileTexts.b4.fontSize,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                returnTheme(
+                                  context,
+                                ).lightModeColor.prColor250,
+                          ),
+                        ),
+                      ),
                       if (selectedUnit != null)
                         TextButton(
-                          onPressed: () {
-                            returnData().clearUnit();
-                            setState(() {});
-                          },
+                          onPressed: _clearSelectedUnit,
                           child: const Text('Clear'),
                         ),
                       IconButton(
@@ -356,11 +470,7 @@ class _UnitsBottomSheetContentState
                                       ),
                                       unit,
                                     ),
-                                    onTap: () {
-                                      returnData()
-                                          .selectUnit(unit);
-                                      setState(() {});
-                                    },
+                                    onTap: () => _toggleUnit(unit),
                                     trailing: Checkbox(
                                       shape:
                                           const CircleBorder(
@@ -381,13 +491,7 @@ class _UnitsBottomSheetContentState
                                               .lightModeColor
                                               .prColor250,
                                       value: isSelected,
-                                      onChanged: (value) {
-                                        returnData()
-                                            .selectUnit(
-                                              unit,
-                                            );
-                                        setState(() {});
-                                      },
+                                      onChanged: (value) => _toggleUnit(unit),
                                     ),
                                   ),
                                 ),

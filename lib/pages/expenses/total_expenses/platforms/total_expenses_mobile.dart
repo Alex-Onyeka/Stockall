@@ -9,7 +9,8 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
-import 'package:stockall/pages/expenses/components/expense_category_filter_bar.dart';
+import 'package:stockall/pages/expenses/categories/expense_categories_page.dart';
+import 'package:stockall/pages/expenses/components/expense_category_filter_buttons.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 
@@ -100,6 +101,29 @@ class _TotalExpensesMobileState
               ),
             ],
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                tooltip: 'Categories',
+                mouseCursor: SystemMouseCursors.click,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) =>
+                              const ExpenseCategoriesPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.category_outlined,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
         ),
         floatingActionButton: FloatingActionButtonMain(
           action: () {
@@ -161,8 +185,6 @@ class _TotalExpensesMobileState
                           color: Colors.white,
                           child: Column(
                             children: [
-                              const ExpenseCategoryFilterBar(),
-                              const SizedBox(height: 8),
                               Row(
                                 spacing: 10,
                                 children: [
@@ -185,126 +207,171 @@ class _TotalExpensesMobileState
                                 ],
                               ),
                               Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .viewDate,
-                                ),
-                                child: SizedBox(height: 30),
+                                visible:
+                                    !authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .viewDate,
+                                    ),
+                                child: SizedBox(height: 20),
                               ),
-                              Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .viewDate,
-                                ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      vertical: 6.0,
+                                    ),
                                 child: Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.end,
+                                      MainAxisAlignment
+                                          .spaceBetween,
                                   children: [
-                                    MaterialButton(
-                                      mouseCursor:
-                                          SystemMouseCursors
-                                              .click,
-                                      onPressed: () {
-                                        if (returnExpensesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).dateSet !=
-                                                null ||
+                                    Visibility(
+                                      visible: authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewDate,
+                                      ),
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        returnExpensesProvider(
+                                                      context,
+                                                    ).dateSet !=
+                                                    null ||
+                                                returnExpensesProvider(
+                                                      context,
+                                                    ).rangeStartDate !=
+                                                    null
+                                            ? 'All'
+                                            : 'Today',
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    const Expanded(
+                                      child: Center(
+                                        child:
+                                            ExpenseCategoryFilterButtons(),
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Visibility(
+                                      visible: authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewDate,
+                                      ),
+                                      child: MaterialButton(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
+                                        onPressed: () {
+                                          if (returnExpensesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).dateSet !=
+                                                  null ||
+                                              returnExpensesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).rangeStartDate !=
+                                                  null) {
                                             returnExpensesProvider(
+                                              context,
+                                              listen: false,
+                                            ).clearDate();
+                                          } else {
+                                            mainDatePicker(
+                                              context:
+                                                  context,
+                                              theme: theme,
+                                              singleDate: (
+                                                date,
+                                              ) {
+                                                returnExpensesProvider(
                                                   context,
                                                   listen:
                                                       false,
-                                                ).rangeStartDate !=
-                                                null) {
-                                          returnExpensesProvider(
-                                            context,
-                                            listen: false,
-                                          ).clearDate();
-                                        } else {
-                                          mainDatePicker(
-                                            context:
-                                                context,
-                                            theme: theme,
-                                            singleDate: (
-                                              date,
-                                            ) {
+                                                ).setDate(
+                                                  date!,
+                                                );
+                                              },
+                                              rangeDate: (
+                                                firstDate,
+                                                lastDate,
+                                              ) {
+                                                returnExpensesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).setRange(
+                                                  firstDate!,
+                                                  lastDate ??
+                                                      DateTime.now(),
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
+                                        child: Row(
+                                          spacing: 3,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade700,
+                                              ),
                                               returnExpensesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setDate(
-                                                date!,
-                                              );
-                                            },
-                                            rangeDate: (
-                                              firstDate,
-                                              lastDate,
-                                            ) {
-                                              returnExpensesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setRange(
-                                                firstDate!,
-                                                lastDate ??
-                                                    DateTime.now(),
-                                              );
-                                            },
-                                          );
-                                        }
-                                      },
-                                      child: Row(
-                                        spacing: 3,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b2
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              color:
-                                                  Colors
-                                                      .grey
-                                                      .shade700,
+                                                            context,
+                                                          ).dateSet !=
+                                                          null ||
+                                                      returnExpensesProvider(
+                                                            context,
+                                                          ).rangeStartDate !=
+                                                          null
+                                                  ? 'Clear'
+                                                  : 'Set Date',
                                             ),
-                                            returnExpensesProvider(
-                                                          context,
-                                                        ).dateSet !=
-                                                        null ||
-                                                    returnExpensesProvider(
-                                                          context,
-                                                        ).rangeStartDate !=
-                                                        null
-                                                ? 'Clear'
-                                                : 'Set Date',
-                                          ),
-                                          Icon(
-                                            size: 20,
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .secColor100,
-                                            returnExpensesProvider(
-                                                          context,
-                                                        ).dateSet !=
-                                                        null ||
-                                                    returnExpensesProvider(
-                                                          context,
-                                                        ).rangeStartDate !=
-                                                        null
-                                                ? Icons
-                                                    .clear
-                                                : Icons
-                                                    .date_range_outlined,
-                                          ),
-                                        ],
+                                            Icon(
+                                              size: 20,
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .secColor100,
+                                              returnExpensesProvider(
+                                                            context,
+                                                          ).dateSet !=
+                                                          null ||
+                                                      returnExpensesProvider(
+                                                            context,
+                                                          ).rangeStartDate !=
+                                                          null
+                                                  ? Icons
+                                                      .clear
+                                                  : Icons
+                                                      .date_range_outlined,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],

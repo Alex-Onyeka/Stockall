@@ -14,6 +14,7 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/components/sub_expenses_section.dart';
@@ -122,13 +123,9 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
   }
 
   Future<void> _pickPaymentDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _paymentDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null) {
+    final theme = returnTheme(context, listen: false);
+    final picked = await myDatePickerAction(theme, context);
+    if (picked != null && mounted) {
       setState(() {
         _paymentDate = DateTime(
           picked.year,
@@ -161,6 +158,7 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
           widget.quantityController.text.replaceAll(',', ''),
         ),
         paymentChannel: _paymentChannel,
+        unit: returnData().selectedUnit,
       );
     }
     final saved = await showSubExpenseEditor(

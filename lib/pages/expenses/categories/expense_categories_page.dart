@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/expense_category.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 
@@ -29,36 +32,36 @@ class _ExpenseCategoriesPageState extends State<ExpenseCategoriesPage> {
   Future<void> _showCategoryDialog({ExpenseCategory? existing}) async {
     final theme = returnTheme(context, listen: false);
     final controller = TextEditingController(text: existing?.name ?? '');
+    bool isSaving = false;
     await showDialog(
       context: context,
       builder: (dialogCtx) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: Text(
-            existing == null ? 'New Expense Category' : 'Edit Category',
-            style: TextStyle(
-              fontSize: theme.mobileTexts.h4.fontSize,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Category Name',
-              hintText: 'e.g. Electricity, Rent, Fuel',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogCtx).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return DialogTemplate(
+              theme: theme,
+              title: existing == null ? 'Create Category' : 'Edit Category',
+              message: 'Enter Category Name',
+              actionButtonText: existing == null ? 'Create' : 'Save',
+              action: () async {
+                if (isSaving) return;
                 final name = controller.text.trim();
-                if (name.isEmpty) return;
+                if (name.isEmpty) {
+                  showDialog(
+                    context: dialogCtx,
+                    builder:
+                        (_) => InfoAlert(
+                          theme: theme,
+                          title: 'Category Name Empty',
+                          message:
+                              'Category Name Cannot be empty. Please enter Category name and try again.',
+                        ),
+                  );
+                  return;
+                }
+                setDialogState(() {
+                  isSaving = true;
+                });
                 final provider = returnExpensesProvider(
                   context,
                   listen: false,
@@ -80,6 +83,9 @@ class _ExpenseCategoriesPageState extends State<ExpenseCategoriesPage> {
                         : await provider.updateExpenseCategory(existing, name);
                 if (!dialogCtx.mounted) return;
                 if (!ok) {
+                  setDialogState(() {
+                    isSaving = false;
+                  });
                   showDialog(
                     context: dialogCtx,
                     builder:
@@ -94,9 +100,34 @@ class _ExpenseCategoriesPageState extends State<ExpenseCategoriesPage> {
                 }
                 Navigator.of(dialogCtx).pop();
               },
-              child: Text(existing == null ? 'Create' : 'Save'),
-            ),
-          ],
+              widget: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: SizedBox(
+                  height: 120,
+                  width: 500,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 10,
+                        children: [
+                          GeneralTextField(
+                            title: 'Category Name *',
+                            hint: 'e.g. Electricity, Rent, Fuel',
+                            controller: controller,
+                            lines: 1,
+                            theme: theme,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -149,14 +180,11 @@ class _ExpenseCategoriesPageState extends State<ExpenseCategoriesPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCategoryDialog(),
-        backgroundColor: theme.lightModeColor.prColor250,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'New Category',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+      floatingActionButton: FloatingActionButtonMain(
+        action: () => _showCategoryDialog(),
+        color: theme.lightModeColor.secColor100,
+        text: 'Add Category',
+        theme: theme,
       ),
       body:
           categories.isEmpty

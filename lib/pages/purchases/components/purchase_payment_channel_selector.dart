@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/components/alert_dialogues/manage_payment_methods_dialog.dart';
 import 'package:stockall/main.dart';
 
 /// Reusable Cash / Bank (+ custom bank account) payment channel
@@ -65,7 +66,7 @@ class PurchasePaymentChannelSelector extends StatelessWidget {
           isSelected: paymentOption == 1,
           onTap: () => onOptionChanged(1),
         ),
-        if (paymentOption == 1 && customMethods.isNotEmpty)
+        if (paymentOption == 1)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(
@@ -87,61 +88,93 @@ class PurchasePaymentChannelSelector extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Select Bank Account:',
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b4.fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade700,
+                if (customMethods.isNotEmpty) ...[
+                  Text(
+                    'Select Bank Account:',
+                    style: TextStyle(
+                      fontSize: theme.mobileTexts.b4.fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade700,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  children: customMethods.map((bMethod) {
-                    // Older records saved "Bank (account)".
-                    final isSelected = bMethod.matchesLabel(
-                      selectedBankName,
-                    );
-                    return ChoiceChip(
-                      avatar: Icon(
-                        bMethod.icon,
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: customMethods.map((bMethod) {
+                      // Older records saved "Bank (account)".
+                      final isSelected = bMethod.matchesLabel(
+                        selectedBankName,
+                      );
+                      return ChoiceChip(
+                        avatar: Icon(
+                          bMethod.icon,
+                          size: 16,
+                          color:
+                              isSelected
+                                  ? Colors.white
+                                  : theme.lightModeColor.prColor250,
+                        ),
+                        label: Text(
+                          bMethod.displayName,
+                          style: TextStyle(
+                            fontSize: theme.mobileTexts.b4.fontSize,
+                            color:
+                                isSelected ? Colors.white : Colors.black87,
+                            fontWeight:
+                                isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedColor: theme.lightModeColor.prColor250,
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                          side: BorderSide(
+                            color:
+                                isSelected
+                                    ? theme.lightModeColor.prColor250
+                                    : Colors.grey.shade300,
+                          ),
+                        ),
+                        onSelected: (val) {
+                          onBankSelected(val ? bMethod.displayName : null);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 4),
+                ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton.icon(
+                      icon: Icon(
+                        Icons.add_circle_outline,
                         size: 16,
-                        color:
-                            isSelected
-                                ? Colors.white
-                                : theme.lightModeColor.prColor250,
+                        color: theme.lightModeColor.prColor250,
                       ),
                       label: Text(
-                        bMethod.displayName,
+                        customMethods.isEmpty
+                            ? '+ Add Channel'
+                            : 'Manage Channels',
                         style: TextStyle(
                           fontSize: theme.mobileTexts.b4.fontSize,
-                          color:
-                              isSelected ? Colors.white : Colors.black87,
-                          fontWeight:
-                              isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                          color: theme.lightModeColor.prColor250,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      selected: isSelected,
-                      selectedColor: theme.lightModeColor.prColor250,
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                        side: BorderSide(
-                          color:
-                              isSelected
-                                  ? theme.lightModeColor.prColor250
-                                  : Colors.grey.shade300,
-                        ),
-                      ),
-                      onSelected: (val) {
-                        onBankSelected(val ? bMethod.displayName : null);
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => const ManagePaymentMethodsDialog(),
+                        );
                       },
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 ),
               ],
             ),
