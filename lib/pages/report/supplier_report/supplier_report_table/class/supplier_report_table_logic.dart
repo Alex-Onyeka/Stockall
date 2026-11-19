@@ -4,6 +4,7 @@ import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_summary/class/purchase_summary_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 // Supplier Report: one row per supplier, built on the Purchase
 // Report rows so every amount (total, paid, clamped balance) is
@@ -54,8 +55,11 @@ class SupplierReportAccess {
     return suppliers
         .where(
           (s) =>
-              s.departmentId == null ||
-              s.departmentId == currentDepartmentUuid,
+              isUnassignedDepartment(s.departmentId) ||
+              reportDepartmentMatches(
+                s.departmentId,
+                currentDepartmentUuid,
+              ),
         )
         .toList();
   }

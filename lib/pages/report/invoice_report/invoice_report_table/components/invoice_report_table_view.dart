@@ -19,6 +19,7 @@ import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/
 import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/invoice_report_table_logic.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 class _TableCol {
   final String label;
@@ -272,16 +273,17 @@ class _InvoiceReportTableViewState
           returnDepartmentProvider()
               .currentDepartment()
               ?.uuid;
-      if (currentDeptUuid != null) {
-        scopedInvoices =
-            shopInvoices
-                .where(
-                  (inv) =>
-                      inv.departmentUuidNew ==
-                      currentDeptUuid,
-                )
-                .toList();
-      }
+      // With no current department (staff assigned to none) only
+      // invoices in no department.
+      scopedInvoices =
+          shopInvoices
+              .where(
+                (inv) => reportDepartmentMatches(
+                  inv.departmentUuidNew,
+                  currentDeptUuid,
+                ),
+              )
+              .toList();
     }
 
     final allReceipts =

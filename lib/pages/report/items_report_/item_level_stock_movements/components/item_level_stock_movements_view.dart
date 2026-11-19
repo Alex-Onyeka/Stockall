@@ -19,6 +19,7 @@ import 'package:stockall/pages/report/items_report_/item_history_summary/class/i
 import 'package:stockall/pages/report/items_report_/item_history_summary/class/item_history_summary_logic.dart';
 import 'package:stockall/pages/report/items_report_/item_level_stock_movements/class/item_level_stock_movements_export_spec.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 const int itemStockMovementsPageSize = 100;
 
@@ -213,8 +214,10 @@ class _ItemLevelStockMovementsViewState
             shopHistories
                 .where(
                   (h) =>
-                      h.departmentUuid ==
-                      _currentDepartmentUuid,
+                      reportDepartmentMatches(
+                        h.departmentUuid,
+                        _currentDepartmentUuid,
+                      ),
                 )
                 .toList();
       } else {

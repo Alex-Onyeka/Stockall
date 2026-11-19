@@ -9,6 +9,7 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/items_report_/item_history_summary/class/item_history_summary_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 /// Per-item version of the Item History Summary row, shown as a vertical list.
 class ItemHistoryItemSummary extends StatefulWidget {
@@ -96,8 +97,10 @@ class _ItemHistoryItemSummaryState
             shopHistories
                 .where(
                   (h) =>
-                      h.departmentUuid ==
-                      _currentDepartmentUuid,
+                      reportDepartmentMatches(
+                        h.departmentUuid,
+                        _currentDepartmentUuid,
+                      ),
                 )
                 .toList();
       } else {

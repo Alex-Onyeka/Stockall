@@ -19,6 +19,7 @@ import 'package:stockall/pages/report/items_report_/item_history_summary/class/i
 import 'package:stockall/pages/report/items_report_/item_history_summary/class/item_history_summary_logic.dart';
 import 'package:stockall/pages/report/items_report_/item_level_stock_movements/item_level_stock_movements_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 class ItemHistorySummaryView extends StatefulWidget {
   final bool isDesktop;
@@ -156,8 +157,10 @@ class _ItemHistorySummaryViewState
             shopHistories
                 .where(
                   (h) =>
-                      h.departmentUuid ==
-                      _currentDepartmentUuid,
+                      reportDepartmentMatches(
+                        h.departmentUuid,
+                        _currentDepartmentUuid,
+                      ),
                 )
                 .toList();
       } else {

@@ -8,6 +8,7 @@ import 'package:stockall/classes/temp_production_folder/production_unit_snapshot
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record_materials.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 /// Where a production record's recorded cost came from.
 enum ProductionCostSource { itemCost, materials, custom, unknown }
@@ -62,7 +63,10 @@ class ProductionReportAccess {
         (!canViewAllDepartments || currentDepartmentUuid != null);
     return records.where((record) {
       if (restrictDepartment &&
-          departmentOf(record) != currentDepartmentUuid) {
+          !reportDepartmentMatches(
+            departmentOf(record),
+            currentDepartmentUuid,
+          )) {
         return false;
       }
       if (!canViewAllTransactions && staffOf(record) != currentUserId) {

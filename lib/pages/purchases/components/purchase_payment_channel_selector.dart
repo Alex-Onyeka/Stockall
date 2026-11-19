@@ -100,8 +100,10 @@ class PurchasePaymentChannelSelector extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 6,
                   children: customMethods.map((bMethod) {
-                    final isSelected =
-                        selectedBankName == bMethod.displayName;
+                    // Older records saved "Bank (account)".
+                    final isSelected = bMethod.matchesLabel(
+                      selectedBankName,
+                    );
                     return ChoiceChip(
                       avatar: Icon(
                         bMethod.icon,

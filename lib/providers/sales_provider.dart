@@ -5060,7 +5060,7 @@ class SalesProvider extends ChangeNotifier {
       final customBanks =
           returnShopProvider().getCustomPaymentMethods();
       final match = customBanks.where(
-        (b) => b.displayName == name || b.bankName == name,
+        (b) => b.matchesLabel(name),
       );
       currentCart().selectedBank =
           match.isNotEmpty

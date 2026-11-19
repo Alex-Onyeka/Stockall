@@ -33,10 +33,10 @@ class UtilityConstants extends HiveObject {
   @HiveField(9)
   final double vat;
 
-  @HiveField(10)
+  @HiveField(10, defaultValue: '')
   final String desktopDownloadLink;
 
-  @HiveField(11)
+  @HiveField(11, defaultValue: false)
   final bool isCompulsory;
 
   UtilityConstants({

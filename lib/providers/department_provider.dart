@@ -29,15 +29,24 @@ class DepartmentProvider with ChangeNotifier {
   DateTime? _lastSyncAt;
   int? _lastSyncShopId;
 
-  /// Returns true if the current user can view all departments & all records:
-  /// either they have explicit `viewAllDepartments` permission OR they are not
-  /// assigned to any department (`departmentUuids` is null or empty).
+  /// True only with the `viewAllDepartments` permission. Staff
+  /// with no department and no permission are not "view all":
+  /// they see only records outside every department
+  /// ([isUnassignedStaff]).
   bool canUserViewAllDepartments() {
-    if (authorization(
+    return authorization(
       authorized: Authorizations().viewAllDepartments,
-    )) {
-      return true;
+    );
+  }
+
+  /// Departments are on, the user lacks `viewAllDepartments` and
+  /// is assigned to no department.
+  bool isUnassignedStaff() {
+    if (returnShopProvider().userShop()?.manageDepartments !=
+        true) {
+      return false;
     }
+    if (canUserViewAllDepartments()) return false;
     final userDepts = currentUser().departmentUuids;
     return userDepts == null || userDepts.isEmpty;
   }
@@ -48,18 +57,47 @@ class DepartmentProvider with ChangeNotifier {
     List<String>? departmentUuids,
     bool includeUnassignedWhenDeptSelected = false,
   }) {
-    if (returnShopProvider().userShop()?.manageDepartments !=
-        true) {
-      return true;
-    }
-    final currentDeptUuid = currentDepartment()?.uuid;
-    if (currentDeptUuid == null) {
-      return canUserViewAllDepartments();
-    }
+    final manageDepartments =
+        returnShopProvider().userShop()?.manageDepartments ==
+        true;
+    if (!manageDepartments) return true;
+    return departmentRecordVisible(
+      manageDepartments: manageDepartments,
+      canViewAll: canUserViewAllDepartments(),
+      isUnassignedUser: isUnassignedStaff(),
+      currentDeptUuid: currentDepartment()?.uuid,
+      departmentUuid: departmentUuid,
+      departmentUuids: departmentUuids,
+      includeUnassignedWhenDeptSelected:
+          includeUnassignedWhenDeptSelected,
+    );
+  }
+
+  /// The department rule, without providers (testable):
+  /// 1. Departments off: visible.
+  /// 2. Unassigned user (no department, no permission): only
+  ///    records in no department.
+  /// 3. No current department: visible to "view all" users only.
+  /// 4. Otherwise the record must be in the current department
+  ///    ([includeUnassignedWhenDeptSelected] also lets records in
+  ///    no department through, e.g. shared products).
+  static bool departmentRecordVisible({
+    required bool manageDepartments,
+    required bool canViewAll,
+    required bool isUnassignedUser,
+    required String? currentDeptUuid,
+    String? departmentUuid,
+    List<String>? departmentUuids,
+    bool includeUnassignedWhenDeptSelected = false,
+  }) {
+    if (!manageDepartments) return true;
     final hasMulti =
-        departmentUuids != null && departmentUuids.isNotEmpty;
+        departmentUuids != null &&
+        departmentUuids.any((d) => d.trim().isNotEmpty);
     final hasSingle =
-        departmentUuid != null && departmentUuid.isNotEmpty;
+        departmentUuid != null && departmentUuid.trim().isNotEmpty;
+    if (isUnassignedUser) return !hasMulti && !hasSingle;
+    if (currentDeptUuid == null) return canViewAll;
     if (hasMulti || hasSingle) {
       return (departmentUuids?.contains(currentDeptUuid) ??
               false) ||
@@ -69,6 +107,10 @@ class DepartmentProvider with ChangeNotifier {
   }
 
   DepartmentClass? currentDepartment() {
+    // Staff in no department have no current department (a stale
+    // stored one is ignored), so lists and reports agree: they see
+    // only records in no department.
+    if (isUnassignedStaff()) return null;
     var offlineDepartment =
         CurrentDepartmentFunc().getCurrentDepartment();
     if (canUserViewAllDepartments()) {

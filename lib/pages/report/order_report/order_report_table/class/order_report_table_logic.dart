@@ -8,6 +8,7 @@ import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/pages/report/components/report_group_by.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 /// Page size, same as the Invoice and Receipts report tables.
 const int orderReportPageSize = 100;
@@ -718,12 +719,16 @@ class OrderReportScope {
   }) {
     final shopOrders =
         orders.where((o) => o.shopId == shopId).toList();
-    if (departmentsEnabled &&
-        !canViewAllDepartments &&
-        currentDepartmentUuid != null) {
+    // Without "view all departments": the current department, or
+    // with none (staff assigned to no department) only orders in no
+    // department.
+    if (departmentsEnabled && !canViewAllDepartments) {
       return shopOrders
           .where(
-            (o) => o.departmentUuid == currentDepartmentUuid,
+            (o) => reportDepartmentMatches(
+              o.departmentUuid,
+              currentDepartmentUuid,
+            ),
           )
           .toList();
     }

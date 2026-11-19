@@ -17,6 +17,7 @@ import 'package:stockall/pages/report/invoice_report/invoice_report_table/invoic
 import 'package:stockall/pages/report/invoice_report/invoice_summary/class/invoice_summary_export_spec.dart';
 import 'package:stockall/pages/report/invoice_report/invoice_summary/class/invoice_summary_logic.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 class InvoiceSummaryView extends StatefulWidget {
   final bool isDesktop;
@@ -167,17 +168,17 @@ class _InvoiceSummaryViewState
       // Department restriction check
       if (_departmentsEnabled && !_canViewAllDepartments) {
         final curDept = _currentDepartmentUuid;
-        if (curDept != null) {
-          _invoices =
-              shopInvoices
-                  .where(
-                    (inv) =>
-                        inv.departmentUuidNew == curDept,
-                  )
-                  .toList();
-        } else {
-          _invoices = shopInvoices;
-        }
+        // With no current department (staff assigned to none)
+        // only invoices in no department.
+        _invoices =
+            shopInvoices
+                .where(
+                  (inv) => reportDepartmentMatches(
+                    inv.departmentUuidNew,
+                    curDept,
+                  ),
+                )
+                .toList();
       } else {
         _invoices = shopInvoices;
       }

@@ -968,10 +968,27 @@ void main() {
       expect(scoped(), ['d1']);
     });
 
-    test('view all, departments off, or no current department', () {
+    test('view all or departments off', () {
       expect(scoped(viewAll: true), ['d1', 'd2']);
       expect(scoped(enabled: false), ['d1', 'd2']);
-      expect(scoped(current: null), ['d1', 'd2']);
+      expect(scoped(viewAll: true, current: null), ['d1', 'd2']);
+    });
+
+    test('no current department (staff in no department): only orders '
+        'in no department', () {
+      final withUnassigned = [
+        ...orders,
+        testOrder(uuid: 'none', departmentUuid: null),
+        testOrder(uuid: 'blank', departmentUuid: ''),
+      ];
+      final out = OrderReportScope.scope(
+        orders: withUnassigned,
+        shopId: 1,
+        departmentsEnabled: true,
+        canViewAllDepartments: false,
+        currentDepartmentUuid: null,
+      ).map((o) => o.uuid).toList();
+      expect(out, ['none', 'blank']);
     });
   });
 

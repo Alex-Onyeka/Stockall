@@ -27,8 +27,8 @@ class UtilityConstantsAdapter extends TypeAdapter<UtilityConstants> {
       sixMonthsDiscount: fields[7] as double,
       oneYearDiscount: fields[8] as double,
       vat: fields[9] as double,
-      desktopDownloadLink: (fields[10] as String?) ?? '',
-      isCompulsory: (fields[11] as bool?) ?? false,
+      desktopDownloadLink: fields[10] == null ? '' : fields[10] as String,
+      isCompulsory: fields[11] == null ? false : fields[11] as bool,
     );
   }
 
