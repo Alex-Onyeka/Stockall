@@ -83,7 +83,10 @@ class _EmployeePageDesktopState extends State<EmployeePageDesktop>
               if (widget.env == null && data.canSeeRecords)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: StaffSalaryHistorySection(staffUuid: staffId),
+                  child: StaffSalaryHistorySection(
+                    staffUuid: staffId,
+                    canOpen: canManageStaff,
+                  ),
                 ),
             ],
           ),

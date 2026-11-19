@@ -390,11 +390,7 @@ class _MyDrawerWidgetTabletState
                                 svg: reportIconSvg,
                               ),
                               Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .employeePage,
-                                ),
+                                visible: true,
                                 child: NavListTileTablet(
                                   itemIndex: 9,
                                   height: 14,

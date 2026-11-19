@@ -451,11 +451,7 @@ class _MyDrawerWidgetDesktopMainState
                                 svg: reportIconSvg,
                               ),
                               Visibility(
-                                visible: authorization(
-                                  authorized:
-                                      Authorizations()
-                                          .employeePage,
-                                ),
+                                visible: true,
                                 child: NavListTileDesktopAlt(
                                   itemIndex: 9,
                                   height: 14,

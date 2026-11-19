@@ -10,9 +10,14 @@ import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
 class StaffSalaryHistorySection extends StatefulWidget {
   final String staffUuid;
 
+  /// False: the rows are read-only and do not open the expense
+  /// (staff without Employee Page, on their own page).
+  final bool canOpen;
+
   const StaffSalaryHistorySection({
     super.key,
     required this.staffUuid,
+    this.canOpen = true,
   });
 
   @override
@@ -265,8 +270,9 @@ class _StaffSalaryHistorySectionState
               itemBuilder: (context, index) {
                 final sal = salaries[index];
                 return InkWell(
+                  key: ValueKey('staff-salary-row-$index'),
                   onTap:
-                      sal.uuid == null
+                      !widget.canOpen || sal.uuid == null
                           ? null
                           : () {
                             Navigator.push(
