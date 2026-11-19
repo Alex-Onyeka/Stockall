@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stockall/classes/temp_expenses/sub_expense.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
@@ -429,6 +430,36 @@ void main() {
       expect(t.orderTotal, 90);
       expect(t.purchaseTotal, 150);
       expect(t.expenseTotal, 25 + 15 + 5);
+    });
+  });
+
+  group('Sub-expenses', () {
+    test('an expense with sub-expenses counts once, at its total', () {
+      final split =
+          testExpense(uuid: 'e-split', amount: 65)
+            ..subExpenses = [
+          SubExpense(
+            uuid: 's1',
+            name: 'Bill payment',
+            amount: 50,
+            paymentChannel: 'GTB',
+          ),
+          SubExpense(uuid: 's2', name: 'Transportation', amount: 10),
+          SubExpense(uuid: 's3', name: 'Feeding', amount: 5),
+        ];
+      final base = buildStaffBase(
+        staff: staffList,
+        owner: owner,
+        receipts: receipts,
+        invoices: invoices,
+        orders: orders,
+        purchases: purchases,
+        expenses: [...expenses, split],
+      );
+      final a = staffRowFor(base, 'staff-a');
+      // e-a1 15 + e-split 65.
+      expect(a.expenseTotal, 80);
+      expect(a.expenseCount, 2);
     });
   });
 

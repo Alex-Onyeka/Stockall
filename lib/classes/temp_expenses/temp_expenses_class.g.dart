@@ -6,8 +6,7 @@ part of 'temp_expenses_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempExpensesClassAdapter
-    extends TypeAdapter<TempExpensesClass> {
+class TempExpensesClassAdapter extends TypeAdapter<TempExpensesClass> {
   @override
   final int typeId = 2;
 
@@ -15,8 +14,7 @@ class TempExpensesClassAdapter
   TempExpensesClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempExpensesClass(
       name: fields[3] as String,
@@ -34,24 +32,22 @@ class TempExpensesClassAdapter
       uuid: fields[12] as String?,
       updatedAt: fields[13] as DateTime?,
       userName: fields[14] as String?,
-      expenseType:
-          (fields[15] as String?) ??
-          ExpenseType.simpleExpense,
+      expenseType: fields[15] == null ? 'simple_expense' : fields[15] as String,
       expenseCategoryUuid: fields[16] as String?,
       expenseCategoryName: fields[17] as String?,
       staffUuid: fields[18] as String?,
       staffName: fields[19] as String?,
       purchaseUuid: fields[20] as String?,
       paymentChannel: fields[21] as String?,
-      paymentEntries:
-          (fields[22] as List?)?.cast<PaymentEntry>(),
+      paymentEntries: (fields[22] as List?)?.cast<PaymentEntry>(),
+      subExpenses: (fields[23] as List?)?.cast<SubExpense>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TempExpensesClass obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -97,7 +93,9 @@ class TempExpensesClassAdapter
       ..writeByte(21)
       ..write(obj.paymentChannel)
       ..writeByte(22)
-      ..write(obj.paymentEntries);
+      ..write(obj.paymentEntries)
+      ..writeByte(23)
+      ..write(obj.subExpenses);
   }
 
   @override

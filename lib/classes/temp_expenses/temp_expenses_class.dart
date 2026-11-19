@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
 import 'package:stockall/classes/temp_expenses/expense_category.dart';
+import 'package:stockall/classes/temp_expenses/sub_expense.dart';
 
 part 'temp_expenses_class.g.dart';
 
@@ -119,6 +120,12 @@ class TempExpensesClass extends HiveObject {
   @HiveField(22)
   List<PaymentEntry>? paymentEntries;
 
+  /// Optional breakdown. When non-empty, [amount] and
+  /// [paymentEntries] are derived from it; reports only ever read
+  /// [amount], so the lines are never counted twice.
+  @HiveField(23)
+  List<SubExpense>? subExpenses;
+
   TempExpensesClass({
     required this.name,
     this.description,
@@ -143,6 +150,7 @@ class TempExpensesClass extends HiveObject {
     this.purchaseUuid,
     this.paymentChannel,
     this.paymentEntries,
+    this.subExpenses,
   });
 
   String get categoryLabel => ExpenseType.labelFor(
@@ -172,6 +180,22 @@ class TempExpensesClass extends HiveObject {
   bool get isStockPurchase => expenseType == ExpenseType.stockPurchase;
   bool get isCustomCategory => expenseType == ExpenseType.custom;
 
+  /// Only Simple and Custom expenses can be broken down.
+  static bool allowsSubExpenses(String type) =>
+      type == ExpenseType.simpleExpense || type == ExpenseType.custom;
+
+  bool get hasSubExpenses =>
+      subExpenses != null && subExpenses!.isNotEmpty;
+
+  double get subExpensesTotal =>
+      hasSubExpenses ? SubExpense.totalOf(subExpenses!) : 0;
+
+  /// True when the lines no longer add up to [amount], e.g. after an
+  /// older app version edited the amount.
+  bool get subExpensesMismatch =>
+      hasSubExpenses &&
+      (subExpensesTotal - amount).abs() > PaymentBreakdown.tolerance;
+
   String get resolvedPaymentChannelLabel {
     if (paymentEntries != null && paymentEntries!.isNotEmpty) {
       return PaymentBreakdown(paymentEntries!).label;
@@ -191,6 +215,19 @@ class TempExpensesClass extends HiveObject {
               .whereType<Map>()
               .map(
                 (e) => PaymentEntry.fromJson(
+                  Map<String, dynamic>.from(e),
+                ),
+              )
+              .toList();
+    }
+    final rawSubs = json['sub_expenses'];
+    List<SubExpense>? parsedSubs;
+    if (rawSubs is List) {
+      parsedSubs =
+          rawSubs
+              .whereType<Map>()
+              .map(
+                (e) => SubExpense.fromJson(
                   Map<String, dynamic>.from(e),
                 ),
               )
@@ -233,6 +270,7 @@ class TempExpensesClass extends HiveObject {
       purchaseUuid: json['purchase_uuid'] as String?,
       paymentChannel: json['payment_channel'] as String?,
       paymentEntries: parsedEntries,
+      subExpenses: parsedSubs,
     );
   }
 
@@ -262,6 +300,10 @@ class TempExpensesClass extends HiveObject {
       'payment_channel': paymentChannel,
       'payment_entries':
           paymentEntries?.map((e) => e.toJson()).toList(),
+      // Left out while null so plain expenses keep syncing even if the
+      // sub_expenses column is missing; cleared rows are sent as [].
+      if (subExpenses != null)
+        'sub_expenses': subExpenses!.map((e) => e.toJson()).toList(),
     };
   }
 }

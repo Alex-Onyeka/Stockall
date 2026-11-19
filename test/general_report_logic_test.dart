@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:stockall/classes/temp_expenses/sub_expense.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
@@ -137,6 +138,30 @@ void main() {
         expenses: [expense(amount: 400)],
       );
       expect(f.netProfit, -100);
+    });
+  });
+
+  group('sub-expenses', () {
+    test('an expense with sub-expenses is counted once, at its total', () {
+      final split =
+          expense(uuid: 'nepa', amount: 65)
+            ..subExpenses = [
+          SubExpense(
+            uuid: 's1',
+            name: 'Bill payment',
+            amount: 50,
+            paymentChannel: 'GTB',
+          ),
+          SubExpense(uuid: 's2', name: 'Transportation', amount: 10),
+          SubExpense(uuid: 's3', name: 'Feeding', amount: 5),
+        ];
+      final f = figuresFor(
+        expenses: [split, expense(uuid: 'plain', amount: 10)],
+      );
+      expect(f.totalExpenses, 75);
+      expect(f.expenseCount, 2);
+      expect(f.netProfit, 300 - 75);
+      expect(GeneralReportExpenses.total(f.expenses), 75);
     });
   });
 

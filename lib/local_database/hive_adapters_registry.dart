@@ -38,6 +38,7 @@ import 'package:stockall/classes/temp_error_log/unsynced/created_error_log_class
 import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
 import 'package:stockall/classes/temp_event_log/unsynced/created_events_log_class.dart';
 import 'package:stockall/classes/temp_expenses/expense_category.dart';
+import 'package:stockall/classes/temp_expenses/sub_expense.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/created_expense_categories/created_expense_category.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/created_expenses/created_expenses.dart';
@@ -189,6 +190,7 @@ void registerAllHiveAdapters() {
   safeRegisterAdapter(TempEventLogClassAdapter());
   safeRegisterAdapter(CreatedEventsLogClassAdapter());
   safeRegisterAdapter(TempExpensesClassAdapter());
+  safeRegisterAdapter(SubExpenseAdapter());
   safeRegisterAdapter(CreatedExpensesAdapter());
   safeRegisterAdapter(DeletedExpensesAdapter());
   safeRegisterAdapter(UpdatedExpensesAdapter());

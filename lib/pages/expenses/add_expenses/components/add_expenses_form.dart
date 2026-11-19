@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/temp_expenses/sub_expense.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -15,6 +16,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/expenses/add_expenses/components/sub_expenses_section.dart';
 import 'package:stockall/pages/expenses/categories/expense_categories_page.dart';
 import 'package:stockall/pages/expenses/components/expense_category_selector.dart';
 import 'package:stockall/pages/expenses/components/expense_payment_channel_selector.dart';
@@ -54,6 +56,7 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
   TempUserClass? _selectedStaff;
   DateTime _paymentDate = DateTime.now();
   String _paymentChannel = PaymentMethods.cash;
+  List<SubExpense> _subExpenses = [];
 
   @override
   void initState() {
@@ -73,6 +76,8 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
       );
       _paymentDate = existing.createdDate ?? DateTime.now();
       _paymentChannel = existing.resolvedPaymentChannelLabel;
+      _subExpenses =
+          existing.subExpenses?.map((sub) => sub.copy()).toList() ?? [];
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         returnData().clearUnit();
@@ -131,6 +136,103 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
     }
   }
 
+  bool get _usesSubExpenses =>
+      _subExpenses.isNotEmpty &&
+      TempExpensesClass.allowsSubExpenses(_selectedCategory.expenseType);
+
+  Future<void> _addSubExpense() async {
+    SubExpense? initial;
+    if (_subExpenses.isEmpty) {
+      // First row starts from what is already typed, so nothing is lost.
+      initial = SubExpense(
+        uuid: '',
+        name: '',
+        amount:
+            double.tryParse(
+              widget.amountController.text.replaceAll(',', ''),
+            ) ??
+            0,
+        quantity: double.tryParse(
+          widget.quantityController.text.replaceAll(',', ''),
+        ),
+        paymentChannel: _paymentChannel,
+      );
+    }
+    final saved = await showSubExpenseEditor(
+      context: context,
+      isDesktop: widget.isDesktop,
+      initial: initial,
+    );
+    if (saved == null || !mounted) return;
+    setState(() {
+      _subExpenses = [..._subExpenses, saved];
+    });
+  }
+
+  Future<void> _editSubExpense(int index) async {
+    final saved = await showSubExpenseEditor(
+      context: context,
+      isDesktop: widget.isDesktop,
+      initial: _subExpenses[index],
+    );
+    if (saved == null || !mounted) return;
+    setState(() {
+      _subExpenses = [..._subExpenses]..[index] = saved;
+    });
+  }
+
+  void _removeSubExpense(int index) {
+    setState(() {
+      final removed = _subExpenses[index];
+      _subExpenses = [..._subExpenses]..removeAt(index);
+      if (_subExpenses.isEmpty) {
+        // Back to a single amount: keep the last total and channel.
+        widget.amountController.text = removed.amount.toString();
+        _paymentChannel = removed.paymentChannel;
+      }
+    });
+  }
+
+  /// Keeps the sub-expenses' total as the amount and, when they used
+  /// one channel, that channel.
+  void _collapseSubExpenses() {
+    final entries = SubExpense.paymentEntriesOf(_subExpenses);
+    widget.amountController.text =
+        SubExpense.totalOf(_subExpenses).toString();
+    if (entries.length == 1) {
+      _paymentChannel = entries.first.method;
+    }
+    _subExpenses = [];
+  }
+
+  void _onCategorySelected(ExpenseCategorySelection selection) {
+    if (_subExpenses.isEmpty ||
+        TempExpensesClass.allowsSubExpenses(selection.expenseType)) {
+      setState(() {
+        _selectedCategory = selection;
+      });
+      return;
+    }
+    showDialog(
+      context: context,
+      builder:
+          (dialogCtx) => ConfirmationAlert(
+            theme: returnTheme(context, listen: false),
+            title: 'Remove Sub-expenses?',
+            message:
+                '${ExpenseType.labelFor(selection.expenseType)} expenses cannot have sub-expenses. Switching will remove ${_subExpenses.length} sub-expense(s) and keep their total as the amount.',
+            action: () {
+              Navigator.of(dialogCtx).pop();
+              if (!mounted) return;
+              setState(() {
+                _collapseSubExpenses();
+                _selectedCategory = selection;
+              });
+            },
+          ),
+    );
+  }
+
   void _showError(String title, String message) {
     showDialog(
       context: context,
@@ -160,7 +262,9 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                 : 'Salary - ${_selectedStaff!.name}')
             : widget.nameController.text.trim();
 
-    if (effectiveName.isEmpty || widget.amountController.text.trim().isEmpty) {
+    final useSubs = _usesSubExpenses;
+    if (effectiveName.isEmpty ||
+        (!useSubs && widget.amountController.text.trim().isEmpty)) {
       _showError(
         'Empty Fields',
         isSalary
@@ -171,7 +275,12 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
     }
 
     final parsedAmount =
-        double.tryParse(widget.amountController.text.replaceAll(',', '')) ?? 0;
+        useSubs
+            ? SubExpense.totalOf(_subExpenses)
+            : double.tryParse(
+                  widget.amountController.text.replaceAll(',', ''),
+                ) ??
+                0;
     if (parsedAmount <= 0) {
       _showError('Zero Expense', 'Expense Amount must be greater than zero.');
       return;
@@ -207,9 +316,28 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                     ? null
                     : '${_selectedStaff!.name} ${_selectedStaff!.lastName ?? ''}'
                         .trim();
-            final paymentEntries = [
-              PaymentEntry(method: _paymentChannel, amount: parsedAmount),
-            ];
+            final paymentEntries =
+                useSubs
+                    ? SubExpense.paymentEntriesOf(_subExpenses)
+                    : [
+                      PaymentEntry(
+                        method: _paymentChannel,
+                        amount: parsedAmount,
+                      ),
+                    ];
+            final paymentChannel =
+                useSubs
+                    ? PaymentBreakdown(paymentEntries).label
+                    : _paymentChannel;
+            // Parent quantity and unit are hidden while sub-expenses
+            // exist, so they are not kept.
+            final hideQuantity = isSalary || useSubs;
+            // An expense that had sub-expenses sends [] so the server
+            // column is cleared too.
+            final List<SubExpense>? subExpenses =
+                useSubs
+                    ? _subExpenses.map((sub) => sub.copy()).toList()
+                    : (widget.expenses?.subExpenses != null ? [] : null);
 
             if (widget.expenses == null) {
               ExpensesAuthAction().numberOfDailyExpensesAction(
@@ -229,9 +357,9 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                       creator: currentUser.name,
                       userId: currentUser.userId!,
                       name: effectiveName,
-                      unit: isSalary ? null : returnData().selectedUnit,
+                      unit: hideQuantity ? null : returnData().selectedUnit,
                       quantity:
-                          isSalary
+                          hideQuantity
                               ? null
                               : double.tryParse(
                                 widget.quantityController.text.replaceAll(
@@ -249,8 +377,9 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                       expenseCategoryName: _selectedCategory.categoryName,
                       staffUuid: isSalary ? _selectedStaff?.userId : null,
                       staffName: isSalary ? staffFullName : null,
-                      paymentChannel: _paymentChannel,
+                      paymentChannel: paymentChannel,
                       paymentEntries: paymentEntries,
+                      subExpenses: subExpenses,
                     ),
                   );
                   if (!mounted) return;
@@ -286,9 +415,9 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                       ).currentUserMain!.name,
                   userId: widget.expenses!.userId,
                   name: effectiveName,
-                  unit: isSalary ? null : returnData().selectedUnit,
+                  unit: hideQuantity ? null : returnData().selectedUnit,
                   quantity:
-                      isSalary
+                      hideQuantity
                           ? null
                           : double.tryParse(
                             widget.quantityController.text.replaceAll(',', ''),
@@ -306,8 +435,9 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                   staffUuid: isSalary ? _selectedStaff?.userId : null,
                   staffName: isSalary ? staffFullName : null,
                   purchaseUuid: widget.expenses!.purchaseUuid,
-                  paymentChannel: _paymentChannel,
+                  paymentChannel: paymentChannel,
                   paymentEntries: paymentEntries,
+                  subExpenses: subExpenses,
                 ),
                 safeContext,
               );
@@ -384,11 +514,7 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                         ).getExpenseCategories(shopId());
                       });
                     },
-                    onSelected: (selection) {
-                      setState(() {
-                        _selectedCategory = selection;
-                      });
-                    },
+                    onSelected: _onCategorySelected,
                   ),
                   const SizedBox(height: 15),
                   if (isStockPurchase) ...[
@@ -510,6 +636,18 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
                       lines: 4,
                       theme: theme,
                     ),
+                    const SizedBox(height: 15),
+                    SubExpensesSection(
+                      theme: theme,
+                      subExpenses: _subExpenses,
+                      onAdd: _addSubExpense,
+                      onEdit: _editSubExpense,
+                      onRemove: _removeSubExpense,
+                    ),
+                  ],
+                  if (!isStockPurchase &&
+                      !isStaffSalary &&
+                      _subExpenses.isEmpty) ...[
                     const SizedBox(height: 15),
                     MoneyTextfield(
                       title: 'Amount (${currencySymbol(context: context)})',

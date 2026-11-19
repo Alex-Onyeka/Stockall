@@ -8,6 +8,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/single_expense/components/stock_purchase_expense_actions.dart';
+import 'package:stockall/pages/expenses/single_expense/components/sub_expenses_breakdown.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ExpenseDetailsDesktop extends StatelessWidget {
@@ -539,6 +540,10 @@ class ExpenseDetailsContainer extends StatelessWidget {
                 ),
               ),
             ],
+            SubExpensesBreakdown(
+              expense: expense,
+              theme: theme,
+            ),
             SizedBox(height: 40),
             Row(
               spacing: 15,
