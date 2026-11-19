@@ -75,7 +75,12 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
         categoryName: existing.expenseCategoryName,
       );
       _paymentDate = existing.createdDate ?? DateTime.now();
-      _paymentChannel = existing.resolvedPaymentChannelLabel;
+      final channelLabel = existing.resolvedPaymentChannelLabel;
+      // "Split" only labels several methods; never use it as one.
+      _paymentChannel =
+          channelLabel == PaymentMethods.split
+              ? _mainChannel(existing.paymentEntries ?? [])
+              : channelLabel;
       _subExpenses =
           existing.subExpenses?.map((sub) => sub.copy()).toList() ?? [];
     } else {
@@ -193,15 +198,21 @@ class _AddExpensesFormState extends State<AddExpensesForm> {
     });
   }
 
-  /// Keeps the sub-expenses' total as the amount and, when they used
-  /// one channel, that channel.
+  /// The method that paid the most in [entries], or Cash when there
+  /// are none.
+  String _mainChannel(List<PaymentEntry> entries) {
+    final compact = PaymentBreakdown(entries).compact;
+    compact.sort((a, b) => b.amount.compareTo(a.amount));
+    return compact.isEmpty ? PaymentMethods.cash : compact.first.method;
+  }
+
+  /// Keeps the sub-expenses' total as the amount and the channel that
+  /// paid the most.
   void _collapseSubExpenses() {
     final entries = SubExpense.paymentEntriesOf(_subExpenses);
     widget.amountController.text =
         SubExpense.totalOf(_subExpenses).toString();
-    if (entries.length == 1) {
-      _paymentChannel = entries.first.method;
-    }
+    _paymentChannel = _mainChannel(entries);
     _subExpenses = [];
   }
 
