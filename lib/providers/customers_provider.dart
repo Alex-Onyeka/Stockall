@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_customers/unsynced/created_customers/creat
 import 'package:stockall/classes/temp_customers/unsynced/deleted_customers/deleted_customers.dart';
 import 'package:stockall/classes/temp_customers/unsynced/updated/updated_customers.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
@@ -40,45 +39,13 @@ class CustomersProvider extends ChangeNotifier {
   }
 
   List<TempCustomersClass> customersMain() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return customers.where((cat) {
-          if (cat.departmentUuid == null) {
-            return true;
-          } else {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-          }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return customers;
-        } else {
-          return customers.where((cat) {
-            if (cat.departmentUuid == null) {
-              return true;
-            } else {
-              return cat.departmentUuid ==
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid;
-            }
-          }).toList();
-        }
-      }
-    } else {
-      return customers;
-    }
+    return customers.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+            includeUnassignedWhenDeptSelected: true,
+          );
+    }).toList();
   }
 
   /// Fetch all customers by shop ID
@@ -94,9 +61,10 @@ class CustomersProvider extends ChangeNotifier {
           _lastSyncShopId == shopId &&
           customers.isNotEmpty) {
         try {
-          final safeSince = _lastSyncAt!
-              .subtract(const Duration(seconds: 5))
-              .toUtc();
+          final safeSince =
+              _lastSyncAt!
+                  .subtract(const Duration(seconds: 5))
+                  .toUtc();
           final res = await supabase
               .from('customers')
               .select()
@@ -105,17 +73,21 @@ class CustomersProvider extends ChangeNotifier {
               .order('updated_at', ascending: true);
           if (res.isNotEmpty) {
             final pendingUuids = {
-              ...UpdatedCustomersFunc()
-                  .getCustomers()
-                  .map((u) => u.customer.uuid),
-              ...CreatedCustomersFunc()
-                  .getCustomers()
-                  .map((c) => c.customer.uuid),
+              ...UpdatedCustomersFunc().getCustomers().map(
+                (u) => u.customer.uuid,
+              ),
+              ...CreatedCustomersFunc().getCustomers().map(
+                (c) => c.customer.uuid,
+              ),
             };
             final updated =
                 (res as List)
-                    .map((j) => TempCustomersClass.fromJson(j))
-                    .where((c) => !pendingUuids.contains(c.uuid))
+                    .map(
+                      (j) => TempCustomersClass.fromJson(j),
+                    )
+                    .where(
+                      (c) => !pendingUuids.contains(c.uuid),
+                    )
                     .toList();
             for (final item in updated) {
               final idx = customers.indexWhere(
@@ -132,7 +104,9 @@ class CustomersProvider extends ChangeNotifier {
                 b.name.toLowerCase(),
               ),
             );
-            await CustomerFunc().insertAllCustomers(customers);
+            await CustomerFunc().insertAllCustomers(
+              customers,
+            );
             notifyListeners();
           }
           _lastSyncAt = DateTime.now().toUtc();
@@ -140,7 +114,9 @@ class CustomersProvider extends ChangeNotifier {
               .getCustomerAccountReceipts(shopId);
           return customers;
         } catch (e) {
-          await mainLocalLog('Incremental Customers Sync error: $e');
+          await mainLocalLog(
+            'Incremental Customers Sync error: $e',
+          );
         }
       }
 

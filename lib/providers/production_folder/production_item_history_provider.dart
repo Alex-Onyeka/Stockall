@@ -65,39 +65,12 @@ class ProductionItemHistoryProvider with ChangeNotifier {
 
   List<ProductionItemHistory>
   departmentProductionItemHistories() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return productionItemHistories.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return productionItemHistories;
-        } else {
-          return productionItemHistories.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return productionItemHistories;
-    }
+    return productionItemHistories.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<ProductionItemHistory>

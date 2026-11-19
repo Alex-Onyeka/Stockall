@@ -8,7 +8,6 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/main.dart';
@@ -18,7 +17,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class EventsLogProvider with ChangeNotifier {
   final SupabaseClient client = Supabase.instance.client;
   final String tableName = 'event_logs';
-  static final EventsLogProvider _instance = EventsLogProvider._internal();
+  static final EventsLogProvider _instance =
+      EventsLogProvider._internal();
   factory EventsLogProvider() => _instance;
   EventsLogProvider._internal();
 
@@ -26,25 +26,43 @@ class EventsLogProvider with ChangeNotifier {
   final Set<String> _fetchedDateKeys = {};
   int? _fetchedShopId;
 
-  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month}-${d.day}';
 
-  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+  bool _isRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) return false;
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
-      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      if (!_fetchedDateKeys.contains(_dateKey(cursor)))
+        return false;
       cursor = cursor.add(const Duration(days: 1));
     }
     return true;
   }
 
-  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+  void _markRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) {
       _fetchedDateKeys.clear();
       _fetchedShopId = shopId;
     }
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
       _fetchedDateKeys.add(_dateKey(cursor));
@@ -81,56 +99,58 @@ class EventsLogProvider with ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
+    mainLocalLog(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
     dateSet = null;
-    getEventLogs(startDate: rangeStart, endDate: endOfrange);
+    getEventLogs(
+      startDate: rangeStart,
+      endDate: endOfrange,
+    );
     notifyListeners();
   }
 
   List<TempEventLogClass> departmentEvents() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
-        return logs.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider().currentDepartment()?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
-          return logs;
-        } else {
-          return logs.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
-          }).toList();
-        }
-      }
-    } else {
-      return logs;
-    }
+    return logs.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<TempEventLogClass> returnLogs() {
-    departmentEvents().sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-    if (dateSet == null && rangeEndDate == null && rangeStartDate == null) {
-      departmentEvents().sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
-      return departmentEvents();
+    final events =
+        departmentEvents()..sort(
+          (a, b) => b.createdAt!.compareTo(a.createdAt!),
+        );
+    if (dateSet == null &&
+        rangeEndDate == null &&
+        rangeStartDate == null) {
+      return events;
     } else if (dateSet != null) {
-      return departmentEvents()
+      return events
           .where(
             (log) =>
-                !log.createdAt!.isBefore(fourAm(dateSet!)) &&
-                log.createdAt!.isBefore(fourAmNextDay(dateSet!)),
+                !log.createdAt!.isBefore(
+                  fourAm(dateSet!),
+                ) &&
+                log.createdAt!.isBefore(
+                  fourAmNextDay(dateSet!),
+                ),
           )
           .toList();
     } else {
       return departmentEvents()
           .where(
             (log) =>
-                !log.createdAt!.isBefore(fourAm(rangeStartDate!)) &&
+                !log.createdAt!.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 log.createdAt!.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -153,11 +173,16 @@ class EventsLogProvider with ChangeNotifier {
           rangeStartDate ??
           resolveBusinessDate(DateTime.now());
       final effectiveEnd =
-          endDate ?? (dateSet ?? rangeEndDate ?? effectiveStart);
+          endDate ??
+          (dateSet ?? rangeEndDate ?? effectiveStart);
 
       if (!fetchAll &&
           !forceRefresh &&
-          _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {
+          _isRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          )) {
         return logs;
       }
 
@@ -171,11 +196,23 @@ class EventsLogProvider with ChangeNotifier {
             .eq('shop_id', shopId);
         if (!fetchAll) {
           query = query
-              .gte('created_at', windowStart.toUtc().toIso8601String())
-              .lt('created_at', windowEnd.toUtc().toIso8601String());
+              .gte(
+                'created_at',
+                windowStart.toUtc().toIso8601String(),
+              )
+              .lt(
+                'created_at',
+                windowEnd.toUtc().toIso8601String(),
+              );
         }
-        var res = await query.order('created_at', ascending: false);
-        final fetched = res.map((m) => TempEventLogClass.fromJson(m)).toList();
+        var res = await query.order(
+          'created_at',
+          ascending: false,
+        );
+        final fetched =
+            res
+                .map((m) => TempEventLogClass.fromJson(m))
+                .toList();
         if (fetchAll) {
           if (fetched.isEmpty) {
             await mainLocalLog('No Event Logs Returned');
@@ -186,45 +223,61 @@ class EventsLogProvider with ChangeNotifier {
           }
           logs = fetched;
         } else {
-          final fetchedUuids = fetched.map((e) => e.uuid).toSet();
-          final outsideWindow = logs.where((rec) {
-            if (fetchedUuids.contains(rec.uuid)) return false;
-            final created = rec.createdAt;
-            if (created == null) return true;
-            final inWindow =
-                !created.isBefore(windowStart) && created.isBefore(windowEnd);
-            return !inWindow;
-          }).toList();
-          logs = [...fetched, ...outsideWindow]
-            ..sort(
-              (a, b) => (b.createdAt ?? DateTime(1970))
-                  .compareTo(a.createdAt ?? DateTime(1970)),
-            );
-          _markRangeFetched(shopId, effectiveStart, effectiveEnd);
+          final fetchedUuids =
+              fetched.map((e) => e.uuid).toSet();
+          final outsideWindow =
+              logs.where((rec) {
+                if (fetchedUuids.contains(rec.uuid))
+                  return false;
+                final created = rec.createdAt;
+                if (created == null) return true;
+                final inWindow =
+                    !created.isBefore(windowStart) &&
+                    created.isBefore(windowEnd);
+                return !inWindow;
+              }).toList();
+          logs = [...fetched, ...outsideWindow]..sort(
+            (a, b) => (b.createdAt ?? DateTime(1970))
+                .compareTo(a.createdAt ?? DateTime(1970)),
+          );
+          _markRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          );
         }
 
         await EventsLogFunc().insertAllEventsLog(logs);
-        await mainLocalLog('✅✅ Events Gotten Successfully Online');
+        await mainLocalLog(
+          '✅✅ Events Gotten Successfully Online',
+        );
         notifyListeners();
 
         return logs;
       } catch (e) {
-        await mainLocalLog('❌❌ Events Getting Online Failed: ${e.toString()}');
+        await mainLocalLog(
+          '❌❌ Events Getting Online Failed: ${e.toString()}',
+        );
         return [];
       }
     } else {
       logs = EventsLogFunc().getEventsLogs();
 
-      await mainLocalLog('Events Gotten Successfully Offline');
+      await mainLocalLog(
+        'Events Gotten Successfully Offline',
+      );
       notifyListeners();
       return logs;
     }
   }
 
-  Future<List<TempEventLogClass>> getEventLogsOffline() async {
+  Future<List<TempEventLogClass>>
+  getEventLogsOffline() async {
     logs = EventsLogFunc().getEventsLogs();
 
-    await mainLocalLog('Events Gotten Successfully Offline');
+    await mainLocalLog(
+      'Events Gotten Successfully Offline',
+    );
     notifyListeners();
     return logs;
   }
@@ -283,7 +336,10 @@ class EventsLogProvider with ChangeNotifier {
     return 1;
   }
 
-  TempEventLogClass customerAdapter(TempCustomersClass customer, int event) {
+  TempEventLogClass customerAdapter(
+    TempCustomersClass customer,
+    int event,
+  ) {
     return TempEventLogClass(
       shopId: shopId(),
       tableName: 'customers',
@@ -300,13 +356,23 @@ class EventsLogProvider with ChangeNotifier {
               : event == 2
               ? 'Customer Updated #${customer.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
               : 'Customer Deleted #${customer.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
-      staffName: returnUserProviderSingle().currentUserMain!.name,
-      departmentName: returnDepartmentProvider().currentDepartment()?.name,
-      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
     );
   }
 
-  TempEventLogClass expensesAdapter(TempExpensesClass expenses, int event) {
+  TempEventLogClass expensesAdapter(
+    TempExpensesClass expenses,
+    int event,
+  ) {
     return TempEventLogClass(
       shopId: shopId(),
       tableName: 'expenses',
@@ -323,14 +389,24 @@ class EventsLogProvider with ChangeNotifier {
               : event == 2
               ? 'Expenses Updated #${expenses.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
               : 'Expenses Deleted #${expenses.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
-      staffName: returnUserProviderSingle().currentUserMain!.name,
-      departmentName: returnDepartmentProvider().currentDepartment()?.name,
-      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount: expenses.amount,
     );
   }
 
-  TempEventLogClass subStaffAdapter(TempSubStaff subStaff, int event) {
+  TempEventLogClass subStaffAdapter(
+    TempSubStaff subStaff,
+    int event,
+  ) {
     return TempEventLogClass(
       shopId: shopId(),
       tableName: 'sub_staff',
@@ -347,14 +423,24 @@ class EventsLogProvider with ChangeNotifier {
               : event == 2
               ? 'SubStaff Updated #${subStaff.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
               : 'SubStaff Deleted #${subStaff.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
-      staffName: returnUserProviderSingle().currentUserMain!.name,
-      departmentName: returnDepartmentProvider().currentDepartment()?.name,
-      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       // amount: subStaff.amount,
     );
   }
 
-  TempEventLogClass departmentAdapter(DepartmentClass department, int event) {
+  TempEventLogClass departmentAdapter(
+    DepartmentClass department,
+    int event,
+  ) {
     return TempEventLogClass(
       shopId: shopId(),
       tableName: 'department',
@@ -371,14 +457,24 @@ class EventsLogProvider with ChangeNotifier {
               : event == 2
               ? 'Expenses Updated #${department.uuid.split('-').first.substring(0, 5).toUpperCase()}'
               : 'Expenses Deleted #${department.uuid.split('-').first.substring(0, 5).toUpperCase()}',
-      staffName: returnUserProviderSingle().currentUserMain!.name,
-      departmentName: returnDepartmentProvider().currentDepartment()?.name,
-      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount: null,
     );
   }
 
-  TempEventLogClass productAdapter(TempProductClass product, int event) {
+  TempEventLogClass productAdapter(
+    TempProductClass product,
+    int event,
+  ) {
     return TempEventLogClass(
       shopId: shopId(),
       tableName: 'products',
@@ -395,9 +491,16 @@ class EventsLogProvider with ChangeNotifier {
               : event == 2
               ? 'Item Updated #${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
               : 'Item Deleted #${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
-      staffName: returnUserProviderSingle().currentUserMain!.name,
-      departmentName: returnDepartmentProvider().currentDepartment()?.name,
-      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount: product.getPrimaryPrice().priceValue,
     );
   }
@@ -410,7 +513,8 @@ class EventsLogProvider with ChangeNotifier {
     return TempEventLogClass(
       shopId: shopId(),
       tableName: 'receipts',
-      title: '${productNames.last} and (${productNames.length - 1}) others.',
+      title:
+          '${productNames.last} and (${productNames.length - 1}) others.',
       event:
           event == 1
               ? 'created'
@@ -423,9 +527,16 @@ class EventsLogProvider with ChangeNotifier {
               : event == 2
               ? 'Sale Updated #${receipt.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
               : 'Sale Deleted #${receipt.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
-      staffName: returnUserProviderSingle().currentUserMain!.name,
-      departmentName: returnDepartmentProvider().currentDepartment()?.name,
-      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount:
           event == 3
               ? (-1 *
@@ -446,7 +557,8 @@ class EventsLogProvider with ChangeNotifier {
     return TempEventLogClass(
       shopId: shopId(),
       tableName: 'invoices',
-      title: '${productNames.last} and (${productNames.length - 1}) others.',
+      title:
+          '${productNames.last} and (${productNames.length - 1}) others.',
       event:
           event == 1
               ? 'created'
@@ -459,9 +571,16 @@ class EventsLogProvider with ChangeNotifier {
               : event == 2
               ? 'Invoice Updated #${invoice.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
               : 'Invoice Deleted #${invoice.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
-      staffName: returnUserProviderSingle().currentUserMain!.name,
-      departmentName: returnDepartmentProvider().currentDepartment()?.name,
-      departmentUuid: returnDepartmentProvider().currentDepartment()?.uuid,
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount:
           event == 3
               ? (-1 * (invoice.bank + invoice.cashAlt))
@@ -471,12 +590,17 @@ class EventsLogProvider with ChangeNotifier {
 
   Future<void> eventsLogSync() async {
     try {
-      bool isOnline = await ConnectivityProvider().isOnline();
+      bool isOnline =
+          await ConnectivityProvider().isOnline();
       // Prepare batch payload
-      if (CreatedEventsLogFunc().getCreatedEventsLogs().isNotEmpty &&
+      if (CreatedEventsLogFunc()
+              .getCreatedEventsLogs()
+              .isNotEmpty &&
           isOnline) {
         final tempEventLogs =
-            CreatedEventsLogFunc().getCreatedEventsLogs().toList();
+            CreatedEventsLogFunc()
+                .getCreatedEventsLogs()
+                .toList();
         // var newEvents = tempEventLogs.map((log) {
         //   log.eventLog.createdAt = log.eventLog.createdAt!;
         //   return log;
@@ -495,10 +619,14 @@ class EventsLogProvider with ChangeNotifier {
                 .from(tableName)
                 .insert(item.eventLog.toJson());
             count++;
-            await CreatedEventsLogFunc().deleteEventLog(item.eventLog.uuid!);
+            await CreatedEventsLogFunc().deleteEventLog(
+              item.eventLog.uuid!,
+            );
           } on PostgrestException catch (e) {
             // if (e.code == '23505') {
-            await CreatedEventsLogFunc().deleteEventLog(item.eventLog.uuid!);
+            await CreatedEventsLogFunc().deleteEventLog(
+              item.eventLog.uuid!,
+            );
             await mainLocalLog(
               'Error Synchronizing Events Log ${item.eventLog.title}: $e',
             );
@@ -510,14 +638,20 @@ class EventsLogProvider with ChangeNotifier {
           }
         }
 
-        await mainLocalLog('$count Event Log items added successfully ✅');
+        await mainLocalLog(
+          '$count Event Log items added successfully ✅',
+        );
         await CreatedEventsLogFunc().clearEvents();
         await mainLocalLog('Unsynced Event Logs Cleared');
-        await mainLocalLog('Mounted, refreshing Receipts ✅');
+        await mainLocalLog(
+          'Mounted, refreshing Receipts ✅',
+        );
         await getEventLogs();
       }
     } catch (e) {
-      await mainLocalLog('Batch Event Logs insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Event Logs insert failed ❌: $e',
+      );
     }
   }
 

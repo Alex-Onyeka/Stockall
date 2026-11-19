@@ -337,45 +337,13 @@ class MaterialsProvider extends ChangeNotifier {
   }
 
   List<MaterialClass> materialList() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return materialListMain.where((cat) {
-          if (cat.departmentUuid == null) {
-            return true;
-          } else {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-          }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return materialListMain;
-        } else {
-          return materialListMain.where((cat) {
-            if (cat.departmentUuid == null) {
-              return true;
-            } else {
-              return cat.departmentUuid ==
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid;
-            }
-          }).toList();
-        }
-      }
-    } else {
-      return materialListMain;
-    }
+    return materialListMain.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+            includeUnassignedWhenDeptSelected: true,
+          );
+    }).toList();
   }
 
   DateTime? _lastSyncAt;

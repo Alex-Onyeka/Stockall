@@ -66,39 +66,12 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
 
   List<MaterialsItemHistory>
   departmentMaterialsItemHistories() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return materialsItemHistories.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return materialsItemHistories;
-        } else {
-          return materialsItemHistories.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return materialsItemHistories;
-    }
+    return materialsItemHistories.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<MaterialsItemHistory>

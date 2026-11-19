@@ -53,25 +53,43 @@ class PurchaseProvider extends ChangeNotifier {
   final Set<String> _fetchedDateKeys = {};
   int? _fetchedShopId;
 
-  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month}-${d.day}';
 
-  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+  bool _isRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) return false;
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
-      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      if (!_fetchedDateKeys.contains(_dateKey(cursor)))
+        return false;
       cursor = cursor.add(const Duration(days: 1));
     }
     return true;
   }
 
-  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+  void _markRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) {
       _fetchedDateKeys.clear();
       _fetchedShopId = shopId;
     }
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
       _fetchedDateKeys.add(_dateKey(cursor));
@@ -440,10 +458,12 @@ class PurchaseProvider extends ChangeNotifier {
                     rec.createdAt.isBefore(windowEnd);
                 return !inWindow;
               }).toList();
-          _purchases = [...remotePurchases, ...outsideWindow]
-            ..sort(
-              (a, b) => b.createdAt.compareTo(a.createdAt),
-            );
+          _purchases = [
+            ...remotePurchases,
+            ...outsideWindow,
+          ]..sort(
+            (a, b) => b.createdAt.compareTo(a.createdAt),
+          );
           _markRangeFetched(
             shopId,
             effectiveStart,
@@ -740,14 +760,16 @@ class PurchaseProvider extends ChangeNotifier {
         rec.storageItemId!.trim().isNotEmpty) {
       return true;
     }
-    if (rec.itemId != null && rec.itemId!.trim().isNotEmpty) {
+    if (rec.itemId != null &&
+        rec.itemId!.trim().isNotEmpty) {
       return false;
     }
     return isManageStorage;
   }
 
   String? _lookupSupplierName(String? supplierUuid) {
-    if (supplierUuid == null || supplierUuid.trim().isEmpty) {
+    if (supplierUuid == null ||
+        supplierUuid.trim().isEmpty) {
       return null;
     }
     return returnSuppliersProvider().suppliers
@@ -854,7 +876,9 @@ class PurchaseProvider extends ChangeNotifier {
               ) ??
               _lookupSupplierName(recSupplierUuid);
           final recTrackingNumber = rec
-              .effectiveTrackingNumber(purchase.trackingNumber);
+              .effectiveTrackingNumber(
+                purchase.trackingNumber,
+              );
           if (_isStorageRecord(rec, isManageStorage)) {
             final targetStorageId =
                 rec.storageItemId ?? rec.itemId;
@@ -1399,7 +1423,9 @@ class PurchaseProvider extends ChangeNotifier {
         final parentPurchase =
             item.purchaseId != null
                 ? (purchases
-                        .where((p) => p.uuid == item.purchaseId)
+                        .where(
+                          (p) => p.uuid == item.purchaseId,
+                        )
                         .firstOrNull ??
                     PurchaseFunc().getSinglePurchase(
                       uuid: item.purchaseId!,
@@ -1413,9 +1439,10 @@ class PurchaseProvider extends ChangeNotifier {
               parentPurchase?.supplierName,
             ) ??
             _lookupSupplierName(itemSupplierUuid);
-        final itemTrackingNumber = item.effectiveTrackingNumber(
-          parentPurchase?.trackingNumber,
-        );
+        final itemTrackingNumber = item
+            .effectiveTrackingNumber(
+              parentPurchase?.trackingNumber,
+            );
 
         if (_isStorageRecord(item, isManageStorage)) {
           final targetStorageId =
@@ -1750,7 +1777,9 @@ class PurchaseProvider extends ChangeNotifier {
           purchases
               .where((p) => p.uuid == purchaseUuid)
               .firstOrNull ??
-          PurchaseFunc().getSinglePurchase(uuid: purchaseUuid);
+          PurchaseFunc().getSinglePurchase(
+            uuid: purchaseUuid,
+          );
 
       for (final entry in deltas.entries) {
         final delta = entry.value;
@@ -2202,38 +2231,12 @@ class PurchaseProvider extends ChangeNotifier {
   //
 
   List<TempPurchase> departmentPurchases() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return purchases.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return purchases;
-        } else {
-          return purchases.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return purchases;
-    }
+    return purchases.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<TempPurchase> returnPurchasesByDateForIndex() {

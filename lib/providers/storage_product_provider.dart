@@ -679,9 +679,7 @@ class StorageProductProvider extends ChangeNotifier {
         CreatedStorageProductsFunc()
             .getStorageProducts()
             .where(
-              (product) =>
-                  product.storageProduct.uuid ==
-                  product.storageProduct.uuid,
+              (cp) => cp.storageProduct.uuid == product.uuid,
             )
             .toList();
 
@@ -689,9 +687,8 @@ class StorageProductProvider extends ChangeNotifier {
         UpdatedStorageProductsFunc()
             .getStorageProductIds()
             .where(
-              (product) =>
-                  product.updatedStorageProduct.uuid ==
-                  product.updatedStorageProduct.uuid,
+              (up) =>
+                  up.updatedStorageProduct.uuid == product.uuid,
             )
             .toList();
     await mainLocalLog(

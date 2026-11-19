@@ -111,39 +111,12 @@ class ItemHistoryProvider with ChangeNotifier {
     itemHistories.sort(
       (a, b) => b.createdAt!.compareTo(a.createdAt!),
     );
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return itemHistories.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return itemHistories;
-        } else {
-          return itemHistories.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return itemHistories;
-    }
+    return itemHistories.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<ItemHistory> returnItemHistories() {

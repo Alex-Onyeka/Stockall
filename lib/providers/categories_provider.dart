@@ -3,7 +3,6 @@ import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_categories/unsynced/created_category/created_category.dart';
 import 'package:stockall/classes/temp_categories/unsynced/deleted_category/deleted_category.dart';
 import 'package:stockall/classes/temp_categories/unsynced/updated/updated_category.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/category/category_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
@@ -13,42 +12,24 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CategoriesProvider extends ChangeNotifier {
-  static final CategoriesProvider _instance = CategoriesProvider._internal();
+  static final CategoriesProvider _instance =
+      CategoriesProvider._internal();
   factory CategoriesProvider() => _instance;
   CategoriesProvider._internal();
   final supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   List<CategoryClass> categoriesMain = [];
 
   List<CategoryClass> categories() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
-        return categoriesMain.where((cat) {
-          if (cat.departmentId == null) {
-            return true;
-          } else {
-            return cat.departmentId ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
-          }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
-          return categoriesMain;
-        } else {
-          return categoriesMain.where((cat) {
-            if (cat.departmentId == null) {
-              return true;
-            } else {
-              return cat.departmentId ==
-                  returnDepartmentProvider().currentDepartment()?.uuid;
-            }
-          }).toList();
-        }
-      }
-    } else {
-      return categoriesMain;
-    }
+    return categoriesMain.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentId,
+            includeUnassignedWhenDeptSelected: true,
+          );
+    }).toList();
   }
 
   final String tableName = 'categories';
@@ -63,7 +44,9 @@ class CategoriesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int> addCategory({required CategoryClass category}) async {
+  Future<int> addCategory({
+    required CategoryClass category,
+  }) async {
     category.updatedAt = DateTime.now();
     try {
       category.createdAt ??= DateTime.now();
@@ -78,7 +61,9 @@ class CategoriesProvider extends ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog('Error Creating Category: ${e.toString()}');
+      await mainLocalLog(
+        'Error Creating Category: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -104,9 +89,10 @@ class CategoriesProvider extends ChangeNotifier {
             _lastSyncAt != null &&
             _lastSyncShopId == shopId &&
             categoriesMain.isNotEmpty) {
-          final safeSince = _lastSyncAt!
-              .subtract(const Duration(seconds: 5))
-              .toUtc();
+          final safeSince =
+              _lastSyncAt!
+                  .subtract(const Duration(seconds: 5))
+                  .toUtc();
           final res = await supabase
               .from(tableName)
               .select()
@@ -125,7 +111,9 @@ class CategoriesProvider extends ChangeNotifier {
             final updated =
                 (res as List)
                     .map((j) => CategoryClass.fromJson(j))
-                    .where((c) => !pendingUuids.contains(c.uuid))
+                    .where(
+                      (c) => !pendingUuids.contains(c.uuid),
+                    )
                     .toList();
             for (final item in updated) {
               final idx = categoriesMain.indexWhere(
@@ -142,7 +130,9 @@ class CategoriesProvider extends ChangeNotifier {
                 b.name.toLowerCase(),
               ),
             );
-            await CategoryFunc().insertAllCategories(categoriesMain);
+            await CategoryFunc().insertAllCategories(
+              categoriesMain,
+            );
             notifyListeners();
           }
           _lastSyncAt = DateTime.now().toUtc();
@@ -154,18 +144,26 @@ class CategoriesProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shopId)
             .order('name', ascending: true);
-        await mainLocalLog('Categories Gotten: ${response.length}');
+        await mainLocalLog(
+          'Categories Gotten: ${response.length}',
+        );
 
         categoriesMain =
-            (response as List).map((e) => CategoryClass.fromJson(e)).toList();
+            (response as List)
+                .map((e) => CategoryClass.fromJson(e))
+                .toList();
 
-        await CategoryFunc().insertAllCategories(categoriesMain);
+        await CategoryFunc().insertAllCategories(
+          categoriesMain,
+        );
         _lastSyncAt = DateTime.now().toUtc();
         _lastSyncShopId = shopId;
         notifyListeners();
         return categoriesMain;
       } catch (e) {
-        await mainLocalLog('Error Getting Categories Online: ${e.toString()}');
+        await mainLocalLog(
+          'Error Getting Categories Online: ${e.toString()}',
+        );
         notifyListeners();
         return [];
       }
@@ -176,21 +174,27 @@ class CategoriesProvider extends ChangeNotifier {
         notifyListeners();
         return categoriesMain;
       } catch (e) {
-        await mainLocalLog('Error Getting Categories Offline: ${e.toString()}');
+        await mainLocalLog(
+          'Error Getting Categories Offline: ${e.toString()}',
+        );
         notifyListeners();
         return [];
       }
     }
   }
 
-  Future<List<CategoryClass>> getCategoriesOffline(int shopId) async {
+  Future<List<CategoryClass>> getCategoriesOffline(
+    int shopId,
+  ) async {
     try {
       categoriesMain = CategoryFunc().getCategories();
 
       notifyListeners();
       return categoriesMain;
     } catch (e) {
-      await mainLocalLog('Error Getting Categories Offline: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Categories Offline: ${e.toString()}',
+      );
       notifyListeners();
       return [];
     }
@@ -212,7 +216,9 @@ class CategoriesProvider extends ChangeNotifier {
       var containsCreated =
           CreatedCategoriesFunc()
               .getCreateCategories()
-              .where((cat) => cat.category.uuid == category.uuid)
+              .where(
+                (cat) => cat.category.uuid == category.uuid,
+              )
               .toList();
       if (containsCreated.isEmpty) {
         await UpdatedCategoriesFunc().createUpdatedCategory(
@@ -228,7 +234,9 @@ class CategoriesProvider extends ChangeNotifier {
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog('Error Updating Category: ${e.toString()}');
+      await mainLocalLog(
+        'Error Updating Category: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -240,39 +248,52 @@ class CategoriesProvider extends ChangeNotifier {
   //
   //
 
-  Future<int> deleteCategory({required CategoryClass category}) async {
+  Future<int> deleteCategory({
+    required CategoryClass category,
+  }) async {
     try {
       var containsCreated =
           CreatedCategoriesFunc()
               .getCreateCategories()
-              .where((cat) => cat.category.uuid == category.uuid)
+              .where(
+                (cat) => cat.category.uuid == category.uuid,
+              )
               .toList();
       var containsUpdated =
           UpdatedCategoriesFunc()
               .getCategories()
-              .where((cat) => cat.category.uuid == category.uuid)
+              .where(
+                (cat) => cat.category.uuid == category.uuid,
+              )
               .toList();
       await CategoryFunc().deleteCategory(category.uuid);
 
       if (containsCreated.isNotEmpty) {
-        CreatedCategoriesFunc().deleteCategory(category.uuid);
+        CreatedCategoriesFunc().deleteCategory(
+          category.uuid,
+        );
       } else {
         await DeletedCategoriesFunc().createDeletedCategory(
           DeletedCategory(
             categoryUuid: category.uuid,
-            shopId: returnShopProvider().userShop()!.shopId!,
+            shopId:
+                returnShopProvider().userShop()!.shopId!,
           ),
         );
       }
       if (containsUpdated.isNotEmpty) {
-        UpdatedCategoriesFunc().deleteUpdatedCategory(category.uuid);
+        UpdatedCategoriesFunc().deleteUpdatedCategory(
+          category.uuid,
+        );
       }
       await getCategoriesOffline(shopId());
       notifyListeners();
       syncData();
       return 1;
     } catch (e) {
-      await mainLocalLog('Error Deleting Category: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Category: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -287,26 +308,40 @@ class CategoriesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedCategoriesFunc().getCreateCategories().isNotEmpty &&
+      if (CreatedCategoriesFunc()
+              .getCreateCategories()
+              .isNotEmpty &&
           isOnline) {
         final tempCategories =
-            CreatedCategoriesFunc().getCreateCategories().toList();
+            CreatedCategoriesFunc()
+                .getCreateCategories()
+                .toList();
         for (var cat in tempCategories) {
           await mainLocalLog(
             'Updated Time: ${cat.category.updatedAt?.toString()}',
           );
         }
-        final payload = tempCategories.map((p) => p.category.toJson()).toList();
+        final payload =
+            tempCategories
+                .map((p) => p.category.toJson())
+                .toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select('uuid');
+        final data = await supabase
+            .from(tableName)
+            .insert(payload)
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedCategoriesFunc().clearCategories();
         await mainLocalLog('Unsynced Categories Cleared');
       }
     } catch (e) {
-      await mainLocalLog('Batch Categories insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Categories insert failed ❌: $e',
+      );
     }
   }
 
@@ -320,27 +355,39 @@ class CategoriesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedCategoriesFunc().getCategoryIds().isNotEmpty && isOnline) {
+      if (DeletedCategoriesFunc()
+              .getCategoryIds()
+              .isNotEmpty &&
+          isOnline) {
         final uuids =
             DeletedCategoriesFunc()
                 .getCategoryIds()
                 .map((p) => p.categoryUuid)
                 .toList();
 
-        final data =
-            await supabase
-                .from(tableName)
-                .delete()
-                .inFilter('uuid', uuids) // delete where id is in the list
-                .select('uuid');
+        final data = await supabase
+            .from(tableName)
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items deleted successfully ✅');
+        await mainLocalLog(
+          '${data.length} items deleted successfully ✅',
+        );
 
-        await DeletedCategoriesFunc().clearDeletedCategories();
-        await mainLocalLog('Unsynced deleted Categories cleared');
+        await DeletedCategoriesFunc()
+            .clearDeletedCategories();
+        await mainLocalLog(
+          'Unsynced deleted Categories cleared',
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Categories delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Categories delete failed ❌: $e',
+      );
     }
   }
 
@@ -352,16 +399,24 @@ class CategoriesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedCategoriesFunc().getCategories().length.toString(),
+        UpdatedCategoriesFunc()
+            .getCategories()
+            .length
+            .toString(),
       );
 
-      if (UpdatedCategoriesFunc().getCategories().isNotEmpty && isOnline) {
-        final updatedCategory = UpdatedCategoriesFunc().getCategories();
+      if (UpdatedCategoriesFunc()
+              .getCategories()
+              .isNotEmpty &&
+          isOnline) {
+        final updatedCategory =
+            UpdatedCategoriesFunc().getCategories();
 
         for (final updated in updatedCategory) {
           final localCategories = updated.category;
 
-          localCategories.updatedAt ??= DateTime.now().toLocal();
+          localCategories.updatedAt ??=
+              DateTime.now().toLocal();
 
           final remoteData =
               await supabase
@@ -371,27 +426,41 @@ class CategoriesProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase.from(tableName).insert(localCategories.toJson());
+            await supabase
+                .from(tableName)
+                .insert(localCategories.toJson());
             await mainLocalLog(
               'Inserted Category with uuid ${localCategories.uuid}',
             );
-            await UpdatedCategoriesFunc().deleteUpdatedCategory(
-              localCategories.uuid,
-            );
+            await UpdatedCategoriesFunc()
+                .deleteUpdatedCategory(
+                  localCategories.uuid,
+                );
           } else {
-            final remoteUpdatedAtRaw = remoteData['updated_at'];
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localCategories.updatedAt =
-                (localCategories.updatedAt ?? DateTime.now()).toUtc();
-            await mainLocalLog("Local updatedAt: ${localCategories.updatedAt}");
-            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
+                (localCategories.updatedAt ??
+                        DateTime.now())
+                    .toUtc();
+            await mainLocalLog(
+              "Local updatedAt: ${localCategories.updatedAt}",
+            );
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
-                localCategories.updatedAt!.isAfter(remoteUpdatedAt)) {
+                localCategories.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
               await supabase
                   .from(tableName)
                   .update(localCategories.toJson())
@@ -399,9 +468,10 @@ class CategoriesProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Category with uuid ${localCategories.uuid}',
               );
-              await UpdatedCategoriesFunc().deleteUpdatedCategory(
-                localCategories.uuid,
-              );
+              await UpdatedCategoriesFunc()
+                  .deleteUpdatedCategory(
+                    localCategories.uuid,
+                  );
             } else {
               await mainLocalLog(
                 'Skipped Category ${localCategories.uuid}, remote is newer ✅',
@@ -410,13 +480,22 @@ class CategoriesProvider extends ChangeNotifier {
           }
         }
 
-        await UpdatedCategoriesFunc().clearUpdatedCategory();
-        await mainLocalLog('Unsynced updated Categories cleared');
-        await mainLocalLog('Mounted, refreshing Categories ✅');
-        await getCategories(returnShopProvider().userShop()!.shopId!);
+        await UpdatedCategoriesFunc()
+            .clearUpdatedCategory();
+        await mainLocalLog(
+          'Unsynced updated Categories cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Categories ✅',
+        );
+        await getCategories(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Categories update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Categories update failed ❌: $e',
+      );
     }
   }
 

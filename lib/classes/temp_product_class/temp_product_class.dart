@@ -150,6 +150,19 @@ class TempProductClass {
   @HiveField(45)
   String? globalDepartmentProductId;
 
+  @HiveField(46)
+  List<String>? departmentUuids;
+
+  List<String> get effectiveDepartmentUuids {
+    if (departmentUuids != null && departmentUuids!.isNotEmpty) {
+      return departmentUuids!;
+    }
+    if (departmentUuid != null && departmentUuid!.isNotEmpty) {
+      return [departmentUuid!];
+    }
+    return [];
+  }
+
   TempProductClass({
     this.id,
     required this.name,
@@ -197,6 +210,7 @@ class TempProductClass {
     this.deriveQuantityFromPrice,
     this.globalProductId,
     this.globalDepartmentProductId,
+    this.departmentUuids,
   });
 
   factory TempProductClass.fromJson(
@@ -309,6 +323,14 @@ class TempProductClass {
           json['global_product_id'] as String?,
       globalDepartmentProductId:
           json['global_department_product_id'] as String?,
+      departmentUuids:
+          (json['department_uuids'] as List<dynamic>?)
+              ?.map((item) => item.toString())
+              .toList() ??
+          (json['department_uuid'] != null &&
+                  (json['department_uuid'] as String).isNotEmpty
+              ? [json['department_uuid'] as String]
+              : []),
     );
   }
 
@@ -379,6 +401,7 @@ class TempProductClass {
             deriveQuantityFromPrice,
         'global_product_id': globalProductId,
         'global_department_product_id': globalDepartmentProductId,
+        'department_uuids': departmentUuids ?? [],
       };
     } else {
       return {
@@ -444,6 +467,7 @@ class TempProductClass {
             deriveQuantityFromPrice,
         'global_product_id': globalProductId,
         'global_department_product_id': globalDepartmentProductId,
+        'department_uuids': departmentUuids ?? [],
       };
     }
   }
@@ -495,6 +519,7 @@ class TempProductClass {
     bool? deriveQuantityFromPrice,
     String? globalProductId,
     String? globalDepartmentProductId,
+    List<String>? departmentUuids,
   }) {
     return TempProductClass(
       id: id ?? this.id,
@@ -554,6 +579,7 @@ class TempProductClass {
           globalProductId ?? this.globalProductId,
       globalDepartmentProductId: globalDepartmentProductId ??
           this.globalDepartmentProductId,
+      departmentUuids: departmentUuids ?? this.departmentUuids,
     );
   }
 

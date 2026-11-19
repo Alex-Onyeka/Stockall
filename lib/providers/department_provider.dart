@@ -29,12 +29,49 @@ class DepartmentProvider with ChangeNotifier {
   DateTime? _lastSyncAt;
   int? _lastSyncShopId;
 
-  DepartmentClass? currentDepartment() {
-    var offlineDepartment =
-        CurrentDepartmentFunc().getCurrentDepartment();
+  /// Returns true if the current user can view all departments & all records:
+  /// either they have explicit `viewAllDepartments` permission OR they are not
+  /// assigned to any department (`departmentUuids` is null or empty).
+  bool canUserViewAllDepartments() {
     if (authorization(
       authorized: Authorizations().viewAllDepartments,
     )) {
+      return true;
+    }
+    final userDepts = currentUser().departmentUuids;
+    return userDepts == null || userDepts.isEmpty;
+  }
+
+  /// Centralized department visibility check for items and records.
+  bool matchesCurrentDepartment({
+    String? departmentUuid,
+    List<String>? departmentUuids,
+    bool includeUnassignedWhenDeptSelected = false,
+  }) {
+    if (returnShopProvider().userShop()?.manageDepartments !=
+        true) {
+      return true;
+    }
+    final currentDeptUuid = currentDepartment()?.uuid;
+    if (currentDeptUuid == null) {
+      return canUserViewAllDepartments();
+    }
+    final hasMulti =
+        departmentUuids != null && departmentUuids.isNotEmpty;
+    final hasSingle =
+        departmentUuid != null && departmentUuid.isNotEmpty;
+    if (hasMulti || hasSingle) {
+      return (departmentUuids?.contains(currentDeptUuid) ??
+              false) ||
+          departmentUuid == currentDeptUuid;
+    }
+    return includeUnassignedWhenDeptSelected;
+  }
+
+  DepartmentClass? currentDepartment() {
+    var offlineDepartment =
+        CurrentDepartmentFunc().getCurrentDepartment();
+    if (canUserViewAllDepartments()) {
       try {
         var depts = departments.where(
           (dept) =>
@@ -56,36 +93,31 @@ class DepartmentProvider with ChangeNotifier {
                 dept.uuid ==
                 offlineDepartment.currentDepartmentId,
           );
-          return depts.isEmpty ? null : depts.first;
+          if (depts.isNotEmpty) {
+            return depts.first;
+          }
         } catch (e) {
           mainLocalLog(
             'Error With Department First: ${e.toString()}',
           );
-          return null;
         }
-      } else {
-        if (departments.isNotEmpty) {
-          try {
-            CurrentDepartmentFunc().createCurrentDepartment(
-              TempCurrentDepartment(
-                currentDepartmentId: departments.first.uuid,
-              ),
-            );
-            var dept =
-                departments.isNotEmpty
-                    ? departments.first
-                    : null;
-            return dept;
-          } catch (e) {
-            mainLocalLog(
-              'Error With Department Second: ${e.toString()}',
-            );
-            return null;
-          }
-        } else {
+      }
+      if (departments.isNotEmpty) {
+        try {
+          CurrentDepartmentFunc().createCurrentDepartment(
+            TempCurrentDepartment(
+              currentDepartmentId: departments.first.uuid,
+            ),
+          );
+          return departments.first;
+        } catch (e) {
+          mainLocalLog(
+            'Error With Department Second: ${e.toString()}',
+          );
           return null;
         }
       }
+      return null;
     }
   }
 
@@ -124,6 +156,8 @@ class DepartmentProvider with ChangeNotifier {
 
   Future<int> clearDepartments() async {
     departments.clear();
+    _lastSyncAt = null;
+    _lastSyncShopId = null;
     await mainLocalLog('Departments Cleared');
     notifyListeners();
     return await CurrentDepartmentFunc()
@@ -201,10 +235,7 @@ class DepartmentProvider with ChangeNotifier {
                           .userShop()
                           ?.manageDepartments ==
                       true &&
-                  !authorization(
-                    authorized:
-                        Authorizations().viewAllDepartments,
-                  ) &&
+                  !canUserViewAllDepartments() &&
                   !(currentUser().departmentUuids?.contains(
                         item.uuid,
                       ) ??
@@ -240,36 +271,32 @@ class DepartmentProvider with ChangeNotifier {
           'Departments Gotten: ${res.length}',
         );
 
-        departments =
+        final allShopDepartments =
             (res as List)
                 .map((e) => DepartmentClass.fromJson(e))
                 .toList();
+        await DepartmentsFunc().insertAllDepartment(
+          allShopDepartments,
+        );
+        departments = List<DepartmentClass>.from(
+          allShopDepartments,
+        );
         if (returnShopProvider()
                 .userShop()
                 ?.manageDepartments ==
             true) {
-          if (!authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
+          if (!canUserViewAllDepartments()) {
             departments =
-                departments.where((dept) {
-                  if (currentUser().departmentUuids !=
-                      null) {
-                    return currentUser().departmentUuids !=
-                            null
-                        ? currentUser().departmentUuids!
-                            .contains(dept.uuid)
-                        : false;
-                  } else {
-                    return false;
-                  }
-                }).toList();
+                departments
+                    .where(
+                      (dept) =>
+                          currentUser().departmentUuids
+                                  ?.contains(dept.uuid) ??
+                              false,
+                    )
+                    .toList();
           }
         }
-
-        await DepartmentsFunc().insertAllDepartment(
-          departments,
-        );
         _lastSyncAt = DateTime.now().toUtc();
         _lastSyncShopId = currentShopId;
         notifyListeners();
@@ -279,19 +306,14 @@ class DepartmentProvider with ChangeNotifier {
                 .userShop()
                 ?.manageDepartments ==
             true) {
-          if (!authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
+          if (!canUserViewAllDepartments()) {
             departments =
                 departments
                     .where(
                       (dept) =>
-                          currentUser().departmentUuids !=
-                                  null
-                              ? currentUser()
-                                  .departmentUuids!
-                                  .contains(dept.uuid)
-                              : false,
+                          currentUser().departmentUuids
+                                  ?.contains(dept.uuid) ??
+                              false,
                     )
                     .toList();
           }
@@ -318,24 +340,18 @@ class DepartmentProvider with ChangeNotifier {
               .userShop()
               ?.manageDepartments ==
           true) {
-        if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+        if (!canUserViewAllDepartments()) {
           departments =
               departments
                   .where(
                     (dept) =>
-                        currentUser().departmentUuids !=
-                                null
-                            ? currentUser().departmentUuids!
-                                .contains(dept.uuid)
-                            : false,
+                        currentUser().departmentUuids
+                                ?.contains(dept.uuid) ??
+                            false,
                   )
                   .toList();
         }
       }
-      notifyListeners();
-      // }
 
       departments.sort((a, b) => a.name.compareTo(b.name));
       notifyListeners();
