@@ -213,11 +213,7 @@ class _MyDrawerWidgetMobileState
                               ),
                             ),
                             Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .employeePage,
-                              ),
+                              visible: true,
                               child: NavListTileAlt(
                                 height: 14,
                                 action: () {

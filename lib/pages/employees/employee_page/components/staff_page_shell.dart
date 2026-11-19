@@ -61,8 +61,26 @@ mixin StaffPageStateMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> load({bool refreshFromStore = false}) async {
+    if (_popped) return;
     await controller.load(context, refreshFromStore: refreshFromStore);
     if (mounted) _popIfMissing();
+  }
+
+  /// `Authorizations().employeePage`: the Staffs list and every
+  /// staff's page. Without it the viewer only has their own page.
+  bool get canManageStaff => env.can(Authorizations().employeePage);
+
+  /// Another staff's page without [canManageStaff]: not shown.
+  bool _isBlocked(BuildContext context) =>
+      !canManageStaff &&
+      staffId != env.report.access(context).currentUserId;
+
+  void _closeBlocked() {
+    if (_popped) return;
+    _popped = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.of(context).pop();
+    });
   }
 
   /// As before: a staff no longer in the shop's list closes the page.
@@ -88,7 +106,7 @@ mixin StaffPageStateMixin<T extends StatefulWidget> on State<T> {
               ? env.departmentNames(user.departmentUuids ?? const [])
               : null,
       onEdit:
-          env.can(Authorizations().updateEmployee)
+          canManageStaff && env.can(Authorizations().updateEmployee)
               ? () => env.edit(
                 context,
                 user,
@@ -101,7 +119,7 @@ mixin StaffPageStateMixin<T extends StatefulWidget> on State<T> {
               )
               : null,
       onDelete:
-          env.can(Authorizations().deleteEmployee)
+          canManageStaff && env.can(Authorizations().deleteEmployee)
               ? () => env.delete(
                 context,
                 staffId,
@@ -192,6 +210,10 @@ mixin StaffPageStateMixin<T extends StatefulWidget> on State<T> {
     BuildContext context, {
     required Widget Function(TempUserClass user, StaffPageData data) content,
   }) {
+    if (_isBlocked(context)) {
+      _closeBlocked();
+      return const Scaffold(key: ValueKey('staff-page-blocked'));
+    }
     // Subscribes to the providers and rebuilds the figures when the
     // data or the business day changed.
     controller.sync(context);

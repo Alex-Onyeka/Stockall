@@ -48,7 +48,10 @@ class _EmployeePageMobileState extends State<EmployeePageMobile>
             if (note != null) note,
             ...sections(data),
             if (widget.env == null && data.canSeeRecords)
-              StaffSalaryHistorySection(staffUuid: staffId),
+              StaffSalaryHistorySection(
+                staffUuid: staffId,
+                canOpen: canManageStaff,
+              ),
           ],
         );
       },

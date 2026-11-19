@@ -95,6 +95,10 @@ class StaffPageEnv {
         for (final u in returnUserProviderSingle().usersMain) {
           if (u.userId == staffId) return u;
         }
+        // The viewer's own page can open before the staff list is
+        // loaded (Staffs without Employee Page skips the list).
+        final me = currentUser();
+        if (staffId.isNotEmpty && me.userId == staffId) return me;
         return null;
       },
       can: (a) => authorization(authorized: a),

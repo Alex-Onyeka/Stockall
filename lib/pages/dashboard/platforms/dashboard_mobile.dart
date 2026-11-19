@@ -625,10 +625,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                           .start,
                                                   children: [
                                                     Visibility(
-                                                      visible: authorization(
-                                                        authorized:
-                                                            Authorizations().employeePage,
-                                                      ),
+                                                      visible: true,
                                                       child: ButtonTab(
                                                         theme:
                                                             theme,
@@ -658,10 +655,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       ),
                                                     ),
                                                     Visibility(
-                                                      visible: authorization(
-                                                        authorized:
-                                                            Authorizations().employeePage,
-                                                      ),
+                                                      visible: true,
                                                       child: SizedBox(
                                                         width:
                                                             10,
@@ -906,10 +900,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                 Row(
                                                   children: [
                                                     Visibility(
-                                                      visible: authorization(
-                                                        authorized:
-                                                            Authorizations().employeePage,
-                                                      ),
+                                                      visible: true,
                                                       child: ButtonTab(
                                                         theme:
                                                             theme,
@@ -937,10 +928,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       ),
                                                     ),
                                                     Visibility(
-                                                      visible: authorization(
-                                                        authorized:
-                                                            Authorizations().employeePage,
-                                                      ),
+                                                      visible: true,
                                                       child: SizedBox(
                                                         width:
                                                             15,

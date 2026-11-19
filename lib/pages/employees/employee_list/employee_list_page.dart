@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/employee_list/platforms/employee_list_desktop.dart';
 import 'package:stockall/pages/employees/employee_list/platforms/employee_list_mobile.dart';
+import 'package:stockall/pages/employees/employee_page/employee_page.dart';
 
 class EmployeeListPage extends StatefulWidget {
   final String empId;
@@ -33,6 +35,10 @@ class _EmployeeListPageState
 
   @override
   Widget build(BuildContext context) {
+    // Without Employee Page, Staffs is the staff's own page only.
+    if (!authorization(authorized: Authorizations().employeePage)) {
+      return EmployeePage(employeeId: currentUser().userId ?? '');
+    }
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {

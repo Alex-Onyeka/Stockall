@@ -8,6 +8,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/pages/customers/customer_details_page/components/customer_sales_section.dart';
 import 'package:stockall/pages/employees/employee_page/components/staff_page_env.dart';
 import 'package:stockall/pages/employees/employee_page/components/staff_page_shell.dart';
+import 'package:stockall/pages/employees/employee_page/components/staff_salary_history_section.dart';
 import 'package:stockall/pages/employees/employee_page/employee_page.dart';
 import 'package:stockall/pages/employees/employee_page/platforms/employee_page_desktop.dart';
 import 'package:stockall/pages/employees/employee_page/platforms/employee_page_mobile.dart';
@@ -16,6 +17,7 @@ import 'package:stockall/pages/report/components/export/report_export_spec.dart'
 import 'package:stockall/pages/report/components/export/report_roll_builder.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/class/staff_report_table_logic.dart';
 import 'package:stockall/pages/report/staff_report/staff_report_table/components/staff_report_table_view.dart';
+import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -159,6 +161,7 @@ class CaptureBackend implements ReportExportBackend {
 }
 
 final allActions = {
+  Authorizations().employeePage,
   Authorizations().updateEmployee,
   Authorizations().deleteEmployee,
 };
@@ -607,7 +610,13 @@ void main() {
         await pumpPage(
           tester,
           desktop: desktop,
-          env: pageEnv(can: {Authorizations().updateEmployee}, log: log),
+          env: pageEnv(
+            can: {
+              Authorizations().employeePage,
+              Authorizations().updateEmployee,
+            },
+            log: log,
+          ),
         );
         expect(find.byKey(const ValueKey('staff-edit')), findsOneWidget);
         expect(find.byKey(const ValueKey('staff-delete')), findsNothing);
@@ -615,7 +624,13 @@ void main() {
         await pumpPage(
           tester,
           desktop: desktop,
-          env: pageEnv(can: {Authorizations().deleteEmployee}, log: log),
+          env: pageEnv(
+            can: {
+              Authorizations().employeePage,
+              Authorizations().deleteEmployee,
+            },
+            log: log,
+          ),
         );
         expect(find.byKey(const ValueKey('staff-edit')), findsNothing);
         expect(find.byKey(const ValueKey('staff-delete')), findsOneWidget);
@@ -625,6 +640,75 @@ void main() {
         await tapKey(tester, 'staff-delete');
         expect(log.edits, [('staff-a', desktop)]);
         expect(log.deletes, ['staff-a']);
+      });
+
+      testWidgets('own page without Employee Page: records, no Edit or Delete', (
+        tester,
+      ) async {
+        // Update / Delete Employee alone are not enough.
+        await pumpPage(
+          tester,
+          desktop: desktop,
+          env: pageEnv(
+            can: {
+              Authorizations().updateEmployee,
+              Authorizations().deleteEmployee,
+            },
+          ),
+        );
+        expect(
+          find.byKey(const ValueKey('staff-details-card')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('staff-summary-card')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('staff-records-menu')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const ValueKey('staff-edit')), findsNothing);
+        expect(find.byKey(const ValueKey('staff-delete')), findsNothing);
+      });
+
+      testWidgets('another staff\'s page without Employee Page closes', (
+        tester,
+      ) async {
+        await pumpPushedPage(
+          tester,
+          desktop: desktop,
+          env: pageEnv(
+            can: {
+              Authorizations().updateEmployee,
+              Authorizations().deleteEmployee,
+            },
+            report: reportEnv(access: staffAccess(currentUserId: 'staff-b')),
+          ),
+        );
+        expect(find.byType(EmployeePage), findsNothing);
+        expect(
+          find.byKey(const ValueKey('staff-details-card')),
+          findsNothing,
+        );
+        expect(find.text('home'), findsOneWidget);
+      });
+
+      testWidgets('another staff\'s page with Employee Page stays open', (
+        tester,
+      ) async {
+        await pumpPushedPage(
+          tester,
+          desktop: desktop,
+          env: pageEnv(
+            report: reportEnv(access: staffAccess(currentUserId: 'staff-b')),
+          ),
+        );
+        expect(find.byType(EmployeePage), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('staff-details-card')),
+          findsOneWidget,
+        );
       });
 
       testWidgets('Print Report exports the staff\'s day', (tester) async {
@@ -657,4 +741,94 @@ void main() {
       });
     });
   }
+
+  group('Salary History rows', () {
+    setUp(() {
+      ExpensesProvider().expensesMain = [
+        TempExpensesClass(
+          uuid: 'sal-1',
+          name: 'Salary',
+          amount: 500,
+          creator: 'Owner',
+          shopId: 1,
+          createdDate: DateTime(2026, 10, 1, 12),
+          userId: 'owner',
+          departmentName: null,
+          departmentUuid: null,
+          expenseType: ExpenseType.staffSalary,
+          staffUuid: 'staff-a',
+        ),
+      ];
+    });
+    tearDown(() => ExpensesProvider().expensesMain = []);
+
+    for (final canOpen in [true, false]) {
+      testWidgets(canOpen ? 'open the expense' : 'are read-only', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ChangeNotifierProvider<ThemeProvider>(
+                create: (_) => ThemeProvider(),
+              ),
+              ChangeNotifierProvider<ShopProvider>.value(value: ShopProvider()),
+              ChangeNotifierProvider<ExpensesProvider>.value(
+                value: ExpensesProvider(),
+              ),
+            ],
+            child: MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  child: StaffSalaryHistorySection(
+                    staffUuid: 'staff-a',
+                    canOpen: canOpen,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await frames(tester);
+        final row = tester.widget<InkWell>(
+          find.byKey(const ValueKey('staff-salary-row-0')),
+        );
+        expect(row.onTap != null, canOpen);
+      });
+    }
+  });
+}
+
+/// The page pushed over a 'home' route, so closing it can be seen.
+Future<void> pumpPushedPage(
+  WidgetTester tester, {
+  required bool desktop,
+  required StaffPageEnv env,
+}) async {
+  tester.view.physicalSize = Size(desktop ? 1800 : 500, desktop ? 2600 : 4200);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  final nav = GlobalKey<NavigatorState>();
+  await tester.pumpWidget(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider<ShopProvider>.value(value: ShopProvider()),
+        ChangeNotifierProvider<ReceiptsProvider>.value(
+          value: ReceiptsProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        navigatorKey: nav,
+        home: const Scaffold(body: Text('home')),
+      ),
+    ),
+  );
+  nav.currentState!.push(
+    MaterialPageRoute(
+      builder: (_) => EmployeePage(employeeId: 'staff-a', env: env),
+    ),
+  );
+  await settleReportScreen(tester);
+  await frames(tester);
 }
