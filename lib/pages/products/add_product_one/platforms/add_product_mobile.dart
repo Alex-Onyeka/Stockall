@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/barcode_scanner.dart';
@@ -251,20 +250,33 @@ class _AddProductMobileState
                       dataProvider.selectedCategories
                           .toList(),
                   storageUuid: null,
+                  departmentUuids:
+                      dataProvider.selectedDepartments
+                          .toList(),
                   departmentName:
-                      returnData().departmentUuid != null
+                      dataProvider
+                              .selectedDepartments
+                              .isNotEmpty
                           ? returnDepartmentProvider()
                               .departments
-                              .firstWhere(
+                              .where(
                                 (dept) =>
                                     dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    dataProvider
+                                        .selectedDepartments
+                                        .first,
                               )
-                              .name
+                              .firstOrNull
+                              ?.name
                           : null,
                   departmentUuid:
-                      returnData().departmentUuid,
+                      dataProvider
+                              .selectedDepartments
+                              .isNotEmpty
+                          ? dataProvider
+                              .selectedDepartments
+                              .first
+                          : null,
                   isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
@@ -551,14 +563,19 @@ class _AddProductMobileState
                 updatedBranchClusterId = uuidGen();
               } else if (stagedBranchLinks.isNotEmpty) {
                 for (final link in stagedBranchLinks) {
-                  if (link.product.globalProductId != null &&
-                      link.product.globalProductId!.trim().isNotEmpty) {
-                    updatedBranchClusterId = link.product.globalProductId;
+                  if (link.product.globalProductId !=
+                          null &&
+                      link.product.globalProductId!
+                          .trim()
+                          .isNotEmpty) {
+                    updatedBranchClusterId =
+                        link.product.globalProductId;
                     break;
                   }
                 }
                 updatedBranchClusterId ??=
-                    widget.product?.globalProductId ?? uuidGen();
+                    widget.product?.globalProductId ??
+                    uuidGen();
               } else {
                 updatedBranchClusterId ??= uuidGen();
               }
@@ -569,15 +586,27 @@ class _AddProductMobileState
                 updatedDeptClusterId = uuidGen();
               } else if (stagedDeptLinks.isNotEmpty) {
                 for (final link in stagedDeptLinks) {
-                  if (link.product.globalDepartmentProductId != null &&
-                      link.product.globalDepartmentProductId!.trim().isNotEmpty) {
+                  if (link
+                              .product
+                              .globalDepartmentProductId !=
+                          null &&
+                      link
+                          .product
+                          .globalDepartmentProductId!
+                          .trim()
+                          .isNotEmpty) {
                     updatedDeptClusterId =
-                        link.product.globalDepartmentProductId;
+                        link
+                            .product
+                            .globalDepartmentProductId;
                     break;
                   }
                 }
                 updatedDeptClusterId ??=
-                    widget.product?.globalDepartmentProductId ?? uuidGen();
+                    widget
+                        .product
+                        ?.globalDepartmentProductId ??
+                    uuidGen();
               } else {
                 updatedDeptClusterId ??= uuidGen();
               }
@@ -620,20 +649,32 @@ class _AddProductMobileState
                   categories:
                       provider.selectedCategories.toList(),
                   storageUuid: widget.product?.storageUuid,
+                  departmentUuids:
+                      provider.selectedDepartments.toList(),
                   departmentName:
-                      returnData().departmentUuid != null
+                      provider
+                              .selectedDepartments
+                              .isNotEmpty
                           ? returnDepartmentProvider()
                               .departments
-                              .firstWhere(
+                              .where(
                                 (dept) =>
                                     dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    provider
+                                        .selectedDepartments
+                                        .first,
                               )
-                              .name
+                              .firstOrNull
+                              ?.name
                           : null,
                   departmentUuid:
-                      returnData().departmentUuid,
+                      provider
+                              .selectedDepartments
+                              .isNotEmpty
+                          ? provider
+                              .selectedDepartments
+                              .first
+                          : null,
                   setCustomPrice: provider.setCustomPrice,
                   isManaged:
                       // widget.quantityController.text.isEmpty
@@ -824,6 +865,9 @@ class _AddProductMobileState
               ?.uuid;
       if (currentDept != null) {
         returnData().departmentUuid = currentDept;
+        returnData().initDepartments(
+          departments: [currentDept],
+        );
       }
     } else {
       createdProductUuid = widget.product?.uuid;
@@ -876,6 +920,10 @@ class _AddProductMobileState
               : '';
       returnData().departmentUuid =
           widget.product?.departmentUuid;
+      returnData().initDepartments(
+        departments:
+            widget.product!.effectiveDepartmentUuids,
+      );
       returnData().expiryDate = widget.product?.expiryDate;
       returnData().isProductRefundable =
           widget.product!.isRefundable;
@@ -931,6 +979,9 @@ class _AddProductMobileState
       if (currentDept != null) {
         returnData(context: context).departmentUuid =
             currentDept;
+        returnData(
+          context: context,
+        ).initDepartments(departments: [currentDept]);
       }
     }
   }
@@ -1592,11 +1643,8 @@ class _AddProductMobileState
                                                         .userShop()
                                                         ?.manageDepartments ==
                                                     true &&
-                                                authorization(
-                                                  authorized:
-                                                      Authorizations()
-                                                          .viewAllDepartments,
-                                                ),
+                                                returnDepartmentProvider()
+                                                    .canUserViewAllDepartments(),
                                             child: InkWell(
                                               mouseCursor:
                                                   SystemMouseCursors
@@ -1606,140 +1654,11 @@ class _AddProductMobileState
                                                   context:
                                                       context,
                                                   action: () {
-                                                    String?
-                                                    selectedDept;
-                                                    setState(() {
-                                                      selectedDept =
-                                                          returnData().departmentUuid;
-                                                    });
-                                                    showDialog(
-                                                      context:
-                                                          context,
-                                                      builder: (
-                                                        firstContext,
-                                                      ) {
-                                                        return StatefulBuilder(
-                                                          builder: (
-                                                            secondContext,
-                                                            setState,
-                                                          ) {
-                                                            return DialogTemplate(
-                                                              theme:
-                                                                  theme,
-                                                              message:
-                                                                  'Select Department for this Staff',
-                                                              title:
-                                                                  'Select Department(s)',
-                                                              action: () {
-                                                                returnData().setDepartment(
-                                                                  selectedDept,
-                                                                );
-                                                                Navigator.of(
-                                                                  context,
-                                                                ).pop();
-                                                              },
-                                                              widget: SizedBox(
-                                                                height:
-                                                                    screenHeight(
-                                                                      context,
-                                                                    ) -
-                                                                    300,
-                                                                child: SingleChildScrollView(
-                                                                  child: Padding(
-                                                                    padding: const EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          20.0,
-                                                                      vertical:
-                                                                          15,
-                                                                    ),
-                                                                    child: Column(
-                                                                      spacing:
-                                                                          5,
-                                                                      children:
-                                                                          returnDepartmentProvider().departments
-                                                                              .map(
-                                                                                (
-                                                                                  dept,
-                                                                                ) => Material(
-                                                                                  color:
-                                                                                      Colors.transparent,
-                                                                                  child: InkWell(
-                                                                                    mouseCursor:
-                                                                                        SystemMouseCursors.click,
-                                                                                    onTap: () {
-                                                                                      setState(
-                                                                                        () {
-                                                                                          if (selectedDept ==
-                                                                                              dept.uuid) {
-                                                                                            selectedDept =
-                                                                                                null;
-                                                                                          } else {
-                                                                                            selectedDept =
-                                                                                                dept.uuid;
-                                                                                          }
-                                                                                        },
-                                                                                      );
-                                                                                    },
-                                                                                    child: Padding(
-                                                                                      padding: const EdgeInsets.symmetric(
-                                                                                        vertical:
-                                                                                            9.0,
-                                                                                        horizontal:
-                                                                                            12,
-                                                                                      ),
-                                                                                      child: Row(
-                                                                                        mainAxisAlignment:
-                                                                                            MainAxisAlignment.spaceBetween,
-                                                                                        children: [
-                                                                                          Text(
-                                                                                            style: TextStyle(
-                                                                                              fontSize:
-                                                                                                  theme.mobileTexts.b3.fontSize,
-                                                                                              fontWeight:
-                                                                                                  FontWeight.bold,
-                                                                                            ),
-                                                                                            dept.name,
-                                                                                          ),
-                                                                                          Container(
-                                                                                            padding: EdgeInsets.all(
-                                                                                              2,
-                                                                                            ),
-                                                                                            decoration: BoxDecoration(
-                                                                                              shape:
-                                                                                                  BoxShape.circle,
-                                                                                              border: Border.all(
-                                                                                                color:
-                                                                                                    Colors.grey,
-                                                                                              ),
-                                                                                            ),
-                                                                                            child: Container(
-                                                                                              padding: EdgeInsets.all(
-                                                                                                5,
-                                                                                              ),
-                                                                                              decoration: BoxDecoration(
-                                                                                                shape:
-                                                                                                    BoxShape.circle,
-                                                                                                color:
-                                                                                                    selectedDept ==
-                                                                                                            dept.uuid
-                                                                                                        ? theme.lightModeColor.prColor250
-                                                                                                        : Colors.transparent,
-                                                                                              ),
-                                                                                            ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              )
-                                                                              .toList(),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
+                                                    departmentsBottomSheet(
+                                                      context,
+                                                      () {
+                                                        setState(
+                                                          () {},
                                                         );
                                                       },
                                                     );
@@ -1762,7 +1681,7 @@ class _AddProductMobileState
                                                             TextAlign.start,
                                                         style:
                                                             theme.mobileTexts.b3.textStyleBold,
-                                                        'Set Department',
+                                                        'Set Department(s)',
                                                       ),
                                                     ],
                                                   ),
@@ -1782,13 +1701,17 @@ class _AddProductMobileState
                                                       decoration: BoxDecoration(
                                                         border: Border.all(
                                                           color:
-                                                              returnData().departmentUuid !=
-                                                                      null
+                                                              returnData(
+                                                                    context:
+                                                                        context,
+                                                                  ).selectedDepartments.isNotEmpty
                                                                   ? theme.lightModeColor.prColor300
                                                                   : Colors.grey,
                                                           width:
-                                                              returnData().departmentUuid !=
-                                                                      null
+                                                              returnData(
+                                                                    context:
+                                                                        context,
+                                                                  ).selectedDepartments.isNotEmpty
                                                                   ? 1.3
                                                                   : 1,
                                                         ),
@@ -1809,35 +1732,47 @@ class _AddProductMobileState
                                                               Text(
                                                                 style: TextStyle(
                                                                   fontSize:
-                                                                      returnData().departmentUuid !=
-                                                                              null
-                                                                          ? theme.mobileTexts.b2.fontSize
-                                                                          : theme.mobileTexts.b2.fontSize,
+                                                                      theme.mobileTexts.b2.fontSize,
                                                                   fontWeight:
-                                                                      returnData().departmentUuid !=
-                                                                              null
+                                                                      returnData(
+                                                                            context:
+                                                                                context,
+                                                                          ).selectedDepartments.isNotEmpty
                                                                           ? FontWeight.bold
                                                                           : null,
                                                                   color:
-                                                                      returnData().departmentUuid !=
-                                                                              null
+                                                                      returnData(
+                                                                            context:
+                                                                                context,
+                                                                          ).selectedDepartments.isNotEmpty
                                                                           ? null
                                                                           : Colors.grey.shade500,
                                                                 ),
-                                                                returnData().departmentUuid ==
-                                                                        null
-                                                                    ? 'Select Department'
-                                                                    : returnDepartmentProvider().departments
+                                                                returnData(
+                                                                      context:
+                                                                          context,
+                                                                    ).selectedDepartments.isEmpty
+                                                                    ? 'Select Department(s)'
+                                                                    : returnData(
+                                                                          context:
+                                                                              context,
+                                                                        ).selectedDepartments.length ==
+                                                                        1
+                                                                    ? (returnDepartmentProvider().departments
                                                                             .where(
                                                                               (
                                                                                 dept,
                                                                               ) =>
                                                                                   dept.uuid ==
-                                                                                  returnData().departmentUuid,
+                                                                                  returnData(
+                                                                                    context:
+                                                                                        context,
+                                                                                  ).selectedDepartments.first,
                                                                             )
                                                                             .firstOrNull
                                                                             ?.name ??
-                                                                        'Select Department',
+                                                                        '(1) Department Selected')
+                                                                    : '(${returnData(context: context).selectedDepartments.length}) Departments Selected',
                                                               ),
                                                             ],
                                                           ),
@@ -1849,6 +1784,7 @@ class _AddProductMobileState
                                                                 20,
                                                               ),
                                                               onTap: () {
+                                                                returnData().selectedDepartments.clear();
                                                                 returnData().clearDepartment();
                                                               },
                                                               child: Container(
@@ -2294,11 +2230,12 @@ class _AddProductMobileState
                                           SizedBox(
                                             height: 10,
                                           ),
-                                          if (widget.product != null &&
+                                          if (widget.product !=
+                                                  null &&
                                               returnShopProvider()
-                                                  .userShops
-                                                  .length >
-                                              1) ...[
+                                                      .userShops
+                                                      .length >
+                                                  1) ...[
                                             BranchProductLinkWidget(
                                               currentProduct:
                                                   widget
@@ -2323,11 +2260,12 @@ class _AddProductMobileState
                                               height: 10,
                                             ),
                                           ],
-                                          if (widget.product != null &&
+                                          if (widget.product !=
+                                                  null &&
                                               returnShopProvider()
-                                                  .userShop()
-                                                  ?.manageDepartments ==
-                                              true) ...[
+                                                      .userShop()
+                                                      ?.manageDepartments ==
+                                                  true) ...[
                                             DepartmentProductLinkWidget(
                                               currentProduct:
                                                   widget

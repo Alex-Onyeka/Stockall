@@ -14,35 +14,55 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {
-  static final ExpensesProvider _instance = ExpensesProvider._internal();
+  static final ExpensesProvider _instance =
+      ExpensesProvider._internal();
   factory ExpensesProvider() => _instance;
   ExpensesProvider._internal();
   final supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   List<TempExpensesClass> expensesMain = [];
   final Set<String> _fetchedDateKeys = {};
   int? _fetchedShopId;
 
-  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month}-${d.day}';
 
-  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+  bool _isRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) return false;
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
-      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      if (!_fetchedDateKeys.contains(_dateKey(cursor)))
+        return false;
       cursor = cursor.add(const Duration(days: 1));
     }
     return true;
   }
 
-  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+  void _markRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) {
       _fetchedDateKeys.clear();
       _fetchedShopId = shopId;
     }
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
       _fetchedDateKeys.add(_dateKey(cursor));
@@ -100,7 +120,10 @@ class ExpensesProvider extends ChangeNotifier {
         dateSet ??
         resolveBusinessDate(DateTime.now());
     final effectiveEnd =
-        endDate ?? rangeEndDate ?? dateSet ?? effectiveStart;
+        endDate ??
+        rangeEndDate ??
+        dateSet ??
+        effectiveStart;
     final windowStart = fourAm(effectiveStart);
     final windowEnd = fourAmNextDay(effectiveEnd);
 
@@ -108,7 +131,11 @@ class ExpensesProvider extends ChangeNotifier {
     if (isOnline && ExpensesFunc().isSynced()) {
       if (!forceRefresh &&
           !fetchAll &&
-          _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {
+          _isRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          )) {
         return expensesMain;
       }
       try {
@@ -118,11 +145,22 @@ class ExpensesProvider extends ChangeNotifier {
             .eq('shop_id', shopId);
         if (!fetchAll) {
           query = query
-              .gte('created_date', windowStart.toUtc().toIso8601String())
-              .lt('created_date', windowEnd.toUtc().toIso8601String());
+              .gte(
+                'created_date',
+                windowStart.toUtc().toIso8601String(),
+              )
+              .lt(
+                'created_date',
+                windowEnd.toUtc().toIso8601String(),
+              );
         }
-        final response = await query.order('created_date', ascending: false);
-        await mainLocalLog('Expenses Gotten: ${response.length}');
+        final response = await query.order(
+          'created_date',
+          ascending: false,
+        );
+        await mainLocalLog(
+          'Expenses Gotten: ${response.length}',
+        );
 
         final fetched =
             (response as List)
@@ -132,14 +170,17 @@ class ExpensesProvider extends ChangeNotifier {
         if (fetchAll) {
           expensesMain = fetched;
         } else {
-          final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+          final fetchedUuids =
+              fetched.map((e) => e.uuid).toSet();
           final outsideWindow =
               expensesMain.where((exp) {
-                if (fetchedUuids.contains(exp.uuid)) return false;
+                if (fetchedUuids.contains(exp.uuid))
+                  return false;
                 final dt = exp.createdDate;
                 if (dt == null) return true;
                 final inWindow =
-                    !dt.isBefore(windowStart) && dt.isBefore(windowEnd);
+                    !dt.isBefore(windowStart) &&
+                    dt.isBefore(windowEnd);
                 return !inWindow;
               }).toList();
           expensesMain = [...fetched, ...outsideWindow]
@@ -147,14 +188,22 @@ class ExpensesProvider extends ChangeNotifier {
               (a, b) => (b.createdDate ?? DateTime(0))
                   .compareTo(a.createdDate ?? DateTime(0)),
             );
-          _markRangeFetched(shopId, effectiveStart, effectiveEnd);
+          _markRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          );
         }
 
-        await ExpensesFunc().insertAllExpenses(expensesMain);
+        await ExpensesFunc().insertAllExpenses(
+          expensesMain,
+        );
         notifyListeners();
         return expensesMain;
       } catch (e) {
-        await mainLocalLog('Error Getting Expenses Online: ${e.toString()}');
+        await mainLocalLog(
+          'Error Getting Expenses Online: ${e.toString()}',
+        );
         notifyListeners();
         return [];
       }
@@ -164,20 +213,26 @@ class ExpensesProvider extends ChangeNotifier {
         notifyListeners();
         return expensesMain;
       } catch (e) {
-        await mainLocalLog('Error Getting Expenses Offline: ${e.toString()}');
+        await mainLocalLog(
+          'Error Getting Expenses Offline: ${e.toString()}',
+        );
         notifyListeners();
         return [];
       }
     }
   }
 
-  Future<List<TempExpensesClass>> getExpensesOffline(int shopId) async {
+  Future<List<TempExpensesClass>> getExpensesOffline(
+    int shopId,
+  ) async {
     try {
       expensesMain = ExpensesFunc().getExpenses();
       notifyListeners();
       return expensesMain;
     } catch (e) {
-      await mainLocalLog('Error Getting Expenses Offline: ${e.toString()}');
+      await mainLocalLog(
+        'Error Getting Expenses Offline: ${e.toString()}',
+      );
       notifyListeners();
       return [];
     }
@@ -211,7 +266,8 @@ class ExpensesProvider extends ChangeNotifier {
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
       final sid = returnShopProvider().userShop()?.shopId;
-      if (sid != null && !_isRangeFetched(sid, date, date)) {
+      if (sid != null &&
+          !_isRangeFetched(sid, date, date)) {
         getExpenses(sid, startDate: date, endDate: date);
       }
     } else {
@@ -227,106 +283,129 @@ class ExpensesProvider extends ChangeNotifier {
   void setRange(DateTime rangeStart, DateTime endOfrange) {
     rangeStartDate = rangeStart;
     rangeEndDate = endOfrange;
-    mainLocalLog('Date Range set: Start: $rangeStart End: $endOfrange ');
+    mainLocalLog(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
     dateSet = null;
     final sid = returnShopProvider().userShop()?.shopId;
-    if (sid != null && !_isRangeFetched(sid, rangeStart, endOfrange)) {
-      getExpenses(sid, startDate: rangeStart, endDate: endOfrange);
+    if (sid != null &&
+        !_isRangeFetched(sid, rangeStart, endOfrange)) {
+      getExpenses(
+        sid,
+        startDate: rangeStart,
+        endDate: endOfrange,
+      );
     }
     notifyListeners();
   }
 
   List<TempExpensesClass> departmentExpenses() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
-        return expensesMain.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider().currentDepartment()?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
-          return expensesMain;
-        } else {
-          return expensesMain.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
-          }).toList();
-        }
-      }
-    } else {
-      return expensesMain;
-    }
+    return expensesMain.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
-  List<TempExpensesClass> returnExpensesByDayOrWeek(BuildContext context) {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
+  List<TempExpensesClass> returnExpensesByDayOrWeek(
+    BuildContext context,
+  ) {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
       if (rangeStartDate != null) {
         return departmentExpenses().where((expense) {
           final created = expense.createdDate!.toUtc();
-          return !created.isBefore(fourAm(rangeStartDate!)) &&
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
-        var currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
+        var currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         return departmentExpenses()
             .where(
               (expense) =>
-                  !expense.createdDate!.isBefore(fourAm(currentDate)) &&
-                  expense.createdDate!.isBefore(fourAmNextDay(currentDate)),
+                  !expense.createdDate!.isBefore(
+                    fourAm(currentDate),
+                  ) &&
+                  expense.createdDate!.isBefore(
+                    fourAmNextDay(currentDate),
+                  ),
             )
             .toList();
       }
     } else {
       if (rangeStartDate != null) {
         if (authorization(
-          authorized: Authorizations().viewAllTransactionRecords,
+          authorized:
+              Authorizations().viewAllTransactionRecords,
         )) {
           return expensesMain.where((expense) {
             final created = expense.createdDate!.toUtc();
-            return !created.isBefore(fourAm(rangeStartDate!)) &&
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 );
           }).toList();
         } else {
           return expensesMain.where((expense) {
             final created = expense.createdDate!.toUtc();
-            return !created.isBefore(fourAm(rangeStartDate!)) &&
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? resolveBusinessDate(DateTime.now()),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ) &&
                 expense.userId == currentUser().userId;
           }).toList();
         }
       } else {
-        var currentDate = dateSet ?? resolveBusinessDate(DateTime.now());
+        var currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         if (authorization(
-          authorized: Authorizations().viewAllTransactionRecords,
+          authorized:
+              Authorizations().viewAllTransactionRecords,
         )) {
           return expensesMain
               .where(
                 (expense) =>
-                    !expense.createdDate!.isBefore(fourAm(currentDate)) &&
-                    expense.createdDate!.isBefore(fourAmNextDay(currentDate)),
+                    !expense.createdDate!.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    expense.createdDate!.isBefore(
+                      fourAmNextDay(currentDate),
+                    ),
               )
               .toList();
         } else {
           return expensesMain
               .where(
                 (expense) =>
-                    !expense.createdDate!.isBefore(fourAm(currentDate)) &&
-                    expense.createdDate!.isBefore(fourAmNextDay(currentDate)) &&
+                    !expense.createdDate!.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    expense.createdDate!.isBefore(
+                      fourAmNextDay(currentDate),
+                    ) &&
                     expense.userId == currentUser().userId,
               )
               .toList();
@@ -368,7 +447,9 @@ class ExpensesProvider extends ChangeNotifier {
     var containsCreated =
         CreatedExpensesFunc()
             .getExpenses()
-            .where((exp) => exp.expenses.uuid == expense.uuid)
+            .where(
+              (exp) => exp.expenses.uuid == expense.uuid,
+            )
             .toList();
     if (containsCreated.isEmpty) {
       await UpdatedExpensesFunc().createUpdatedExpense(
@@ -420,12 +501,16 @@ class ExpensesProvider extends ChangeNotifier {
     var containsCreated =
         CreatedExpensesFunc()
             .getExpenses()
-            .where((exp) => exp.expenses.uuid == uuid)
+            .where(
+              (exp) => exp.expenses.uuid == expenses.uuid,
+            )
             .toList();
     var containsUpdated =
         UpdatedExpensesFunc()
             .getExpenses()
-            .where((exp) => exp.expenses.uuid == expenses.uuid)
+            .where(
+              (exp) => exp.expenses.uuid == expenses.uuid,
+            )
             .toList();
     await ExpensesFunc().deleteExpenses(expenses.uuid!);
 
@@ -440,7 +525,9 @@ class ExpensesProvider extends ChangeNotifier {
       );
     }
     if (containsUpdated.isNotEmpty) {
-      UpdatedExpensesFunc().deleteUpdatedExpense(expenses.uuid!);
+      UpdatedExpensesFunc().deleteUpdatedExpense(
+        expenses.uuid!,
+      );
     }
     await returnEventsLogProvider().createLog(
       returnEventsLogProvider(
@@ -467,8 +554,10 @@ class ExpensesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedExpensesFunc().getExpenses().isNotEmpty && isOnline) {
-        final tempExpenses = CreatedExpensesFunc().getExpenses().toList();
+      if (CreatedExpensesFunc().getExpenses().isNotEmpty &&
+          isOnline) {
+        final tempExpenses =
+            CreatedExpensesFunc().getExpenses().toList();
         // for (var exp in tempExpenses) {
         //   await mainLocalLog(
         //     'Updated Time: ${exp.expenses.updatedAt?.toString()}',
@@ -489,10 +578,14 @@ class ExpensesProvider extends ChangeNotifier {
                 .from('expenses')
                 .insert(item.expenses.toJson());
             count++;
-            await CreatedExpensesFunc().deleteExpenses(item.expenses.uuid!);
+            await CreatedExpensesFunc().deleteExpenses(
+              item.expenses.uuid!,
+            );
           } on PostgrestException catch (e) {
             if (e.code == '23505') {
-              await CreatedExpensesFunc().deleteExpenses(item.expenses.uuid!);
+              await CreatedExpensesFunc().deleteExpenses(
+                item.expenses.uuid!,
+              );
             }
             await mainLocalLog(
               'Error Synchronizing Created Expenses ${item.expenses.name}: $e',
@@ -500,12 +593,16 @@ class ExpensesProvider extends ChangeNotifier {
           }
         }
 
-        await mainLocalLog('$count items added successfully ✅');
+        await mainLocalLog(
+          '$count items added successfully ✅',
+        );
         // await CreatedExpensesFunc().clearExpenses();
         await mainLocalLog('Unsynced Expenses Cleared');
       }
     } catch (e) {
-      await mainLocalLog('Batch Expenses insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Expenses insert failed ❌: $e',
+      );
     }
   }
 
@@ -519,27 +616,38 @@ class ExpensesProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedExpensesFunc().getExpenseIds().isNotEmpty && isOnline) {
+      if (DeletedExpensesFunc()
+              .getExpenseIds()
+              .isNotEmpty &&
+          isOnline) {
         final uuids =
             DeletedExpensesFunc()
                 .getExpenseIds()
                 .map((p) => p.expensesUuid)
                 .toList();
 
-        final data =
-            await supabase
-                .from('expenses')
-                .delete()
-                .inFilter('uuid', uuids) // delete where id is in the list
-                .select('uuid');
+        final data = await supabase
+            .from('expenses')
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items deleted successfully ✅');
+        await mainLocalLog(
+          '${data.length} items deleted successfully ✅',
+        );
 
         await DeletedExpensesFunc().clearDeletedExpenses();
-        await mainLocalLog('Unsynced deleted Expenses cleared');
+        await mainLocalLog(
+          'Unsynced deleted Expenses cleared',
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Expenses delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Expenses delete failed ❌: $e',
+      );
     }
   }
 
@@ -550,18 +658,28 @@ class ExpensesProvider extends ChangeNotifier {
   Future<void> updateExpensesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
-      await mainLocalLog(UpdatedExpensesFunc().getExpenses().length.toString());
+      await mainLocalLog(
+        UpdatedExpensesFunc()
+            .getExpenses()
+            .length
+            .toString(),
+      );
 
-      if (UpdatedExpensesFunc().getExpenses().isNotEmpty && isOnline) {
-        final updatedExpenses = UpdatedExpensesFunc().getExpenses();
+      if (UpdatedExpensesFunc().getExpenses().isNotEmpty &&
+          isOnline) {
+        final updatedExpenses =
+            UpdatedExpensesFunc().getExpenses();
 
         for (final updated in updatedExpenses) {
           final localExpenses = updated.expenses;
 
-          localExpenses.updatedAt ??= DateTime.now().toLocal();
+          localExpenses.updatedAt ??=
+              DateTime.now().toLocal();
 
           if (localExpenses.uuid == null) {
-            await mainLocalLog('Local Expenses Uuid is Null');
+            await mainLocalLog(
+              'Local Expenses Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -571,28 +689,40 @@ class ExpensesProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase.from('expenses').insert(localExpenses.toJson());
+            await supabase
+                .from('expenses')
+                .insert(localExpenses.toJson());
             await mainLocalLog(
               'Inserted Expenses with uuid ${localExpenses.uuid}',
             );
-            await UpdatedExpensesFunc().deleteUpdatedExpense(
-              localExpenses.uuid ?? '',
-            );
+            await UpdatedExpensesFunc()
+                .deleteUpdatedExpense(
+                  localExpenses.uuid ?? '',
+                );
           } else {
-            final remoteUpdatedAtRaw = remoteData['updated_at'];
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localExpenses.updatedAt =
                 (localExpenses.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog("Local updatedAt: ${localExpenses.updatedAt}");
-            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Local updatedAt: ${localExpenses.updatedAt}",
+            );
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
-                localExpenses.updatedAt!.isAfter(remoteUpdatedAt)) {
+                localExpenses.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
               await supabase
                   .from('expenses')
                   .update(localExpenses.toJson())
@@ -600,9 +730,10 @@ class ExpensesProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Expenses with uuid ${localExpenses.uuid}',
               );
-              await UpdatedExpensesFunc().deleteUpdatedExpense(
-                localExpenses.uuid ?? '',
-              );
+              await UpdatedExpensesFunc()
+                  .deleteUpdatedExpense(
+                    localExpenses.uuid ?? '',
+                  );
             } else {
               await mainLocalLog(
                 'Skipped Expenses ${localExpenses.uuid}, remote is newer ✅',
@@ -612,12 +743,20 @@ class ExpensesProvider extends ChangeNotifier {
         }
 
         await UpdatedExpensesFunc().clearupdatedExpenses();
-        await mainLocalLog('Unsynced updated Expenses cleared');
-        await mainLocalLog('Mounted, refreshing Expenses ✅');
-        await getExpenses(returnShopProvider().userShop()!.shopId!);
+        await mainLocalLog(
+          'Unsynced updated Expenses cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Expenses ✅',
+        );
+        await getExpenses(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Expenses update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Expenses update failed ❌: $e',
+      );
     }
   }
 

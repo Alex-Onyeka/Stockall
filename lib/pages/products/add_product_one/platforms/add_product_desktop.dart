@@ -5,7 +5,6 @@ import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -373,20 +372,33 @@ class _AddProductDesktopState
                   // categoryUuid:
                   //     dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
+                  departmentUuids:
+                      dataProvider.selectedDepartments
+                          .toList(),
                   departmentName:
-                      returnData().departmentUuid != null
+                      dataProvider
+                              .selectedDepartments
+                              .isNotEmpty
                           ? returnDepartmentProvider()
                               .departments
-                              .firstWhere(
+                              .where(
                                 (dept) =>
                                     dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    dataProvider
+                                        .selectedDepartments
+                                        .first,
                               )
-                              .name
+                              .firstOrNull
+                              ?.name
                           : null,
                   departmentUuid:
-                      returnData().departmentUuid,
+                      dataProvider
+                              .selectedDepartments
+                              .isNotEmpty
+                          ? dataProvider
+                              .selectedDepartments
+                              .first
+                          : null,
                 ),
               );
 
@@ -640,20 +652,32 @@ class _AddProductDesktopState
                   categories:
                       provider.selectedCategories.toList(),
                   storageUuid: widget.product?.storageUuid,
+                  departmentUuids:
+                      provider.selectedDepartments.toList(),
                   departmentName:
-                      returnData().departmentUuid != null
+                      provider
+                              .selectedDepartments
+                              .isNotEmpty
                           ? returnDepartmentProvider()
                               .departments
-                              .firstWhere(
+                              .where(
                                 (dept) =>
                                     dept.uuid ==
-                                    returnData()
-                                        .departmentUuid,
+                                    provider
+                                        .selectedDepartments
+                                        .first,
                               )
-                              .name
+                              .firstOrNull
+                              ?.name
                           : null,
                   departmentUuid:
-                      returnData().departmentUuid,
+                      provider
+                              .selectedDepartments
+                              .isNotEmpty
+                          ? provider
+                              .selectedDepartments
+                              .first
+                          : null,
                   setCustomPrice: provider.setCustomPrice,
                   isManaged:
                       // widget.quantityController.text.isEmpty
@@ -843,6 +867,9 @@ class _AddProductDesktopState
               ?.uuid;
       if (currentDept != null) {
         returnData().departmentUuid = currentDept;
+        returnData().initDepartments(
+          departments: [currentDept],
+        );
       }
     } else {
       createdProductUuid = widget.product?.uuid;
@@ -875,6 +902,10 @@ class _AddProductDesktopState
     if (widget.product != null && context.mounted) {
       returnData().departmentUuid =
           widget.product?.departmentUuid;
+      returnData().initDepartments(
+        departments:
+            widget.product!.effectiveDepartmentUuids,
+      );
       returnData().manageWastage =
           widget.product?.manageSalesWastage ?? false;
       returnData().selectedDimensionUnit =
@@ -960,6 +991,9 @@ class _AddProductDesktopState
       if (currentDept != null) {
         returnData(context: context).departmentUuid =
             currentDept;
+        returnData(
+          context: context,
+        ).initDepartments(departments: [currentDept]);
       }
     }
   }
@@ -1586,23 +1620,25 @@ class _AddProductDesktopState
                                                             [],
                                                         storageUuid:
                                                             widget.product?.storageUuid,
+                                                        departmentUuids:
+                                                            returnData().selectedDepartments.toList(),
                                                         departmentName:
-                                                            returnData().departmentUuid !=
-                                                                    null
+                                                            returnData().selectedDepartments.isNotEmpty
                                                                 ? returnDepartmentProvider().departments
                                                                     .where(
                                                                       (
                                                                         d,
                                                                       ) =>
                                                                           d.uuid ==
-                                                                          returnData().departmentUuid,
+                                                                          returnData().selectedDepartments.first,
                                                                     )
                                                                     .firstOrNull
                                                                     ?.name
                                                                 : returnDepartmentProvider().currentDepartment()?.name,
                                                         departmentUuid:
-                                                            returnData().departmentUuid ??
-                                                            returnDepartmentProvider().currentDepartment()?.uuid,
+                                                            returnData().selectedDepartments.isNotEmpty
+                                                                ? returnData().selectedDepartments.first
+                                                                : returnDepartmentProvider().currentDepartment()?.uuid,
                                                         groupUnit:
                                                             widget.product?.groupUnit,
                                                         qttyPerGroup:
@@ -1878,10 +1914,8 @@ class _AddProductDesktopState
                                                           .userShop()
                                                           ?.manageDepartments ==
                                                       true &&
-                                                  authorization(
-                                                    authorized:
-                                                        Authorizations().viewAllDepartments,
-                                                  ),
+                                                  returnDepartmentProvider()
+                                                      .canUserViewAllDepartments(),
                                               child: InkWell(
                                                 mouseCursor:
                                                     SystemMouseCursors
@@ -1891,140 +1925,11 @@ class _AddProductDesktopState
                                                     context:
                                                         context,
                                                     action: () {
-                                                      String?
-                                                      selectedDept;
-                                                      setState(() {
-                                                        selectedDept =
-                                                            returnData().departmentUuid;
-                                                      });
-                                                      showDialog(
-                                                        context:
-                                                            context,
-                                                        builder: (
-                                                          firstContext,
-                                                        ) {
-                                                          return StatefulBuilder(
-                                                            builder: (
-                                                              secondContext,
-                                                              setState,
-                                                            ) {
-                                                              return DialogTemplate(
-                                                                theme:
-                                                                    theme,
-                                                                message:
-                                                                    'Select Department for this Staff',
-                                                                title:
-                                                                    'Select Department(s)',
-                                                                action: () {
-                                                                  returnData().setDepartment(
-                                                                    selectedDept,
-                                                                  );
-                                                                  Navigator.of(
-                                                                    context,
-                                                                  ).pop();
-                                                                },
-                                                                widget: SizedBox(
-                                                                  height:
-                                                                      screenHeight(
-                                                                        context,
-                                                                      ) -
-                                                                      300,
-                                                                  child: SingleChildScrollView(
-                                                                    child: Padding(
-                                                                      padding: const EdgeInsets.symmetric(
-                                                                        horizontal:
-                                                                            20.0,
-                                                                        vertical:
-                                                                            15,
-                                                                      ),
-                                                                      child: Column(
-                                                                        spacing:
-                                                                            5,
-                                                                        children:
-                                                                            returnDepartmentProvider().departments
-                                                                                .map(
-                                                                                  (
-                                                                                    dept,
-                                                                                  ) => Material(
-                                                                                    color:
-                                                                                        Colors.transparent,
-                                                                                    child: InkWell(
-                                                                                      mouseCursor:
-                                                                                          SystemMouseCursors.click,
-                                                                                      onTap: () {
-                                                                                        setState(
-                                                                                          () {
-                                                                                            if (selectedDept ==
-                                                                                                dept.uuid) {
-                                                                                              selectedDept =
-                                                                                                  null;
-                                                                                            } else {
-                                                                                              selectedDept =
-                                                                                                  dept.uuid;
-                                                                                            }
-                                                                                          },
-                                                                                        );
-                                                                                      },
-                                                                                      child: Padding(
-                                                                                        padding: const EdgeInsets.symmetric(
-                                                                                          vertical:
-                                                                                              9.0,
-                                                                                          horizontal:
-                                                                                              12,
-                                                                                        ),
-                                                                                        child: Row(
-                                                                                          mainAxisAlignment:
-                                                                                              MainAxisAlignment.spaceBetween,
-                                                                                          children: [
-                                                                                            Text(
-                                                                                              style: TextStyle(
-                                                                                                fontSize:
-                                                                                                    theme.mobileTexts.b3.fontSize,
-                                                                                                fontWeight:
-                                                                                                    FontWeight.bold,
-                                                                                              ),
-                                                                                              dept.name,
-                                                                                            ),
-                                                                                            Container(
-                                                                                              padding: EdgeInsets.all(
-                                                                                                2,
-                                                                                              ),
-                                                                                              decoration: BoxDecoration(
-                                                                                                shape:
-                                                                                                    BoxShape.circle,
-                                                                                                border: Border.all(
-                                                                                                  color:
-                                                                                                      Colors.grey,
-                                                                                                ),
-                                                                                              ),
-                                                                                              child: Container(
-                                                                                                padding: EdgeInsets.all(
-                                                                                                  5,
-                                                                                                ),
-                                                                                                decoration: BoxDecoration(
-                                                                                                  shape:
-                                                                                                      BoxShape.circle,
-                                                                                                  color:
-                                                                                                      selectedDept ==
-                                                                                                              dept.uuid
-                                                                                                          ? theme.lightModeColor.prColor250
-                                                                                                          : Colors.transparent,
-                                                                                                ),
-                                                                                              ),
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                )
-                                                                                .toList(),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            },
+                                                      departmentsBottomSheet(
+                                                        context,
+                                                        () {
+                                                          setState(
+                                                            () {},
                                                           );
                                                         },
                                                       );
@@ -2048,7 +1953,7 @@ class _AddProductDesktopState
                                                               TextAlign.start,
                                                           style:
                                                               theme.mobileTexts.b3.textStyleBold,
-                                                          'Set Department',
+                                                          'Set Department(s)',
                                                         ),
                                                       ],
                                                     ),
@@ -2068,13 +1973,17 @@ class _AddProductDesktopState
                                                         decoration: BoxDecoration(
                                                           border: Border.all(
                                                             color:
-                                                                returnData().departmentUuid !=
-                                                                        null
+                                                                returnData(
+                                                                      context:
+                                                                          context,
+                                                                    ).selectedDepartments.isNotEmpty
                                                                     ? theme.lightModeColor.prColor300
                                                                     : Colors.grey,
                                                             width:
-                                                                returnData().departmentUuid !=
-                                                                        null
+                                                                returnData(
+                                                                      context:
+                                                                          context,
+                                                                    ).selectedDepartments.isNotEmpty
                                                                     ? 1.3
                                                                     : 1,
                                                           ),
@@ -2095,35 +2004,47 @@ class _AddProductDesktopState
                                                                 Text(
                                                                   style: TextStyle(
                                                                     fontSize:
-                                                                        returnData().departmentUuid !=
-                                                                                null
-                                                                            ? theme.mobileTexts.b2.fontSize
-                                                                            : theme.mobileTexts.b2.fontSize,
+                                                                        theme.mobileTexts.b2.fontSize,
                                                                     fontWeight:
-                                                                        returnData().departmentUuid !=
-                                                                                null
+                                                                        returnData(
+                                                                              context:
+                                                                                  context,
+                                                                            ).selectedDepartments.isNotEmpty
                                                                             ? FontWeight.bold
                                                                             : null,
                                                                     color:
-                                                                        returnData().departmentUuid !=
-                                                                                null
+                                                                        returnData(
+                                                                              context:
+                                                                                  context,
+                                                                            ).selectedDepartments.isNotEmpty
                                                                             ? null
                                                                             : Colors.grey.shade500,
                                                                   ),
-                                                                  returnData().departmentUuid ==
-                                                                          null
-                                                                      ? 'Select Department'
-                                                                      : returnDepartmentProvider().departments
+                                                                  returnData(
+                                                                        context:
+                                                                            context,
+                                                                      ).selectedDepartments.isEmpty
+                                                                      ? 'Select Department(s)'
+                                                                      : returnData(
+                                                                            context:
+                                                                                context,
+                                                                          ).selectedDepartments.length ==
+                                                                          1
+                                                                      ? (returnDepartmentProvider().departments
                                                                               .where(
                                                                                 (
                                                                                   dept,
                                                                                 ) =>
                                                                                     dept.uuid ==
-                                                                                    returnData().departmentUuid,
+                                                                                    returnData(
+                                                                                      context:
+                                                                                          context,
+                                                                                    ).selectedDepartments.first,
                                                                               )
                                                                               .firstOrNull
                                                                               ?.name ??
-                                                                          'Select Department',
+                                                                          '(1) Department Selected')
+                                                                      : '(${returnData(context: context).selectedDepartments.length}) Departments Selected',
                                                                 ),
                                                               ],
                                                             ),
@@ -2135,6 +2056,7 @@ class _AddProductDesktopState
                                                                   20,
                                                                 ),
                                                                 onTap: () {
+                                                                  returnData().selectedDepartments.clear();
                                                                   returnData().clearDepartment();
                                                                 },
                                                                 child: Container(

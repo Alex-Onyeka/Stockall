@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_suppliers/unsynced/created_suppliers/creat
 import 'package:stockall/classes/temp_suppliers/unsynced/deleted_suppliers/deleted_supplier.dart';
 import 'package:stockall/classes/temp_suppliers/unsynced/updated/updated_suppliers.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/local_database/suppliers_func/suppliers_func.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/created/created_supplier_func.dart';
@@ -15,7 +14,8 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SuppliersProvider extends ChangeNotifier {
-  static final SuppliersProvider _instance = SuppliersProvider._internal();
+  static final SuppliersProvider _instance =
+      SuppliersProvider._internal();
   factory SuppliersProvider() => _instance;
   SuppliersProvider._internal();
   //
@@ -24,7 +24,8 @@ class SuppliersProvider extends ChangeNotifier {
   //
 
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
   List<SuppliersClass> suppliers = [];
   final String tableName = 'suppliers';
   DateTime? _lastSyncAt;
@@ -39,33 +40,13 @@ class SuppliersProvider extends ChangeNotifier {
   }
 
   List<SuppliersClass> suppliersMain() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
-        return suppliers.where((cat) {
-          if (cat.departmentId == null) {
-            return true;
-          } else {
-            return cat.departmentId ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
-          }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
-          return suppliers;
-        } else {
-          return suppliers.where((cat) {
-            if (cat.departmentId == null) {
-              return true;
-            } else {
-              return cat.departmentId ==
-                  returnDepartmentProvider().currentDepartment()?.uuid;
-            }
-          }).toList();
-        }
-      }
-    } else {
-      return suppliers;
-    }
+    return suppliers.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentId,
+            includeUnassignedWhenDeptSelected: true,
+          );
+    }).toList();
   }
 
   /// Fetch all Suppliers by shop ID
@@ -82,9 +63,10 @@ class SuppliersProvider extends ChangeNotifier {
           _lastSyncShopId == shopId &&
           suppliers.isNotEmpty) {
         try {
-          final safeSince = _lastSyncAt!
-              .subtract(const Duration(seconds: 5))
-              .toUtc();
+          final safeSince =
+              _lastSyncAt!
+                  .subtract(const Duration(seconds: 5))
+                  .toUtc();
           final res = await supabase
               .from(tableName)
               .select()
@@ -93,17 +75,19 @@ class SuppliersProvider extends ChangeNotifier {
               .order('updated_at', ascending: true);
           if (res.isNotEmpty) {
             final pendingUuids = {
-              ...UpdatedSupplierFunc()
-                  .getSuppliers()
-                  .map((u) => u.suppliers.uuid),
-              ...CreatedSupplierFunc()
-                  .getSuppliers()
-                  .map((c) => c.supplier.uuid),
+              ...UpdatedSupplierFunc().getSuppliers().map(
+                (u) => u.suppliers.uuid,
+              ),
+              ...CreatedSupplierFunc().getSuppliers().map(
+                (c) => c.supplier.uuid,
+              ),
             };
             final updated =
                 (res as List)
                     .map((j) => SuppliersClass.fromJson(j))
-                    .where((s) => !pendingUuids.contains(s.uuid))
+                    .where(
+                      (s) => !pendingUuids.contains(s.uuid),
+                    )
                     .toList();
             for (final item in updated) {
               final idx = suppliers.indexWhere(
@@ -120,13 +104,17 @@ class SuppliersProvider extends ChangeNotifier {
                 b.name.toLowerCase(),
               ),
             );
-            await SuppliersFunc().insertAllSuppliers(suppliers);
+            await SuppliersFunc().insertAllSuppliers(
+              suppliers,
+            );
             notifyListeners();
           }
           _lastSyncAt = DateTime.now().toUtc();
           return suppliers;
         } catch (e) {
-          await mainLocalLog('Incremental Suppliers Sync error: $e');
+          await mainLocalLog(
+            'Incremental Suppliers Sync error: $e',
+          );
         }
       }
 
@@ -138,7 +126,9 @@ class SuppliersProvider extends ChangeNotifier {
       await mainLocalLog(data.length.toString());
 
       suppliers =
-          (data as List).map((json) => SuppliersClass.fromJson(json)).toList();
+          (data as List)
+              .map((json) => SuppliersClass.fromJson(json))
+              .toList();
 
       await SuppliersFunc().insertAllSuppliers(suppliers);
       _lastSyncAt = DateTime.now().toUtc();
@@ -205,7 +195,9 @@ class SuppliersProvider extends ChangeNotifier {
       var containsCreated =
           CreatedSupplierFunc()
               .getSuppliers()
-              .where((cus) => cus.supplier.uuid == supplier.uuid)
+              .where(
+                (cus) => cus.supplier.uuid == supplier.uuid,
+              )
               .toList();
       if (containsCreated.isEmpty) {
         await UpdatedSupplierFunc().createUpdatedSupplier(
@@ -222,12 +214,15 @@ class SuppliersProvider extends ChangeNotifier {
     // Purchases keep the name saved when they were made: give them
     // the new one. A failure here never fails the supplier edit.
     try {
-      await returnPurchaseProvider().renameSupplierOnPurchases(
-        supplierUuid: supplier.uuid!,
-        name: supplier.name,
-      );
+      await returnPurchaseProvider()
+          .renameSupplierOnPurchases(
+            supplierUuid: supplier.uuid!,
+            name: supplier.name,
+          );
     } catch (e) {
-      await mainLocalLog('Rename supplier on purchases failed ❌: $e');
+      await mainLocalLog(
+        'Rename supplier on purchases failed ❌: $e',
+      );
     }
   }
 
@@ -239,29 +234,42 @@ class SuppliersProvider extends ChangeNotifier {
     final shopProvider = returnShopProvider();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      await supabase.from(tableName).delete().eq('uuid', supplier.uuid!);
+      await supabase
+          .from(tableName)
+          .delete()
+          .eq('uuid', supplier.uuid!);
       await mainLocalLog('Supplier Deleted');
     } else {
       var containsCreated =
           CreatedSupplierFunc()
               .getSuppliers()
-              .where((supp) => supp.supplier.uuid == supplier.uuid)
+              .where(
+                (supp) =>
+                    supp.supplier.uuid == supplier.uuid,
+              )
               .toList();
       var containsUpdated =
           UpdatedSupplierFunc()
               .getSuppliers()
-              .where((supp) => supp.suppliers.uuid == supplier.uuid)
+              .where(
+                (supp) =>
+                    supp.suppliers.uuid == supplier.uuid,
+              )
               .toList();
       await SuppliersFunc().deleteSupplier(supplier.uuid!);
       if (containsCreated.isNotEmpty) {
-        await CreatedSupplierFunc().deleteSupplier(supplier.uuid!);
+        await CreatedSupplierFunc().deleteSupplier(
+          supplier.uuid!,
+        );
       } else {
         await DeletedSupplierFunc().createDeletedSupplier(
           DeletedSupplier(supplierUuid: supplier.uuid!),
         );
       }
       if (containsUpdated.isNotEmpty) {
-        await UpdatedSupplierFunc().deleteUpdatedSupplier(supplier.uuid!);
+        await UpdatedSupplierFunc().deleteUpdatedSupplier(
+          supplier.uuid!,
+        );
       }
     }
 
@@ -318,24 +326,36 @@ class SuppliersProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedSupplierFunc().getSuppliers().isNotEmpty && isOnline) {
-        final tempSuppliers = CreatedSupplierFunc().getSuppliers().toList();
+      if (CreatedSupplierFunc().getSuppliers().isNotEmpty &&
+          isOnline) {
+        final tempSuppliers =
+            CreatedSupplierFunc().getSuppliers().toList();
         for (var supp in tempSuppliers) {
           await mainLocalLog(
             'Updated Time: ${supp.supplier.updatedAt?.toString()}',
           );
         }
-        final payload = tempSuppliers.map((p) => p.supplier.toJson()).toList();
+        final payload =
+            tempSuppliers
+                .map((p) => p.supplier.toJson())
+                .toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select('uuid');
+        final data = await supabase
+            .from(tableName)
+            .insert(payload)
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedSupplierFunc().clearSuppliers();
         await mainLocalLog('Unsynced Suppliers Cleared');
       }
     } catch (e) {
-      await mainLocalLog('Batch Suppliers Insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Suppliers Insert failed ❌: $e',
+      );
     }
   }
 
@@ -349,19 +369,27 @@ class SuppliersProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedSupplierFunc().getSuppliers().length.toString(),
+        UpdatedSupplierFunc()
+            .getSuppliers()
+            .length
+            .toString(),
       );
 
-      if (UpdatedSupplierFunc().getSuppliers().isNotEmpty && isOnline) {
-        final updatedSuppliers = UpdatedSupplierFunc().getSuppliers();
+      if (UpdatedSupplierFunc().getSuppliers().isNotEmpty &&
+          isOnline) {
+        final updatedSuppliers =
+            UpdatedSupplierFunc().getSuppliers();
 
         for (final updated in updatedSuppliers) {
           final localSupplier = updated.suppliers;
 
-          localSupplier.updatedAt ??= DateTime.now().toLocal();
+          localSupplier.updatedAt ??=
+              DateTime.now().toLocal();
 
           if (localSupplier.uuid == null) {
-            await mainLocalLog('Local Supplier Uuid is Null');
+            await mainLocalLog(
+              'Local Supplier Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -371,28 +399,40 @@ class SuppliersProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase.from(tableName).insert(localSupplier.toJson());
+            await supabase
+                .from(tableName)
+                .insert(localSupplier.toJson());
             await mainLocalLog(
               'Inserted Supplier with uuid ${localSupplier.uuid}',
             );
-            await UpdatedSupplierFunc().deleteUpdatedSupplier(
-              localSupplier.uuid ?? '',
-            );
+            await UpdatedSupplierFunc()
+                .deleteUpdatedSupplier(
+                  localSupplier.uuid ?? '',
+                );
           } else {
-            final remoteUpdatedAtRaw = remoteData['updated_at'];
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localSupplier.updatedAt =
                 (localSupplier.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog("Local updatedAt: ${localSupplier.updatedAt}");
-            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Local updatedAt: ${localSupplier.updatedAt}",
+            );
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
-                localSupplier.updatedAt!.isAfter(remoteUpdatedAt)) {
+                localSupplier.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
               await supabase
                   .from(tableName)
                   .update(localSupplier.toJson())
@@ -400,9 +440,10 @@ class SuppliersProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Supplier with uuid ${localSupplier.uuid}',
               );
-              await UpdatedSupplierFunc().deleteUpdatedSupplier(
-                localSupplier.uuid ?? '',
-              );
+              await UpdatedSupplierFunc()
+                  .deleteUpdatedSupplier(
+                    localSupplier.uuid ?? '',
+                  );
             } else {
               await mainLocalLog(
                 'Skipped Supplier ${localSupplier.uuid}, remote is newer ✅',
@@ -412,10 +453,14 @@ class SuppliersProvider extends ChangeNotifier {
         }
 
         await UpdatedSupplierFunc().clearUpdatedSuppliers();
-        await mainLocalLog('Unsynced updated Suppliers cleared');
+        await mainLocalLog(
+          'Unsynced updated Suppliers cleared',
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Suppliers Update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Suppliers Update failed ❌: $e',
+      );
     }
   }
 
@@ -428,27 +473,38 @@ class SuppliersProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedSupplierFunc().getSupplierIds().isNotEmpty && isOnline) {
+      if (DeletedSupplierFunc()
+              .getSupplierIds()
+              .isNotEmpty &&
+          isOnline) {
         final uuids =
             DeletedSupplierFunc()
                 .getSupplierIds()
                 .map((p) => p.supplierUuid)
                 .toList();
 
-        final data =
-            await supabase
-                .from(tableName)
-                .delete()
-                .inFilter('uuid', uuids) // delete where id is in the list
-                .select('uuid');
+        final data = await supabase
+            .from(tableName)
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items deleted successfully ✅');
+        await mainLocalLog(
+          '${data.length} items deleted successfully ✅',
+        );
 
         await DeletedSupplierFunc().clearDeletedSupplier();
-        await mainLocalLog('Unsynced deleted Suppliers cleared');
+        await mainLocalLog(
+          'Unsynced deleted Suppliers cleared',
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Suppliers Delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Suppliers Delete failed ❌: $e',
+      );
     }
   }
 }

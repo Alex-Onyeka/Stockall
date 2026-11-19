@@ -63,13 +63,14 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       deriveQuantityFromPrice: fields[43] as bool?,
       globalProductId: fields[44] as String?,
       globalDepartmentProductId: fields[45] as String?,
+      departmentUuids: (fields[46] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductClass obj) {
     writer
-      ..writeByte(46)
+      ..writeByte(47)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -161,7 +162,9 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       ..writeByte(44)
       ..write(obj.globalProductId)
       ..writeByte(45)
-      ..write(obj.globalDepartmentProductId);
+      ..write(obj.globalDepartmentProductId)
+      ..writeByte(46)
+      ..write(obj.departmentUuids);
   }
 
   @override

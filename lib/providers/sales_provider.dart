@@ -1218,7 +1218,11 @@ class SalesProvider extends ChangeNotifier {
   }
 
   String? departmentName() {
-    if (currentCart().invoiceUuidEdit != null) {
+    if (currentCart().invoiceUuidEdit != null ||
+        currentCart().receiptUuidEdit != null ||
+        currentCart().orderUuidEdit != null ||
+        currentCart().draftUuid != null ||
+        currentCart().departmentName != null) {
       return currentCart().departmentName ??
           returnDepartmentProvider()
               .currentDepartment()
@@ -1231,7 +1235,11 @@ class SalesProvider extends ChangeNotifier {
   }
 
   String? departmentUuid() {
-    if (currentCart().invoiceUuidEdit != null) {
+    if (currentCart().invoiceUuidEdit != null ||
+        currentCart().receiptUuidEdit != null ||
+        currentCart().orderUuidEdit != null ||
+        currentCart().draftUuid != null ||
+        currentCart().departmentUuid != null) {
       return currentCart().departmentUuid ??
           returnDepartmentProvider()
               .currentDepartment()
