@@ -33,6 +33,12 @@ class UtilityConstants extends HiveObject {
   @HiveField(9)
   final double vat;
 
+  @HiveField(10)
+  final String desktopDownloadLink;
+
+  @HiveField(11)
+  final bool isCompulsory;
+
   UtilityConstants({
     required this.uuid,
     required this.dollarRate,
@@ -44,6 +50,8 @@ class UtilityConstants extends HiveObject {
     required this.sixMonthsDiscount,
     required this.oneYearDiscount,
     required this.vat,
+    required this.desktopDownloadLink,
+    this.isCompulsory = false,
   });
 
   factory UtilityConstants.fromJson(
@@ -63,6 +71,9 @@ class UtilityConstants extends HiveObject {
       oneYearDiscount:
           (json['one_year_discount'] as num).toDouble(),
       vat: (json['vat'] as num).toDouble(),
+      desktopDownloadLink:
+          (json['desktop_download_link'] as String?) ?? '',
+      isCompulsory: (json['is_compulsory'] as bool?) ?? false,
     );
   }
 }
