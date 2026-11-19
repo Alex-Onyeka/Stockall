@@ -71,11 +71,11 @@ class PaymentMethod extends HiveObject {
   String get displayName {
     final acc = accountNumber?.trim();
     if (acc != null && acc.isNotEmpty) {
-      return '$bankName ($acc)';
+      return bankName;
     }
     final n = note?.trim();
     if (n != null && n.isNotEmpty) {
-      return '$bankName ($n)';
+      return bankName;
     }
     return bankName;
   }
@@ -92,12 +92,18 @@ class PaymentMethod extends HiveObject {
       final map = Map<String, dynamic>.from(json);
       return PaymentMethod(
         uuid: map['uuid'] as String? ?? uuidGen(),
-        bankName: (map['bank_name'] ?? map['name'] ?? '').toString(),
+        bankName:
+            (map['bank_name'] ?? map['name'] ?? '')
+                .toString(),
         accountNumber: map['account_number']?.toString(),
         accountName: map['account_name']?.toString(),
-        type: map['type'] is int
-            ? map['type'] as int
-            : int.tryParse(map['type']?.toString() ?? '1') ?? 1,
+        type:
+            map['type'] is int
+                ? map['type'] as int
+                : int.tryParse(
+                      map['type']?.toString() ?? '1',
+                    ) ??
+                    1,
         note: (map['note'] ?? map['others'])?.toString(),
       );
     }
