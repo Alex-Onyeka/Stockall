@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
+import 'package:stockall/classes/temp_expenses/expense_category.dart';
 
 part 'temp_expenses_class.g.dart';
 
@@ -29,9 +30,22 @@ class ExpenseType {
         return 'Custom Category';
       case simpleExpense:
       default:
-        return 'Simple Expense';
+        return 'Simple Expenses';
     }
   }
+
+  /// Names a custom category cannot take: the system categories'
+  /// labels, plus the old "Simple Expense" label.
+  static const List<String> reservedNames = [
+    'simple expense',
+    'simple expenses',
+    'staff salary',
+    'stock purchase',
+  ];
+
+  /// True when [name] (trimmed, any case) is a reserved name.
+  static bool isReservedName(String name) =>
+      reservedNames.contains(name.trim().toLowerCase());
 }
 
 @HiveType(typeId: 2)
@@ -135,6 +149,23 @@ class TempExpensesClass extends HiveObject {
     expenseType,
     customCategoryName: expenseCategoryName,
   );
+
+  /// [categoryLabel], but a custom category's name is looked up
+  /// in [categories] by uuid, so a rename shows on every expense.
+  /// Falls back to the saved name (category deleted or not loaded).
+  String categoryLabelWith(List<ExpenseCategory> categories) {
+    if (isCustomCategory && expenseCategoryUuid != null) {
+      for (final category in categories) {
+        if (category.uuid == expenseCategoryUuid) {
+          return ExpenseType.labelFor(
+            ExpenseType.custom,
+            customCategoryName: category.name,
+          );
+        }
+      }
+    }
+    return categoryLabel;
+  }
 
   bool get isSimpleExpense => expenseType == ExpenseType.simpleExpense;
   bool get isStaffSalary => expenseType == ExpenseType.staffSalary;

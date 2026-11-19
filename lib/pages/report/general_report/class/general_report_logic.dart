@@ -44,7 +44,9 @@ class GeneralReportExpenses {
   }
 
   /// Expenses in [period]. One without a created date cannot be
-  /// placed in a period and is left out.
+  /// placed in a period and is left out. Stock Purchase expenses
+  /// are left out too: they are the payments of purchases, already
+  /// shown under purchases and in gross profit's cost.
   static List<TempExpensesClass> inPeriod(
     List<TempExpensesClass> expenses,
     ReceiptsReportPeriod period, {
@@ -53,6 +55,7 @@ class GeneralReportExpenses {
     return expenses
         .where(
           (expense) =>
+              !expense.isStockPurchase &&
               expense.createdDate != null &&
               period.contains(
                 expense.createdDate!,
@@ -62,10 +65,13 @@ class GeneralReportExpenses {
         .toList();
   }
 
+  /// Total of [expenses], without Stock Purchase expenses (see
+  /// [inPeriod]).
   static double total(List<TempExpensesClass> expenses) =>
       expenses.fold<double>(
         0,
-        (sum, expense) => sum + expense.amount,
+        (sum, expense) =>
+            expense.isStockPurchase ? sum : sum + expense.amount,
       );
 }
 

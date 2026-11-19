@@ -219,6 +219,29 @@ class _StaffSalaryHistorySectionState
               ],
             ),
           ),
+          if (!_loading &&
+              returnExpensesProvider(context).salaryHistoryIsLocal) ...[
+            const SizedBox(height: 8),
+            Row(
+              spacing: 6,
+              children: [
+                Icon(
+                  Icons.cloud_off_outlined,
+                  size: 14,
+                  color: Colors.orange.shade800,
+                ),
+                Expanded(
+                  child: Text(
+                    'Showing offline data; may be incomplete',
+                    style: TextStyle(
+                      fontSize: theme.mobileTexts.b5.fontSize,
+                      color: Colors.orange.shade800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 12),
           if (_loading && salaries.isEmpty)
             const Padding(

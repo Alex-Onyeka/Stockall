@@ -14,6 +14,7 @@ import 'package:stockall/constants/purchase_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/purchases/components/purchase_linked_expense_row.dart';
 import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/purchases/purchase_page/platforms/purchase_page_desktop.dart';
@@ -1486,6 +1487,11 @@ class _PurchasePageMobileState
                                                                   : purchase.trackingNumber!.trim(),
                                                             ),
                                                           ],
+                                                        ),
+                                                        PurchaseLinkedExpenseRow(
+                                                          purchaseUuid:
+                                                              purchase.uuid,
+                                                          theme: theme,
                                                         ),
                                                       ],
                                                     ),

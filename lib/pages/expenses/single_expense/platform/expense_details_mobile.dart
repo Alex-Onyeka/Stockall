@@ -7,6 +7,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
+import 'package:stockall/pages/expenses/single_expense/components/stock_purchase_expense_actions.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ExpenseDetailsMobile extends StatelessWidget {
@@ -274,6 +275,30 @@ class _DetailsPageContainerState
                       iconSize: 18,
                       text: 'Delete',
                       action: () {
+                        if (expense.isStockPurchase &&
+                            expense.purchaseUuid != null) {
+                          confirmDeleteStockPurchaseExpense(
+                            context: context,
+                            theme: widget.theme,
+                            expense: expense,
+                            onStart: () {
+                              setState(() {
+                                isLoading = true;
+                              });
+                            },
+                            onDone: (deleted) {
+                              if (!mounted) return;
+                              if (deleted) {
+                                Navigator.of(context).pop();
+                              } else {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            },
+                          );
+                          return;
+                        }
                         var expP = returnExpensesProvider(
                           context,
                           listen: false,
@@ -317,11 +342,31 @@ class _DetailsPageContainerState
                     ),
 
                     CustomerActionButton(
-                      svg: editIconSvg,
+                      // A stock purchase expense is changed through
+                      // its purchase.
+                      svg:
+                          expense.isStockPurchase
+                              ? null
+                              : editIconSvg,
+                      icon:
+                          expense.isStockPurchase
+                              ? Icons.open_in_new_rounded
+                              : null,
                       color: Colors.grey,
                       iconSize: 15,
-                      text: 'Edit',
+                      text:
+                          expense.isStockPurchase
+                              ? 'Open Purchase'
+                              : 'Edit',
                       action: () {
+                        if (expense.isStockPurchase &&
+                            expense.purchaseUuid != null) {
+                          openLinkedPurchase(
+                            context,
+                            expense.purchaseUuid!,
+                          );
+                          return;
+                        }
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -465,7 +510,9 @@ class ExpenseDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 9,
                   child: TabBarUserInfoSection(
-                    mainText: expense.categoryLabel,
+                    mainText: returnExpensesProvider(
+                      context,
+                    ).categoryLabelFor(expense),
                     text: 'Category',
                   ),
                 ),
@@ -503,10 +550,17 @@ class ExpenseDetailsContainer extends StatelessWidget {
               SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerLeft,
-                child: TabBarUserInfoSection(
-                  mainText:
-                      'Purchase #${expense.purchaseUuid!.split('-').first.toUpperCase()}',
-                  text: 'Linked Purchase',
+                child: InkWell(
+                  onTap:
+                      () => openLinkedPurchase(
+                        context,
+                        expense.purchaseUuid!,
+                      ),
+                  child: TabBarUserInfoSection(
+                    mainText:
+                        'Purchase #${expense.purchaseUuid!.split('-').first.toUpperCase()}',
+                    text: 'Linked Purchase',
+                  ),
                 ),
               ),
             ],

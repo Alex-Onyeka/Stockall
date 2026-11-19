@@ -32,6 +32,12 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
     returnData().toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
+      final expProvider = returnExpensesProvider(
+        context,
+        listen: false,
+      );
+      expProvider.clearCategoryFilter();
+      expProvider.getExpenseCategories(shopId());
     });
   }
 

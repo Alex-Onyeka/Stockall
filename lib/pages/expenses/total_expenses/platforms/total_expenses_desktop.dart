@@ -39,6 +39,12 @@ class TotalExpensesDesktopState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
       returnData().toggleFloatingAction(context);
+      final expProvider = returnExpensesProvider(
+        context,
+        listen: false,
+      );
+      expProvider.clearCategoryFilter();
+      expProvider.getExpenseCategories(shopId());
     });
   }
 

@@ -803,60 +803,6 @@ class DataProvider extends ChangeNotifier {
               );
               setSyncProgress(13);
             }
-            if (CreatedExpensesFunc()
-                    .getExpenses()
-                    .isNotEmpty &&
-                isOnline) {
-              await returnExpensesProviderSingle()
-                  .createExpensesSync();
-              await mainLocalLog(
-                'Finished Syncing Created Expenses',
-              );
-              setSyncProgress(14);
-            }
-            if (UpdatedExpensesFunc()
-                    .getExpenses()
-                    .isNotEmpty &&
-                isOnline) {
-              await returnExpensesProviderSingle()
-                  .updateExpensesSync();
-              await mainLocalLog(
-                'Finished Syncing Updated Expenses',
-              );
-              setSyncProgress(15);
-            }
-            if (DeletedExpensesFunc()
-                    .getExpenseIds()
-                    .isNotEmpty &&
-                isOnline) {
-              await returnExpensesProviderSingle()
-                  .deleteExpensesSync();
-              await mainLocalLog(
-                'Finished Syncing Deleted Expenses',
-              );
-              setSyncProgress(16);
-            }
-            if (ExpenseCategoriesFunc()
-                    .getCreatedQueue()
-                    .isNotEmpty &&
-                isOnline) {
-              await returnExpensesProviderSingle()
-                  .createExpenseCategoriesSync();
-            }
-            if (ExpenseCategoriesFunc()
-                    .getUpdatedQueue()
-                    .isNotEmpty &&
-                isOnline) {
-              await returnExpensesProviderSingle()
-                  .updateExpenseCategoriesSync();
-            }
-            if (ExpenseCategoriesFunc()
-                    .getDeletedQueue()
-                    .isNotEmpty &&
-                isOnline) {
-              await returnExpensesProviderSingle()
-                  .deleteExpenseCategoriesSync();
-            }
             if (CreatedCustomersFunc()
                     .getCustomers()
                     .isNotEmpty &&
@@ -1107,6 +1053,63 @@ class DataProvider extends ChangeNotifier {
                 'Finished Syncing Deleted Purchasess',
               );
               setSyncProgress(39);
+            }
+            // Expenses reference expense categories and purchases
+            // (FKs), so they sync after both are created. Category
+            // deletes run last so queued expenses can still insert.
+            if (ExpenseCategoriesFunc()
+                    .getCreatedQueue()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .createExpenseCategoriesSync();
+            }
+            if (ExpenseCategoriesFunc()
+                    .getUpdatedQueue()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .updateExpenseCategoriesSync();
+            }
+            if (CreatedExpensesFunc()
+                    .getExpenses()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .createExpensesSync();
+              await mainLocalLog(
+                'Finished Syncing Created Expenses',
+              );
+              setSyncProgress(40);
+            }
+            if (UpdatedExpensesFunc()
+                    .getExpenses()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .updateExpensesSync();
+              await mainLocalLog(
+                'Finished Syncing Updated Expenses',
+              );
+              setSyncProgress(41);
+            }
+            if (DeletedExpensesFunc()
+                    .getExpenseIds()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .deleteExpensesSync();
+              await mainLocalLog(
+                'Finished Syncing Deleted Expenses',
+              );
+              setSyncProgress(42);
+            }
+            if (ExpenseCategoriesFunc()
+                    .getDeletedQueue()
+                    .isNotEmpty &&
+                isOnline) {
+              await returnExpensesProviderSingle()
+                  .deleteExpenseCategoriesSync();
             }
             if (CreatedItemPurchaseFunc()
                 .getRecords()

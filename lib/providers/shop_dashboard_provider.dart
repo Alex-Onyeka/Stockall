@@ -538,6 +538,8 @@ class ShopDashboardProvider extends ChangeNotifier {
     double tempTotal = 0;
 
     for (var exp in returnExpenses(shop: shop)) {
+      // Stock purchase payments are purchases, not expenses.
+      if (exp.isStockPurchase) continue;
       tempTotal += exp.amount;
     }
     return tempTotal;

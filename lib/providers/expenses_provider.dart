@@ -651,9 +651,13 @@ class ExpensesProvider extends ChangeNotifier {
               if (item.expenses.isStockPurchase &&
                   item.expenses.purchaseUuid != null) {
                 try {
+                  // Keep the server row's uuid: other devices
+                  // know the expense by it.
+                  final payload = item.expenses.toJson()
+                    ..remove('uuid');
                   await supabase
                       .from('expenses')
-                      .update(item.expenses.toJson())
+                      .update(payload)
                       .eq(
                         'purchase_uuid',
                         item.expenses.purchaseUuid!,
@@ -663,6 +667,32 @@ class ExpensesProvider extends ChangeNotifier {
               await CreatedExpensesFunc().deleteExpenses(
                 item.expenses.uuid!,
               );
+            } else if (e.code == '23503' &&
+                item.expenses.isCustomCategory &&
+                item.expenses.expenseCategoryUuid != null &&
+                await _isCategoryMissingOnServer(
+                  item.expenses.expenseCategoryUuid!,
+                )) {
+              // Its category was deleted before it reached the
+              // server: keep the saved name, drop the link and
+              // retry once. A stock purchase whose purchase is
+              // not on the server yet stays queued instead.
+              final fixed = await _clearMissingCategory(
+                item.expenses,
+              );
+              try {
+                await supabase
+                    .from('expenses')
+                    .insert(fixed.toJson());
+                count++;
+                await CreatedExpensesFunc().deleteExpenses(
+                  fixed.uuid!,
+                );
+              } catch (retryError) {
+                await mainLocalLog(
+                  'Retry Failed For Created Expense ${fixed.name}: $retryError',
+                );
+              }
             }
             await mainLocalLog(
               'Error Synchronizing Created Expenses ${item.expenses.name}: $e',
@@ -875,11 +905,17 @@ class ExpensesProvider extends ChangeNotifier {
     return expenseCategories;
   }
 
+  /// Category label of [expense], with a custom category's current
+  /// name (see [TempExpensesClass.categoryLabelWith]).
+  String categoryLabelFor(TempExpensesClass expense) =>
+      expense.categoryLabelWith(expenseCategories);
+
   bool isDuplicateCategoryName(
     int shopId,
     String name, {
     String? excludeUuid,
   }) {
+    if (ExpenseType.isReservedName(name)) return true;
     final normalized = name.trim().toLowerCase();
     return expenseCategories.any(
       (c) =>
@@ -945,13 +981,8 @@ class ExpensesProvider extends ChangeNotifier {
       await ExpenseCategoriesFunc().queueUpdated(category);
     }
 
-    // Keep local historical expenses' display name in sync with rename.
-    for (final exp in ExpensesFunc().getExpenses()) {
-      if (exp.expenseCategoryUuid == category.uuid) {
-        exp.expenseCategoryName = trimmed;
-        await ExpensesFunc().updateExpenses(exp);
-      }
-    }
+    // Expenses show the current name through categoryLabelFor, so
+    // no expense row changes on a rename.
     expenseCategories = ExpenseCategoriesFunc()
         .getCategories(shopId: category.shopId);
     expensesMain = ExpensesFunc().getExpenses();
@@ -985,11 +1016,13 @@ class ExpensesProvider extends ChangeNotifier {
     );
 
     // Preserve historical expense records (ON DELETE SET NULL + keep snapshot name).
+    // The queued copies change too, so an unsynced expense never
+    // sends the deleted category's uuid.
     for (final exp in ExpensesFunc().getExpenses()) {
       if (exp.expenseCategoryUuid == category.uuid) {
         exp.expenseCategoryUuid = null;
-        exp.expenseCategoryName ??= category.name;
-        await ExpensesFunc().updateExpenses(exp);
+        exp.expenseCategoryName = category.name;
+        await _saveAndQueueExpense(exp);
       }
     }
     expenseCategories = ExpenseCategoriesFunc()
@@ -1015,6 +1048,7 @@ class ExpensesProvider extends ChangeNotifier {
           );
         } on PostgrestException catch (e) {
           if (e.code == '23505') {
+            await _adoptServerCategory(item.category);
             await ExpenseCategoriesFunc().removeCreated(
               item.category.uuid,
             );
@@ -1090,6 +1124,119 @@ class ExpensesProvider extends ChangeNotifier {
     }
   }
 
+  /// Saves [exp] locally and in its unsynced queue: the created
+  /// copy if it was never synced, otherwise an update.
+  Future<void> _saveAndQueueExpense(
+    TempExpensesClass exp,
+  ) async {
+    await ExpensesFunc().updateExpenses(exp);
+    final isQueuedCreated = CreatedExpensesFunc()
+        .getExpenses()
+        .any((c) => c.expenses.uuid == exp.uuid);
+    if (isQueuedCreated) {
+      await CreatedExpensesFunc().updateExpenses(
+        CreatedExpenses(expenses: exp),
+      );
+    } else {
+      await UpdatedExpensesFunc().createUpdatedExpense(
+        UpdatedExpenses(expenses: exp),
+      );
+    }
+  }
+
+  /// True when category [categoryUuid] is not on the server.
+  /// False on any error, so a failure never drops a link.
+  Future<bool> _isCategoryMissingOnServer(
+    String categoryUuid,
+  ) async {
+    try {
+      final row =
+          await supabase
+              .from('expense_categories')
+              .select('uuid')
+              .eq('uuid', categoryUuid)
+              .maybeSingle();
+      return row == null;
+    } catch (e) {
+      await mainLocalLog(
+        'Error Checking Expense Category $categoryUuid: $e',
+      );
+      return false;
+    }
+  }
+
+  /// Drops the category link of queued created expense [queued]
+  /// (keeping its saved name) in the local box and the queue.
+  /// Returns the copy to send.
+  Future<TempExpensesClass> _clearMissingCategory(
+    TempExpensesClass queued,
+  ) async {
+    final localList =
+        ExpensesFunc()
+            .getExpenses()
+            .where((e) => e.uuid == queued.uuid)
+            .toList();
+    final target =
+        localList.isNotEmpty ? localList.first : queued;
+    target.expenseCategoryUuid = null;
+    if (localList.isNotEmpty) {
+      await ExpensesFunc().updateExpenses(target);
+    }
+    await CreatedExpensesFunc().updateExpenses(
+      CreatedExpenses(expenses: target),
+    );
+    expensesMain = ExpensesFunc().getExpenses();
+    notifyListeners();
+    return target;
+  }
+
+  /// [local] could not be created because the shop already has a
+  /// category of that name (e.g. made on another device). Replaces
+  /// it with the server's category and moves its expenses, and
+  /// their queued copies, to the server uuid.
+  Future<void> _adoptServerCategory(
+    ExpenseCategory local,
+  ) async {
+    try {
+      final response = await supabase
+          .from('expense_categories')
+          .select()
+          .eq('shop_id', local.shopId);
+      final normalized = local.name.trim().toLowerCase();
+      final matches =
+          (response as List)
+              .map((e) => ExpenseCategory.fromJson(e))
+              .where(
+                (c) =>
+                    c.name.trim().toLowerCase() == normalized,
+              )
+              .toList();
+      // Same uuid: it was already created, nothing to move.
+      if (matches.isEmpty || matches.first.uuid == local.uuid) {
+        return;
+      }
+      final server = matches.first;
+      await ExpenseCategoriesFunc().deleteCategory(local.uuid);
+      await ExpenseCategoriesFunc().removeUpdated(local.uuid);
+      await ExpenseCategoriesFunc().upsertCategory(server);
+      for (final exp in ExpensesFunc().getExpenses()) {
+        if (exp.expenseCategoryUuid == local.uuid) {
+          exp.expenseCategoryUuid = server.uuid;
+          exp.expenseCategoryName = server.name;
+          await _saveAndQueueExpense(exp);
+        }
+      }
+      expenseCategories = ExpenseCategoriesFunc()
+          .getCategories(shopId: local.shopId);
+      expensesMain = ExpensesFunc().getExpenses();
+      notifyListeners();
+    } catch (e) {
+      await mainLocalLog(
+        'Error Adopting Server Expense Category ${local.name}: $e',
+      );
+    }
+  }
+
   // ===========================================================================
   // Staff Salary History
   // ===========================================================================
@@ -1112,6 +1259,52 @@ class ExpensesProvider extends ChangeNotifier {
           a.createdDate ?? DateTime(0),
         ),
       );
+  }
+
+  /// True when the last [fetchSalaryHistoryForStaff] could not
+  /// reach the server and returned local data, which may be
+  /// incomplete.
+  bool salaryHistoryIsLocal = false;
+
+  /// Deletes local salary rows of [staffUuid] in the fetched
+  /// window that the server did not return (deleted, or moved to
+  /// another staff, on another device). Unsynced ones are kept.
+  Future<void> _removeStaleSalaries(
+    String staffUuid,
+    int targetShopId, {
+    required Set<String?> fetchedUuids,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    final queued = <String?>{
+      ...CreatedExpensesFunc().getExpenses().map(
+        (c) => c.expenses.uuid,
+      ),
+      ...UpdatedExpensesFunc().getExpenses().map(
+        (u) => u.expenses.uuid,
+      ),
+    };
+    final start = startDate == null ? null : fourAm(startDate);
+    final end = endDate == null ? null : fourAmNextDay(endDate);
+    for (final exp in ExpensesFunc().getExpenses()) {
+      final uuid = exp.uuid;
+      if (uuid == null ||
+          exp.shopId != targetShopId ||
+          !exp.isStaffSalary ||
+          exp.staffUuid != staffUuid ||
+          fetchedUuids.contains(uuid) ||
+          queued.contains(uuid)) {
+        continue;
+      }
+      final dt = exp.createdDate;
+      if (start != null && (dt == null || dt.isBefore(start))) {
+        continue;
+      }
+      if (end != null && (dt == null || !dt.isBefore(end))) {
+        continue;
+      }
+      await ExpensesFunc().deleteExpenses(uuid);
+    }
   }
 
   Future<List<TempExpensesClass>>
@@ -1155,6 +1348,14 @@ class ExpensesProvider extends ChangeNotifier {
         for (final exp in fetched) {
           await ExpensesFunc().createExpenses(exp);
         }
+        await _removeStaleSalaries(
+          staffUuid,
+          targetShopId,
+          fetchedUuids: fetched.map((e) => e.uuid).toSet(),
+          startDate: startDate,
+          endDate: endDate,
+        );
+        salaryHistoryIsLocal = false;
         expensesMain = ExpensesFunc().getExpenses();
         notifyListeners();
         return fetched;
@@ -1164,6 +1365,9 @@ class ExpensesProvider extends ChangeNotifier {
         );
       }
     }
+    // Only the date windows loaded so far are on this device.
+    salaryHistoryIsLocal = true;
+    notifyListeners();
     var local = getSalaryHistoryForStaff(
       staffUuid,
       targetShopId: targetShopId,
@@ -1203,8 +1407,17 @@ class ExpensesProvider extends ChangeNotifier {
             .getExpenses()
             .where((e) => e.purchaseUuid == purchaseUuid)
             .toList();
-    final existing =
+    var existing =
         existingList.isNotEmpty ? existingList.first : null;
+
+    // Not loaded on this device: reuse the server's expense (and
+    // its uuid) instead of creating a second one.
+    if (existing == null) {
+      existing = await _fetchServerPurchaseExpense(purchaseUuid);
+      if (existing != null) {
+        await ExpensesFunc().createExpenses(existing);
+      }
+    }
 
     if (paidAmount <= 0) {
       if (existing != null) {
@@ -1253,9 +1466,10 @@ class ExpensesProvider extends ChangeNotifier {
       existing.updatedAt = DateTime.now();
 
       await ExpensesFunc().updateExpenses(existing);
+      final existingUuid = existing.uuid;
       final isQueuedCreated = CreatedExpensesFunc()
           .getExpenses()
-          .any((exp) => exp.expenses.uuid == existing.uuid);
+          .any((exp) => exp.expenses.uuid == existingUuid);
       if (isQueuedCreated) {
         await CreatedExpensesFunc().updateExpenses(
           CreatedExpenses(expenses: existing),
@@ -1292,6 +1506,37 @@ class ExpensesProvider extends ChangeNotifier {
     await getExpensesOffline(purchase.shopId);
     notifyListeners();
     syncData();
+  }
+
+  /// The local Stock Purchase expense of purchase [purchaseUuid],
+  /// or null when there is none on this device.
+  TempExpensesClass? expenseForPurchase(String purchaseUuid) {
+    for (final exp in ExpensesFunc().getExpenses()) {
+      if (exp.purchaseUuid == purchaseUuid) return exp;
+    }
+    return null;
+  }
+
+  /// The server's expense for purchase [purchaseUuid], or null
+  /// when offline, missing or on error.
+  Future<TempExpensesClass?> _fetchServerPurchaseExpense(
+    String purchaseUuid,
+  ) async {
+    try {
+      if (!await connectivity.isOnline()) return null;
+      final row =
+          await supabase
+              .from('expenses')
+              .select()
+              .eq('purchase_uuid', purchaseUuid)
+              .maybeSingle();
+      return row == null ? null : TempExpensesClass.fromJson(row);
+    } catch (e) {
+      await mainLocalLog(
+        'Error Fetching Purchase Expense $purchaseUuid: $e',
+      );
+      return null;
+    }
   }
 
   Future<void> deletePurchaseExpense(

@@ -129,8 +129,14 @@ class StaffReportAccess {
     );
   }
 
+  /// Stock Purchase expenses are left out: they are the staff's
+  /// purchase payments, already counted under purchases.
   List<TempExpensesClass> scopeExpenses(List<TempExpensesClass> expenses) {
-    return expenses.where((e) => _allows(e.departmentUuid, e.userId)).toList();
+    return expenses
+        .where(
+          (e) => !e.isStockPurchase && _allows(e.departmentUuid, e.userId),
+        )
+        .toList();
   }
 }
 

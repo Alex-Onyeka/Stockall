@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/expenses/single_expense/components/stock_purchase_expense_actions.dart';
 
 class ExpensesTile extends StatefulWidget {
   final TempExpensesClass expense;
@@ -258,7 +259,9 @@ class _ExpensesTileState extends State<ExpensesTile> {
                             ),
                           ),
                           child: Text(
-                            widget.expense.categoryLabel,
+                            returnExpensesProvider(
+                              context,
+                            ).categoryLabelFor(widget.expense),
                             style: TextStyle(
                               fontSize:
                                   theme
@@ -329,13 +332,21 @@ class _ExpensesTileState extends State<ExpensesTile> {
                   const SizedBox(height: 6),
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Linked Purchase #${widget.expense.purchaseUuid!.split('-').first.toUpperCase()}',
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        color: Colors.teal.shade700,
-                        fontWeight: FontWeight.w600,
+                    child: InkWell(
+                      onTap:
+                          () => openLinkedPurchase(
+                            context,
+                            widget.expense.purchaseUuid!,
+                          ),
+                      child: Text(
+                        'Linked Purchase #${widget.expense.purchaseUuid!.split('-').first.toUpperCase()}',
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.b4.fontSize,
+                          color: Colors.teal.shade700,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
                     ),
                   ),

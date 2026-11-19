@@ -15,7 +15,7 @@ class ExpenseCategoryFilterBar extends StatelessWidget {
 
     final chips = <({String? value, String label})>[
       (value: null, label: 'All'),
-      (value: ExpenseType.simpleExpense, label: 'Simple Expense'),
+      (value: ExpenseType.simpleExpense, label: 'Simple Expenses'),
       (value: ExpenseType.staffSalary, label: 'Staff Salary'),
       (value: ExpenseType.stockPurchase, label: 'Stock Purchase'),
       for (final cat in customCategories)

@@ -5,6 +5,8 @@ import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 
+import 'purchase_report_fixtures.dart';
+
 void main() {
   group('TempExpensesClass & ExpenseType', () {
     test('historical JSON without new columns defaults to simple_expense and Cash', () {
@@ -24,7 +26,7 @@ void main() {
 
       expect(exp.expenseType, ExpenseType.simpleExpense);
       expect(exp.isSimpleExpense, isTrue);
-      expect(exp.categoryLabel, 'Simple Expense');
+      expect(exp.categoryLabel, 'Simple Expenses');
       expect(exp.resolvedPaymentChannelLabel, PaymentMethods.cash);
     });
 
@@ -125,7 +127,7 @@ void main() {
   });
 
   group('GeneralReportFigures expense aggregation', () {
-    test('sums simple, salary, custom, and paid purchase expenses without double counting', () {
+    test('sums simple, salary and custom expenses; a stock purchase counts only under purchases', () {
       final day = DateTime(2026, 11, 10, 12, 0);
       final period = ReceiptsReportPeriod.day(DateTime(2026, 11, 10));
       final expenses = [
@@ -179,21 +181,34 @@ void main() {
           departmentUuid: null,
           createdDate: day,
           expenseType: ExpenseType.stockPurchase,
-          purchaseUuid: 'p1',
+          purchaseUuid: 'p-000000000001',
+        ),
+      ];
+      // The purchase that stock purchase expense e4 was paid for.
+      final purchaseRows = [
+        row(
+          purchase(
+            uuid: 'p-000000000001',
+            createdAt: day,
+            total: 30000,
+            payments: [payment(30000)],
+          ),
         ),
       ];
 
       final figures = GeneralReportFigures.build(
         receiptRows: const [],
-        purchaseRows: const [],
+        purchaseRows: purchaseRows,
         expenses: expenses,
         period: period,
         profitVisible: true,
       );
 
-      expect(figures.totalExpenses, 101000);
-      expect(figures.expenseCount, 4);
-      expect(figures.netProfit, -101000);
+      expect(figures.totalPurchases, 30000);
+      expect(figures.purchaseCount, 1);
+      expect(figures.totalExpenses, 71000);
+      expect(figures.expenseCount, 3);
+      expect(figures.netProfit, -71000);
     });
   });
 }

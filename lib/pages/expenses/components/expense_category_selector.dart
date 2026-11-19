@@ -74,7 +74,7 @@ class ExpenseCategorySelector extends StatelessWidget {
           itemBuilder: (context) {
             final items = <PopupMenuEntry<ExpenseCategorySelection>>[
               _buildItem(
-                label: 'Simple Expense',
+                label: 'Simple Expenses',
                 value: const ExpenseCategorySelection(
                   expenseType: ExpenseType.simpleExpense,
                 ),

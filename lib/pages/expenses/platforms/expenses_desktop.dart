@@ -46,10 +46,12 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
     returnData().toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
-      returnExpensesProvider(
+      final expProvider = returnExpensesProvider(
         context,
         listen: false,
-      ).getExpenseCategories(shopId());
+      );
+      expProvider.clearCategoryFilter();
+      expProvider.getExpenseCategories(shopId());
     });
   }
 

@@ -755,6 +755,8 @@ class DepartmentsDashboardProvider extends ChangeNotifier {
     for (var exp in returnExpenses(
       department: departmentClass,
     )) {
+      // Stock purchase payments are purchases, not expenses.
+      if (exp.isStockPurchase) continue;
       tempTotal += exp.amount;
     }
     return tempTotal;

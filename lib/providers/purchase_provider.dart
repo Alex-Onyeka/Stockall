@@ -165,6 +165,27 @@ class PurchaseProvider extends ChangeNotifier {
     }
   }
 
+  /// Purchase [uuid] from the local box, or from the server when
+  /// it is not stored locally and the device is online. Null when
+  /// it exists in neither (e.g. already deleted).
+  Future<TempPurchase?> findPurchase(String uuid) async {
+    final local = PurchaseFunc().getSinglePurchase(uuid: uuid);
+    if (local != null) return local;
+    try {
+      if (!await connectivity.isOnline()) return null;
+      final row =
+          await supabase
+              .from(tableName)
+              .select()
+              .eq('uuid', uuid)
+              .maybeSingle();
+      return row == null ? null : TempPurchase.fromJson(row);
+    } catch (e) {
+      await mainLocalLog('Error Finding Purchase $uuid: $e');
+      return null;
+    }
+  }
+
   // CREATE a new Purchase
   Future<TempPurchase?> updatePurchase(
     TempPurchase purchase,
@@ -357,6 +378,13 @@ class PurchaseProvider extends ChangeNotifier {
         }
       }
       syncData();
+    }
+
+    // Stock purchase expenses carry the supplier in their name.
+    // Unpaid purchases have none.
+    for (final purchase in renamed) {
+      if (purchase.purchasePayments.isEmpty) continue;
+      await ExpensesProvider().syncPurchaseExpense(purchase);
     }
 
     await loadPurchases(shopId());
