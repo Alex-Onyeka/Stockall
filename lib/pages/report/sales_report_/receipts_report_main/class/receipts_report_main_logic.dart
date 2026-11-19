@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/pages/report/components/report_group_by.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 /// Page size, same as the Items Report table.
 const int receiptsReportPageSize = 100;
@@ -468,8 +469,10 @@ class ReceiptsReportAccess {
             currentDepartmentUuid != null);
     return receipts.where((receipt) {
       if (restrictDepartment &&
-          receipt.departmentUuidNew !=
-              currentDepartmentUuid) {
+          !reportDepartmentMatches(
+            receipt.departmentUuidNew,
+            currentDepartmentUuid,
+          )) {
         return false;
       }
       if (!canViewAllTransactions &&

@@ -55,7 +55,7 @@ class DepartmentClass {
     return {
       'uuid': uuid,
       'created_at': createdAt.toIso8601String(),
-      'updated_at': createdAt.toIso8601String(),
+      'updated_at': (updatedAt ?? createdAt).toUtc().toIso8601String(),
       'shop_id': shopId,
       'name': name,
       'description': description,

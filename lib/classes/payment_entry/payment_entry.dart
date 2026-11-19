@@ -146,6 +146,13 @@ class PaymentBreakdown {
     if (entries.any((entry) => entry.method.trim().isEmpty)) {
       return 'Payment method cannot be empty.';
     }
+    // "Split" labels a payment with several methods; it is never a
+    // method itself. Custom bank names stay valid.
+    if (entries.any(
+      (entry) => entry.method.trim() == PaymentMethods.split,
+    )) {
+      return 'Unknown payment method.';
+    }
     if (account > 0) {
       if (accountBalance == null) {
         return 'Select a customer before paying from a Customer Account.';

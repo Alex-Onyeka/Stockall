@@ -157,7 +157,11 @@ void main() {
                 name: 'Staff',
                 email: 'staff@stockall.test',
                 role: 'Manager',
-                departmentUuids: [],
+                // Without View All, a current department means the
+                // staff is in it; staff in no department have none.
+                departmentUuids: [
+                  if (!canViewAll && current != null) current,
+                ],
                 createdAt: DateTime.utc(2026, 1, 1),
                 access: [
                   if (canViewAll)

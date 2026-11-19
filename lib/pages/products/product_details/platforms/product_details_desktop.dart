@@ -571,13 +571,31 @@ class _ProductDetailsDesktopState
                                               theme:
                                                   widget
                                                       .theme,
-                                              mainText: cutLongText(
-                                                product.departmentName ??
-                                                    'Not Set',
-                                                20,
-                                              ),
+                                              mainText:
+                                                  product
+                                                          .effectiveDepartmentUuids
+                                                          .isEmpty
+                                                      ? 'Not Set'
+                                                      : product.effectiveDepartmentUuids.length ==
+                                                          1
+                                                      ? cutLongText(
+                                                        returnDepartmentProvider().departments
+                                                                .where(
+                                                                  (
+                                                                    d,
+                                                                  ) =>
+                                                                      d.uuid ==
+                                                                      product.effectiveDepartmentUuids.first,
+                                                                )
+                                                                .firstOrNull
+                                                                ?.name ??
+                                                            product.departmentName ??
+                                                            '(1) Department(s)',
+                                                        20,
+                                                      )
+                                                      : '(${product.effectiveDepartmentUuids.length}) Department(s)',
                                               text:
-                                                  'Department',
+                                                  'Department(s)',
                                             ),
                                           ),
                                         ],

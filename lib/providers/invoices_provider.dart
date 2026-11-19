@@ -13,7 +13,6 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/invoices/invoices_func.dart';
@@ -53,25 +52,43 @@ class InvoicesProvider extends ChangeNotifier {
   final Set<String> _fetchedDateKeys = {};
   int? _fetchedShopId;
 
-  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month}-${d.day}';
 
-  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+  bool _isRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) return false;
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
-      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      if (!_fetchedDateKeys.contains(_dateKey(cursor)))
+        return false;
       cursor = cursor.add(const Duration(days: 1));
     }
     return true;
   }
 
-  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+  void _markRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) {
       _fetchedDateKeys.clear();
       _fetchedShopId = shopId;
     }
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
       _fetchedDateKeys.add(_dateKey(cursor));
@@ -183,7 +200,10 @@ class InvoicesProvider extends ChangeNotifier {
         dateSet ??
         resolveBusinessDate(DateTime.now());
     final effectiveEnd =
-        endDate ?? rangeEndDate ?? dateSet ?? effectiveStart;
+        endDate ??
+        rangeEndDate ??
+        dateSet ??
+        effectiveStart;
     final windowStart = fourAm(effectiveStart);
     final windowEnd = fourAmNextDay(effectiveEnd);
 
@@ -191,7 +211,11 @@ class InvoicesProvider extends ChangeNotifier {
     if (isOnline && InvoicesFunc().isSynced()) {
       if (!forceRefresh &&
           !fetchAll &&
-          _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {
+          _isRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          )) {
         return _invoices;
       }
       try {
@@ -201,10 +225,19 @@ class InvoicesProvider extends ChangeNotifier {
             .eq('shop_id', shopId);
         if (!fetchAll) {
           query = query
-              .gte('created_at', windowStart.toUtc().toIso8601String())
-              .lt('created_at', windowEnd.toUtc().toIso8601String());
+              .gte(
+                'created_at',
+                windowStart.toUtc().toIso8601String(),
+              )
+              .lt(
+                'created_at',
+                windowEnd.toUtc().toIso8601String(),
+              );
         }
-        final data = await query.order('created_at', ascending: false);
+        final data = await query.order(
+          'created_at',
+          ascending: false,
+        );
         if (data.isNotEmpty) {
           await mainLocalLog(
             'Invoices Gotten ${data.length}',
@@ -230,18 +263,25 @@ class InvoicesProvider extends ChangeNotifier {
         if (fetchAll) {
           _invoices = fetched;
         } else {
-          final fetchedUuids = fetched.map((e) => e.uuid).toSet();
+          final fetchedUuids =
+              fetched.map((e) => e.uuid).toSet();
           final outsideWindow =
               _invoices.where((inv) {
-                if (fetchedUuids.contains(inv.uuid)) return false;
+                if (fetchedUuids.contains(inv.uuid))
+                  return false;
                 final inWindow =
                     !inv.createdAt.isBefore(windowStart) &&
                     inv.createdAt.isBefore(windowEnd);
                 return !inWindow;
               }).toList();
-          _invoices = [...fetched, ...outsideWindow]
-            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          _markRangeFetched(shopId, effectiveStart, effectiveEnd);
+          _invoices = [...fetched, ...outsideWindow]..sort(
+            (a, b) => b.createdAt.compareTo(a.createdAt),
+          );
+          _markRangeFetched(
+            shopId,
+            effectiveStart,
+            effectiveEnd,
+          );
         }
 
         await InvoicesFunc().insertAllInvoices(_invoices);
@@ -500,11 +540,15 @@ class InvoicesProvider extends ChangeNotifier {
     if (name == null) {
       selectedBank = null;
     } else {
-      final customBanks = returnShopProvider().getCustomPaymentMethods();
-      final match = customBanks
-          .where((b) => b.displayName == name || b.bankName == name);
+      final customBanks =
+          returnShopProvider().getCustomPaymentMethods();
+      final match = customBanks.where(
+        (b) => b.matchesLabel(name),
+      );
       selectedBank =
-          match.isNotEmpty ? match.first : PaymentMethod(bankName: name);
+          match.isNotEmpty
+              ? match.first
+              : PaymentMethod(bankName: name);
     }
     notifyListeners();
   }
@@ -590,13 +634,15 @@ class InvoicesProvider extends ChangeNotifier {
           selectedBank?.displayName ?? selectedBankName;
       final effectivePaymentMethod =
           paymentMethod ??
-          (bankAmount > 0 && cashAmount == 0 && customerAmount == 0
+          (bankAmount > 0 &&
+                  cashAmount == 0 &&
+                  customerAmount == 0
               ? (resolvedBankName ?? PaymentMethods.bank)
               : PaymentBreakdown.fromAmounts(
-                  bank: bankAmount,
-                  cash: cashAmount,
-                  account: customerAmount,
-                ).label);
+                bank: bankAmount,
+                cash: cashAmount,
+                account: customerAmount,
+              ).label);
 
       TempMainReceipt receipt = TempMainReceipt(
         tempItems: null,
@@ -629,14 +675,21 @@ class InvoicesProvider extends ChangeNotifier {
         cartName: invoice.cartName,
         paymentEntries: [
           if (cashAmount > 0)
-            PaymentEntry(method: PaymentMethods.cash, amount: cashAmount),
+            PaymentEntry(
+              method: PaymentMethods.cash,
+              amount: cashAmount,
+            ),
           if (bankAmount > 0)
             PaymentEntry(
-              method: resolvedBankName ?? PaymentMethods.bank,
+              method:
+                  resolvedBankName ?? PaymentMethods.bank,
               amount: bankAmount,
             ),
           if (customerAmount > 0)
-            PaymentEntry(method: PaymentMethods.account, amount: customerAmount),
+            PaymentEntry(
+              method: PaymentMethods.account,
+              amount: customerAmount,
+            ),
         ],
         selectedBank: selectedBank,
       );
@@ -1262,7 +1315,8 @@ class InvoicesProvider extends ChangeNotifier {
       rangeEndDate = null;
       mainLocalLog('Date set: $date');
       final sid = returnShopProvider().userShop()?.shopId;
-      if (sid != null && !_isRangeFetched(sid, date, date)) {
+      if (sid != null &&
+          !_isRangeFetched(sid, date, date)) {
         loadInvoices(sid, startDate: date, endDate: date);
       }
     } else {
@@ -1283,53 +1337,31 @@ class InvoicesProvider extends ChangeNotifier {
     );
     dateSet = null;
     final sid = returnShopProvider().userShop()?.shopId;
-    if (sid != null && !_isRangeFetched(sid, rangeStart, endOfrange)) {
-      loadInvoices(sid, startDate: rangeStart, endDate: endOfrange);
+    if (sid != null &&
+        !_isRangeFetched(sid, rangeStart, endOfrange)) {
+      loadInvoices(
+        sid,
+        startDate: rangeStart,
+        endDate: endOfrange,
+      );
     }
     notifyListeners();
   }
 
   List<TempInvoice> departmentInvoices() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return invoicesMain.where((cat) {
-          return cat.departmentUuidNew ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return invoicesMain;
-        } else {
-          return invoicesMain.where((cat) {
-            return cat.departmentUuidNew ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return invoicesMain;
-    }
+    return invoicesMain.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuidNew,
+          );
+    }).toList();
   }
 
   List<TempInvoice> returnAllOrSetDateInvoices() {
     if (dateSet == null &&
         rangeEndDate == null &&
         rangeStartDate == null) {
-      return invoicesMain;
+      return departmentInvoices();
     } else {
       return returnInvoicesByDayOrWeekAll();
     }

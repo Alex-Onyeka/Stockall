@@ -86,6 +86,7 @@ class RightSideBar extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       Text(
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize:
@@ -107,6 +108,7 @@ class RightSideBar extends StatelessWidget {
                             screenWidth(context) >
                             tabletScreenSmall,
                         child: Text(
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color:

@@ -4,6 +4,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_summary/class/receipts_report_summary_logic.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 // General Report: revenue and gross profit from the receipts report
 // logic, purchases from the purchase report logic, expenses from
@@ -32,7 +33,10 @@ class GeneralReportExpenses {
             currentDepartmentUuid != null);
     return expenses.where((expense) {
       if (restrictDepartment &&
-          expense.departmentUuid != currentDepartmentUuid) {
+          !reportDepartmentMatches(
+            expense.departmentUuid,
+            currentDepartmentUuid,
+          )) {
         return false;
       }
       if (!canViewAllTransactions &&

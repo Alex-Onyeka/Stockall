@@ -6,6 +6,7 @@ import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/pages/report/components/report_pager.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_lines.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 /// Page size, same as the Receipts Report table.
 const int purchaseReportPageSize = 100;
@@ -377,7 +378,10 @@ class PurchaseReportAccess {
             currentDepartmentUuid != null);
     return purchases.where((purchase) {
       if (restrictDepartment &&
-          purchase.departmentUuid != currentDepartmentUuid) {
+          !reportDepartmentMatches(
+            purchase.departmentUuid,
+            currentDepartmentUuid,
+          )) {
         return false;
       }
       if (!canViewAllTransactions &&

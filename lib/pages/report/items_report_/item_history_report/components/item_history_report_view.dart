@@ -21,6 +21,7 @@ import 'package:stockall/pages/report/items_report_/item_history_report/class/it
 import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_export_spec.dart'
     show itemsExportSizeLabel;
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 class _Col {
   final String label;
@@ -201,8 +202,10 @@ class _ItemHistoryReportViewState
           shopRecords
               .where(
                 (h) =>
-                    h.departmentUuid ==
-                    _currentDepartmentUuid,
+                    reportDepartmentMatches(
+                      h.departmentUuid,
+                      _currentDepartmentUuid,
+                    ),
               )
               .toList();
     } else {

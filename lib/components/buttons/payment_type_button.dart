@@ -862,9 +862,33 @@ class _AvailableMethod {
 class _PaymentMethodSectionState
     extends State<PaymentMethodSection> {
   bool isUpdating = false;
+
+  /// Keys of the methods in the split: Cash, Bank and Customer
+  /// Account by their constant, a custom method by its uuid (two
+  /// methods at one bank share a label but never a key). A saved
+  /// label no custom method matches is kept as its own key.
   final List<String> _activeMethods = [];
   final Map<String, TextEditingController>
   _customBankControllers = {};
+
+  bool _isFixedMethod(String method) =>
+      method == PaymentMethods.cash ||
+      method == PaymentMethods.bank ||
+      method == PaymentMethods.account;
+
+  /// The label saved for [key]: the method's bank name.
+  String _labelForKey(String key) => PaymentMethod.labelForKey(
+    key,
+    returnShopProvider().getCustomPaymentMethods(),
+  );
+
+  /// Keys for saved [entries], in order (older "Bank (account)"
+  /// labels match too, see [PaymentMethod.keysForEntries]).
+  List<String> _keysForEntries(List<PaymentEntry> entries) =>
+      PaymentMethod.keysForEntries(
+        entries,
+        returnShopProvider().getCustomPaymentMethods(),
+      );
 
   @override
   void initState() {
@@ -874,9 +898,9 @@ class _PaymentMethodSectionState
     var saved =
         returnSalesProvider().currentCart().splitPayments;
     if (saved != null && saved.isNotEmpty) {
-      for (final entry in saved) {
-        if (!_activeMethods.contains(entry.method)) {
-          _activeMethods.add(entry.method);
+      for (final key in _keysForEntries(saved)) {
+        if (!_activeMethods.contains(key)) {
+          _activeMethods.add(key);
         }
       }
       _writeControllers(PaymentBreakdown(saved));
@@ -917,7 +941,7 @@ class _PaymentMethodSectionState
     final entries = <PaymentEntry>[
       for (final method in _activeMethods)
         PaymentEntry(
-          method: method,
+          method: _labelForKey(method),
           amount: _amount(_getControllerFor(method)),
         ),
     ];
@@ -932,20 +956,20 @@ class _PaymentMethodSectionState
     widget.accountController.text = breakdown.account
         .toStringAsFixed(2);
 
-    for (final entry in breakdown.entries) {
-      if (entry.method != PaymentMethods.cash &&
-          entry.method != PaymentMethods.account &&
-          entry.method != PaymentMethods.bank) {
-        _getControllerFor(entry.method).text = entry.amount
+    final keys = _keysForEntries(breakdown.entries);
+    for (var i = 0; i < breakdown.entries.length; i++) {
+      final entry = breakdown.entries[i];
+      if (!_isFixedMethod(entry.method)) {
+        _getControllerFor(keys[i]).text = entry.amount
             .toStringAsFixed(2);
       }
     }
   }
 
   void _applyPayments(List<PaymentEntry> payments) {
-    for (final p in payments) {
-      if (!_activeMethods.contains(p.method)) {
-        _activeMethods.add(p.method);
+    for (final key in _keysForEntries(payments)) {
+      if (!_activeMethods.contains(key)) {
+        _activeMethods.add(key);
       }
     }
     _writeControllers(PaymentBreakdown(payments));
@@ -978,7 +1002,7 @@ class _PaymentMethodSectionState
     if (editedAmount > total) {
       _showAlert(
         'Overpayment',
-        '$method cannot exceed total amount.',
+        '${_labelForKey(method)} cannot exceed total amount.',
       );
       editedAmount = total;
       _getControllerFor(method).text = editedAmount
@@ -1007,10 +1031,8 @@ class _PaymentMethodSectionState
     if (customBanks.isNotEmpty) {
       double totalBank = 0;
       for (final PaymentMethod b in customBanks) {
-        if (_activeMethods.contains(b.displayName)) {
-          totalBank += _amount(
-            _getControllerFor(b.displayName),
-          );
+        if (_activeMethods.contains(b.uuid)) {
+          totalBank += _amount(_getControllerFor(b.uuid));
         }
       }
       widget.bankController.text = totalBank
@@ -1020,7 +1042,7 @@ class _PaymentMethodSectionState
     final entries = <PaymentEntry>[
       for (final m in _activeMethods)
         PaymentEntry(
-          method: m,
+          method: _labelForKey(m),
           amount: _amount(_getControllerFor(m)),
         ),
     ];
@@ -1089,10 +1111,10 @@ class _PaymentMethodSectionState
 
     if (customBanks.isNotEmpty) {
       for (final b in customBanks) {
-        if (!_activeMethods.contains(b.displayName)) {
+        if (!_activeMethods.contains(b.uuid)) {
           list.add(
             _AvailableMethod(
-              name: b.displayName,
+              name: b.uuid,
               icon: b.icon,
               label: b.displayName,
               typeLabel: b.typeLabel,
@@ -1139,7 +1161,7 @@ class _PaymentMethodSectionState
           0;
       return 'Customer Account (${formatMoneyMid(amount: balance, context: context)})';
     }
-    return method;
+    return _labelForKey(method);
   }
 
   @override

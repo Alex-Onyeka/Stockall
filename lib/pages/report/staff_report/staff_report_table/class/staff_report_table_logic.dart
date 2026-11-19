@@ -14,6 +14,7 @@ import 'package:stockall/pages/report/invoice_report/invoice_report_table/class/
 import 'package:stockall/pages/report/order_report/order_report_table/class/order_report_table_logic.dart';
 import 'package:stockall/pages/report/purchase_report/purchase_report_table/class/purchase_report_table_logic.dart';
 import 'package:stockall/pages/report/sales_report_/receipts_report_main/class/receipts_report_main_logic.dart';
+import 'package:stockall/pages/report/components/report_department_scope.dart';
 
 /// Page size, same as the other report tables.
 const int staffReportPageSize = 100;
@@ -91,7 +92,8 @@ class StaffReportAccess {
       (!canViewAllDepartments || currentDepartmentUuid != null);
 
   bool _allows(String? departmentUuid, String? staffId) {
-    if (_restrictDepartment && departmentUuid != currentDepartmentUuid) {
+    if (_restrictDepartment &&
+        !reportDepartmentMatches(departmentUuid, currentDepartmentUuid)) {
       return false;
     }
     return canViewAllTransactions || staffId == currentUserId;

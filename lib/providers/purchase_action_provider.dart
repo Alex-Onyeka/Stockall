@@ -134,6 +134,7 @@ class PurchaseActionProvider extends ChangeNotifier {
         return await _updatePurchaseInPlace(purchase);
       }
       var tempUuid = uuidGen();
+      final currentDept = returnDepartmentProvider().currentDepartment();
       var tempPurchase = TempPurchase(
         createdAt: purchase?.createdAt ?? DateTime.now(),
         shopId: purchase?.shopId ?? shopId(),
@@ -141,6 +142,8 @@ class PurchaseActionProvider extends ChangeNotifier {
         staffName: purchase?.staffName ?? currentUser().name,
         supplierId: tempSupplier?.uuid,
         supplierName: tempSupplier?.name,
+        departmentUuid: purchase?.departmentUuid ?? currentDept?.uuid,
+        departmentName: purchase?.departmentName ?? currentDept?.name,
         trackingNumber: trackingNumber,
         total: totalPurchaseAmount(),
         uuid: purchase?.uuid ?? tempUuid,

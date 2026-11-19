@@ -732,7 +732,7 @@ void setDepartment({required BuildContext context}) {
                                     )
                                     .first,
                       );
-                  Navigator.of(context).pop();
+                  Navigator.of(firstContext).pop();
                 },
                 widget: SizedBox(
                   height: screenHeight(context) - 300,
@@ -785,8 +785,11 @@ void setDepartment({required BuildContext context}) {
                                               setState(() {
                                                 if (selectedDept ==
                                                     dept.uuid) {
-                                                  selectedDept =
-                                                      null;
+                                                  if (returnDepartmentProvider()
+                                                      .canUserViewAllDepartments()) {
+                                                    selectedDept =
+                                                        null;
+                                                  }
                                                 } else {
                                                   selectedDept =
                                                       dept.uuid;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
@@ -10,34 +9,20 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationProvider with ChangeNotifier {
   final SupabaseClient supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   List<TempNotification> _notifications = [];
 
   // List<TempNotification> get notifications =>
   //     _notifications;
   List<TempNotification> notifications() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
-        return _notifications.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider().currentDepartment()?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
-          return _notifications;
-        } else {
-          return _notifications.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return _notifications;
-    }
+    return _notifications.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   void clearNotifications() {
@@ -47,31 +32,38 @@ class NotificationProvider with ChangeNotifier {
   }
 
   void deleteNotification(TempNotification notif) {
-    notifications().remove(notif);
+    _notifications.removeWhere((n) => n.uuid == notif.uuid);
     notifyListeners();
   }
 
-  Future<void> deleteNotificationFromSupabase(TempNotification notif) async {
+  Future<void> deleteNotificationFromSupabase(
+    TempNotification notif,
+  ) async {
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
       try {
-        debugPrint('Attempting to delete notification ID: ${notif.uuid}');
+        debugPrint(
+          'Attempting to delete notification ID: ${notif.uuid}',
+        );
 
-        final response =
-            await supabase
-                .from('notifications')
-                .delete()
-                .eq('uuid', notif.uuid!)
-                .select('uuid'); // confirm deletion
+        final response = await supabase
+            .from('notifications')
+            .delete()
+            .eq('uuid', notif.uuid!)
+            .select('uuid'); // confirm deletion
 
         debugPrint('Deleted rows: $response');
 
         if (response.isNotEmpty) {
           deleteNotification(notif);
-          debugPrint('Notification ${notif.uuid} deleted successfully.');
+          debugPrint(
+            'Notification ${notif.uuid} deleted successfully.',
+          );
         } else {
-          debugPrint('No matching notification found to delete.');
+          debugPrint(
+            'No matching notification found to delete.',
+          );
         }
       } catch (e) {
         debugPrint('Error deleting notification: $e');
@@ -79,7 +71,9 @@ class NotificationProvider with ChangeNotifier {
     }
   }
 
-  Future<List<TempNotification>> fetchRecentNotifications(int shopId) async {
+  Future<List<TempNotification>> fetchRecentNotifications(
+    int shopId,
+  ) async {
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       final response = await supabase
@@ -92,17 +86,23 @@ class NotificationProvider with ChangeNotifier {
 
       _notifications =
           (response as List)
-              .map((item) => TempNotification.fromJson(item))
+              .map(
+                (item) => TempNotification.fromJson(item),
+              )
               .toList();
-      await NotificationFunc().insertAllNotifications(_notifications);
+      await NotificationFunc().insertAllNotifications(
+        _notifications,
+      );
     } else {
-      _notifications = NotificationFunc().getNotifications();
+      _notifications =
+          NotificationFunc().getNotifications();
     }
     notifyListeners();
     return _notifications;
   }
 
-  Future<List<TempNotification>> fetchRecentNotificationsOffline() async {
+  Future<List<TempNotification>>
+  fetchRecentNotificationsOffline() async {
     _notifications = NotificationFunc().getNotifications();
     notifyListeners();
     return _notifications;
@@ -116,10 +116,14 @@ class NotificationProvider with ChangeNotifier {
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
-      var no = notifications().firstWhere((noti) => noti.uuid == notifUuid);
+      var no = notifications().firstWhere(
+        (noti) => noti.uuid == notifUuid,
+      );
       if (!no.isViewed) {
         try {
-          await mainLocalLog('Updating notification with uuid: $notifUuid');
+          await mainLocalLog(
+            'Updating notification with uuid: $notifUuid',
+          );
           final response =
               await supabase
                   .from('notifications')
@@ -129,22 +133,31 @@ class NotificationProvider with ChangeNotifier {
                   .maybeSingle();
 
           if (response == null) {
-            debugPrint('⚠️ No notification found with uuid $notifUuid');
+            debugPrint(
+              '⚠️ No notification found with uuid $notifUuid',
+            );
           } else {
-            debugPrint('✅ Notification $notifUuid updated: $response');
+            debugPrint(
+              '✅ Notification $notifUuid updated: $response',
+            );
           }
 
           // Update locally
-          int index = _notifications.indexWhere((n) => n.uuid == notifUuid);
+          int index = _notifications.indexWhere(
+            (n) => n.uuid == notifUuid,
+          );
           if (index != -1) {
             _notifications[index] = TempNotification(
-              departmentName: _notifications[index].departmentName,
-              departmentUuid: _notifications[index].departmentUuid,
+              departmentName:
+                  _notifications[index].departmentName,
+              departmentUuid:
+                  _notifications[index].departmentUuid,
               uuid: _notifications[index].uuid,
               notifId: _notifications[index].notifId,
               shopId: _notifications[index].shopId,
               productId: _notifications[index].productId,
-              productUuid: _notifications[index].productUuid,
+              productUuid:
+                  _notifications[index].productUuid,
               title: _notifications[index].title,
               text: _notifications[index].text,
               date: _notifications[index].date,
