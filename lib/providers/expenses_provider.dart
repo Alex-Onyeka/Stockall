@@ -65,7 +65,6 @@ class ExpensesProvider extends ChangeNotifier {
 
   String _dateKey(DateTime d) =>
       '${d.year}-${d.month}-${d.day}';
-
   bool _isRangeFetched(
     int shopId,
     DateTime start,
@@ -339,38 +338,12 @@ class ExpensesProvider extends ChangeNotifier {
   }
 
   List<TempExpensesClass> departmentExpenses() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return expensesMain.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return expensesMain;
-        } else {
-          return expensesMain.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-          }).toList();
-        }
-      }
-    } else {
-      return expensesMain;
-    }
+    return expensesMain.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<TempExpensesClass> returnExpensesByDayOrWeek(

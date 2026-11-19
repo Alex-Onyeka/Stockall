@@ -154,16 +154,22 @@ void _manageDepartments({
                         returnDepartmentsDashboardProvider()
                             .toggleIsLoading(true);
                         setState(() {});
-                        await returnUserProviderSingle()
+                        final res = await returnUserProviderSingle()
                             .updateStaffDepartments(
                               user: employee,
                               newDepartments: list,
                             );
-                        if (secondContext.mounted) {
-                          Navigator.of(secondContext).pop();
-                        }
-                        if (firstContext.mounted) {
-                          Navigator.of(firstContext).pop();
+                        returnDepartmentsDashboardProvider()
+                            .toggleIsLoading(false);
+                        if (res == 1) {
+                          if (secondContext.mounted) {
+                            Navigator.of(secondContext).pop();
+                          }
+                          if (firstContext.mounted) {
+                            Navigator.of(firstContext).pop();
+                          }
+                        } else {
+                          setState(() {});
                         }
                       },
                     );

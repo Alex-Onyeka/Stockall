@@ -2,6 +2,7 @@ import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/main.dart';
 
 /// Default history text when the user leaves the comment empty.
 const String defaultQuantityAdjustmentDesc =
@@ -135,6 +136,12 @@ ItemHistory buildQuantityAdjustmentHistory({
     primaryUnit: primaryUnit.name,
     unit: selectedUnit.name,
     shopId: shopId,
+    departmentUuid:
+        product.departmentUuid ??
+        returnDepartmentProvider().currentDepartment()?.uuid,
+    departmentName:
+        product.departmentName ??
+        returnDepartmentProvider().currentDepartment()?.name,
     title:
         'Item Quantity ${isIncrement ? "Increased" : 'Reduced'}',
     quantityChange: selectedUnit.getQuantityEquivDivided(

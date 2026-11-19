@@ -101,7 +101,9 @@ class TempInventoryUpdateClass {
       staffName: json['staff_name'] as String?,
       staffId: json['staff_id'] as String?,
       departmentName: json['department_name'] as String?,
-      departmentUuid: json['department_uuid'] as String?,
+      departmentUuid:
+          (json['department_uuid'] ?? json['department_id'])
+              as String?,
       departmentNameTwo:
           json['department_name_two'] as String?,
       departmentUuidTwo:

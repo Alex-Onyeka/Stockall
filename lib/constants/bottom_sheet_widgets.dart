@@ -14,6 +14,7 @@ import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/on_screen_keyboard_pin.dart/on_screen_keyboard_pin.dart';
 import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
@@ -1473,6 +1474,286 @@ void categoriesBottomSheet(
     },
   );
   action!();
+}
+
+void departmentsBottomSheet(
+  BuildContext context,
+  Function()? action,
+) async {
+  var shopDepts = returnDepartmentProvider().departments;
+
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    backgroundColor: Colors.white,
+    builder: (BuildContext context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.75,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        builder: (context, scrollController) {
+          return Container(
+            padding: const EdgeInsets.fromLTRB(
+              30,
+              15,
+              30,
+              45,
+            ),
+            child: Material(
+              color: Colors.white,
+              child: Ink(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        height: 4,
+                        width: 80,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(5),
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Departments',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Select Item Department(s)',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            FocusScope.of(
+                              context,
+                            ).unfocus();
+                          },
+                          icon: Icon(
+                            returnData(
+                                  context: context,
+                                ).selectedDepartments.isNotEmpty
+                                ? Icons.check
+                                : Icons.clear_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Builder(
+                          builder: (context) {
+                            if (shopDepts.isEmpty) {
+                              return Material(
+                                color: Colors.white,
+                                child: EmptyWidgetDisplayOnly(
+                                  title: 'No Departments',
+                                  subText:
+                                      'You currently do not have any departments available.',
+                                  theme: returnTheme(
+                                    context,
+                                  ),
+                                  height: 30,
+                                  icon: Icons.store_mall_directory_outlined,
+                                  altAction: () async {
+                                    await returnDepartmentProvider()
+                                        .getDepartments();
+                                  },
+                                  altActionText: 'Refresh',
+                                ),
+                              );
+                            } else {
+                              return ListView.builder(
+                                controller:
+                                    scrollController,
+                                itemCount: shopDepts.length,
+                                itemBuilder: (
+                                  context,
+                                  index,
+                                ) {
+                                  final dept =
+                                      shopDepts[index];
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade300,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Material(
+                                      color: Colors.white,
+                                      child: ListTile(
+                                        title: Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    )
+                                                    .mobileTexts
+                                                    .b2
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .w600,
+                                          ),
+                                          dept.name,
+                                        ),
+                                        onTap: () {
+                                          returnData()
+                                              .selectDepartments(
+                                                dept,
+                                              );
+                                        },
+                                        trailing: Checkbox(
+                                          shape: CircleBorder(
+                                            side:
+                                                BorderSide(),
+                                          ),
+                                          side: BorderSide(
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade400,
+                                            width: 1.2,
+                                          ),
+                                          activeColor:
+                                              returnTheme(
+                                                    context,
+                                                  )
+                                                  .lightModeColor
+                                                  .prColor250,
+                                          value: returnData(
+                                                context:
+                                                    context,
+                                              )
+                                              .selectedDepartments
+                                              .contains(
+                                                dept.uuid,
+                                              ),
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            Provider.of<
+                                              DataProvider
+                                            >(
+                                              context,
+                                              listen: false,
+                                            ).selectDepartments(
+                                              dept,
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        borderRadius:
+                            BorderRadius.circular(5),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            color:
+                                returnTheme(context)
+                                    .lightModeColor
+                                    .prColor300,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Done',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+  if (action != null) {
+    action();
+  }
 }
 
 //

@@ -25,7 +25,11 @@ class DraftsProvider extends ChangeNotifier {
   final SupabaseClient supabase = Supabase.instance.client;
   final ConnectivityProvider connectivity = ConnectivityProvider();
   List<Drafts> _drafts = [];
-  List<Drafts> get drafts => _drafts;
+  List<Drafts> get drafts => _drafts.where((draft) {
+        return returnDepartmentProvider().matchesCurrentDepartment(
+          departmentUuid: draft.departmentUuid,
+        );
+      }).toList();
 
   final String tableName = 'drafts';
 

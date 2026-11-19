@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_sub_staff/unsynced/created_sub_staffs/crea
 import 'package:stockall/classes/temp_sub_staff/unsynced/deleted_sub_staff/deleted_sub_staff.dart';
 import 'package:stockall/classes/temp_sub_staff/unsynced/updated/updated_sub_staff.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/sub_staff/sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/created/created_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_sub_staff_func.dart';
@@ -14,42 +13,23 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubStaffProvider extends ChangeNotifier {
-  static final SubStaffProvider _instance = SubStaffProvider._internal();
+  static final SubStaffProvider _instance =
+      SubStaffProvider._internal();
   factory SubStaffProvider() => _instance;
   SubStaffProvider._internal();
   final supabase = Supabase.instance.client;
-  final ConnectivityProvider connectivity = ConnectivityProvider();
+  final ConnectivityProvider connectivity =
+      ConnectivityProvider();
 
   List<TempSubStaff> subStaffsMain = [];
 
   List<TempSubStaff> subStaffs() {
-    if (returnShopProvider().userShop()?.manageDepartments == true) {
-      if (!authorization(authorized: Authorizations().viewAllDepartments)) {
-        return subStaffsMain.where((cat) {
-          // if (cat.departmentUuid == null) {
-          //   return true;
-          // } else {
-          return cat.departmentUuid ==
-              returnDepartmentProvider().currentDepartment()?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider().currentDepartment()?.uuid == null) {
-          return subStaffsMain;
-        } else {
-          return subStaffsMain.where((cat) {
-            // if (cat.departmentUuid == null) {
-            //   return true;
-            // } else {
-            return cat.departmentUuid ==
-                returnDepartmentProvider().currentDepartment()?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return subStaffsMain;
-    }
+    return subStaffsMain.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   final String tableName = 'sub_staff';
@@ -79,7 +59,9 @@ class SubStaffProvider extends ChangeNotifier {
       notifyListeners();
       return 1;
     } catch (e) {
-      await mainLocalLog('Error Creating Sub Staff: ${e.toString()}');
+      await mainLocalLog(
+        'Error Creating Sub Staff: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -101,17 +83,24 @@ class SubStaffProvider extends ChangeNotifier {
           .from(tableName)
           .select()
           .eq('shop_id', shopId());
-      await mainLocalLog('Sub Staffs Gotten: ${response.length}');
+      await mainLocalLog(
+        'Sub Staffs Gotten: ${response.length}',
+      );
 
       subStaffsMain =
-          (response as List).map((e) => TempSubStaff.fromJson(e)).toList();
-      await SubStaffFunc().insertAllSubStaffs(subStaffsMain);
+          (response as List)
+              .map((e) => TempSubStaff.fromJson(e))
+              .toList();
+      await SubStaffFunc().insertAllSubStaffs(
+        subStaffsMain,
+      );
     } else {
       subStaffsMain = SubStaffFunc().getSubStaffs();
     }
     subStaffsMain.sort(
-      (a, b) =>
-          a.staffName!.toLowerCase().compareTo(b.staffName!.toLowerCase()),
+      (a, b) => a.staffName!.toLowerCase().compareTo(
+        b.staffName!.toLowerCase(),
+      ),
     );
     notifyListeners();
     return subStaffsMain;
@@ -167,7 +156,9 @@ class SubStaffProvider extends ChangeNotifier {
       var containsCreated =
           CreatedSubStaffFunc()
               .getSubStaffs()
-              .where((exp) => exp.subStaff.uuid == subStaff.uuid)
+              .where(
+                (exp) => exp.subStaff.uuid == subStaff.uuid,
+              )
               .toList();
       if (containsCreated.isEmpty) {
         await UpdatedSubStaffFunc().createUpdatedSubStaff(
@@ -179,14 +170,19 @@ class SubStaffProvider extends ChangeNotifier {
         );
       }
       await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().subStaffAdapter(subStaff, 2),
+        returnEventsLogProvider().subStaffAdapter(
+          subStaff,
+          2,
+        ),
       );
       notifyListeners();
       await getSubStaffsOffline();
       return 1;
       // }
     } catch (e) {
-      await mainLocalLog('Error Updating Sub Staff: ${e.toString()}');
+      await mainLocalLog(
+        'Error Updating Sub Staff: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -220,24 +216,32 @@ class SubStaffProvider extends ChangeNotifier {
       var containsCreated =
           CreatedSubStaffFunc()
               .getSubStaffs()
-              .where((exp) => exp.subStaff.uuid == subStaff.uuid)
+              .where(
+                (exp) => exp.subStaff.uuid == subStaff.uuid,
+              )
               .toList();
       var containsUpdated =
           UpdatedSubStaffFunc()
               .getSubStaffs()
-              .where((exp) => exp.subStaff.uuid == subStaff.uuid)
+              .where(
+                (exp) => exp.subStaff.uuid == subStaff.uuid,
+              )
               .toList();
       await SubStaffFunc().deleteSubStaff(subStaff.uuid!);
 
       if (containsCreated.isNotEmpty) {
-        CreatedSubStaffFunc().deleteSubStaff(subStaff.uuid!);
+        CreatedSubStaffFunc().deleteSubStaff(
+          subStaff.uuid!,
+        );
       } else {
         await DeletedSubStaffFunc().createDeletedSubStaff(
           DeletedSubStaff(subStaffUuid: subStaff.uuid!),
         );
       }
       if (containsUpdated.isNotEmpty) {
-        UpdatedSubStaffFunc().deleteUpdatedSubStaff(subStaff.uuid!);
+        UpdatedSubStaffFunc().deleteUpdatedSubStaff(
+          subStaff.uuid!,
+        );
       }
       await returnEventsLogProvider().createLog(
         returnEventsLogProvider(
@@ -251,7 +255,9 @@ class SubStaffProvider extends ChangeNotifier {
       return 1;
       // }
     } catch (e) {
-      await mainLocalLog('Error Deleting Sub Staff: ${e.toString()}');
+      await mainLocalLog(
+        'Error Deleting Sub Staff: ${e.toString()}',
+      );
       return 0;
     }
   }
@@ -268,24 +274,36 @@ class SubStaffProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
-      if (CreatedSubStaffFunc().getSubStaffs().isNotEmpty && isOnline) {
-        final subStaffs = CreatedSubStaffFunc().getSubStaffs().toList();
+      if (CreatedSubStaffFunc().getSubStaffs().isNotEmpty &&
+          isOnline) {
+        final subStaffs =
+            CreatedSubStaffFunc().getSubStaffs().toList();
         for (var subStaff in subStaffs) {
           await mainLocalLog(
             'Updated Time: ${subStaff.subStaff.updatedAt?.toString()}',
           );
         }
-        final payload = subStaffs.map((p) => p.subStaff.toJson()).toList();
+        final payload =
+            subStaffs
+                .map((p) => p.subStaff.toJson())
+                .toList();
 
         // Insert all at once
-        final data = await supabase.from(tableName).insert(payload).select('uuid');
+        final data = await supabase
+            .from(tableName)
+            .insert(payload)
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items added successfully ✅');
+        await mainLocalLog(
+          '${data.length} items added successfully ✅',
+        );
         await CreatedSubStaffFunc().clearSubStaffs();
         await mainLocalLog('Unsynced Sub Staffs Cleared');
       }
     } catch (e) {
-      await mainLocalLog('Batch Sub Staffs Insert failed ❌: $e');
+      await mainLocalLog(
+        'Batch Sub Staffs Insert failed ❌: $e',
+      );
     }
   }
 
@@ -299,27 +317,38 @@ class SubStaffProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
 
-      if (DeletedSubStaffFunc().getSubStaffIds().isNotEmpty && isOnline) {
+      if (DeletedSubStaffFunc()
+              .getSubStaffIds()
+              .isNotEmpty &&
+          isOnline) {
         final uuids =
             DeletedSubStaffFunc()
                 .getSubStaffIds()
                 .map((p) => p.subStaffUuid)
                 .toList();
 
-        final data =
-            await supabase
-                .from(tableName)
-                .delete()
-                .inFilter('uuid', uuids) // delete where id is in the list
-                .select('uuid');
+        final data = await supabase
+            .from(tableName)
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select('uuid');
 
-        await mainLocalLog('${data.length} items deleted successfully ✅');
+        await mainLocalLog(
+          '${data.length} items deleted successfully ✅',
+        );
 
         await DeletedSubStaffFunc().clearDeletedSubStaff();
-        await mainLocalLog('Unsynced deleted Sub Staffs cleared');
+        await mainLocalLog(
+          'Unsynced deleted Sub Staffs cleared',
+        );
       }
     } catch (e) {
-      await mainLocalLog('Batch Sub Staffs Delete failed ❌: $e');
+      await mainLocalLog(
+        'Batch Sub Staffs Delete failed ❌: $e',
+      );
     }
   }
 
@@ -331,19 +360,27 @@ class SubStaffProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog(
-        UpdatedSubStaffFunc().getSubStaffs().length.toString(),
+        UpdatedSubStaffFunc()
+            .getSubStaffs()
+            .length
+            .toString(),
       );
 
-      if (UpdatedSubStaffFunc().getSubStaffs().isNotEmpty && isOnline) {
-        final updatedSubStaffs = UpdatedSubStaffFunc().getSubStaffs();
+      if (UpdatedSubStaffFunc().getSubStaffs().isNotEmpty &&
+          isOnline) {
+        final updatedSubStaffs =
+            UpdatedSubStaffFunc().getSubStaffs();
 
         for (final updated in updatedSubStaffs) {
           final localSubStaffs = updated.subStaff;
 
-          localSubStaffs.updatedAt ??= DateTime.now().toLocal();
+          localSubStaffs.updatedAt ??=
+              DateTime.now().toLocal();
 
           if (localSubStaffs.uuid == null) {
-            await mainLocalLog('Local Sub Staffs Uuid is Null');
+            await mainLocalLog(
+              'Local Sub Staffs Uuid is Null',
+            );
           }
           final remoteData =
               await supabase
@@ -353,28 +390,40 @@ class SubStaffProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase.from(tableName).insert(localSubStaffs.toJson());
+            await supabase
+                .from(tableName)
+                .insert(localSubStaffs.toJson());
             await mainLocalLog(
               'Inserted Sub Staffs with uuid ${localSubStaffs.uuid}',
             );
-            await UpdatedSubStaffFunc().deleteUpdatedSubStaff(
-              localSubStaffs.uuid ?? '',
-            );
+            await UpdatedSubStaffFunc()
+                .deleteUpdatedSubStaff(
+                  localSubStaffs.uuid ?? '',
+                );
           } else {
-            final remoteUpdatedAtRaw = remoteData['updated_at'];
+            final remoteUpdatedAtRaw =
+                remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
                     ? null
-                    : DateTime.parse(remoteUpdatedAtRaw).toUtc();
+                    : DateTime.parse(
+                      remoteUpdatedAtRaw,
+                    ).toUtc();
 
             localSubStaffs.updatedAt =
                 (localSubStaffs.updatedAt ?? DateTime.now())
                     .toUtc(); // ✅ keep both UTC
-            await mainLocalLog("Local updatedAt: ${localSubStaffs.updatedAt}");
-            await mainLocalLog("Remote updatedAt: $remoteUpdatedAt");
+            await mainLocalLog(
+              "Local updatedAt: ${localSubStaffs.updatedAt}",
+            );
+            await mainLocalLog(
+              "Remote updatedAt: $remoteUpdatedAt",
+            );
 
             if (remoteUpdatedAt == null ||
-                localSubStaffs.updatedAt!.isAfter(remoteUpdatedAt)) {
+                localSubStaffs.updatedAt!.isAfter(
+                  remoteUpdatedAt,
+                )) {
               await supabase
                   .from(tableName)
                   .update(localSubStaffs.toJson())
@@ -382,9 +431,10 @@ class SubStaffProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Updated Sub Staffs with uuid ${localSubStaffs.uuid}',
               );
-              await UpdatedSubStaffFunc().deleteUpdatedSubStaff(
-                localSubStaffs.uuid ?? '',
-              );
+              await UpdatedSubStaffFunc()
+                  .deleteUpdatedSubStaff(
+                    localSubStaffs.uuid ?? '',
+                  );
             } else {
               await mainLocalLog(
                 'Skipped Sub Staffs ${localSubStaffs.uuid}, remote is newer ✅',
@@ -394,12 +444,18 @@ class SubStaffProvider extends ChangeNotifier {
         }
 
         await UpdatedSubStaffFunc().clearUpdatedSubStaff();
-        await mainLocalLog('Unsynced updated Sub Staffs cleared');
-        await mainLocalLog('Mounted, refreshing Sub Staffs ✅');
+        await mainLocalLog(
+          'Unsynced updated Sub Staffs cleared',
+        );
+        await mainLocalLog(
+          'Mounted, refreshing Sub Staffs ✅',
+        );
         await getSubStaffs();
       }
     } catch (e) {
-      await mainLocalLog('Batch Sub Staffs Update failed ❌: $e');
+      await mainLocalLog(
+        'Batch Sub Staffs Update failed ❌: $e',
+      );
     }
   }
 

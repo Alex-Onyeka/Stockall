@@ -212,7 +212,7 @@ class _TotalProductsDesktopState
               .toList();
         case 5:
           return products
-              .where((p) => p.departmentUuid == null)
+              .where((p) => p.effectiveDepartmentUuids.isEmpty)
               .toList();
         case 0:
         default:

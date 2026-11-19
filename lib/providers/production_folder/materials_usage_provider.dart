@@ -897,38 +897,12 @@ class MaterialsUsageProvider extends ChangeNotifier {
 
   List<ProductionMaterialsUsage>
   departmentProductionMaterialsUsage() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return productionMaterialsUsage.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return productionMaterialsUsage;
-        } else {
-          return productionMaterialsUsage.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return productionMaterialsUsage;
-    }
+    return productionMaterialsUsage.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<ProductionMaterialsUsage>

@@ -91,39 +91,17 @@ class StorageItemHistoryProvider with ChangeNotifier {
 
   List<StorageItemHistory>
   departmentStorageItemHistories() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return storageItemHistories.where((cat) {
-          return cat.storageDepartmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-          // }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return storageItemHistories;
-        } else {
-          return storageItemHistories.where((cat) {
-            return cat.storageDepartmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return storageItemHistories;
-    }
+    return storageItemHistories.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuids: [
+              if (cat.storageDepartmentUuid != null)
+                cat.storageDepartmentUuid!,
+              if (cat.salesDepartmentUuid != null)
+                cat.salesDepartmentUuid!,
+            ],
+          );
+    }).toList();
   }
 
   List<StorageItemHistory> returnItemHistories() {

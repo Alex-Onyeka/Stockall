@@ -1507,45 +1507,19 @@ class OrdersProvider extends ChangeNotifier {
   List<OrderItems> get orderItems => _orderItems;
 
   List<Orders> departmentOrders() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return orders.where((cat) {
-          return cat.departmentUuid ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return orders;
-        } else {
-          return orders.where((cat) {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return orders;
-    }
+    return orders.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+          );
+    }).toList();
   }
 
   List<Orders> returnAllOrSetDateOrders() {
     if (dateSet == null &&
         rangeEndDate == null &&
         rangeStartDate == null) {
-      return orders;
+      return departmentOrders();
     } else {
       return returnOrdersByDayOrWeekAll();
     }

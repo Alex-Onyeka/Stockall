@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -12,6 +13,7 @@ import 'package:stockall/constants/subscription/branding_watermark.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
+import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/documents/document_downloads.dart';
 import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart';
 import 'package:stockall/services/documents/pdf_document_kit.dart'
@@ -512,7 +514,9 @@ Future<void> generateAndPreviewPdfRoll({
               ),
         );
       } catch (e, stackTrace) {
-        await mainLocalLog('❌ Error printing receipt: $e\n$stackTrace');
+        await mainLocalLog(
+          '❌ Error printing receipt: $e\n$stackTrace',
+        );
       } finally {
         if (context.mounted) {
           returnReceiptProvider(
@@ -1104,7 +1108,9 @@ Future<Uint8List> _buildPdfRoll(
                                 flex: 3,
                                 child: pw.Column(
                                   crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
                                     pw.Text(
                                       style: pw.TextStyle(
@@ -1120,18 +1126,23 @@ Future<Uint8List> _buildPdfRoll(
                                       ) {
                                         return pw.Column(
                                           crossAxisAlignment:
-                                              pw.CrossAxisAlignment.start,
+                                              pw
+                                                  .CrossAxisAlignment
+                                                  .start,
                                           children: [
                                             ...receipt.displayPayments().map(
                                               (
                                                 payment,
                                               ) => pw.Text(
                                                 style: pw.TextStyle(
-                                                  font: fontRegular,
-                                                  fontSize: parTextAlt,
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parTextAlt,
                                                 ),
                                                 '${payment.method}: ${formatMoneyMid(amount: payment.amount, context: context)}',
-                                                softWrap: true,
+                                                softWrap:
+                                                    true,
                                               ),
                                             ),
                                           ],
@@ -4070,20 +4081,7 @@ void downloadPdfWebSalesSummary({
 //
 //
 
-Future<void> downloadApkFromApp({
-  required BuildContext context,
-}) async {
-  final url =
-      screenWidth(context) > tabletScreenSmall
-          ? Uri.parse(
-            'https://apps.microsoft.com/detail/9NKK31W8032C',
-            // 'https://github.com/Alex-Onyeka/Stockall/releases/download/desktop-v1.0.1/StockallDesktop.exe',
-          )
-          : Uri.parse(
-            'https://play.google.com/store/apps/details?id=com.stockallsolutions.stockall',
-            // 'https://github.com/Alex-Onyeka/Stockall/releases/download/mobile-v1.0.1/stockall.apk',
-          );
-
+Future<void> _launchExternalDownloadUrl(Uri url) async {
   if (await canLaunchUrl(url)) {
     await launchUrl(
       url,
@@ -4091,5 +4089,181 @@ Future<void> downloadApkFromApp({
     );
   } else {
     throw 'Could not launch. $url. Please Try Again';
+  }
+}
+
+Future<void> downloadApkFromApp({
+  required BuildContext context,
+}) async {
+  if (screenWidth(context) <= tabletScreenSmall) {
+    final url = Uri.parse(
+      'https://play.google.com/store/apps/details?id=com.stockallsolutions.stockall',
+    );
+    await _launchExternalDownloadUrl(url);
+    return;
+  }
+
+  final utilityProvider = returnUtilityConstantProvider();
+  var constants = utilityProvider.utilityConstants;
+  constants ??= await utilityProvider.getUtilityConstants();
+  if (!context.mounted) return;
+
+  final theme = returnTheme(context, listen: false);
+  final githubLink =
+      constants?.desktopDownloadLink.trim() ?? '';
+  const microsoftStoreUrl =
+      'https://apps.microsoft.com/detail/9NKK31W8032C';
+
+  await showDialog(
+    context: context,
+    builder: (dialogContext) {
+      return DialogTemplate(
+        theme: theme,
+        title: 'Download Update',
+        message:
+            'Choose how you would like to download the latest Stockall desktop update.',
+        action: () {},
+        showMainBottomActionButton: false,
+        cancelText: 'Close',
+        widget: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 12,
+          children: [
+            _DownloadOptionTile(
+              theme: theme,
+              icon: Icons.download_rounded,
+              title: 'Download from Stockall',
+              subtitle:
+                  'Download the installer directly from Stockall (GitHub)',
+              accentColor: theme.lightModeColor.prColor300,
+              onTap: () async {
+                Navigator.of(dialogContext).pop();
+                if (githubLink.isEmpty) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Direct download link is not available right now. Please try Microsoft Store.',
+                        ),
+                      ),
+                    );
+                  }
+                  return;
+                }
+                await _launchExternalDownloadUrl(
+                  Uri.parse(githubLink),
+                );
+              },
+            ),
+            _DownloadOptionTile(
+              theme: theme,
+              icon: Icons.storefront_rounded,
+              title: 'Download from Microsoft Store',
+              subtitle:
+                  'Open Stockall on the Microsoft Store',
+              accentColor: theme.lightModeColor.secColor200,
+              onTap: () async {
+                Navigator.of(dialogContext).pop();
+                await _launchExternalDownloadUrl(
+                  Uri.parse(microsoftStoreUrl),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+class _DownloadOptionTile extends StatelessWidget {
+  final ThemeProvider theme;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  const _DownloadOptionTile({
+    required this.theme,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+            color: Colors.grey.shade50,
+          ),
+          child: Row(
+            spacing: 12,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(
+                    alpha: 0.12,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  icon,
+                  color: accentColor,
+                  size: 22,
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: Colors.grey.shade500,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -27,13 +27,15 @@ class UtilityConstantsAdapter extends TypeAdapter<UtilityConstants> {
       sixMonthsDiscount: fields[7] as double,
       oneYearDiscount: fields[8] as double,
       vat: fields[9] as double,
+      desktopDownloadLink: (fields[10] as String?) ?? '',
+      isCompulsory: (fields[11] as bool?) ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, UtilityConstants obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -53,7 +55,11 @@ class UtilityConstantsAdapter extends TypeAdapter<UtilityConstants> {
       ..writeByte(8)
       ..write(obj.oneYearDiscount)
       ..writeByte(9)
-      ..write(obj.vat);
+      ..write(obj.vat)
+      ..writeByte(10)
+      ..write(obj.desktopDownloadLink)
+      ..writeByte(11)
+      ..write(obj.isCompulsory);
   }
 
   @override

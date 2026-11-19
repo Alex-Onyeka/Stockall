@@ -50,25 +50,43 @@ class ProductionRecordsProvider extends ChangeNotifier {
   final Set<String> _fetchedDateKeys = {};
   int? _fetchedShopId;
 
-  String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month}-${d.day}';
 
-  bool _isRangeFetched(int shopId, DateTime start, DateTime end) {
+  bool _isRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) return false;
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
-      if (!_fetchedDateKeys.contains(_dateKey(cursor))) return false;
+      if (!_fetchedDateKeys.contains(_dateKey(cursor)))
+        return false;
       cursor = cursor.add(const Duration(days: 1));
     }
     return true;
   }
 
-  void _markRangeFetched(int shopId, DateTime start, DateTime end) {
+  void _markRangeFetched(
+    int shopId,
+    DateTime start,
+    DateTime end,
+  ) {
     if (_fetchedShopId != shopId) {
       _fetchedDateKeys.clear();
       _fetchedShopId = shopId;
     }
-    var cursor = DateTime(start.year, start.month, start.day);
+    var cursor = DateTime(
+      start.year,
+      start.month,
+      start.day,
+    );
     final last = DateTime(end.year, end.month, end.day);
     while (!cursor.isAfter(last)) {
       _fetchedDateKeys.add(_dateKey(cursor));
@@ -715,11 +733,13 @@ class ProductionRecordsProvider extends ChangeNotifier {
                     created.isBefore(windowEnd);
                 return !inWindow;
               }).toList();
-          _productionRecords = [...fetched, ...outsideWindow]
-            ..sort(
-              (a, b) => (b.createdAt ?? DateTime(1970))
-                  .compareTo(a.createdAt ?? DateTime(1970)),
-            );
+          _productionRecords = [
+            ...fetched,
+            ...outsideWindow,
+          ]..sort(
+            (a, b) => (b.createdAt ?? DateTime(1970))
+                .compareTo(a.createdAt ?? DateTime(1970)),
+          );
           _markRangeFetched(
             shopId,
             effectiveStart,
@@ -941,11 +961,10 @@ class ProductionRecordsProvider extends ChangeNotifier {
                 .toList();
 
         // Insert all at once
-        final data =
-            await supabase
-                .from(tableName)
-                .insert(payload)
-                .select('uuid');
+        final data = await supabase
+            .from(tableName)
+            .insert(payload)
+            .select('uuid');
 
         await mainLocalLog(
           '${data.length} items added succesfully ✅',
@@ -1143,38 +1162,12 @@ class ProductionRecordsProvider extends ChangeNotifier {
   //
 
   List<ProductionRecord> departmentProductionRecords() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return productionRecords.where((cat) {
-          return cat.departmentId ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return productionRecords;
-        } else {
-          return productionRecords.where((cat) {
-            return cat.departmentId ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return productionRecords;
-    }
+    return productionRecords.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentId,
+          );
+    }).toList();
   }
 
   List<ProductionRecord>

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
+import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
 import 'package:stockall/classes/temp_product_class/prices_class/product_prices_class.dart';
@@ -17,7 +18,6 @@ import 'package:stockall/classes/temp_storage_item_history/storage_item_history_
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
@@ -2533,45 +2533,14 @@ class DataProvider extends ChangeNotifier {
   }
 
   List<TempProductClass> productList() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return productListMain.where((cat) {
-          if (cat.departmentUuid == null) {
-            return true;
-          } else {
-            return cat.departmentUuid ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-          }
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return productListMain;
-        } else {
-          return productListMain.where((cat) {
-            if (cat.departmentUuid == null) {
-              return true;
-            } else {
-              return cat.departmentUuid ==
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid;
-            }
-          }).toList();
-        }
-      }
-    } else {
-      return productListMain;
-    }
+    return productListMain.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuid,
+            departmentUuids: cat.departmentUuids,
+            includeUnassignedWhenDeptSelected: true,
+          );
+    }).toList();
   }
 
   void clearProducts() {
@@ -3210,6 +3179,7 @@ class DataProvider extends ChangeNotifier {
     setCustomPrice = false;
     isRefundable = false;
     selectedCategories.clear();
+    selectedDepartments.clear();
     // selectedCategory = null;
     selectedColor = null;
     selectedSize = null;
@@ -3361,6 +3331,24 @@ class DataProvider extends ChangeNotifier {
 
   void initCategories({required List<String> categories}) {
     selectedCategories = categories;
+    notifyListeners();
+  }
+
+  List<String> selectedDepartments = [];
+
+  void selectDepartments(DepartmentClass dept) {
+    if (selectedDepartments.contains(dept.uuid)) {
+      selectedDepartments.remove(dept.uuid);
+    } else {
+      selectedDepartments.add(dept.uuid);
+    }
+    notifyListeners();
+  }
+
+  void initDepartments({
+    required List<String> departments,
+  }) {
+    selectedDepartments = List<String>.from(departments);
     notifyListeners();
   }
 

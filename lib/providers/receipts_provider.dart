@@ -955,7 +955,7 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord> get mainSales => _sales;
 
   List<TempProductSaleRecord> salesReceipts() {
-    return receipts
+    return departmentReceipts()
         .expand((item) => item.getItems())
         .toList();
     // return _salesReceipts;
@@ -1149,38 +1149,12 @@ class ReceiptsProvider extends ChangeNotifier {
   // }
 
   List<TempMainReceipt> departmentReceipts() {
-    if (returnShopProvider()
-            .userShop()
-            ?.manageDepartments ==
-        true) {
-      if (!authorization(
-        authorized: Authorizations().viewAllDepartments,
-      )) {
-        return receipts.where((cat) {
-          return cat.departmentUuidNew ==
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-        }).toList();
-      } else {
-        if (returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid ==
-            null) {
-          return receipts;
-        } else {
-          return receipts.where((cat) {
-            return cat.departmentUuidNew ==
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid;
-            // }
-          }).toList();
-        }
-      }
-    } else {
-      return receipts;
-    }
+    return receipts.where((cat) {
+      return returnDepartmentProvider()
+          .matchesCurrentDepartment(
+            departmentUuid: cat.departmentUuidNew,
+          );
+    }).toList();
   }
 
   int paymentMethod = 0;

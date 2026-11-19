@@ -83,6 +83,10 @@ class _DashboardDesktopState
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       NewFeaturePopUpFunc().checkIfIsNew(context: context);
+      returnAppVersionProvider(
+        context,
+        listen: false,
+      ).onDashboardOpened(context);
       if (!returnReceiptProvider(
         context,
         listen: false,
@@ -1004,16 +1008,11 @@ class _DashboardDesktopState
                               ),
                               Visibility(
                                 visible:
-                                    appVersionDesktop !=
-                                        returnAppVersionProvider(
-                                              context,
-                                            )
-                                            .appVersion
-                                            ?.desktopVersion &&
                                     returnAppVersionProvider(
-                                          context,
-                                        ).isUpdated ==
-                                        false,
+                                      context,
+                                    ).shouldShowUpdatePopup(
+                                      context,
+                                    ),
                                 child: Align(
                                   alignment: Alignment(
                                     0,
@@ -1098,8 +1097,8 @@ class _DashboardDesktopState
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).toggleUpdated(
-                                                    true,
+                                                  ).dismissUpdatePopup(
+                                                    context,
                                                   );
                                                 },
                                                 icon: Icon(
