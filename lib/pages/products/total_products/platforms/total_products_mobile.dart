@@ -171,7 +171,9 @@ class _TotalProductsMobileState
               .toList();
         case 5:
           return products
-              .where((p) => p.effectiveDepartmentUuids.isEmpty)
+              .where(
+                (p) => p.effectiveDepartmentUuids.isEmpty,
+              )
               .toList();
         case 0:
         default:
@@ -200,9 +202,17 @@ class _TotalProductsMobileState
             appBar: appBar(
               context: context,
               title: 'All Items',
-              turnOff: widget.isMainTab,
-              backAction:
-                  () => Navigator.of(context).maybePop(),
+              turnOff: false,
+              backAction: () {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                } else {
+                  returnNavProvider(
+                    context,
+                    listen: false,
+                  ).navigate(0);
+                }
+              },
               widget:
                   widget.categoryUuid != null
                       ? null

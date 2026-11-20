@@ -71,7 +71,17 @@ class _TotalSalesMobileState
       },
       child: Scaffold(
         appBar: appBar(
-          turnOff: widget.turnOff,
+          turnOff: false,
+          backAction: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              returnNavProvider(
+                context,
+                listen: false,
+              ).navigate(0);
+            }
+          },
           context: context,
           title: 'All Sales',
           widget: Row(

@@ -268,91 +268,76 @@ class _TotalExpensesMobileState
                                             Authorizations()
                                                 .viewDate,
                                       ),
-                                      child: MaterialButton(
-                                        mouseCursor:
-                                            SystemMouseCursors
-                                                .click,
-                                        onPressed: () {
-                                          if (returnExpensesProvider(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: InkWell(
+                                          mouseCursor:
+                                              SystemMouseCursors
+                                                  .click,
+                                          onTap: () {
+                                            if (returnExpensesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).dateSet !=
+                                                    null ||
+                                                returnExpensesProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).rangeStartDate !=
+                                                    null) {
+                                              returnExpensesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).clearDate();
+                                            } else {
+                                              mainDatePicker(
+                                                context:
+                                                    context,
+                                                theme:
+                                                    theme,
+                                                singleDate: (
+                                                  date,
+                                                ) {
+                                                  returnExpensesProvider(
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).dateSet !=
-                                                  null ||
-                                              returnExpensesProvider(
+                                                  ).setDate(
+                                                    date!,
+                                                  );
+                                                },
+                                                rangeDate: (
+                                                  firstDate,
+                                                  lastDate,
+                                                ) {
+                                                  returnExpensesProvider(
                                                     context,
                                                     listen:
                                                         false,
-                                                  ).rangeStartDate !=
-                                                  null) {
-                                            returnExpensesProvider(
-                                              context,
-                                              listen: false,
-                                            ).clearDate();
-                                          } else {
-                                            mainDatePicker(
-                                              context:
-                                                  context,
-                                              theme: theme,
-                                              singleDate: (
-                                                date,
-                                              ) {
-                                                returnExpensesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).setDate(
-                                                  date!,
-                                                );
-                                              },
-                                              rangeDate: (
-                                                firstDate,
-                                                lastDate,
-                                              ) {
-                                                returnExpensesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).setRange(
-                                                  firstDate!,
-                                                  lastDate ??
-                                                      DateTime.now(),
-                                                );
-                                              },
-                                            );
-                                          }
-                                        },
-                                        child: Row(
-                                          spacing: 3,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade700,
-                                              ),
-                                              returnExpensesProvider(
-                                                            context,
-                                                          ).dateSet !=
-                                                          null ||
-                                                      returnExpensesProvider(
-                                                            context,
-                                                          ).rangeStartDate !=
-                                                          null
-                                                  ? 'Clear'
-                                                  : 'Set Date',
-                                            ),
-                                            Icon(
-                                              size: 20,
+                                                  ).setRange(
+                                                    firstDate!,
+                                                    lastDate ??
+                                                        DateTime.now(),
+                                                  );
+                                                },
+                                              );
+                                            }
+                                          },
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                  vertical:
+                                                      5.0,
+                                                  horizontal:
+                                                      7,
+                                                ),
+                                            child: Icon(
+                                              size: 18,
                                               color:
                                                   theme
                                                       .lightModeColor
@@ -370,7 +355,7 @@ class _TotalExpensesMobileState
                                                   : Icons
                                                       .date_range_outlined,
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),

@@ -16,16 +16,19 @@ PreferredSizeWidget appBar({
   return AppBar(
     scrolledUnderElevation: 0,
     toolbarHeight: 50,
-    leading: Opacity(
-      opacity: turnOff == null || turnOff == false ? 1 : 0,
-      child: IconButton(
-        mouseCursor: SystemMouseCursors.click,
-        onPressed: () {
-          if (backAction != null) {
-            backAction();
-          } else {
-            if (turnOff != null && turnOff) {
+    leading: IgnorePointer(
+      ignoring: turnOff == true,
+      child: Opacity(
+        opacity:
+            turnOff == null || turnOff == false ? 1 : 0,
+        child: IconButton(
+          mouseCursor: SystemMouseCursors.click,
+          onPressed: () {
+            if (turnOff == true) {
               return;
+            }
+            if (backAction != null) {
+              backAction();
             } else {
               if (isMain != null) {
                 Navigator.pushReplacement(
@@ -51,16 +54,16 @@ PreferredSizeWidget appBar({
                 Navigator.of(context).pop();
               }
             }
-          }
-        },
-        icon: Padding(
-          padding: const EdgeInsets.only(
-            left: 10.0,
-            right: 5,
-          ),
-          child: Icon(
-            size: 20,
-            Icons.arrow_back_ios_new_rounded,
+          },
+          icon: Padding(
+            padding: const EdgeInsets.only(
+              left: 10.0,
+              right: 5,
+            ),
+            child: Icon(
+              size: 20,
+              Icons.arrow_back_ios_new_rounded,
+            ),
           ),
         ),
       ),
