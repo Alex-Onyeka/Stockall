@@ -238,7 +238,7 @@ public class BluetoothPrintPlusPlugin
           LogUtils.i(TAG, "\nBlueToothName: " + device.getName() + "\nMacAddress: " + device.getAddress() + "\nrssi: " + rssi);
           invokeMethodUIThread(device);
         }
-      } catch (SecurityException | Exception ignored) {
+      } catch (Exception ignored) {
       }
     }
   };
