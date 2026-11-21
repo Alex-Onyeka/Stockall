@@ -299,7 +299,7 @@ public class BluetoothPrintPlusPlugin
     ret.put("name", device.getName());
     ret.put("type", device.getType());
     new Handler(Looper.getMainLooper()).post(() -> {
-      if (!ret.isEmpty()) {
+      if (channel != null && !ret.isEmpty()) {
         channel.invokeMethod("ScanResult", ret);
       } else {
         LogUtils.w(TAG, "invokeMethodUIThread: tried to call method on closed channel: " + "ScanResult");
@@ -323,65 +323,65 @@ public class BluetoothPrintPlusPlugin
     }
   }
 
-  public void connect(final String mac) {
-    ThreadPoolManager.getInstance().addTask(new Runnable() {
-      @Override
-      public void run() {
-        if (portManager != null) {
-          portManager.closePort();
-          try {
-            Thread.sleep(500);
-          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-          }
-        }
-        if (mac != null) {
-          PrinterDevices blueTooth = new PrinterDevices.Build()
-                  .setContext(context)
-                  .setConnMethod(ConnMethod.BLUETOOTH)
-                  .setMacAddress(mac)
-                  .setCommand(Command.ESC)
-                  .setCallbackListener(new CallbackListener() {
-                    @Override
-                    public void onConnecting() { }
-
-                    @Override
-                    public void onCheckCommand() { }
-
-                    @Override
-                    public void onSuccess(PrinterDevices printerDevices) {
-                      // LogUtils.d(TAG, "onSuccess");
-                      sink.success(BPPState.DeviceConnected.getValue());
-                    }
-
-                    @Override
-                    public void onReceive(byte[] data) {
-                      if (data == null) return;
-                      // LogUtils.d(TAG, "Received Data: " + Arrays.toString(data));
-                      new Handler(Looper.getMainLooper()).post(() -> {
-                        channel.invokeMethod("ReceivedData", data);
-                      });
-                    }
-
-                    @Override
-                    public void onFailure() { }
-
-                    @Override
-                    public void onDisconnect() {
-                      // LogUtils.d(TAG, "onDisconnect");
-                      sink.success(BPPState.DeviceDisconnected.getValue());
-                    }
-                  })
-                  .build();
-          Printer.connect(blueTooth);
-        }
+  private void postState(final int stateValue) {
+    new Handler(Looper.getMainLooper()).post(() -> {
+      if (sink != null) {
+        sink.success(stateValue);
       }
     });
   }
 
+  public void connect(final String mac) {
+    if (mac == null || context == null) return;
+    PrinterDevices blueTooth = new PrinterDevices.Build()
+            .setContext(context)
+            .setConnMethod(ConnMethod.BLUETOOTH)
+            .setMacAddress(mac)
+            .setCommand(Command.ESC)
+            .setCallbackListener(new CallbackListener() {
+              @Override
+              public void onConnecting() { }
+
+              @Override
+              public void onCheckCommand() { }
+
+              @Override
+              public void onSuccess(PrinterDevices printerDevices) {
+                postState(BPPState.DeviceConnected.getValue());
+              }
+
+              @Override
+              public void onReceive(byte[] data) {
+                if (data == null) return;
+                new Handler(Looper.getMainLooper()).post(() -> {
+                  if (channel != null) {
+                    channel.invokeMethod("ReceivedData", data);
+                  }
+                });
+              }
+
+              @Override
+              public void onFailure() {
+                postState(BPPState.DeviceDisconnected.getValue());
+              }
+
+              @Override
+              public void onDisconnect() {
+                postState(BPPState.DeviceDisconnected.getValue());
+              }
+            })
+            .build();
+    Printer.connect(blueTooth);
+  }
+
   @SuppressWarnings("unchecked")
   private boolean write(byte[] data) throws IOException {
-    boolean result = Printer.getPortManager().writeDataImmediately(data);
+    PortManager pm = Printer.getPortManager();
+    if (pm == null || data == null) {
+      LogUtils.d(TAG, "发送失败: PortManager is null");
+      return false;
+    }
+    boolean result = pm.writeDataImmediately(data);
     LogUtils.d(TAG, result ? "发送成功": "发送失败");
     return result;
   }

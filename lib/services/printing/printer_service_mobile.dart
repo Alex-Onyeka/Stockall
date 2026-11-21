@@ -167,18 +167,13 @@ class _BluetoothDevicesPageState
           // );
           switch (event) {
             case ConnectState.connected:
+              if (!mounted) return;
               setState(() {
                 if (_device == null) return;
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder:
-                //         (context) => FunctionPage(_device!),
-                //   ),
-                // );
               });
               break;
             case ConnectState.disconnected:
+              if (!mounted) return;
               setState(() {
                 _device = null;
               });

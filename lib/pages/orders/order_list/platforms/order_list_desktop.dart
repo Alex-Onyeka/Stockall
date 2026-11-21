@@ -173,7 +173,7 @@ class _OrderListDesktopState
                       context: context,
                       title: 'All Orders',
                       widget: Row(
-                        spacing: 15,
+                        spacing: 5,
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment:
                             MainAxisAlignment.end,
@@ -199,30 +199,38 @@ class _OrderListDesktopState
                                   mainAxisSize:
                                       MainAxisSize.min,
                                   children: [
-                                    Row(
-                                      mainAxisSize:
-                                          MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade700,
+                                    if (screenWidth(
+                                          context,
+                                        ) >
+                                        tabletScreenSmall) ...[
+                                      Row(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade700,
+                                            ),
+                                            'Search${screenWidth(context) <= mobileScreen ? '' : ' Order'}',
                                           ),
-                                          'Search${screenWidth(context) <= mobileScreen ? '' : ' Order'}',
-                                        ),
-                                        SizedBox(width: 3),
-                                      ],
-                                    ),
+                                          SizedBox(
+                                            width: 3,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                     Icon(
                                       size: 20,
                                       // color:
@@ -262,19 +270,24 @@ class _OrderListDesktopState
                                   child: Row(
                                     spacing: 5,
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                      if (screenWidth(
+                                            context,
+                                          ) >
+                                          tabletScreenSmall) ...[
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Refresh',
                                         ),
-                                        'Refresh',
-                                      ),
+                                      ],
                                       Icon(
                                         size: 18,
                                         Icons
@@ -589,101 +602,83 @@ class _OrderListBodyDesktopState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b1
+                                    .b3
                                     .fontSize,
+                            fontWeight: FontWeight.bold,
                           ),
                           'All Order',
                         ),
                       ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        width: 270,
-                        child: Row(
-                          spacing: 6,
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: ProductsFilterButton(
-                                action: () {
-                                  returnOrdersProvider()
-                                      .selectPaymentStatus(
-                                        0,
-                                      );
-                                },
-                                currentSelected:
-                                    returnOrdersProvider(
-                                      context: context,
-                                    ).orderPaymentStatusIndex,
-                                number: 0,
-                                title: 'Unpaid',
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: ProductsFilterButton(
-                                action: () {
-                                  returnOrdersProvider()
-                                      .selectPaymentStatus(
-                                        1,
-                                      );
-                                },
-                                currentSelected:
-                                    returnOrdersProvider(
-                                      context: context,
-                                    ).orderPaymentStatusIndex,
-                                number: 1,
-                                title: 'Paid',
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: ProductsFilterButton(
-                                action: () {
-                                  returnOrdersProvider()
-                                      .selectPaymentStatus(
-                                        2,
-                                      );
-                                },
-                                currentSelected:
-                                    returnOrdersProvider(
-                                      context: context,
-                                    ).orderPaymentStatusIndex,
-                                number: 2,
-                                title: 'Partial',
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: ProductsFilterButton(
-                                currentSelected:
-                                    returnOrdersProvider(
-                                      context: context,
-                                    ).orderPaymentStatusIndex,
-                                action: () {
-                                  returnOrdersProvider()
-                                      .selectPaymentStatus(
-                                        3,
-                                      );
-                                },
-                                number: 3,
-                                title: 'All',
-                                theme: theme,
-                              ),
-                            ),
-                          ],
-                        ),
+                      SizedBox(width: 10),
+                      Row(
+                        spacing: 6,
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children: [
+                          ProductsFilterButton(
+                            action: () {
+                              returnOrdersProvider()
+                                  .selectPaymentStatus(0);
+                            },
+                            currentSelected:
+                                returnOrdersProvider(
+                                  context: context,
+                                ).orderPaymentStatusIndex,
+                            number: 0,
+                            title: 'Unpaid',
+                            theme: theme,
+                          ),
+                          ProductsFilterButton(
+                            action: () {
+                              returnOrdersProvider()
+                                  .selectPaymentStatus(1);
+                            },
+                            currentSelected:
+                                returnOrdersProvider(
+                                  context: context,
+                                ).orderPaymentStatusIndex,
+                            number: 1,
+                            title: 'Paid',
+                            theme: theme,
+                          ),
+                          ProductsFilterButton(
+                            action: () {
+                              returnOrdersProvider()
+                                  .selectPaymentStatus(2);
+                            },
+                            currentSelected:
+                                returnOrdersProvider(
+                                  context: context,
+                                ).orderPaymentStatusIndex,
+                            number: 2,
+                            title: 'Partial',
+                            theme: theme,
+                          ),
+                          ProductsFilterButton(
+                            currentSelected:
+                                returnOrdersProvider(
+                                  context: context,
+                                ).orderPaymentStatusIndex,
+                            action: () {
+                              returnOrdersProvider()
+                                  .selectPaymentStatus(3);
+                            },
+                            number: 3,
+                            title: 'All',
+                            theme: theme,
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 20),
+                      SizedBox(width: 10),
                       Visibility(
                         visible: authorization(
                           authorized:
                               Authorizations().viewDate,
                         ),
-                        child: MaterialButton(
+                        child: InkWell(
                           mouseCursor:
                               SystemMouseCursors.click,
-                          onPressed: () {
+                          onTap: () {
                             if (returnOrdersProvider()
                                         .dateSet !=
                                     null ||
@@ -714,55 +709,67 @@ class _OrderListBodyDesktopState
                               );
                             }
                           },
-                          child: Row(
-                            spacing: 3,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color:
-                                      Colors.grey.shade700,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
+                                  vertical: 4,
                                 ),
-                                returnOrdersProvider(
-                                              context:
-                                                  context,
-                                            ).dateSet !=
-                                            null ||
-                                        returnOrdersProvider(
-                                              context:
-                                                  context,
-                                            ).rangeStartDate !=
-                                            null
-                                    ? 'Clear Date'
-                                    : 'Set Date',
-                              ),
-                              Icon(
-                                size: 20,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor100,
-                                returnOrdersProvider(
-                                              context:
-                                                  context,
-                                            ).dateSet !=
-                                            null ||
-                                        returnOrdersProvider(
-                                              context:
-                                                  context,
-                                            ).rangeStartDate !=
-                                            null
-                                    ? Icons.clear
-                                    : Icons
-                                        .date_range_outlined,
-                              ),
-                            ],
+                            child: Row(
+                              spacing: 3,
+                              children: [
+                                if (screenWidth(context) >
+                                    tabletScreenSmall) ...[
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade700,
+                                    ),
+                                    returnOrdersProvider(
+                                                  context:
+                                                      context,
+                                                ).dateSet !=
+                                                null ||
+                                            returnOrdersProvider(
+                                                  context:
+                                                      context,
+                                                ).rangeStartDate !=
+                                                null
+                                        ? 'Clear Date'
+                                        : 'Set Date',
+                                  ),
+                                ],
+                                Icon(
+                                  size: 20,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor100,
+                                  returnOrdersProvider(
+                                                context:
+                                                    context,
+                                              ).dateSet !=
+                                              null ||
+                                          returnOrdersProvider(
+                                                context:
+                                                    context,
+                                              ).rangeStartDate !=
+                                              null
+                                      ? Icons.clear
+                                      : Icons
+                                          .date_range_outlined,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

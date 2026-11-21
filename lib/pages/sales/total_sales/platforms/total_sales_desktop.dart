@@ -448,8 +448,11 @@ class _TotalSalesDesktopState
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b3
                                                         .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
                                               ),
                                               returnReceiptProvider(
                                                             context,

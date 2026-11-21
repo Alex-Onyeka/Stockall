@@ -69,8 +69,35 @@ Future<void> _sendBluetooth(
     );
   }
   await _ensureBluetoothConnected(printer);
-  for (final chunk in chunks) {
-    await BluetoothPrintPlus.write(chunk);
+  final wrote = await _writeChunks(chunks);
+  if (!wrote) {
+    // Connection may have dropped silently since the last print; reconnect once.
+    _connectedAddress = null;
+    try {
+      await BluetoothPrintPlus.disconnect();
+    } catch (_) {}
+    await Future.delayed(const Duration(milliseconds: 300));
+    await _ensureBluetoothConnected(printer);
+    final retried = await _writeChunks(chunks);
+    if (!retried) {
+      throw PosSendException(
+        'Could not send data to ${printer.name}. Please check the printer is on and try again.',
+      );
+    }
+  }
+}
+
+Future<bool> _writeChunks(List<Uint8List> chunks) async {
+  try {
+    for (final chunk in chunks) {
+      final result = await BluetoothPrintPlus.write(chunk);
+      if (result == false) {
+        return false;
+      }
+    }
+    return true;
+  } catch (_) {
+    return false;
   }
 }
 
