@@ -11,6 +11,7 @@ import 'package:stockall/pages/report/components/report_list_tile.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_table/customer_report_table_page.dart';
 import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
+import 'package:stockall/pages/report/expenses_report/expenses_report_page.dart';
 import 'package:stockall/pages/report/general_report/general_report_page.dart';
 import 'package:stockall/pages/report/invoice_credit_report/invoice_credit_report_page.dart';
 import 'package:stockall/pages/report/items_report_/items_report/items_report_page.dart';
@@ -370,13 +371,28 @@ class ReportMobile extends StatelessWidget {
                             title: 'Staff Report',
                           ),
                         ),
-                        ReportListTile(
-                          isActive: false,
-                          theme: theme,
-                          action: () {},
-                          subText:
-                              'View a detailed breakdown of your expenses.',
-                          title: 'Expenses Report (Coming Soon)',
+                        Visibility(
+                          visible:
+                              !isStoreKeeper() &&
+                              ReportAuthAction().viewExpensesReportAction(
+                                context: context,
+                              ),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const ExpensesReportPage(),
+                                ),
+                              );
+                            },
+                            subText:
+                                'View a detailed breakdown of your expenses.',
+                            title: 'Expenses Report',
+                          ),
                         ),
                         SizedBox(height: 30),
                       ],
