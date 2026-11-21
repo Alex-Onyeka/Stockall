@@ -28,11 +28,11 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
+import 'package:stockall/local_database/main_database.dart';
 import 'package:stockall/local_database/barcode_printer_func/custom_label_printer_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboard_pin_func.dart';
-import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/receipt_printer_func/receipt_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
@@ -809,7 +809,7 @@ class ShopProvider extends ChangeNotifier {
             'Current Shop set: ${CurrentShopFunc().getCurrentShop()?.currentShopId}',
           );
           // ignore: use_build_context_synchronously
-          clearAll(safeContext);
+          await clearAll(safeContext);
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             safeContext,
@@ -833,11 +833,19 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  void clearAll(BuildContext context) {
+  Future<void> clearAll(
+    BuildContext context, {
+    bool includeAuthAndShop = false,
+  }) async {
     returnCustomers(
       context,
       listen: false,
     ).clearCustomers();
+    returnCustomerAccountReceiptsProvider()
+        .clearCustomerAccountReceipts();
+    returnCategoriesProvider().clearCategories();
+    returnDepartmentProvider()
+        .clearMulitpleSelectedDepartments();
     returnMaterialsProvider().clearMaterials();
     returnMaterialsItemHistoryProvider()
         .clearMaterialsItemHistories();
@@ -847,11 +855,17 @@ class ShopProvider extends ChangeNotifier {
         .clearMaterialsUsageMainCart();
     returnMaterialsUsageProvider()
         .clearProductionMaterialsUsage();
+    returnProductionItemsProvider().clearProductionItems();
     returnProductionItemHistoryProvider()
         .clearProductionItemHistories();
     returnProductionsActionProvider()
         .clearProductionMainCart();
+    returnProductionRecordsProvider()
+        .clearProductionRecords();
     returnData().clearProducts();
+    returnData().clearDepartment();
+    returnQuantityUpdateProvider().clearQuantityUpdates();
+    returnStorageProductProvider().clearProducts();
     returnExpensesProvider(
       context,
       listen: false,
@@ -868,11 +882,22 @@ class ShopProvider extends ChangeNotifier {
       context,
       listen: false,
     ).load(false);
+    returnInvoicesProvider().clearinvoices();
+    returnOrdersProvider().clearOrders();
+    returnDraftsProvider().clearDrafts();
     returnPurchaseProvider().clearPurchases();
-    PurchaseFunc().clearPurchases();
-    returnSalesProvider().clearCart();
-    returnShopProvider().clearShop();
+    returnSubStaffProvider().clearSubStaffs();
+    returnSuppliersProvider().clearSuppliers();
+    returnPermissionProvider().clearPermissions();
+    await returnSalesProvider().clearCart();
+    if (includeAuthAndShop) {
+      returnShopProvider().clearShop();
+    }
     returnUserProvider(context, listen: false).clearUsers();
+    await returnData().clearTotalCache();
+    await MainDatabase().clearAllShopData(
+      includeAuthAndShop: includeAuthAndShop,
+    );
   }
 
   TempShopClass? userShop() {

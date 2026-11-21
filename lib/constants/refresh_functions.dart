@@ -654,9 +654,15 @@ class RefreshFunctions {
     BuildContext safeContext,
   ) async {
     await loadDashboardDataOffline();
-    await getUserShop();
-    await utilityConstantProvider.getUtilityConstants();
-    var subs = await loadSubscription();
+    if (returnShopProvider().userShops.isEmpty) {
+      await getUserShop();
+    }
+    var subs =
+        returnSubcsription(
+          safeContext,
+          listen: false,
+        ).subscription ??
+        await loadSubscription();
     await mainLocalLog(
       "Subscription Plan RefreshDashboard: ${subs?.plan}",
     );
@@ -668,7 +674,12 @@ class RefreshFunctions {
       await getMainReceipts();
     }
     await getExpenses();
-    if (safeContext.mounted) {
+    if (safeContext.mounted &&
+        returnUserProvider(
+              safeContext,
+              listen: false,
+            ).currentUserMain ==
+            null) {
       await returnUserProvider(
         safeContext,
         listen: false,

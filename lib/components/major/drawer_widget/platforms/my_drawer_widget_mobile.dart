@@ -1,28 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/my_calculator.dart';
+import 'package:stockall/components/major/drawer_widget/drawer_nav_items.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/customers/customers_list/customer_list.dart';
-import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
-import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
-import 'package:stockall/pages/expenses/expenses_page.dart';
-import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
-import 'package:stockall/pages/notifications/notifications_page.dart';
-import 'package:stockall/pages/orders/order_list/order_list_page.dart';
-import 'package:stockall/pages/production/production_page.dart';
-import 'package:stockall/pages/profile/profile_page.dart';
-import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
-import 'package:stockall/pages/report/report_page.dart';
-import 'package:stockall/pages/settings/settings_page.dart';
-import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
-import 'package:stockall/pages/suppliers/supplier_list/supplier_list.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class MyDrawerWidgetMobile extends StatefulWidget {
   final ThemeProvider theme;
@@ -48,11 +30,11 @@ class _MyDrawerWidgetMobileState
       backgroundColor: Colors.white,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
+          horizontal: 5.0,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 15.0,
+            horizontal: 5.0,
           ),
           child: Column(
             mainAxisAlignment:
@@ -83,17 +65,47 @@ class _MyDrawerWidgetMobileState
                             mainLogoIcon,
                             height: 22,
                           ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .h3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .h3
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              appName,
                             ),
-                            appName,
+                          ),
+                          InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onTap: () {
+                              if (Scaffold.maybeOf(
+                                    context,
+                                  )?.isDrawerOpen ==
+                                  true) {
+                                Scaffold.of(
+                                  context,
+                                ).closeDrawer();
+                              } else if (Navigator.of(
+                                context,
+                              ).canPop()) {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: Padding(
+                              padding:
+                                  EdgeInsetsGeometry.all(
+                                    10,
+                                  ),
+                              child: Icon(
+                                size: 18,
+                                Icons.clear,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -111,544 +123,32 @@ class _MyDrawerWidgetMobileState
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            Visibility(
-                              child: NavListTileAlt(
-                                height: 17,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ProfilePage();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Profile',
-                                icon: Icons.person,
-                              ),
-                            ),
-                            Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .manageShop,
-                              ),
-                              child: NavListTileAlt(
-                                height: 17,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ShopPage();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Manage Shop',
-                                icon: Icons.home_filled,
-                              ),
-                            ),
-                            Visibility(
-                              visible: !isStoreKeeper(),
-                              child: NavListTileAlt(
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return CustomerList();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Customers',
-                                svg: custBookIconSvg,
-                              ),
-                            ),
-                            Visibility(
-                              visible: !isStoreKeeper(),
-                              child: NavListTileAlt(
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return SupplierList();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Suppliers',
-                                icon: Icons.person,
-                              ),
-                            ),
-                            Visibility(
-                              visible:
-                                  !isStoreKeeper() &&
-                                  authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .managePurchases,
-                                  ),
-                              child: NavListTileAlt(
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return PurchaseList();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Purchases',
-                                icon:
-                                    Icons
-                                        .account_balance_wallet_outlined,
-                              ),
-                            ),
-                            Visibility(
-                              visible: true,
-                              child: NavListTileAlt(
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return EmployeeListPage(
-                                          empId:
-                                              AuthService()
-                                                  .currentUser!,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Staffs',
-                                svg: employeesIconSvg,
-                              ),
-                            ),
-                            Visibility(
-                              visible: !isStoreKeeper(),
-                              child: NavListTileAlt(
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ExpensesPage(
-                                          isMain: true,
-                                        );
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {});
-                                  });
-                                },
-                                title: 'Expenses',
-                                svg: expensesIconSvg,
-                              ),
-                            ),
-                            Visibility(
-                              visible: !isStoreKeeper(),
-                              child: NavListTileAlt(
-                                height: 16,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return InvoiceListPage();
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {});
-                                  });
-                                },
-                                title: 'Invoices',
-                                icon:
-                                    Icons
-                                        .all_inclusive_sharp,
-                              ),
-                            ),
-                            NavListTileAlt(
-                              height: 14,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return ReportPage();
-                                    },
-                                  ),
+                            DrawerNavItems(
+                              mode: DrawerMode.mobile,
+                              theme: widget.theme,
+                              notifications:
+                                  widget.notifications,
+                              onRefresh:
+                                  () => setState(() {}),
+                              buildTile: ({
+                                int? itemIndex,
+                                required double height,
+                                required VoidCallback
+                                action,
+                                required String title,
+                                IconData? icon,
+                                String? svg,
+                              }) {
+                                return NavListTileAlt(
+                                  height: height,
+                                  action: action,
+                                  title: title,
+                                  icon: icon,
+                                  svg: svg,
                                 );
                               },
-                              title: 'Report',
-                              svg: reportIconSvg,
                             ),
-                            Visibility(
-                              visible:
-                                  authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .viewProductions,
-                                  ) &&
-                                  returnShopProvider()
-                                          .userShop()
-                                          ?.manageProductions ==
-                                      true,
-                              child: NavListTileAlt(
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ProductionPage();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Production',
-                                icon:
-                                    Icons
-                                        .view_in_ar_rounded,
-                              ),
-                            ),
-                            Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .manageOrders,
-                              ),
-                              child: NavListTileAlt(
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return OrderListPage();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Orders',
-                                icon:
-                                    Icons.article_outlined,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Divider(
-                              height:
-                                  MediaQuery.of(
-                                            context,
-                                          ).size.height <
-                                          680
-                                      ? 15
-                                      : 20,
-                              color: Colors.grey.shade200,
-                            ),
-                            Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .contactStockall,
-                              ),
-                              child: NavListTileAlt(
-                                height: 16,
-                                action: () {
-                                  contactUsAction(
-                                    context: context,
-                                  );
-                                },
-                                title: 'Contact Support',
-                                icon:
-                                    Icons
-                                        .manage_accounts_outlined,
-                              ),
-                            ),
-                            Visibility(
-                              visible: !isStoreKeeper(),
-                              child: InkWell(
-                                mouseCursor:
-                                    SystemMouseCursors
-                                        .click,
-                                onTap: () {
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return NotificationsPage();
-                                      },
-                                    ),
-                                  );
-                                },
-                                child: SizedBox(
-                                  height: 50,
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          left: 20.0,
-                                          right: 5,
-                                        ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Row(
-                                          spacing: 10,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Stack(
-                                              children: [
-                                                Icon(
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade400,
-                                                  size: 20,
-                                                  Icons
-                                                      .notifications_on_outlined,
-                                                ),
-                                              ],
-                                            ),
-
-                                            Text(
-                                              style: TextStyle(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade900,
-                                                fontSize:
-                                                    returnTheme(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).mobileTexts.b2.fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              'Notifications',
-                                            ),
-                                          ],
-                                        ),
-                                        Stack(
-                                          clipBehavior:
-                                              Clip.none,
-                                          children: [
-                                            InkWell(
-                                              mouseCursor:
-                                                  SystemMouseCursors
-                                                      .click,
-                                              onTap: () {
-                                                // Provider.of<CompProvider>(
-                                                //   context,
-                                                //   listen: false,
-                                                // ).switchNotif();
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return NotificationsPage();
-                                                    },
-                                                  ),
-                                                );
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsets.all(
-                                                      8,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      const Color.fromARGB(
-                                                        208,
-                                                        245,
-                                                        245,
-                                                        245,
-                                                      ),
-                                                  shape:
-                                                      BoxShape
-                                                          .circle,
-                                                ),
-                                                child: SvgPicture.asset(
-                                                  height:
-                                                      22,
-                                                  width: 22,
-                                                  notifIconSvg,
-                                                  color:
-                                                      widget.notifications
-                                                              .where(
-                                                                (
-                                                                  notif,
-                                                                ) =>
-                                                                    !notif.isViewed,
-                                                              )
-                                                              .isNotEmpty
-                                                          ? null
-                                                          : Colors.grey.shade500,
-                                                ),
-                                              ),
-                                            ),
-                                            Positioned(
-                                              bottom: 25,
-                                              left: 32,
-                                              child: Visibility(
-                                                visible:
-                                                    widget
-                                                        .notifications
-                                                        .where(
-                                                          (
-                                                            notif,
-                                                          ) =>
-                                                              !notif.isViewed,
-                                                        )
-                                                        .isNotEmpty,
-                                                child: Container(
-                                                  padding:
-                                                      EdgeInsets.all(
-                                                        4,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    shape:
-                                                        BoxShape.circle,
-                                                    gradient:
-                                                        widget.theme.lightModeColor.secGradient,
-                                                  ),
-                                                  child: Center(
-                                                    child: Text(
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize:
-                                                            12,
-                                                        color:
-                                                            Colors.white,
-                                                      ),
-                                                      '${widget.notifications.where((notif) => !notif.isViewed).length}',
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            NavListTileAlt(
-                              height: 16,
-                              action: () {
-                                showGeneralDialog(
-                                  context: context,
-                                  pageBuilder: (
-                                    context,
-                                    animation,
-                                    secondaryAnimation,
-                                  ) {
-                                    return MyCalculator();
-                                  },
-                                );
-                              },
-                              title: 'Open Calculator',
-                              icon:
-                                  Icons.calculate_outlined,
-                            ),
-                            Visibility(
-                              visible:
-                                  kIsWeb &&
-                                  Theme.of(
-                                        context,
-                                      ).platform ==
-                                      TargetPlatform
-                                          .android,
-                              child: NavListTileAlt(
-                                height: 18,
-                                action: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return ConfirmationAlert(
-                                        theme: widget.theme,
-                                        message:
-                                            'You are about to download and install our official mobile application, for better experience.',
-                                        title:
-                                            'Proceed to Download Mobile App',
-                                        action: () async {
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          await downloadApkFromApp(
-                                            context:
-                                                context,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                                title:
-                                    'Download Mobile App',
-                                icon:
-                                    Icons.download_outlined,
-                              ),
-                            ),
-                            // NavListTileAlt(
-                            //   height: 20,
-                            //   action: () {
-                            //     Navigator.push(
-                            //       context,
-                            //       MaterialPageRoute(
-                            //         builder: (context) {
-                            //           return Referrals();
-                            //         },
-                            //       ),
-                            //     );
-                            //   },
-                            //   title: 'Referrals',
-                            //   icon:
-                            //       Icons
-                            //           .card_giftcard_rounded,
-                            // ),
-                            NavListTileAlt(
-                              height: 17,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return SettingsPage();
-                                    },
-                                  ),
-                                );
-                              },
-                              title: 'General Settings',
-                              icon: Icons.settings,
-                            ),
-                            SizedBox(height: 30),
+                            const SizedBox(height: 30),
                           ],
                         ),
                       ),
@@ -691,154 +191,6 @@ class _MyDrawerWidgetMobileState
     );
   }
 }
-
-// class NavListTile extends StatelessWidget {
-//   final String title;
-//   final int thisIndex;
-//   final IconData? icon;
-//   final String? svg;
-//   final double? height;
-//   const NavListTile({
-//     super.key,
-//     required this.thisIndex,
-//     required this.title,
-//     this.icon,
-//     this.svg,
-//     this.height,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     var theme = returnTheme(context);
-//     return InkWell( mouseCursor: SystemMouseCursors.click,
-//       onTap: () {
-//         returnNavProvider(
-//           context,
-//           listen: false,
-//         ).navigate(thisIndex);
-//         Navigator.of(context).pop();
-//       },
-//       child: SizedBox(
-//         height: 50,
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(
-//             horizontal: 20.0,
-//           ),
-//           child: Row(
-//             mainAxisAlignment:
-//                 MainAxisAlignment.spaceBetween,
-//             children: [
-//               Row(
-//                 spacing: 10,
-//                 mainAxisAlignment: MainAxisAlignment.start,
-//                 children: [
-//                   Stack(
-//                     children: [
-//                       Visibility(
-//                         visible: icon != null,
-//                         child: Icon(
-//                           color:
-//                               returnNavProvider(
-//                                         context,
-//                                       ).currentPage ==
-//                                       thisIndex
-//                                   ? theme
-//                                       .lightModeColor
-//                                       .secColor200
-//                                   : Colors.grey.shade600,
-//                           size:
-//                               returnNavProvider(
-//                                         context,
-//                                       ).currentPage ==
-//                                       thisIndex
-//                                   ? 22
-//                                   : 18,
-//                           icon ?? Icons.home,
-//                         ),
-//                       ),
-//                       Visibility(
-//                         visible: svg != null,
-//                         child: SvgPicture.asset(
-//                           color:
-//                               returnNavProvider(
-//                                         context,
-//                                       ).currentPage ==
-//                                       thisIndex
-//                                   ? theme
-//                                       .lightModeColor
-//                                       .secColor200
-//                                   : Colors.grey.shade600,
-//                           svg ?? '',
-//                           height:
-//                               returnNavProvider(
-//                                         context,
-//                                       ).currentPage ==
-//                                       thisIndex
-//                                   ? 20
-//                                   : height,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                   // ),
-//                   Text(
-//                     style: TextStyle(
-//                       color:
-//                           returnNavProvider(
-//                                     context,
-//                                   ).currentPage ==
-//                                   thisIndex
-//                               ? theme
-//                                   .lightModeColor
-//                                   .secColor200
-//                               : Colors.grey.shade900,
-//                       fontSize:
-//                           returnNavProvider(
-//                                     context,
-//                                   ).currentPage ==
-//                                   thisIndex
-//                               ? 15
-//                               : 14,
-//                       fontWeight:
-//                           returnNavProvider(
-//                                     context,
-//                                   ).currentPage ==
-//                                   thisIndex
-//                               ? FontWeight.bold
-//                               : FontWeight.normal,
-//                     ),
-//                     title,
-//                   ),
-//                 ],
-//               ),
-
-//               Icon(
-//                 color:
-//                     returnNavProvider(
-//                               context,
-//                             ).currentPage ==
-//                             thisIndex
-//                         ? theme.lightModeColor.secColor200
-//                         : Colors.grey.shade900,
-//                 size:
-//                     returnNavProvider(
-//                               context,
-//                             ).currentPage ==
-//                             thisIndex
-//                         ? 30
-//                         : 18,
-//                 returnNavProvider(context).currentPage ==
-//                         thisIndex
-//                     ? Icons.arrow_drop_down
-//                     : Icons.arrow_forward_ios_rounded,
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class NavListTileAlt extends StatelessWidget {
   final String title;
@@ -920,7 +272,7 @@ class NavListTileAlt extends StatelessWidget {
                           color:
                               color ?? Colors.grey.shade900,
                           fontSize:
-                              theme.mobileTexts.b2.fontSize,
+                              theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.w500,
                         ),
                         title,

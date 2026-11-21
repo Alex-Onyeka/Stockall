@@ -114,8 +114,10 @@ class NavProvider extends ChangeNotifier {
     if (!context.mounted) {
       return;
     }
-    await appVersionP.getAppVersion(context);
-    await utilityConstants.getUtilityConstants();
+    if (shouldRefreshSessionData) {
+      await appVersionP.getAppVersion(context);
+      await utilityConstants.getUtilityConstants();
+    }
 
     if (isOnline) {
       var userOffline = AuthService().currentUserOffline;

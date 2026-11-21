@@ -101,7 +101,6 @@ class _DashboardDesktopState
     });
 
     // loadSuggestions();
-    notificationsFuture = fetchNotifications();
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
@@ -232,42 +231,33 @@ class _DashboardDesktopState
                             children: [
                               Column(
                                 children: [
-                                  FutureBuilder(
-                                    future:
-                                        notificationsFuture,
-                                    builder: (
-                                      context,
-                                      snapshot,
-                                    ) {
-                                      return TopNavBar(
-                                        refreshAction: () async {
-                                          await RefreshFunctions(
+                                  TopNavBar(
+                                    refreshAction: () async {
+                                      await RefreshFunctions(
+                                        context,
+                                      ).refreshAll(
+                                        context,
+                                      );
+                                      // setState(() {});
+                                    },
+                                    action: () {
+                                      returnNavProvider(
+                                        context,
+                                        listen: false,
+                                      ).navigate(8);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
                                             context,
-                                          ).refreshAll(
-                                            context,
-                                          );
-                                          // setState(() {});
-                                        },
-                                        action: () {
-                                          returnNavProvider(
-                                            context,
-                                            listen: false,
-                                          ).navigate(8);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return NotificationsPage();
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        openSideBar: () {},
-                                        theme: theme,
+                                          ) {
+                                            return NotificationsPage();
+                                          },
+                                        ),
                                       );
                                     },
+                                    openSideBar: () {},
+                                    theme: theme,
                                   ),
                                   Expanded(
                                     child: RefreshIndicator(

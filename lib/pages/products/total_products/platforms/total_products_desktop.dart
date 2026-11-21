@@ -26,6 +26,7 @@ import 'package:stockall/pages/products/compnents/product_filter_button_category
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/item_history_page/item_history_page.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_page.dart';
 import 'package:stockall/pages/products/total_products/platforms/components/bulk_transfer_dialog.dart';
 import 'package:stockall/pages/products/total_products/platforms/components/bulk_stock_adjustment_dialog.dart';
 import 'package:stockall/pages/products/total_products/platforms/components/product_duplication_dialog.dart';
@@ -212,7 +213,9 @@ class _TotalProductsDesktopState
               .toList();
         case 5:
           return products
-              .where((p) => p.effectiveDepartmentUuids.isEmpty)
+              .where(
+                (p) => p.effectiveDepartmentUuids.isEmpty,
+              )
               .toList();
         case 0:
         default:
@@ -488,6 +491,57 @@ class _TotalProductsDesktopState
                                             ),
                                           ),
                                         ),
+                                        if (returnShopProvider()
+                                                .userShop()
+                                                ?.manageInventoryStorage ==
+                                            true)
+                                          PopupMenuItem(
+                                            onTap: () {
+                                              ItemsAuthAction().manageInventoryStorageAction(
+                                                context:
+                                                    context,
+                                                action: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (_) =>
+                                                              const StoragePage(),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        10.0,
+                                                  ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    'Storage',
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                    ),
+                                                  ),
+                                                  // Icon(
+                                                  //   Icons
+                                                  //       .warehouse_outlined,
+                                                  //   size:
+                                                  //       17,
+                                                  //   color:
+                                                  //       Colors.grey.shade700,
+                                                  // ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         PopupMenuItem(
                                           onTap: () {
                                             Navigator.push(
@@ -755,7 +809,9 @@ class _TotalProductsDesktopState
                                                               return AddProduct();
                                                             },
                                                           ),
-                                                        ).then((_) {
+                                                        ).then((
+                                                          _,
+                                                        ) {
                                                           if (context.mounted) {}
                                                         });
                                                       }

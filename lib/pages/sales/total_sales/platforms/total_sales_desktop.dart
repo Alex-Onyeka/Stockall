@@ -212,7 +212,7 @@ class _TotalSalesDesktopState
                                                     .grey
                                                     .shade700,
                                           ),
-                                          'Search${screenWidth(context) <= mobileScreen ? '' : ' Receipt'}',
+                                          'Search${screenWidth(context) <= tabletScreenSmall ? '' : ' Receipt'}',
                                         ),
                                         SizedBox(width: 3),
                                       ],
@@ -252,19 +252,24 @@ class _TotalSalesDesktopState
                                   child: Row(
                                     spacing: 5,
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                      if (screenWidth(
+                                            context,
+                                          ) >
+                                          tabletScreenSmall) ...[
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Refresh',
                                         ),
-                                        'Refresh',
-                                      ),
+                                      ],
                                       Icon(
                                         size: 18,
                                         Icons
@@ -323,289 +328,296 @@ class _TotalSalesDesktopState
                     body: Builder(
                       builder: (context) {
                         return Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                            child: Column(
-                              children: [
-                                Material(
-                                  color: Colors.white,
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        spacing: 10,
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
+                          child: Column(
+                            children: [
+                              Material(
+                                color: Colors.white,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      spacing: 10,
+                                      children: [
+                                        ValueSummaryTabSmall(
+                                          color:
+                                              Colors.amber,
+                                          isMoney: true,
+                                          title:
+                                              'Total Revenue',
+                                          value: returnReceiptProvider(
+                                            context,
+                                            listen: false,
+                                          ).getTotalRevenueForSelectedDayAll(
+                                            customerId:
+                                                widget
+                                                    .customerUuid,
+                                            staffId:
+                                                widget.id,
+                                            subStaffId:
+                                                widget
+                                                    .subStaffId,
+                                          ),
+                                        ),
+                                        ValueSummaryTabSmall(
+                                          value:
+                                              widget.id !=
+                                                      null
+                                                  ? returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .where(
+                                                        (
+                                                          receipt,
+                                                        ) =>
+                                                            receipt.staffId ==
+                                                            widget.id,
+                                                      )
+                                                      .toList()
+                                                      .length
+                                                      .toDouble()
+                                                  : widget.subStaffId !=
+                                                      null
+                                                  ? returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .where(
+                                                        (
+                                                          receipt,
+                                                        ) =>
+                                                            receipt.subStaffUuid ==
+                                                            widget.subStaffId,
+                                                      )
+                                                      .toList()
+                                                      .length
+                                                      .toDouble()
+                                                  : widget.customerUuid !=
+                                                      null
+                                                  ? returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .where(
+                                                        (
+                                                          receipt,
+                                                        ) =>
+                                                            receipt.customerUuid ==
+                                                            widget.customerUuid,
+                                                      )
+                                                      .toList()
+                                                      .length
+                                                      .toDouble()
+                                                  : returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .toList()
+                                                      .length
+                                                      .toDouble(),
+                                          title:
+                                              'Sales Number',
+                                          color:
+                                              Colors.green,
+                                          isMoney: false,
+                                        ),
+                                      ],
+                                    ),
+                                    // SizedBox(height: 20),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            vertical: 10.0,
+                                          ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
                                         children: [
-                                          ValueSummaryTabSmall(
-                                            color:
-                                                Colors
-                                                    .amber,
-                                            isMoney: true,
-                                            title:
-                                                'Total Revenue',
-                                            value: returnReceiptProvider(
-                                              context,
-                                              listen: false,
-                                            ).getTotalRevenueForSelectedDayAll(
-                                              customerId:
-                                                  widget
-                                                      .customerUuid,
-                                              staffId:
-                                                  widget.id,
-                                              subStaffId:
-                                                  widget
-                                                      .subStaffId,
+                                          Visibility(
+                                            visible: authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .viewDate,
+                                            ),
+                                            child: Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                              ),
+                                              returnReceiptProvider(
+                                                            context,
+                                                          ).dateSet !=
+                                                          null ||
+                                                      returnReceiptProvider(
+                                                            context,
+                                                          ).rangeStartDate !=
+                                                          null
+                                                  ? 'All Sales'
+                                                  : 'For Today',
                                             ),
                                           ),
-                                          ValueSummaryTabSmall(
-                                            value:
-                                                widget.id !=
-                                                        null
-                                                    ? returnReceiptProvider(
-                                                          context,
-                                                        )
-                                                        .returnOwnReceiptsByDayOrWeek()
-                                                        .where(
-                                                          (
-                                                            receipt,
-                                                          ) =>
-                                                              receipt.staffId ==
-                                                              widget.id,
-                                                        )
-                                                        .toList()
-                                                        .length
-                                                        .toDouble()
-                                                    : widget.subStaffId !=
-                                                        null
-                                                    ? returnReceiptProvider(
-                                                          context,
-                                                        )
-                                                        .returnOwnReceiptsByDayOrWeek()
-                                                        .where(
-                                                          (
-                                                            receipt,
-                                                          ) =>
-                                                              receipt.subStaffUuid ==
-                                                              widget.subStaffId,
-                                                        )
-                                                        .toList()
-                                                        .length
-                                                        .toDouble()
-                                                    : widget.customerUuid !=
-                                                        null
-                                                    ? returnReceiptProvider(
-                                                          context,
-                                                        )
-                                                        .returnOwnReceiptsByDayOrWeek()
-                                                        .where(
-                                                          (
-                                                            receipt,
-                                                          ) =>
-                                                              receipt.customerUuid ==
-                                                              widget.customerUuid,
-                                                        )
-                                                        .toList()
-                                                        .length
-                                                        .toDouble()
-                                                    : returnReceiptProvider(
-                                                          context,
-                                                        )
-                                                        .returnOwnReceiptsByDayOrWeek()
-                                                        .toList()
-                                                        .length
-                                                        .toDouble(),
-                                            title:
-                                                'Sales Number',
-                                            color:
-                                                Colors
-                                                    .green,
-                                            isMoney: false,
+                                          SizedBox(
+                                            width: 10,
                                           ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 20),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              vertical:
-                                                  10.0,
-                                            ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
-                                          children: [
-                                            Visibility(
-                                              visible: authorization(
-                                                authorized:
-                                                    Authorizations()
-                                                        .viewDate,
-                                              ),
-                                              child: Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                ),
-                                                returnReceiptProvider(context).dateSet !=
-                                                            null ||
-                                                        returnReceiptProvider(context).rangeStartDate !=
-                                                            null
-                                                    ? 'All Sales'
-                                                    : 'For Today',
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            Flexible(
-                                              child: SingleChildScrollView(
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                child: Builder(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    final customMethods =
-                                                        returnShopProvider().userShop()?.customPaymentMethods;
-                                                    final selected =
-                                                        returnReceiptProvider(
-                                                          context,
-                                                        ).paymentMethod;
-                                                    return Row(
-                                                      spacing:
-                                                          6,
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.center,
-                                                      children: [
+                                          Flexible(
+                                            child: SingleChildScrollView(
+                                              scrollDirection:
+                                                  Axis.horizontal,
+                                              child: Builder(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  final customMethods =
+                                                      returnShopProvider()
+                                                          .userShop()
+                                                          ?.customPaymentMethods;
+                                                  final selected =
+                                                      returnReceiptProvider(
+                                                        context,
+                                                      ).paymentMethod;
+                                                  return Row(
+                                                    spacing:
+                                                        6,
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      ProductsFilterButton(
+                                                        action: () {
+                                                          returnReceiptProviderSingle().selectPaymentMethod(
+                                                            0,
+                                                          );
+                                                        },
+                                                        currentSelected:
+                                                            selected,
+                                                        number:
+                                                            0,
+                                                        title:
+                                                            'All',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                      ProductsFilterButton(
+                                                        action: () {
+                                                          returnReceiptProviderSingle().selectPaymentMethod(
+                                                            1,
+                                                          );
+                                                        },
+                                                        currentSelected:
+                                                            selected,
+                                                        number:
+                                                            1,
+                                                        title:
+                                                            'Cash',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                      if (customMethods ==
+                                                              null ||
+                                                          customMethods.isEmpty)
                                                         ProductsFilterButton(
                                                           action: () {
                                                             returnReceiptProviderSingle().selectPaymentMethod(
-                                                              0,
+                                                              2,
                                                             );
                                                           },
                                                           currentSelected:
                                                               selected,
                                                           number:
-                                                              0,
+                                                              2,
                                                           title:
-                                                              'All',
+                                                              'Bank',
                                                           theme:
                                                               theme,
-                                                        ),
-                                                        ProductsFilterButton(
-                                                          action: () {
-                                                            returnReceiptProviderSingle().selectPaymentMethod(
-                                                              1,
-                                                            );
-                                                          },
-                                                          currentSelected:
-                                                              selected,
-                                                          number:
-                                                              1,
-                                                          title:
-                                                              'Cash',
-                                                          theme:
-                                                              theme,
-                                                        ),
-                                                        if (customMethods ==
-                                                                null ||
-                                                            customMethods.isEmpty)
+                                                        )
+                                                      else
+                                                        for (
+                                                          var i = 0;
+                                                          i <
+                                                              customMethods.length;
+                                                          i++
+                                                        )
                                                           ProductsFilterButton(
                                                             action: () {
                                                               returnReceiptProviderSingle().selectPaymentMethod(
-                                                                2,
+                                                                5 +
+                                                                    i,
+                                                                customMethodName:
+                                                                    customMethods[i].displayName,
                                                               );
                                                             },
                                                             currentSelected:
                                                                 selected,
                                                             number:
-                                                                2,
+                                                                5 +
+                                                                i,
                                                             title:
-                                                                'Bank',
+                                                                customMethods[i].displayName,
                                                             theme:
                                                                 theme,
-                                                          )
-                                                        else
-                                                          for (
-                                                            var i = 0;
-                                                            i <
-                                                                customMethods.length;
-                                                            i++
-                                                          )
-                                                            ProductsFilterButton(
-                                                              action: () {
-                                                                returnReceiptProviderSingle().selectPaymentMethod(
-                                                                  5 +
-                                                                      i,
-                                                                  customMethodName:
-                                                                      customMethods[i].displayName,
-                                                                );
-                                                              },
-                                                              currentSelected:
-                                                                  selected,
-                                                              number:
-                                                                  5 +
-                                                                  i,
-                                                              title:
-                                                                  customMethods[i].displayName,
-                                                              theme:
-                                                                  theme,
-                                                            ),
-                                                        ProductsFilterButton(
-                                                          currentSelected:
-                                                              selected,
-                                                          action: () {
-                                                            returnReceiptProviderSingle().selectPaymentMethod(
-                                                              3,
-                                                            );
-                                                          },
-                                                          number:
-                                                              3,
-                                                          title:
-                                                              'Split',
-                                                          theme:
-                                                              theme,
-                                                        ),
-                                                        ProductsFilterButton(
-                                                          currentSelected:
-                                                              selected,
-                                                          action: () {
-                                                            returnReceiptProviderSingle().selectPaymentMethod(
-                                                              4,
-                                                            );
-                                                          },
-                                                          number:
-                                                              4,
-                                                          title:
-                                                              'Account',
-                                                          theme:
-                                                              theme,
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                ),
+                                                          ),
+                                                      ProductsFilterButton(
+                                                        currentSelected:
+                                                            selected,
+                                                        action: () {
+                                                          returnReceiptProviderSingle().selectPaymentMethod(
+                                                            3,
+                                                          );
+                                                        },
+                                                        number:
+                                                            3,
+                                                        title:
+                                                            'Split',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                      ProductsFilterButton(
+                                                        currentSelected:
+                                                            selected,
+                                                        action: () {
+                                                          returnReceiptProviderSingle().selectPaymentMethod(
+                                                            4,
+                                                          );
+                                                        },
+                                                        number:
+                                                            4,
+                                                        title:
+                                                            'Account',
+                                                        theme:
+                                                            theme,
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 20,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Visibility(
+                                            visible: authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .viewDate,
                                             ),
-                                            Visibility(
-                                              visible: authorization(
-                                                authorized:
-                                                    Authorizations()
-                                                        .viewDate,
-                                              ),
-                                              child: MaterialButton(
+                                            child: Material(
+                                              color:
+                                                  Colors
+                                                      .transparent,
+                                              child: InkWell(
                                                 mouseCursor:
                                                     SystemMouseCursors
                                                         .click,
-                                                onPressed: () {
+                                                onTap: () {
                                                   if (returnReceiptProvider(
                                                             context,
                                                             listen:
@@ -657,135 +669,203 @@ class _TotalSalesDesktopState
                                                     );
                                                   }
                                                 },
-                                                child: Row(
-                                                  spacing:
-                                                      3,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme.mobileTexts.b2.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        8,
+                                                    vertical:
+                                                        4.0,
+                                                  ),
+                                                  child: Row(
+                                                    spacing:
+                                                        3,
+                                                    children: [
+                                                      if (screenWidth(
+                                                            context,
+                                                          ) >
+                                                          tabletScreenSmall) ...[
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b3.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                Colors.grey.shade700,
+                                                          ),
+                                                          returnReceiptProvider(
+                                                                        context,
+                                                                      ).dateSet !=
+                                                                      null ||
+                                                                  returnReceiptProvider(
+                                                                        context,
+                                                                      ).rangeStartDate !=
+                                                                      null
+                                                              ? 'Clear'
+                                                              : 'Set Date',
+                                                        ),
+                                                      ],
+                                                      Icon(
+                                                        size:
+                                                            20,
                                                         color:
-                                                            Colors.grey.shade700,
+                                                            theme.lightModeColor.secColor100,
+                                                        returnReceiptProvider(
+                                                                      context,
+                                                                    ).dateSet !=
+                                                                    null ||
+                                                                returnReceiptProvider(
+                                                                      context,
+                                                                    ).rangeStartDate !=
+                                                                    null
+                                                            ? Icons.clear
+                                                            : Icons.date_range_outlined,
                                                       ),
-                                                      returnReceiptProvider(
-                                                                    context,
-                                                                  ).dateSet !=
-                                                                  null ||
-                                                              returnReceiptProvider(
-                                                                    context,
-                                                                  ).rangeStartDate !=
-                                                                  null
-                                                          ? 'Clear'
-                                                          : 'Set Date',
-                                                    ),
-                                                    Icon(
-                                                      size:
-                                                          20,
-                                                      color:
-                                                          theme.lightModeColor.secColor100,
-                                                      returnReceiptProvider(
-                                                                    context,
-                                                                  ).dateSet !=
-                                                                  null ||
-                                                              returnReceiptProvider(
-                                                                    context,
-                                                                  ).rangeStartDate !=
-                                                                  null
-                                                          ? Icons.clear
-                                                          : Icons.date_range_outlined,
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                Expanded(
-                                  child: Builder(
-                                    builder: (context) {
-                                      if (widget.id != null
-                                          ? returnReceiptProvider(
-                                                context,
-                                              )
-                                              .returnOwnReceiptsByDayOrWeek()
-                                              .toList()
-                                              .where(
-                                                (rec) =>
-                                                    rec.staffId ==
-                                                    widget
-                                                        .id,
-                                              )
-                                              .toList()
-                                              .isEmpty
-                                          : widget.subStaffId !=
-                                              null
-                                          ? returnReceiptProvider(
-                                                context,
-                                              )
-                                              .returnOwnReceiptsByDayOrWeek()
-                                              .toList()
-                                              .where(
-                                                (rec) =>
-                                                    rec.subStaffUuid ==
-                                                    widget
-                                                        .subStaffId,
-                                              )
-                                              .toList()
-                                              .isEmpty
-                                          : widget.customerUuid !=
-                                              null
-                                          ? returnReceiptProvider(
-                                                context,
-                                              )
-                                              .returnOwnReceiptsByDayOrWeek()
-                                              .where(
-                                                (rec) =>
-                                                    rec.customerUuid ==
-                                                    widget
-                                                        .customerUuid,
-                                              )
-                                              .toList()
-                                              .isEmpty
-                                          : returnReceiptProvider(
-                                                context,
-                                              )
-                                              .returnOwnReceiptsByDayOrWeek()
-                                              .toList()
-                                              .isEmpty) {
-                                        return EmptyWidgetDisplayOnly(
-                                          title:
-                                              'Empty List',
-                                          subText:
-                                              'You don\'t have any Sales under this category',
-                                          icon: Icons.clear,
-                                          theme: theme,
-                                          height: 35,
-                                          altAction: () {
-                                            getMainReceipts();
-                                          },
-                                          altActionText:
-                                              'Refresh List',
-                                        );
-                                      } else {
-                                        return RefreshIndicator(
-                                          onRefresh:
-                                              getMainReceipts,
-                                          backgroundColor:
-                                              Colors.white,
-                                          color:
-                                              theme
-                                                  .lightModeColor
-                                                  .prColor300,
-                                          displacement: 10,
-                                          child: ListView.builder(
-                                            itemCount:
+                              ),
+                              Expanded(
+                                child: Builder(
+                                  builder: (context) {
+                                    if (widget.id != null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
+                                            .toList()
+                                            .where(
+                                              (rec) =>
+                                                  rec.staffId ==
+                                                  widget.id,
+                                            )
+                                            .toList()
+                                            .isEmpty
+                                        : widget.subStaffId !=
+                                            null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
+                                            .toList()
+                                            .where(
+                                              (rec) =>
+                                                  rec.subStaffUuid ==
+                                                  widget
+                                                      .subStaffId,
+                                            )
+                                            .toList()
+                                            .isEmpty
+                                        : widget.customerUuid !=
+                                            null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
+                                            .where(
+                                              (rec) =>
+                                                  rec.customerUuid ==
+                                                  widget
+                                                      .customerUuid,
+                                            )
+                                            .toList()
+                                            .isEmpty
+                                        : returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
+                                            .toList()
+                                            .isEmpty) {
+                                      return EmptyWidgetDisplayOnly(
+                                        title: 'Empty List',
+                                        subText:
+                                            'You don\'t have any Sales under this category',
+                                        icon: Icons.clear,
+                                        theme: theme,
+                                        height: 35,
+                                        altAction: () {
+                                          getMainReceipts();
+                                        },
+                                        altActionText:
+                                            'Refresh List',
+                                      );
+                                    } else {
+                                      return RefreshIndicator(
+                                        onRefresh:
+                                            getMainReceipts,
+                                        backgroundColor:
+                                            Colors.white,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .prColor300,
+                                        displacement: 10,
+                                        child: ListView.builder(
+                                          itemCount:
+                                              widget.id !=
+                                                      null
+                                                  ? returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .where(
+                                                        (
+                                                          rec,
+                                                        ) =>
+                                                            rec.staffId ==
+                                                            widget.id,
+                                                      )
+                                                      .toList()
+                                                      .length
+                                                  : widget.subStaffId !=
+                                                      null
+                                                  ? returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .where(
+                                                        (
+                                                          rec,
+                                                        ) =>
+                                                            rec.subStaffUuid ==
+                                                            widget.subStaffId,
+                                                      )
+                                                      .toList()
+                                                      .length
+                                                  : widget.customerUuid !=
+                                                      null
+                                                  ? returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .where(
+                                                        (
+                                                          rec,
+                                                        ) =>
+                                                            rec.customerUuid ==
+                                                            widget.customerUuid,
+                                                      )
+                                                      .toList()
+                                                      .length
+                                                  : returnReceiptProvider(
+                                                        context,
+                                                      )
+                                                      .returnOwnReceiptsByDayOrWeek()
+                                                      .toList()
+                                                      .length,
+                                          itemBuilder: (
+                                            context,
+                                            index,
+                                          ) {
+                                            var receipt =
                                                 widget.id !=
                                                         null
                                                     ? returnReceiptProvider(
@@ -799,8 +879,7 @@ class _TotalSalesDesktopState
                                                               rec.staffId ==
                                                               widget.id,
                                                         )
-                                                        .toList()
-                                                        .length
+                                                        .toList()[index]
                                                     : widget.subStaffId !=
                                                         null
                                                     ? returnReceiptProvider(
@@ -814,8 +893,7 @@ class _TotalSalesDesktopState
                                                               rec.subStaffUuid ==
                                                               widget.subStaffId,
                                                         )
-                                                        .toList()
-                                                        .length
+                                                        .toList()[index]
                                                     : widget.customerUuid !=
                                                         null
                                                     ? returnReceiptProvider(
@@ -829,106 +907,50 @@ class _TotalSalesDesktopState
                                                               rec.customerUuid ==
                                                               widget.customerUuid,
                                                         )
-                                                        .toList()
-                                                        .length
+                                                        .toList()[index]
                                                     : returnReceiptProvider(
-                                                          context,
-                                                        )
-                                                        .returnOwnReceiptsByDayOrWeek()
-                                                        .toList()
-                                                        .length,
-                                            itemBuilder: (
-                                              context,
-                                              index,
-                                            ) {
-                                              var receipt =
-                                                  widget.id !=
-                                                          null
-                                                      ? returnReceiptProvider(
-                                                            context,
-                                                          )
-                                                          .returnOwnReceiptsByDayOrWeek()
-                                                          .where(
-                                                            (
-                                                              rec,
-                                                            ) =>
-                                                                rec.staffId ==
-                                                                widget.id,
-                                                          )
-                                                          .toList()[index]
-                                                      : widget.subStaffId !=
-                                                          null
-                                                      ? returnReceiptProvider(
-                                                            context,
-                                                          )
-                                                          .returnOwnReceiptsByDayOrWeek()
-                                                          .where(
-                                                            (
-                                                              rec,
-                                                            ) =>
-                                                                rec.subStaffUuid ==
-                                                                widget.subStaffId,
-                                                          )
-                                                          .toList()[index]
-                                                      : widget.customerUuid !=
-                                                          null
-                                                      ? returnReceiptProvider(
-                                                            context,
-                                                          )
-                                                          .returnOwnReceiptsByDayOrWeek()
-                                                          .where(
-                                                            (
-                                                              rec,
-                                                            ) =>
-                                                                rec.customerUuid ==
-                                                                widget.customerUuid,
-                                                          )
-                                                          .toList()[index]
-                                                      : returnReceiptProvider(
-                                                        context,
-                                                      ).returnOwnReceiptsByDayOrWeek().toList()[index];
-                                              return MainReceiptTile(
-                                                action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return ReceiptPage(
-                                                          response: CheckoutResponse(
-                                                            receipt:
-                                                                receipt,
-                                                          ),
-                                                          isMain:
-                                                              false,
-                                                        );
-                                                      },
-                                                    ),
-                                                  ).then((
-                                                    _,
-                                                  ) {
-                                                    // mainReceiptFuture =
-                                                    //     getMainReceipts();
-                                                  });
-                                                },
-                                                key: ValueKey(
-                                                  receipt
-                                                      .uuid,
-                                                ),
-                                                mainReceipt:
-                                                    receipt,
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
+                                                      context,
+                                                    ).returnOwnReceiptsByDayOrWeek().toList()[index];
+                                            return MainReceiptTile(
+                                              action: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return ReceiptPage(
+                                                        response: CheckoutResponse(
+                                                          receipt:
+                                                              receipt,
+                                                        ),
+                                                        isMain:
+                                                            false,
+                                                      );
+                                                    },
+                                                  ),
+                                                ).then((_) {
+                                                  // mainReceiptFuture =
+                                                  //     getMainReceipts();
+                                                });
+                                              },
+                                              key: ValueKey(
+                                                receipt
+                                                    .uuid,
+                                              ),
+                                              mainReceipt:
+                                                  receipt,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    }
+                                  },
                                 ),
-                              ],
-                            ),
-                          );
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ),

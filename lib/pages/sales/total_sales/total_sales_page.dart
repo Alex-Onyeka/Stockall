@@ -45,6 +45,7 @@ class _TotalSalesPageState extends State<TotalSalesPage> {
             customerUuid: widget.customerUuid,
             subStaffId: widget.subStaffId,
             turnOff: widget.turnOff,
+            isMainTab: widget.isMainTab,
             // isInvoice: isInvoice,
           );
         } else {

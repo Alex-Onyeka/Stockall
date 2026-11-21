@@ -4,9 +4,7 @@ import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
-import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
-import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
@@ -366,27 +364,13 @@ class AuthService extends ChangeNotifier {
         );
         return 0;
       } else {
-        returnCustomers(
+        await returnShopProvider().clearAll(
           context,
-          listen: false,
-        ).clearCustomers();
-        returnData().clearProducts();
-        returnExpensesProvider(
-          context,
-          listen: false,
-        ).clearExpenses();
-        returnNotificationProvider(
-          context,
-          listen: false,
-        ).clearNotifications();
-        returnReceiptProviderSingle().clearReceipts();
-        returnReceiptProviderSingle().load(false);
-        returnPurchaseProvider().clearPurchases();
-        await PurchaseFunc().clearPurchases();
+          includeAuthAndShop: true,
+        );
         await CurrentShopFunc().clearCurrentShop();
-        returnSalesProvider().clearCart();
-        await CartFunc().clearMainCart();
-        await returnMultiDisplayProvider().closeAllWindows();
+        await returnMultiDisplayProvider()
+            .closeAllWindows();
         bool isOnline = ConnectivityProvider().isConnected;
 
         if (isOnline) {

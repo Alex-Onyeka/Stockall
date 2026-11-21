@@ -123,6 +123,11 @@ class ExpenseCategoriesFunc {
     await _deletedBox?.clear();
   }
 
+  Future<void> clearAllCategories() async {
+    await _categoriesBox?.clear();
+    await clearAllQueues();
+  }
+
   bool isSynced() {
     return getCreatedQueue().isEmpty &&
         getUpdatedQueue().isEmpty &&

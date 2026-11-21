@@ -103,7 +103,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
       }
     });
     // loadSuggestions();
-    notificationsFuture = fetchNotifications();
   }
 
   late Future<List<TempUserClass>> employeesFuture;
@@ -201,31 +200,26 @@ class _DashboardMobileState extends State<DashboardMobile> {
               children: [
                 Column(
                   children: [
-                    FutureBuilder(
-                      future: notificationsFuture,
-                      builder: (context, snapshot) {
-                        return TopNavBar(
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return NotificationsPage();
-                                },
-                              ),
-                            );
-                          },
-                          openSideBar: () {
-                            _scaffoldKey.currentState
-                                ?.openDrawer();
-                            returnNavProvider(
-                              context,
-                              listen: false,
-                            ).setSettings();
-                          },
-                          theme: theme,
+                    TopNavBar(
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return NotificationsPage();
+                            },
+                          ),
                         );
                       },
+                      openSideBar: () {
+                        _scaffoldKey.currentState
+                            ?.openDrawer();
+                        returnNavProvider(
+                          context,
+                          listen: false,
+                        ).setSettings();
+                      },
+                      theme: theme,
                     ),
                     Expanded(
                       child: RefreshIndicator(

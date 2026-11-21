@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:stockall/local_database/app_logs/app_logs_func.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
@@ -97,6 +98,7 @@ class MainDatabase extends ChangeNotifier {
         Hive.init(stockallDir.path);
       }
       registerAllHiveAdapters();
+      await _safeInit('AppLogsFunc', () => AppLogsFunc().init());
       await _safeInit('UserFunc', () => UserFunc().init());
       await _safeInit('ShopFunc', () => ShopFunc().init());
       await _safeInit(
@@ -319,6 +321,118 @@ class MainDatabase extends ChangeNotifier {
         error: e,
         stackTrace: s,
       );
+    }
+  }
+
+  Future<void> _safeClear(
+    String name,
+    Future<void> Function() clearFunc,
+  ) async {
+    try {
+      await clearFunc();
+    } catch (e) {
+      await mainLocalLog('⚠️ Failed to clear $name: $e');
+    }
+  }
+
+  /// Clears all shop-scoped Hive boxes and sync metadata so switching
+  /// stores or logging out never leaves stale records from a previous shop.
+  Future<void> clearAllShopData({
+    bool includeAuthAndShop = false,
+  }) async {
+    await _safeClear('ProductsFunc', () async {
+      await ProductsFunc().clearProducts();
+      await ProductsFunc().clearLastSyncTime();
+    });
+    await _safeClear('CategoryFunc', () => CategoryFunc().clearCategories());
+    await _safeClear('DepartmentsFunc', () => DepartmentsFunc().clearDepartment());
+    await _safeClear(
+      'CurrentDepartmentFunc',
+      () => CurrentDepartmentFunc().clearCurrentDepartment(),
+    );
+    await _safeClear('CustomerFunc', () => CustomerFunc().clearCustomers());
+    await _safeClear(
+      'CustomerAccountReceiptsFunc',
+      () => CustomerAccountReceiptsFunc().clearCustomerAccountReceipts(),
+    );
+    await _safeClear('ExpensesFunc', () => ExpensesFunc().clearExpenses());
+    await _safeClear(
+      'ExpenseCategoriesFunc',
+      () => ExpenseCategoriesFunc().clearAllCategories(),
+    );
+    await _safeClear('MainReceiptFunc', () => MainReceiptFunc().clearReceipts());
+    await _safeClear('InvoicesFunc', () => InvoicesFunc().clearInvoices());
+    await _safeClear('OrdersFunc', () => OrdersFunc().clearOrders());
+    await _safeClear(
+      'StorageProductsFunc',
+      () => StorageProductsFunc().clearStorageProducts(),
+    );
+    await _safeClear(
+      'StorageItemHistoriesFunc',
+      () => StorageItemHistoriesFunc().clearStorageItemHistories(),
+    );
+    await _safeClear(
+      'ItemHistoriesFunc',
+      () => ItemHistoriesFunc().clearItemHistories(),
+    );
+    await _safeClear(
+      'InventoryUpdatesFunc',
+      () => InventoryUpdatesFunc().clearInventoryUpdates(),
+    );
+    await _safeClear('EventsLogFunc', () => EventsLogFunc().clearEventsLog());
+    await _safeClear('SubStaffFunc', () => SubStaffFunc().clearSubStaffs());
+    await _safeClear('SuppliersFunc', () => SuppliersFunc().clearSuppliers());
+    await _safeClear(
+      'NotificationFunc',
+      () => NotificationFunc().clearNotifications(),
+    );
+    await _safeClear('DraftsFunc', () => DraftsFunc().clearDrafts());
+    await _safeClear('WaybillsFunc', () => WaybillsFunc().clearWaybills());
+    await _safeClear('PurchaseFunc', () => PurchaseFunc().clearPurchases());
+    await _safeClear('CartFunc', () => CartFunc().clearMainCart());
+    await _safeClear('ProductRecordFunc', () => ProductRecordFunc().clearRecords());
+    await _safeClear('MaterialsFunc', () => MaterialsFunc().clearMaterials());
+    await _safeClear(
+      'MaterialsItemHistoriesFunc',
+      () => MaterialsItemHistoriesFunc().clearMaterialsItemHistories(),
+    );
+    await _safeClear(
+      'ProductionItemsFunc',
+      () => ProductionItemsFunc().clearProductionItems(),
+    );
+    await _safeClear(
+      'ProductionItemHistoriesFunc',
+      () => ProductionItemHistoriesFunc().clearProductionItemHistories(),
+    );
+    await _safeClear(
+      'ProductionRecordsFunc',
+      () => ProductionRecordsFunc().clearProductionRecords(),
+    );
+    await _safeClear(
+      'ProductionMaterialsUsageFunc',
+      () => ProductionMaterialsUsageFunc().clearProductionMaterialsUsages(),
+    );
+    await _safeClear(
+      'ProductionsCartFunc',
+      () => ProductionsCartFunc().clearProductionsCart(),
+    );
+    await _safeClear(
+      'MaterialsUsageCartFunc',
+      () => MaterialsUsageCartFunc().clearMaterialsUsageCart(),
+    );
+    await _safeClear('ShopLogosFunc', () => ShopLogosFunc().clearLogos());
+    await _safeClear(
+      'SubscriptionFunc',
+      () => SubscriptionFunc().clearSubscription(),
+    );
+    await _safeClear(
+      'PermissionFunc',
+      () => PermissionFunc().clearPermission(),
+    );
+    if (includeAuthAndShop) {
+      await _safeClear('ShopFunc', () => ShopFunc().clearShop());
+      await _safeClear('ShopOwnerFunc', () => ShopOwnerFunc().clearShopOwner());
+      await _safeClear('UserFunc', () => UserFunc().userBox.clear());
     }
   }
 }

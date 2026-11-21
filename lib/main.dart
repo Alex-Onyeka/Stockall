@@ -12,6 +12,7 @@ import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/local_database/app_logs/app_logs_func.dart';
 import 'package:stockall/local_database/main_database.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
@@ -389,39 +390,13 @@ Future<String?> getMainLogDirectoryPath() async {
 }
 
 Future<String> readMainLogContent({
-  int maxLines = 500,
+  int maxLines = 3000,
 }) async {
-  if (kIsWeb) return 'Logs are not stored on web.';
-  return _enqueueLogOp(() async {
-    try {
-      final path = await getMainLogFilePath();
-      if (path == null) {
-        return 'Local logs are only available on desktop platforms.';
-      }
-      final file = File(path);
-      if (!await file.exists()) {
-        return 'No logs recorded yet.\nStorage path: ${file.parent.path}';
-      }
-      final bytes = await file.readAsBytes();
-      final content = utf8.decode(
-        bytes,
-        allowMalformed: true,
-      );
-      if (content.trim().isEmpty) {
-        return 'Log file is currently empty.\nStorage path: $path';
-      }
-      final lines = content.split('\n');
-      if (lines.length > maxLines) {
-        return '... [Older ${lines.length - maxLines} lines omitted] ...\n\n${lines.sublist(lines.length - maxLines).join('\n')}';
-      }
-      return content;
-    } catch (e) {
-      return 'Failed to read logs: $e';
-    }
-  });
+  return AppLogsFunc().readLogsFormatted();
 }
 
 Future<void> clearMainLog() async {
+  await AppLogsFunc().clearLogs();
   if (!_isDesktopLogPlatform) return;
   await _enqueueLogOp(() async {
     try {
@@ -472,6 +447,21 @@ Future<void> mainLocalLog(
   StackTrace? stackTrace,
 }) async {
   print('Log: ${message ?? 'Not Set'}');
+  final buffer =
+      StringBuffer()..writeln(
+        'Log: [${DateTime.now().toString().split('.').first}] ${message ?? 'Not Set'}',
+      );
+
+  if (error != null) {
+    buffer.writeln('Error Log: $error');
+  }
+
+  if (stackTrace != null) {
+    buffer.writeln("Stack Trace Log: $stackTrace");
+  }
+
+  await AppLogsFunc().addLog(buffer.toString().trimRight());
+
   if (!_isDesktopLogPlatform) return;
   await _enqueueLogOp(() async {
     try {
@@ -479,19 +469,6 @@ Future<void> mainLocalLog(
       final file = File(
         _joinLogPath(dir.path, 'mainLog.log'),
       );
-
-      final buffer =
-          StringBuffer()..writeln(
-            'Log: [${DateTime.now().toString().split('.').first}] ${message ?? 'Not Set'}',
-          );
-
-      if (error != null) {
-        buffer.writeln('Error Log: $error');
-      }
-
-      if (stackTrace != null) {
-        buffer.writeln("Stack Trace Log: $stackTrace");
-      }
 
       buffer.writeln();
 

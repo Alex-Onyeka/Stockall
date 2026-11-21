@@ -180,7 +180,8 @@ class TotalExpensesDesktopState
                         widget: Row(
                           spacing: 10,
                           mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment:
+                              MainAxisAlignment.end,
                           children: [
                             Visibility(
                               visible:
@@ -190,9 +191,12 @@ class TotalExpensesDesktopState
                                 color: Colors.transparent,
                                 child: InkWell(
                                   mouseCursor:
-                                      SystemMouseCursors.click,
+                                      SystemMouseCursors
+                                          .click,
                                   borderRadius:
-                                      BorderRadius.circular(10),
+                                      BorderRadius.circular(
+                                        10,
+                                      ),
                                   onTap: () async {
                                     await getExpenses();
                                   },
@@ -204,21 +208,28 @@ class TotalExpensesDesktopState
                                     child: Row(
                                       spacing: 5,
                                       children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight.bold,
+                                        if (screenWidth(
+                                              context,
+                                            ) >
+                                            tabletScreenSmall) ...[
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Refresh',
                                           ),
-                                          'Refresh',
-                                        ),
+                                        ],
                                         Icon(
                                           size: 18,
-                                          Icons.refresh_rounded,
+                                          Icons
+                                              .refresh_rounded,
                                         ),
                                       ],
                                     ),
@@ -227,13 +238,15 @@ class TotalExpensesDesktopState
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(
-                                right: 10.0,
-                              ),
+                              padding:
+                                  const EdgeInsets.only(
+                                    right: 10.0,
+                                  ),
                               child: IconButton(
                                 tooltip: 'Categories',
                                 mouseCursor:
-                                    SystemMouseCursors.click,
+                                    SystemMouseCursors
+                                        .click,
                                 onPressed: () {
                                   Navigator.push(
                                     context,
@@ -284,10 +297,17 @@ class TotalExpensesDesktopState
                           ),
                       body: Builder(
                         builder: (context) {
-                          final expProvider = returnExpensesProvider(context);
-                          var expenses = expProvider.applyCategoryFilter(
-                            expProvider.returnExpensesByDayOrWeek(context),
-                          );
+                          final expProvider =
+                              returnExpensesProvider(
+                                context,
+                              );
+                          var expenses = expProvider
+                              .applyCategoryFilter(
+                                expProvider
+                                    .returnExpensesByDayOrWeek(
+                                      context,
+                                    ),
+                              );
                           double getTotalExpenses() {
                             double tempTotal = 0;
                             for (var item in expenses) {
@@ -368,32 +388,27 @@ class TotalExpensesDesktopState
                                                 child: Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        theme
-                                                            .mobileTexts
-                                                            .b1
-                                                            .fontSize,
+                                                        theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
                                                   ),
-                                                  returnExpensesProvider(
-                                                                context,
-                                                              ).dateSet !=
+                                                  returnExpensesProvider(context).dateSet !=
                                                               null ||
-                                                          returnExpensesProvider(
-                                                                context,
-                                                              ).rangeStartDate !=
+                                                          returnExpensesProvider(context).rangeStartDate !=
                                                               null
-                                                      ? 'All Expenses'
+                                                      ? 'Date Set'
                                                       : 'For Today',
                                                 ),
                                               ),
                                               SizedBox(
-                                                width: 20,
+                                                width: 10,
                                               ),
                                               const Flexible(
                                                 child:
                                                     ExpenseCategoryFilterButtons(),
                                               ),
                                               SizedBox(
-                                                width: 20,
+                                                width: 10,
                                               ),
                                               Visibility(
                                                 visible: authorization(
@@ -401,105 +416,122 @@ class TotalExpensesDesktopState
                                                       Authorizations()
                                                           .viewDate,
                                                 ),
-                                                child: MaterialButton(
-                                                mouseCursor:
-                                                    SystemMouseCursors
-                                                        .click,
-                                                onPressed: () {
-                                                  if (returnExpensesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).dateSet !=
-                                                          null ||
-                                                      returnExpensesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).rangeStartDate !=
-                                                          null) {
-                                                    returnExpensesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).clearDate();
-                                                  } else {
-                                                    mainDatePicker(
-                                                      context:
-                                                          context,
-                                                      theme:
-                                                          theme,
-                                                      singleDate: (
-                                                        date,
-                                                      ) {
+                                                child: Material(
+                                                  color:
+                                                      Colors
+                                                          .transparent,
+                                                  child: InkWell(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
+                                                    onTap: () {
+                                                      if (returnExpensesProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).dateSet !=
+                                                              null ||
+                                                          returnExpensesProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).rangeStartDate !=
+                                                              null) {
                                                         returnExpensesProvider(
                                                           context,
                                                           listen:
                                                               false,
-                                                        ).setDate(
-                                                          date!,
+                                                        ).clearDate();
+                                                      } else {
+                                                        mainDatePicker(
+                                                          context:
+                                                              context,
+                                                          theme:
+                                                              theme,
+                                                          singleDate: (
+                                                            date,
+                                                          ) {
+                                                            returnExpensesProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).setDate(
+                                                              date!,
+                                                            );
+                                                          },
+                                                          rangeDate: (
+                                                            firstDate,
+                                                            lastDate,
+                                                          ) {
+                                                            returnExpensesProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).setRange(
+                                                              firstDate!,
+                                                              lastDate ??
+                                                                  DateTime.now(),
+                                                            );
+                                                          },
                                                         );
-                                                      },
-                                                      rangeDate: (
-                                                        firstDate,
-                                                        lastDate,
-                                                      ) {
-                                                        returnExpensesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).setRange(
-                                                          firstDate!,
-                                                          lastDate ??
-                                                              DateTime.now(),
-                                                        );
-                                                      },
-                                                    );
-                                                  }
-                                                },
-                                                child: Row(
-                                                  spacing:
-                                                      3,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme.mobileTexts.b2.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            Colors.grey.shade700,
+                                                      }
+                                                    },
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.symmetric(
+                                                        vertical:
+                                                            4.0,
+                                                        horizontal:
+                                                            8,
                                                       ),
-                                                      returnExpensesProvider(
-                                                                    context,
-                                                                  ).dateSet !=
-                                                                  null ||
+                                                      child: Row(
+                                                        spacing:
+                                                            3,
+                                                        children: [
+                                                          if (screenWidth(
+                                                                context,
+                                                              ) >
+                                                              tabletScreenSmall) ...[
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    theme.mobileTexts.b3.fontSize,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                color:
+                                                                    Colors.grey.shade700,
+                                                              ),
                                                               returnExpensesProvider(
-                                                                    context,
-                                                                  ).rangeStartDate !=
-                                                                  null
-                                                          ? 'Clear'
-                                                          : 'Set Date',
+                                                                            context,
+                                                                          ).dateSet !=
+                                                                          null ||
+                                                                      returnExpensesProvider(
+                                                                            context,
+                                                                          ).rangeStartDate !=
+                                                                          null
+                                                                  ? 'Clear'
+                                                                  : 'Set Date',
+                                                            ),
+                                                          ],
+                                                          Icon(
+                                                            size:
+                                                                20,
+                                                            color:
+                                                                theme.lightModeColor.secColor100,
+                                                            returnExpensesProvider(
+                                                                          context,
+                                                                        ).dateSet !=
+                                                                        null ||
+                                                                    returnExpensesProvider(
+                                                                          context,
+                                                                        ).rangeStartDate !=
+                                                                        null
+                                                                ? Icons.clear
+                                                                : Icons.date_range_outlined,
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                    Icon(
-                                                      size:
-                                                          20,
-                                                      color:
-                                                          theme.lightModeColor.secColor100,
-                                                      returnExpensesProvider(
-                                                                    context,
-                                                                  ).dateSet !=
-                                                                  null ||
-                                                              returnExpensesProvider(
-                                                                    context,
-                                                                  ).rangeStartDate !=
-                                                                  null
-                                                          ? Icons.clear
-                                                          : Icons.date_range_outlined,
-                                                    ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
                                               ),
                                             ],
                                           ),

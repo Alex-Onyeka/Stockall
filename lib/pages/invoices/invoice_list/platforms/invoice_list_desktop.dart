@@ -174,9 +174,9 @@ class _InvoiceListDesktopState
                           widget.customerUuid == null &&
                           widget.agentUuid == null,
                       context: context,
-                      title: 'All Invoices',
+                      title: 'Invoices',
                       widget: Row(
-                        spacing: 15,
+                        spacing: 5,
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment:
                             MainAxisAlignment.end,
@@ -221,7 +221,7 @@ class _InvoiceListDesktopState
                                                     .grey
                                                     .shade700,
                                           ),
-                                          'Search${screenWidth(context) <= mobileScreen ? '' : ' Invoice'}',
+                                          'Search${screenWidth(context) <= tabletScreenSmall ? '' : ' Invoice'}',
                                         ),
                                         SizedBox(width: 3),
                                       ],
@@ -265,19 +265,24 @@ class _InvoiceListDesktopState
                                   child: Row(
                                     spacing: 5,
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                      if (screenWidth(
+                                            context,
+                                          ) >
+                                          tabletScreenSmall) ...[
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Refresh',
                                         ),
-                                        'Refresh',
-                                      ),
+                                      ],
                                       Icon(
                                         size: 18,
                                         Icons
@@ -486,7 +491,7 @@ class _InvoiceListBodyDesktopState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Column(
         children: [
           Material(
@@ -596,180 +601,193 @@ class _InvoiceListBodyDesktopState
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b1
+                                    .b3
                                     .fontSize,
+                            fontWeight: FontWeight.bold,
                           ),
-                          'All Invoice',
+                          'All',
                         ),
                       ),
-                      SizedBox(width: 20),
-                      SizedBox(
-                        width: 270,
-                        child: Row(
-                          spacing: 6,
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: ProductsFilterButton(
-                                action: () {
-                                  returnInvoicesProvider()
-                                      .selectPaymentStatus(
-                                        0,
-                                      );
-                                },
-                                currentSelected:
-                                    returnInvoicesProvider(
-                                      context: context,
-                                    ).invoicePaymentStatusIndex,
-                                number: 0,
-                                title: 'Unpaid',
-                                theme: theme,
-                              ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Center(
+                          child: SingleChildScrollView(
+                            scrollDirection:
+                                Axis.horizontal,
+                            child: Row(
+                              spacing: 6,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                ProductsFilterButton(
+                                  action: () {
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
+                                          0,
+                                        );
+                                  },
+                                  currentSelected:
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
+                                  number: 0,
+                                  title: 'Unpaid',
+                                  theme: theme,
+                                ),
+                                ProductsFilterButton(
+                                  action: () {
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
+                                          1,
+                                        );
+                                  },
+                                  currentSelected:
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
+                                  number: 1,
+                                  title: 'Paid',
+                                  theme: theme,
+                                ),
+                                ProductsFilterButton(
+                                  action: () {
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
+                                          2,
+                                        );
+                                  },
+                                  currentSelected:
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
+                                  number: 2,
+                                  title: 'Partial',
+                                  theme: theme,
+                                ),
+                                ProductsFilterButton(
+                                  currentSelected:
+                                      returnInvoicesProvider(
+                                        context: context,
+                                      ).invoicePaymentStatusIndex,
+                                  action: () {
+                                    returnInvoicesProvider()
+                                        .selectPaymentStatus(
+                                          3,
+                                        );
+                                  },
+                                  number: 3,
+                                  title: 'All',
+                                  theme: theme,
+                                ),
+                              ],
                             ),
-                            Expanded(
-                              child: ProductsFilterButton(
-                                action: () {
-                                  returnInvoicesProvider()
-                                      .selectPaymentStatus(
-                                        1,
-                                      );
-                                },
-                                currentSelected:
-                                    returnInvoicesProvider(
-                                      context: context,
-                                    ).invoicePaymentStatusIndex,
-                                number: 1,
-                                title: 'Paid',
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: ProductsFilterButton(
-                                action: () {
-                                  returnInvoicesProvider()
-                                      .selectPaymentStatus(
-                                        2,
-                                      );
-                                },
-                                currentSelected:
-                                    returnInvoicesProvider(
-                                      context: context,
-                                    ).invoicePaymentStatusIndex,
-                                number: 2,
-                                title: 'Partial',
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: ProductsFilterButton(
-                                currentSelected:
-                                    returnInvoicesProvider(
-                                      context: context,
-                                    ).invoicePaymentStatusIndex,
-                                action: () {
-                                  returnInvoicesProvider()
-                                      .selectPaymentStatus(
-                                        3,
-                                      );
-                                },
-                                number: 3,
-                                title: 'All',
-                                theme: theme,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      SizedBox(width: 10),
                       Visibility(
                         visible: authorization(
                           authorized:
                               Authorizations().viewDate,
                         ),
-                        child: MaterialButton(
-                          mouseCursor:
-                              SystemMouseCursors.click,
-                          onPressed: () {
-                            if (returnInvoicesProvider()
-                                        .dateSet !=
-                                    null ||
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            onTap: () {
+                              if (returnInvoicesProvider()
+                                          .dateSet !=
+                                      null ||
+                                  returnInvoicesProvider()
+                                          .rangeStartDate !=
+                                      null) {
                                 returnInvoicesProvider()
-                                        .rangeStartDate !=
-                                    null) {
-                              returnInvoicesProvider()
-                                  .clearDate();
-                            } else {
-                              mainDatePicker(
-                                context: context,
-                                theme: theme,
-                                singleDate: (date) {
-                                  returnInvoicesProvider()
-                                      .setDate(date!);
-                                },
-                                rangeDate: (
-                                  firstDate,
-                                  lastDate,
-                                ) {
-                                  returnInvoicesProvider()
-                                      .setRange(
-                                        firstDate!,
-                                        lastDate ??
-                                            DateTime.now(),
-                                      );
-                                },
-                              );
-                            }
-                          },
-                          child: Row(
-                            spacing: 3,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color:
-                                      Colors.grey.shade700,
-                                ),
-                                returnInvoicesProvider(
-                                              context:
-                                                  context,
-                                            ).dateSet !=
-                                            null ||
-                                        returnInvoicesProvider(
-                                              context:
-                                                  context,
-                                            ).rangeStartDate !=
-                                            null
-                                    ? 'Clear Date'
-                                    : 'Set Date',
+                                    .clearDate();
+                              } else {
+                                mainDatePicker(
+                                  context: context,
+                                  theme: theme,
+                                  singleDate: (date) {
+                                    returnInvoicesProvider()
+                                        .setDate(date!);
+                                  },
+                                  rangeDate: (
+                                    firstDate,
+                                    lastDate,
+                                  ) {
+                                    returnInvoicesProvider()
+                                        .setRange(
+                                          firstDate!,
+                                          lastDate ??
+                                              DateTime.now(),
+                                        );
+                                  },
+                                );
+                              }
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                    horizontal: 8,
+                                  ),
+                              child: Row(
+                                spacing: 3,
+                                children: [
+                                  if (screenWidth(context) >
+                                      tabletScreenSmall) ...[
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade700,
+                                      ),
+                                      returnInvoicesProvider(
+                                                    context:
+                                                        context,
+                                                  ).dateSet !=
+                                                  null ||
+                                              returnInvoicesProvider(
+                                                    context:
+                                                        context,
+                                                  ).rangeStartDate !=
+                                                  null
+                                          ? 'Clear Date'
+                                          : 'Set Date',
+                                    ),
+                                  ],
+                                  Icon(
+                                    size: 20,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor100,
+                                    returnInvoicesProvider(
+                                                  context:
+                                                      context,
+                                                ).dateSet !=
+                                                null ||
+                                            returnInvoicesProvider(
+                                                  context:
+                                                      context,
+                                                ).rangeStartDate !=
+                                                null
+                                        ? Icons.clear
+                                        : Icons
+                                            .date_range_outlined,
+                                  ),
+                                ],
                               ),
-                              Icon(
-                                size: 20,
-                                color:
-                                    theme
-                                        .lightModeColor
-                                        .secColor100,
-                                returnInvoicesProvider(
-                                              context:
-                                                  context,
-                                            ).dateSet !=
-                                            null ||
-                                        returnInvoicesProvider(
-                                              context:
-                                                  context,
-                                            ).rangeStartDate !=
-                                            null
-                                    ? Icons.clear
-                                    : Icons
-                                        .date_range_outlined,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
