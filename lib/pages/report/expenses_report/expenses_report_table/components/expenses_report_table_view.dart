@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/expense_category.dart';
 import 'package:stockall/classes/temp_expenses/sub_expense.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
@@ -330,7 +330,7 @@ class _ExpensesReportTableViewState extends State<ExpensesReportTableView> {
     _amountMaxCtrl.text = _numText(_filters.amountMax);
     _period = widget.initialPeriod ?? _access.initialPeriod();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

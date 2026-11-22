@@ -32,7 +32,11 @@ ReceiptsReportPeriod supplierReportInitialPeriod({
       closingTime: closingTime,
     );
   }
-  return initial ?? const ReceiptsReportPeriod.allTime();
+  return initial ??
+      ReceiptsReportPeriod.today(
+        now: now,
+        closingTime: closingTime,
+      );
 }
 
 /// Suppliers the current user may see. Same rule as

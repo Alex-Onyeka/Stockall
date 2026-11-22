@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -73,7 +73,7 @@ class _StockHistoryViewState extends State<StockHistoryView> {
     _searchCtrl.text = _filters.search;
     _period = widget.initialPeriod ?? ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

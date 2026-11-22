@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -101,7 +101,7 @@ class _StorageReportMainViewState
     );
     _range = DateTimeRange(start: day, end: day);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +95,7 @@ class _ReceiptsReportSummaryViewState
     _filters = ReceiptsReportFilters();
     _period = ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

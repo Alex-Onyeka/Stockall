@@ -482,8 +482,14 @@ class DrawerNavItems extends StatelessWidget {
                               : Colors.grey.shade900,
                       fontSize:
                           isMobile
-                              ? theme.mobileTexts.b3.fontSize
-                              : theme.mobileTexts.b2.fontSize,
+                              ? theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize
+                              : theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
                       fontWeight:
                           isSelected
                               ? FontWeight.bold

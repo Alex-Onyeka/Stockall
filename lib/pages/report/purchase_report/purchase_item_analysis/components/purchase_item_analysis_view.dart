@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -104,7 +104,7 @@ class _PurchaseItemAnalysisViewState
         widget.initialPeriod ??
         ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_customer_account_receipts/customer_account_receipts.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
@@ -187,16 +187,16 @@ class CustomerReportEnv {
       final endDate = period?.end ?? period?.start;
       if (refreshFromStore) {
         final refresh = RefreshFunctions(context);
-        await refresh.refreshReceipts(
-          context,
+        await receipts.loadReceipts(
+          sid,
           startDate: startDate,
           endDate: endDate,
           fetchAll: fetchAll,
           forceRefresh: true,
         );
         if (!context.mounted) return;
-        await refresh.refreshInvoices(
-          context,
+        await returnInvoicesProvider().loadInvoices(
+          sid,
           startDate: startDate,
           endDate: endDate,
           fetchAll: fetchAll,
@@ -532,10 +532,10 @@ class _CustomerReportTableViewState extends State<CustomerReportTableView> {
     _searchCtrl.text = _filters.search;
     _period =
         _access.canPickDate
-            ? (widget.initialPeriod ?? const ReceiptsReportPeriod.allTime())
+            ? (widget.initialPeriod ?? ReceiptsReportPeriod.today())
             : _access.initialPeriod();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

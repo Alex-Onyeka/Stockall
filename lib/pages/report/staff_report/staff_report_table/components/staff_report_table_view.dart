@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
@@ -203,16 +203,16 @@ class StaffReportEnv {
       final endDate = period?.end ?? period?.start;
       if (refreshFromStore) {
         final refresh = RefreshFunctions(context);
-        await refresh.refreshReceipts(
-          context,
+        await receipts.loadReceipts(
+          sid,
           startDate: startDate,
           endDate: endDate,
           fetchAll: fetchAll,
           forceRefresh: true,
         );
         if (!context.mounted) return;
-        await refresh.refreshInvoices(
-          context,
+        await returnInvoicesProvider().loadInvoices(
+          sid,
           startDate: startDate,
           endDate: endDate,
           fetchAll: fetchAll,
@@ -223,8 +223,8 @@ class StaffReportEnv {
         await refresh.refreshEmployees(context);
         if (!context.mounted) return;
         if (a.showExpenses) {
-          await refresh.refreshExpenses(
-            context,
+          await expenses.getExpenses(
+            sid,
             startDate: startDate,
             endDate: endDate,
             fetchAll: fetchAll,
@@ -596,10 +596,10 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
     _searchCtrl.text = _filters.search;
     _period =
         _access.canPickDate
-            ? (widget.initialPeriod ?? const ReceiptsReportPeriod.allTime())
+            ? (widget.initialPeriod ?? ReceiptsReportPeriod.today())
             : _access.initialPeriod();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

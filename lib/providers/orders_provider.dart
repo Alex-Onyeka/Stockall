@@ -273,21 +273,33 @@ class OrdersProvider extends ChangeNotifier {
           );
         }
 
+        if (!fetchAll) {
+          final openData = await supabase
+              .from(tableName)
+              .select()
+              .eq('shop_id', shopId)
+              .or('balance.gt.0,balance.is.null')
+              .order('created_at', ascending: false)
+              .range(0, 1000);
+          tempList.addAll(openData);
+        }
+
         final deletedOrderUuids =
             DeletedOrdersFunc()
                 .getOrderIds()
                 .map((e) => e.orderUuid)
                 .toSet();
 
-        final fetched =
-            (tempList as List)
-                .map((json) => Orders.fromJson(json))
-                .where(
-                  (ord) =>
-                      ord.uuid != null &&
-                      !deletedOrderUuids.contains(ord.uuid),
-                )
-                .toList();
+        final seenUuids = <String>{};
+        final fetched = <Orders>[];
+        for (final json in tempList) {
+          final ord = Orders.fromJson(json);
+          final id = ord.uuid;
+          if (id == null || deletedOrderUuids.contains(id)) continue;
+          if (seenUuids.add(id)) {
+            fetched.add(ord);
+          }
+        }
 
         if (fetchAll) {
           _orders = fetched;

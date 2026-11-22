@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -59,10 +59,10 @@ class _StaffAnalysisViewState extends State<StaffAnalysisView> {
     _access = _env.access(context);
     _period =
         _access.canPickDate
-            ? (widget.initialPeriod ?? const ReceiptsReportPeriod.allTime())
+            ? (widget.initialPeriod ?? ReceiptsReportPeriod.today())
             : _access.initialPeriod();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

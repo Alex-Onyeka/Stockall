@@ -70,7 +70,6 @@ class CustomerReportAccess {
   /// All time (loaded data) with the View Date permission,
   /// otherwise today: the period button is disabled without it.
   ReceiptsReportPeriod initialPeriod({DateTime? now, TimeOfDay? closingTime}) {
-    if (canPickDate) return const ReceiptsReportPeriod.allTime();
     return ReceiptsReportPeriod.today(now: now, closingTime: closingTime);
   }
 

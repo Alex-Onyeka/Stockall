@@ -37,7 +37,6 @@ import 'package:stockall/pages/settings/components/toggle_manage_productions.dar
 import 'package:stockall/pages/settings/components/toggle_print_continuous_docket.dart';
 import 'package:stockall/pages/settings/components/toggle_print_sales_docket.dart';
 import 'package:stockall/pages/settings/components/toggle_track_cart.dart';
-import 'package:stockall/pages/settings/components/toggle_whole_sale_switch.dart';
 import 'package:stockall/pages/settings/components/use_screen_keyboard.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
@@ -214,13 +213,8 @@ class _SettingsItemsListState
         ManageInventoryToggleSwitch(),
         // UseGroupUnitToggle(),
         ToggleManageProductions(),
-        ToggleWholeSaleSwitch(),
+        // ToggleWholeSaleSwitch(),
         ManageDepartmentsToggleSwitch(),
-        TogglePrintSalesDocket(),
-        TogglePrintContinuousDocket(),
-        UseScreenKeyboard(),
-        ToggleTrackCart(),
-        SetClosingTime(),
         Visibility(
           visible:
               authorization(
@@ -254,106 +248,6 @@ class _SettingsItemsListState
               title: 'View Departments',
               icon: Icons.width_normal_outlined,
             ),
-          ),
-        ),
-        Visibility(
-          visible: authorization(
-            authorized: Authorizations().updateProduct,
-          ),
-
-          child: SubWrapper(
-            isVisible:
-                !ItemsAuthAction().applyVariationsAction(
-                  context: context,
-                ),
-            mainWidget: NavListTileDesktopAlt(
-              height: 18,
-              action: () {
-                ItemsAuthAction().applyVariationsAction(
-                  context: context,
-                  action: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return CategoriesPage();
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-              title: 'Manage Categories',
-              icon: Icons.category_outlined,
-            ),
-          ),
-        ),
-        Visibility(
-          visible: authorization(
-            authorized:
-                Authorizations().editReceiptTemplate,
-          ),
-
-          child: SubWrapper(
-            isVisible:
-                !GeneralSettingsAuthAction()
-                    .customizeReceiptTemplateAction(
-                      context: context,
-                    ),
-            mainWidget: NavListTileDesktopAlt(
-              height: 18,
-              action: () {
-                GeneralSettingsAuthAction()
-                    .customizeReceiptTemplateAction(
-                      context: context,
-                      action: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return EditReceipt();
-                            },
-                          ),
-                        );
-                      },
-                    );
-              },
-              title: 'Edit Receipt Template',
-              icon: Icons.receipt,
-            ),
-          ),
-        ),
-        ToggleBulkSale(),
-        Visibility(
-          visible:
-              shop(context)!.bulkSale == true &&
-              authorization(
-                authorized: Authorizations().manageSubStaff,
-              ) &&
-              subPlans
-                  .firstWhere(
-                    (plan) =>
-                        plan.plan ==
-                        returnSubcsription(
-                          context,
-                        ).subscription?.plan,
-                  )
-                  .salesAuth
-                  .bulkSale,
-          child: NavListTileDesktopAlt(
-            height: 18,
-            action: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return SubStaffsPage();
-                  },
-                ),
-              );
-            },
-            title: 'Manage Sub Staffs',
-            icon: Icons.people_outline_outlined,
           ),
         ),
         Visibility(
@@ -548,6 +442,113 @@ class _SettingsItemsListState
             ),
           ),
         ),
+        TogglePrintSalesDocket(),
+        TogglePrintContinuousDocket(),
+        UseScreenKeyboard(),
+        ToggleTrackCart(),
+        SetClosingTime(),
+
+        Visibility(
+          visible: authorization(
+            authorized: Authorizations().updateProduct,
+          ),
+
+          child: SubWrapper(
+            isVisible:
+                !ItemsAuthAction().applyVariationsAction(
+                  context: context,
+                ),
+            mainWidget: NavListTileDesktopAlt(
+              height: 18,
+              action: () {
+                ItemsAuthAction().applyVariationsAction(
+                  context: context,
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return CategoriesPage();
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+              title: 'Manage Categories',
+              icon: Icons.category_outlined,
+            ),
+          ),
+        ),
+        Visibility(
+          visible: authorization(
+            authorized:
+                Authorizations().editReceiptTemplate,
+          ),
+
+          child: SubWrapper(
+            isVisible:
+                !GeneralSettingsAuthAction()
+                    .customizeReceiptTemplateAction(
+                      context: context,
+                    ),
+            mainWidget: NavListTileDesktopAlt(
+              height: 18,
+              action: () {
+                GeneralSettingsAuthAction()
+                    .customizeReceiptTemplateAction(
+                      context: context,
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return EditReceipt();
+                            },
+                          ),
+                        );
+                      },
+                    );
+              },
+              title: 'Edit Receipt Template',
+              icon: Icons.receipt,
+            ),
+          ),
+        ),
+        ToggleBulkSale(),
+        Visibility(
+          visible:
+              shop(context)!.bulkSale == true &&
+              authorization(
+                authorized: Authorizations().manageSubStaff,
+              ) &&
+              subPlans
+                  .firstWhere(
+                    (plan) =>
+                        plan.plan ==
+                        returnSubcsription(
+                          context,
+                        ).subscription?.plan,
+                  )
+                  .salesAuth
+                  .bulkSale,
+          child: NavListTileDesktopAlt(
+            height: 18,
+            action: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return SubStaffsPage();
+                  },
+                ),
+              );
+            },
+            title: 'Manage Sub Staffs',
+            icon: Icons.people_outline_outlined,
+          ),
+        ),
+
         Visibility(
           visible: authorization(
             authorized: Authorizations().generateBarcode,

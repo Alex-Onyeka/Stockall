@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
@@ -233,8 +233,8 @@ class GeneralReportEnv {
         final startDate = period?.start;
         final endDate = period?.end ?? period?.start;
         if (refreshFromStore) {
-          await RefreshFunctions(context).refreshReceipts(
-            context,
+          await receipts.loadReceipts(
+            sid,
             startDate: startDate,
             endDate: endDate,
             fetchAll: fetchAll,
@@ -414,7 +414,7 @@ class _GeneralReportViewState
                 ReceiptsReportPeriod.today()
             : ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

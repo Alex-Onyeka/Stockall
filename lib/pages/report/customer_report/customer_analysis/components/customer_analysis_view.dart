@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -62,10 +62,10 @@ class _CustomerAnalysisViewState extends State<CustomerAnalysisView> {
     _customer = widget.customer;
     _period =
         _access.canPickDate
-            ? (widget.initialPeriod ?? const ReceiptsReportPeriod.allTime())
+            ? (widget.initialPeriod ?? ReceiptsReportPeriod.today())
             : _access.initialPeriod();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 

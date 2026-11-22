@@ -490,6 +490,59 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               'Customer Report',
                                         ),
                                       ),
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return const StaffReportTablePage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'See what each staff member sold, bought and spent',
+                                          title:
+                                              'Staff Report',
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper() &&
+                                            ReportAuthAction()
+                                                .viewExpensesReportAction(
+                                                  context:
+                                                      context,
+                                                ),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return const ExpensesReportPage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a detailed breakdown of your expenses.',
+                                          title:
+                                              'Expenses Report',
+                                        ),
+                                      ),
                                       SubWrapper(
                                         mainWidget: Visibility(
                                           visible:
@@ -547,59 +600,6 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               'View a List of all Error Logs',
                                           title:
                                               'Error Log',
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible:
-                                            !isStoreKeeper(),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return const StaffReportTablePage();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'See what each staff member sold, bought and spent',
-                                          title:
-                                              'Staff Report',
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible:
-                                            !isStoreKeeper() &&
-                                            ReportAuthAction()
-                                                .viewExpensesReportAction(
-                                                  context:
-                                                      context,
-                                                ),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return const ExpensesReportPage();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'View a detailed breakdown of your expenses.',
-                                          title:
-                                              'Expenses Report',
                                         ),
                                       ),
                                       SizedBox(height: 30),

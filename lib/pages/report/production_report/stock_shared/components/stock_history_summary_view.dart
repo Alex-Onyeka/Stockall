@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -68,7 +68,7 @@ class _StockHistorySummaryViewState extends State<StockHistorySummaryView> {
     _env = widget.env ?? ProductionStockEnv.live(widget.kind);
     _period = widget.initialPeriod ?? ReceiptsReportPeriod.today();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _load(refreshFromStore: false);
+      _load(refreshFromStore: true);
     });
   }
 
