@@ -7,10 +7,12 @@ import 'package:stockall/classes/temp_product_class/prices_class/product_prices_
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/units_class/product_units_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -35,16 +37,77 @@ class _BulkUploadProductsPageState
 
   static const _previewLimit = 200;
 
+  List<List<String>> _fullGuide() =>
+      BulkProductTemplate.instructions(
+        full: true,
+        sizeTypes: returnData().sizes,
+      );
+
   Future<void> _downloadTemplate({
     required bool csv,
   }) async {
+    final full = await showDialog<bool>(
+      context: context,
+      builder:
+          (dialogContext) => DialogTemplate(
+            theme: returnTheme(context, listen: false),
+            title: 'Choose a Template',
+            message:
+                csv ? 'CSV (.csv)' : 'Excel (.xlsx)',
+            action: () {},
+            showMainBottomActionButton: false,
+            widget: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.stretch,
+                spacing: 10,
+                children: [
+                  _TemplateOption(
+                    title: 'Simple template',
+                    description:
+                        'The essential fields: name, quantity, prices, barcode, expiry date, low stock level and optional dimensions.',
+                    onTap:
+                        () => Navigator.of(
+                          dialogContext,
+                        ).pop(false),
+                  ),
+                  _TemplateOption(
+                    title: 'Full template',
+                    description:
+                        'Everything in the simple template, plus item settings: custom price, manage quantity, derive quantity from price, wastage, discount and size type. '
+                        'Yes/No columns use 1 = Yes, 0 = No.',
+                    onTap:
+                        () => Navigator.of(
+                          dialogContext,
+                        ).pop(true),
+                  ),
+                  _ColumnGuide(rows: _fullGuide()),
+                ],
+              ),
+            ),
+          ),
+    );
+    if (full == null || !mounted) return;
+    await _saveTemplate(csv: csv, full: full);
+  }
+
+  Future<void> _saveTemplate({
+    required bool csv,
+    required bool full,
+  }) async {
     final bytes =
         csv
-            ? BulkProductTemplate.buildCsv()
-            : BulkProductTemplate.buildXlsx();
+            ? BulkProductTemplate.buildCsv(full: full)
+            : BulkProductTemplate.buildXlsx(
+              full: full,
+              sizeTypes: returnData().sizes,
+            );
     final saved = await ExcelProvider().save(
       bytes: bytes,
-      name: 'Stockall Products Template',
+      name:
+          full
+              ? 'Stockall Products Template (Full)'
+              : 'Stockall Products Template',
       isCsv: csv,
       addSuffix: false,
     );
@@ -99,8 +162,19 @@ class _BulkUploadProductsPageState
         bytes: bytes,
         fileName: file.name,
       );
+      if (!mounted) return;
+      final canSetSizeType = ItemsAuthAction()
+          .applyVariationsAction(context: context);
       final products = returnData().productList();
       final validation = BulkProductValidator.validate(
+        sizeTypes: returnData().sizes,
+        canSetCustomPrice: authorization(
+          authorized: Authorizations().editSellingPrice,
+        ),
+        canManageQuantity: authorization(
+          authorized: Authorizations().updateItemQuantity,
+        ),
+        canSetSizeType: canSetSizeType,
         table: table,
         existingNames: products.map((p) => p.name).toSet(),
         existingBarcodes:
@@ -272,7 +346,12 @@ class _BulkUploadProductsPageState
     ];
 
     return TempProductClass(
-      manageSalesWastage: null,
+      // Blank or missing Full template columns keep the simple
+      // template's defaults.
+      manageSalesWastage: row.manageSalesWastage,
+      deriveQuantityFromPrice: row.deriveQuantityFromPrice,
+      discount: row.discount,
+      sizeType: row.sizeType,
       name: row.name,
       barcode: row.barcode,
       unit: baseUnit,
@@ -285,8 +364,8 @@ class _BulkUploadProductsPageState
       shopId: shopId(),
       createdAt: now,
       updatedAt: now,
-      setCustomPrice: false,
-      isManaged: true,
+      setCustomPrice: row.setCustomPrice ?? false,
+      isManaged: row.isManaged ?? true,
       departmentName: null,
       departmentUuid: null,
       groupUnit: 'Group(s)',
@@ -337,7 +416,9 @@ class _BulkUploadProductsPageState
               Text(
                 'Fill in one product per row. Only the name is required. '
                 'Blank quantity and prices count as 0, and a blank low_qtty is 10. '
-                'Dimensions (width & height in cm) are optional; if set, the item becomes a 2D item with Square Meter units.',
+                'Dimensions (width & height in cm) are optional; if set, the item becomes a 2D item with Square Meter units. '
+                'Choose the Simple template for the essential fields, or the Full template to also set item settings. '
+                'In the Full template, Yes/No columns use 1 = Yes, 0 = No.',
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b1.fontSize,
                 ),
@@ -361,6 +442,8 @@ class _BulkUploadProductsPageState
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+              _ColumnGuide(rows: _fullGuide()),
               const SizedBox(height: 25),
               Text(
                 '2. Upload your file',
@@ -507,5 +590,112 @@ class _BulkUploadProductsPageState
         const SizedBox(height: 15),
       ],
     ];
+  }
+}
+
+class _TemplateOption extends StatelessWidget {
+  final String title;
+  final String description;
+  final VoidCallback onTap;
+
+  const _TemplateOption({
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      mouseCursor: SystemMouseCursors.click,
+      borderRadius: BorderRadius.circular(6),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.download),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Lists every template column. Columns that only the Full
+/// template has are labelled.
+class _ColumnGuide extends StatelessWidget {
+  final List<List<String>> rows;
+
+  const _ColumnGuide({required this.rows});
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      tilePadding: EdgeInsets.zero,
+      childrenPadding: const EdgeInsets.only(bottom: 10),
+      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+      title: const Text(
+        'Column guide',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: const Text(
+        'Yes/No columns: 1 = Yes, 0 = No.',
+        style: TextStyle(fontSize: 12),
+      ),
+      children: [
+        // The first row is the table header.
+        for (final row in rows.skip(1))
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${row[0]}'
+                  '${row[1] == 'Yes' ? ' (required)' : ''}'
+                  '${BulkProductValidator.fullOnlyHeaders.contains(row[0]) ? '  •  Full template only' : ''}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(row[2]),
+                if (row[3].isNotEmpty)
+                  Text(
+                    'Example: ${row[3]}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
   }
 }

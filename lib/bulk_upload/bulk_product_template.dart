@@ -58,17 +58,74 @@ class BulkProductTemplate {
     ],
   ];
 
-  static Uint8List buildXlsx() {
+  /// Column guide rows (first row is the table header). The Full
+  /// guide is the simple one plus the Full-only columns.
+  static List<List<String>> instructions({
+    bool full = false,
+    List<String> sizeTypes = const [],
+  }) {
+    if (!full) return _instructions;
+    return [
+      ..._instructions,
+      [
+        'allow_custom_price',
+        'No',
+        'Let the cashier set a custom price during sales. 1 = Yes, 0 = No. Blank means 0.',
+        '1',
+      ],
+      [
+        'manage_quantity',
+        'No',
+        'Let Stockall manage the item quantity (deduct after sales, low stock alerts). 1 = Yes, 0 = No. Blank means 1.',
+        '1',
+      ],
+      [
+        'derive_quantity_from_price',
+        'No',
+        'Let sellers enter a price during sale and work out the quantity. 1D items only (width and height blank). 1 = Yes, 0 = No. Blank means 0.',
+        '0',
+      ],
+      [
+        'manage_wastage',
+        'No',
+        'Enter wastage during sales. 2D items only (width and height set). 1 = Yes, 0 = No. Blank means 0.',
+        '0',
+      ],
+      [
+        'discount_percent',
+        'No',
+        'Discount in percent, from 0 to 100. Blank means no discount.',
+        '5',
+      ],
+      [
+        'size_type',
+        'No',
+        sizeTypes.isEmpty
+            ? 'Item size type. Blank means not set.'
+            : 'One of: ${sizeTypes.join(', ')}. Blank means not set.',
+        sizeTypes.isEmpty ? '' : sizeTypes.first,
+      ],
+    ];
+  }
+
+  static Uint8List buildXlsx({
+    bool full = false,
+    List<String> sizeTypes = const [],
+  }) {
+    final headers =
+        full
+            ? BulkProductValidator.fullHeaders
+            : BulkProductValidator.headers;
+    final guideRows = instructions(
+      full: full,
+      sizeTypes: sizeTypes,
+    );
     final workbook = Workbook();
     final sheet = workbook.worksheets[0];
     sheet.name = 'Products';
-    for (
-      var i = 0;
-      i < BulkProductValidator.headers.length;
-      i++
-    ) {
+    for (var i = 0; i < headers.length; i++) {
       final cell = sheet.getRangeByIndex(1, i + 1);
-      cell.setText(BulkProductValidator.headers[i]);
+      cell.setText(headers[i]);
       cell.cellStyle.bold = true;
       sheet.setColumnWidthInPixels(i + 1, 130);
     }
@@ -78,14 +135,14 @@ class BulkProductTemplate {
     final guide = workbook.worksheets.addWithName(
       'Instructions',
     );
-    for (var r = 0; r < _instructions.length; r++) {
-      for (var c = 0; c < _instructions[r].length; c++) {
+    for (var r = 0; r < guideRows.length; r++) {
+      for (var c = 0; c < guideRows[r].length; c++) {
         final cell = guide.getRangeByIndex(r + 1, c + 1);
-        cell.setText(_instructions[r][c]);
+        cell.setText(guideRows[r][c]);
         if (r == 0) cell.cellStyle.bold = true;
       }
     }
-    guide.setColumnWidthInPixels(1, 120);
+    guide.setColumnWidthInPixels(1, full ? 190 : 120);
     guide.setColumnWidthInPixels(2, 80);
     guide.setColumnWidthInPixels(3, 320);
     guide.setColumnWidthInPixels(4, 160);
@@ -95,11 +152,13 @@ class BulkProductTemplate {
     return Uint8List.fromList(bytes);
   }
 
-  static Uint8List buildCsv() {
+  static Uint8List buildCsv({bool full = false}) {
+    final headers =
+        full
+            ? BulkProductValidator.fullHeaders
+            : BulkProductValidator.headers;
     return Uint8List.fromList(
-      utf8.encode(
-        '${BulkProductValidator.headers.join(',')}\r\n',
-      ),
+      utf8.encode('${headers.join(',')}\r\n'),
     );
   }
 }
