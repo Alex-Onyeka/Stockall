@@ -49,6 +49,7 @@ import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/receipt_printer_func/receipt_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
+import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
 import 'package:stockall/local_database/shop_owner/shop_owner_func.dart';
 import 'package:stockall/local_database/storage_item_history/storage_item_histories_func.dart';
@@ -421,6 +422,10 @@ class MainDatabase extends ChangeNotifier {
       () => MaterialsUsageCartFunc().clearMaterialsUsageCart(),
     );
     await _safeClear('ShopLogosFunc', () => ShopLogosFunc().clearLogos());
+    await _safeClear(
+      'CreatedShopLogosFunc',
+      () => CreatedShopLogosFunc().clearCreatedLogos(),
+    );
     await _safeClear(
       'SubscriptionFunc',
       () => SubscriptionFunc().clearSubscription(),

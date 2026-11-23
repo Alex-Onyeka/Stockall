@@ -892,6 +892,7 @@ class ShopProvider extends ChangeNotifier {
     returnSuppliersProvider().clearSuppliers();
     returnPermissionProvider().clearPermissions();
     await returnSalesProvider().clearCart();
+    clearImage();
     if (includeAuthAndShop) {
       returnShopProvider().clearShop();
     }
@@ -959,6 +960,7 @@ class ShopProvider extends ChangeNotifier {
   void clearShop() {
     userShops.clear();
     _lastShopsFetchedAt = null;
+    clearImage();
     notifyListeners();
   }
 
@@ -2322,11 +2324,15 @@ class ShopProvider extends ChangeNotifier {
         CreatedShopLogosFunc().getCreatedLogo().toString(),
       );
 
-      if (CreatedShopLogosFunc().getCreatedLogo() != null &&
+      final currentShopId = userShop()?.shopId;
+      final createdLogo = CreatedShopLogosFunc().getCreatedLogo(
+        shopId: currentShopId,
+      );
+      if (createdLogo != null &&
+          currentShopId != null &&
           isOnline) {
-        final createdLogo =
-            CreatedShopLogosFunc().getCreatedLogo();
-        var filePath = createdLogo!.imageName;
+        final previousLogoUrl = userShop()?.logoUrl;
+        var filePath = createdLogo.imageName;
         var imageBytes = base64Decode(createdLogo.logoPath);
         var mimeType = "image/${filePath.split('.').last}";
 
@@ -2349,14 +2355,19 @@ class ShopProvider extends ChangeNotifier {
               .from('shops')
               .update({
                 'logo_url': publicUrl,
-                'image_height': imageHeight,
-                'image_width': imageWidth,
+                'image_height': createdLogo.imageHeight,
+                'image_width': createdLogo.imageWidth,
               })
-              .eq('shop_id', userShop()!.shopId!);
+              .eq('shop_id', currentShopId);
           userShop()!.logoUrl = publicUrl;
-          userShop()!.imageHeight = imageHeight;
-          userShop()!.imageWidth = imageWidth;
+          userShop()!.imageHeight = createdLogo.imageHeight;
+          userShop()!.imageWidth = createdLogo.imageWidth;
+          selectedLogo = imageBytes;
+          _selectedLogoUrl = publicUrl;
+          imageHeight = createdLogo.imageHeight;
+          imageWidth = createdLogo.imageWidth;
           notifyListeners();
+          await _deleteOldLogoFromStorage(previousLogoUrl);
           await mainLocalLog(
             '✅  Online Logo uploaded and saved successfully!',
           );
@@ -2364,8 +2375,8 @@ class ShopProvider extends ChangeNotifier {
             TempShopLogos(
               logoPath: base64Encode(imageBytes),
               imageName: filePath,
-              imageHeight: imageHeight!,
-              imageWidth: imageWidth!,
+              imageHeight: createdLogo.imageHeight,
+              imageWidth: createdLogo.imageWidth,
             ),
             // ignore: use_build_context_synchronously
           );
@@ -2461,7 +2472,7 @@ class ShopProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (logoPicked && selectedLogo != null) {
+    if (logoPicked && selectedLogo != null && rawImage != null) {
       try {
         var res = await uploadLogo(
           image: rawImage!,
@@ -2472,17 +2483,26 @@ class ShopProvider extends ChangeNotifier {
           await mainLocalLog(res);
           return res;
         }
+        logoPicked = false;
+        rawImage = null;
       } catch (e) {
         await mainLocalLog('Error: ${e.toString()}');
         return e.toString();
       }
     }
     if (selectedLogo == null) {
+      final previousLogoUrl = userShop()?.logoUrl;
       userShop()!.logoUrl = null;
       userShop()!.imageHeight = null;
       userShop()!.imageWidth = null;
+      _selectedLogoUrl = null;
+      logoPicked = false;
+      rawImage = null;
       await ShopLogosFunc().clearLogos();
       await CreatedShopLogosFunc().clearCreatedLogos();
+      if (isOnline) {
+        await _deleteOldLogoFromStorage(previousLogoUrl);
+      }
       notifyListeners();
     }
     if (isOnline) {
@@ -2621,6 +2641,7 @@ class ShopProvider extends ChangeNotifier {
 
   final ImagePicker _picker = ImagePicker();
   Uint8List? selectedLogo;
+  String? _selectedLogoUrl;
   XFile? rawImage;
   // String? imageName;
   int? imageWidth;
@@ -2628,11 +2649,30 @@ class ShopProvider extends ChangeNotifier {
 
   void clearImage() {
     selectedLogo = null;
+    _selectedLogoUrl = null;
     imageWidth = null;
     imageHeight = null;
     rawImage = null;
+    logoPicked = false;
     mainLocalLog('Image Cleared');
     notifyListeners();
+  }
+
+  Future<void> _deleteOldLogoFromStorage(String? logoUrl) async {
+    if (logoUrl == null || logoUrl.isEmpty) return;
+    try {
+      final uri = Uri.tryParse(logoUrl);
+      if (uri == null) return;
+      const marker = '/object/public/logos/';
+      final idx = uri.path.indexOf(marker);
+      if (idx == -1) return;
+      final objectPath = uri.path.substring(idx + marker.length);
+      if (objectPath.isNotEmpty) {
+        await supabase.storage.from('logos').remove([objectPath]);
+      }
+    } catch (e) {
+      await mainLocalLog('⚠️ Failed to delete old logo: $e');
+    }
   }
 
   bool logoPicked = false;
@@ -2687,13 +2727,20 @@ class ShopProvider extends ChangeNotifier {
     if (isOnline) {
       try {
         await getUserShops();
-        notifyListeners();
-        final logoUrl = userShop()!.logoUrl;
-        if (logoUrl == null ||
-            userShop()!.imageHeight == null ||
-            userShop()!.imageWidth == null) {
-          // clearImage();
+        final currentShop = userShop();
+        final logoUrl = currentShop?.logoUrl;
+        if (currentShop == null ||
+            logoUrl == null ||
+            currentShop.imageHeight == null ||
+            currentShop.imageWidth == null) {
+          clearImage();
           return null;
+        }
+
+        if (selectedLogo != null && _selectedLogoUrl == logoUrl) {
+          imageHeight = currentShop.imageHeight;
+          imageWidth = currentShop.imageWidth;
+          return selectedLogo;
         }
 
         final onlineBytes = await fetchImageBytes(logoUrl);
@@ -2703,38 +2750,43 @@ class ShopProvider extends ChangeNotifier {
             TempShopLogos(
               logoPath: base64Encode(onlineBytes),
               imageName: logoUrl,
-              imageHeight: userShop()!.imageHeight!,
-              imageWidth: userShop()!.imageWidth!,
+              imageHeight: currentShop.imageHeight!,
+              imageWidth: currentShop.imageWidth!,
             ),
             // ignore: use_build_context_synchronously
           );
+          selectedLogo = onlineBytes;
+          _selectedLogoUrl = logoUrl;
+          imageHeight = currentShop.imageHeight;
+          imageWidth = currentShop.imageWidth;
+          notifyListeners();
+        } else {
+          clearImage();
         }
-        selectedLogo = onlineBytes;
-        imageHeight = userShop()!.imageHeight;
-        imageWidth = userShop()!.imageWidth;
-        // imag
-        notifyListeners();
         return onlineBytes;
       } catch (e) {
         await mainLocalLog(
           '❌❌ Get Logo Error: ${e.toString()}',
         );
-        // clearImage();
+        clearImage();
         return null;
       }
     } else {
       try {
         await getUserShops();
-        var logo = ShopLogosFunc().getLogo();
-        if (logo == null) {
-          // clearImage();
-          notifyListeners();
+        final currentShop = userShop();
+        var logo = ShopLogosFunc().getLogo(
+          shopId: currentShop?.shopId,
+        );
+        if (logo == null || currentShop == null) {
+          clearImage();
           return null;
         } else {
           var imageBytes = base64Decode(logo.logoPath);
           selectedLogo = imageBytes;
-          imageHeight = userShop()!.imageHeight;
-          imageWidth = userShop()!.imageWidth;
+          _selectedLogoUrl = currentShop.logoUrl;
+          imageHeight = currentShop.imageHeight ?? logo.imageHeight;
+          imageWidth = currentShop.imageWidth ?? logo.imageWidth;
           notifyListeners();
           return imageBytes;
         }
@@ -2742,7 +2794,7 @@ class ShopProvider extends ChangeNotifier {
         await mainLocalLog(
           '❌❌ Get Logo Offline Error: ${e.toString()}',
         );
-        // clearImage();
+        clearImage();
         return null;
       }
     }
@@ -2766,6 +2818,7 @@ class ShopProvider extends ChangeNotifier {
 
     final String filePath =
         'logos/${userShop()!.shopId!}-${DateTime.now().millisecondsSinceEpoch}.$ext';
+    final previousLogoUrl = userShop()?.logoUrl;
     if (isOnline) {
       try {
         await supabase.storage
@@ -2793,7 +2846,9 @@ class ShopProvider extends ChangeNotifier {
         userShop()!.logoUrl = publicUrl;
         userShop()!.imageHeight = imageHeight;
         userShop()!.imageWidth = imageWidth;
+        _selectedLogoUrl = publicUrl;
         notifyListeners();
+        await _deleteOldLogoFromStorage(previousLogoUrl);
         await mainLocalLog(
           '✅  Online Logo uploaded and saved successfully!',
         );
@@ -2810,7 +2865,7 @@ class ShopProvider extends ChangeNotifier {
       } catch (e) {
         await mainLocalLog('❌ Error uploading logo: $e');
         clearImage();
-        return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
+        return 'Error uploading logo: ${e.toString()}';
       }
     } else {
       try {

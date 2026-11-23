@@ -50,12 +50,11 @@ class CreatedShopLogosFunc {
     return _createdShopLogosBox!;
   }
 
-  TempShopLogos? getCreatedLogo() {
-    TempShopLogos? logo =
-        createdShopLogosBox.values.isNotEmpty
-            ? createdShopLogosBox.values.first
-            : null;
-    return logo;
+  TempShopLogos? getCreatedLogo({int? shopId}) {
+    final targetShopId =
+        shopId ?? returnShopProvider().userShop()?.shopId;
+    if (targetShopId == null) return null;
+    return createdShopLogosBox.get(targetShopId);
   }
 
   Future<int> createCreatedShopLogo(
@@ -63,9 +62,12 @@ class CreatedShopLogosFunc {
     BuildContext context,
   ) async {
     try {
+      final targetShopId =
+          returnShopProvider().userShop()?.shopId;
+      if (targetShopId == null) return 0;
       await clearCreatedLogos();
       await createdShopLogosBox.put(
-        returnShopProvider().userShop()!.shopId!,
+        targetShopId,
         createdLogo,
       );
       await mainLocalLog(

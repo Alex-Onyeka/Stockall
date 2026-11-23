@@ -238,4 +238,275 @@ void main() {
       expect(r.rows.single.height, 180.0);
     });
   });
+
+  group('Full template', () {
+    test('simple template is unchanged', () {
+      final csv = SpreadsheetReader.read(
+        bytes: BulkProductTemplate.buildCsv(),
+        fileName: 't.csv',
+      );
+      expect(csv.first, BulkProductValidator.headers);
+      expect(BulkProductTemplate.instructions().length, 10);
+    });
+
+    test('full csv and xlsx templates round-trip', () {
+      final csv = SpreadsheetReader.read(
+        bytes: BulkProductTemplate.buildCsv(full: true),
+        fileName: 't.csv',
+      );
+      expect(csv.first, BulkProductValidator.fullHeaders);
+
+      final xlsx = SpreadsheetReader.read(
+        bytes: BulkProductTemplate.buildXlsx(
+          full: true,
+          sizeTypes: _sizes,
+        ),
+        fileName: 't.xlsx',
+      );
+      expect(xlsx.first, BulkProductValidator.fullHeaders);
+      expect(
+        BulkProductValidator.fullHeaders.take(
+          BulkProductValidator.headers.length,
+        ),
+        BulkProductValidator.headers,
+      );
+    });
+
+    test('full instructions document every extra column and 1/0', () {
+      final guide = BulkProductTemplate.instructions(
+        full: true,
+        sizeTypes: _sizes,
+      );
+      final byColumn = {for (final r in guide.skip(1)) r[0]: r};
+      for (final h in BulkProductValidator.fullHeaders) {
+        expect(byColumn.containsKey(h), isTrue, reason: h);
+      }
+      for (final h in [
+        'allow_custom_price',
+        'manage_quantity',
+        'derive_quantity_from_price',
+        'manage_wastage',
+      ]) {
+        expect(byColumn[h]![2], contains('1 = Yes, 0 = No'));
+      }
+      expect(byColumn['size_type']![2], contains('X Large'));
+    });
+
+    test('simple file leaves the extra fields null', () {
+      final row = _validateCsv('$_header\nRice,,,,,,\n').rows.single;
+      expect(row.hasErrors, isFalse);
+      expect(row.setCustomPrice, isNull);
+      expect(row.isManaged, isNull);
+      expect(row.deriveQuantityFromPrice, isNull);
+      expect(row.manageSalesWastage, isNull);
+      expect(row.discount, isNull);
+      expect(row.sizeType, isNull);
+    });
+
+    test('blank extra cells keep defaults', () {
+      final r = _validateFull('Rice,,,,,,,,,,,,,,\n');
+      final row = r.rows.single;
+      expect(r.hasErrors, isFalse);
+      expect(row.setCustomPrice, isNull);
+      expect(row.isManaged, isNull);
+      expect(row.deriveQuantityFromPrice, isNull);
+      expect(row.manageSalesWastage, isNull);
+      expect(row.discount, isNull);
+      expect(row.sizeType, isNull);
+    });
+
+    test('parses 1/0, TRUE/FALSE, yes/no and y/n', () {
+      final r = _validateFull(
+        'A,,,,,,,,,1,0,1,,5,medium\n'
+        'B,,,,,,,,,TRUE,false,No,,,\n'
+        'C,,,,,,,,,Yes,Y,n,,,\n'
+        'D,,,,,,,100,200,0,1,,1,,X LARGE\n',
+      );
+      expect(r.hasErrors, isFalse, reason: '${r.rows.map((e) => e.errors)}');
+      final a = r.rows[0];
+      expect(a.setCustomPrice, isTrue);
+      expect(a.isManaged, isFalse);
+      expect(a.deriveQuantityFromPrice, isTrue);
+      expect(a.manageSalesWastage, isNull);
+      expect(a.discount, 5);
+      expect(a.sizeType, 'Medium');
+      expect(r.rows[1].setCustomPrice, isTrue);
+      expect(r.rows[1].isManaged, isFalse);
+      expect(r.rows[1].deriveQuantityFromPrice, isFalse);
+      expect(r.rows[2].setCustomPrice, isTrue);
+      expect(r.rows[2].isManaged, isTrue);
+      expect(r.rows[2].deriveQuantityFromPrice, isFalse);
+      final d = r.rows[3];
+      expect(d.is2D, isTrue);
+      expect(d.setCustomPrice, isFalse);
+      expect(d.manageSalesWastage, isTrue);
+      expect(d.sizeType, 'X Large');
+    });
+
+    test('invalid booleans are row errors', () {
+      final row = _validateFull('A,,,,,,,,,2,maybe,,,,\n').rows.single;
+      expect(
+        row.errors,
+        containsAll([
+          'allow_custom_price must be 1 (yes) or 0 (no).',
+          'manage_quantity must be 1 (yes) or 0 (no).',
+        ]),
+      );
+    });
+
+    test('discount_percent must be a number from 0 to 100', () {
+      final r = _validateFull(
+        'A,,,,,,,,,,,,,-1,\n'
+        'B,,,,,,,,,,,,,101,\n'
+        'C,,,,,,,,,,,,,abc,\n'
+        'D,,,,,,,,,,,,,12.5%,\n',
+      );
+      expect(
+        r.rows[0].errors,
+        contains('discount_percent must be between 0 and 100.'),
+      );
+      expect(
+        r.rows[1].errors,
+        contains('discount_percent must be between 0 and 100.'),
+      );
+      expect(
+        r.rows[2].errors,
+        contains('discount_percent must be a number.'),
+      );
+      expect(r.rows[3].hasErrors, isFalse);
+      expect(r.rows[3].discount, 12.5);
+    });
+
+    test('size_type must be a known size and allowed by the plan', () {
+      final bad = _validateFull('A,,,,,,,,,,,,,,Huge\n').rows.single;
+      expect(
+        bad.errors.single,
+        startsWith('size_type must be one of: Small, Medium'),
+      );
+
+      final gated = _validateFull(
+        'A,,,,,,,,,,,,,,Small\nB,,,,,,,,,,,,,,\n',
+        canSetSizeType: false,
+      );
+      expect(
+        gated.rows[0].errors,
+        contains('size_type is not available on your plan.'),
+      );
+      expect(gated.rows[1].hasErrors, isFalse);
+    });
+
+    test('1D-only and 2D-only flags are row errors on the wrong item', () {
+      final r = _validateFull(
+        'Glass,,,,,,,100,200,,,1,,,\n'
+        'Rice,,,,,,,,,,,,1,,\n'
+        'Sheet,,,,,,,100,200,,,0,1,,\n'
+        'Beans,,,,,,,,,,,1,0,,\n',
+      );
+      expect(
+        r.rows[0].errors,
+        contains(
+          'derive_quantity_from_price can only be 1 for 1D items (leave width and height blank).',
+        ),
+      );
+      expect(
+        r.rows[1].errors,
+        contains(
+          'manage_wastage can only be 1 for 2D items (set width and height).',
+        ),
+      );
+      expect(r.rows[2].hasErrors, isFalse);
+      expect(r.rows[3].hasErrors, isFalse);
+    });
+
+    test('staff permissions are checked per column', () {
+      final r = _validateFull(
+        'A,,,,,,,,,1,,,,,\n'
+        'B,,,,,,,,,0,,,,,\n'
+        'C,,,,,,,,,,0,,,,\n'
+        'D,,,,,,,,,,1,,,,\n',
+        canSetCustomPrice: false,
+        canManageQuantity: false,
+      );
+      expect(
+        r.rows[0].errors,
+        contains(
+          'You do not have permission to set allow_custom_price (Edit Selling Price).',
+        ),
+      );
+      expect(r.rows[1].hasErrors, isFalse);
+      expect(
+        r.rows[2].errors,
+        contains(
+          'You do not have permission to change manage_quantity (Update Item Quantity).',
+        ),
+      );
+      expect(r.rows[3].hasErrors, isFalse);
+    });
+
+    test('accepts header aliases for the extra columns', () {
+      final r = _validateCsv(
+        '$_header,Set Custom Price,Discount (%),Wastage,Manage Item Quantity\n'
+        'Rice,,,,,,,1,10,0,0\n',
+      );
+      expect(r.fileErrors, isEmpty);
+      final row = r.rows.single;
+      expect(row.setCustomPrice, isTrue);
+      expect(row.discount, 10);
+      expect(row.manageSalesWastage, isFalse);
+      expect(row.isManaged, isFalse);
+    });
+
+    test('reads 1/0 typed as numbers in an xlsx file', () {
+      final wb = Workbook();
+      final sheet = wb.worksheets[0];
+      final headers = BulkProductValidator.fullHeaders;
+      for (var i = 0; i < headers.length; i++) {
+        sheet.getRangeByIndex(1, i + 1).setText(headers[i]);
+      }
+      sheet.getRangeByIndex(2, 1).setText('Rice');
+      sheet
+          .getRangeByIndex(2, headers.indexOf('allow_custom_price') + 1)
+          .setNumber(1);
+      sheet
+          .getRangeByIndex(2, headers.indexOf('manage_quantity') + 1)
+          .setNumber(0);
+      final bytes = Uint8List.fromList(wb.saveAsStream());
+      wb.dispose();
+
+      final r = BulkProductValidator.validate(
+        table: SpreadsheetReader.read(bytes: bytes, fileName: 'f.xlsx'),
+        sizeTypes: _sizes,
+      );
+      expect(r.hasErrors, isFalse);
+      expect(r.rows.single.setCustomPrice, isTrue);
+      expect(r.rows.single.isManaged, isFalse);
+    });
+
+    test('unknown columns are still file errors', () {
+      final r = _validateCsv('$_header,brand\nRice,,,,,,,Acme\n');
+      expect(r.fileErrors, contains('Unknown column "brand".'));
+    });
+  });
+}
+
+const _sizes = ['Small', 'Medium', 'Large', 'X Large'];
+
+BulkValidationResult _validateFull(
+  String rows, {
+  bool canSetCustomPrice = true,
+  bool canManageQuantity = true,
+  bool canSetSizeType = true,
+}) {
+  return BulkProductValidator.validate(
+    table: SpreadsheetReader.read(
+      bytes: _csv(
+        '${BulkProductValidator.fullHeaders.join(',')}\n$rows',
+      ),
+      fileName: 'f.csv',
+    ),
+    sizeTypes: _sizes,
+    canSetCustomPrice: canSetCustomPrice,
+    canManageQuantity: canManageQuantity,
+    canSetSizeType: canSetSizeType,
+  );
 }

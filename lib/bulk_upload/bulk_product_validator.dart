@@ -10,6 +10,16 @@ class BulkProductRow {
   final DateTime? expiryDate;
   final double? width;
   final double? height;
+
+  // Full template columns. Null means blank or column missing,
+  // so the caller keeps today's default.
+  final bool? setCustomPrice;
+  final bool? isManaged;
+  final bool? deriveQuantityFromPrice;
+  final bool? manageSalesWastage;
+  final double? discount;
+  final String? sizeType;
+
   final List<String> errors;
   final List<String> warnings;
 
@@ -24,6 +34,12 @@ class BulkProductRow {
     required this.expiryDate,
     this.width,
     this.height,
+    this.setCustomPrice,
+    this.isManaged,
+    this.deriveQuantityFromPrice,
+    this.manageSalesWastage,
+    this.discount,
+    this.sizeType,
     required this.errors,
     required this.warnings,
   });
@@ -64,6 +80,19 @@ class BulkProductValidator {
     'height',
   ];
 
+  /// Extra columns that only the Full template has.
+  static const fullOnlyHeaders = [
+    'allow_custom_price',
+    'manage_quantity',
+    'derive_quantity_from_price',
+    'manage_wastage',
+    'discount_percent',
+    'size_type',
+  ];
+
+  /// Columns of the Full template: the simple ones, then the extras.
+  static const fullHeaders = [...headers, ...fullOnlyHeaders];
+
   static const requiredHeaders = [
     'name',
     'quantity',
@@ -98,7 +127,40 @@ class BulkProductValidator {
         normalized == 'length(cm)') {
       return 'height';
     }
+    switch (normalized) {
+      case 'set_custom_price':
+      case 'custom_price':
+        return 'allow_custom_price';
+      case 'manage_item_quantity':
+        return 'manage_quantity';
+      case 'derive_quantity':
+        return 'derive_quantity_from_price';
+      case 'wastage':
+      case 'manage_sales_wastage':
+        return 'manage_wastage';
+      case 'discount':
+      case 'discount_(%)':
+      case 'discount_%':
+        return 'discount_percent';
+    }
     return normalized;
+  }
+
+  /// Accepts 1/0, true/false, yes/no and y/n in any case.
+  static bool? parseBool(String raw) {
+    switch (raw.trim().toLowerCase()) {
+      case '1':
+      case 'true':
+      case 'yes':
+      case 'y':
+        return true;
+      case '0':
+      case 'false':
+      case 'no':
+      case 'n':
+        return false;
+    }
+    return null;
   }
 
   static String _key(String s) => s.trim().toLowerCase();
@@ -107,6 +169,12 @@ class BulkProductValidator {
     required List<List<String>> table,
     Set<String> existingNames = const {},
     Set<String> existingBarcodes = const {},
+    // Full template rules. The page passes the shop's size types,
+    // the staff permissions and the plan; the validator stays pure.
+    List<String> sizeTypes = const [],
+    bool canSetCustomPrice = true,
+    bool canManageQuantity = true,
+    bool canSetSizeType = true,
   }) {
     final fileErrors = <String>[];
 
@@ -128,7 +196,7 @@ class BulkProductValidator {
       final raw = headerRow[i];
       if (raw.trim().isEmpty) continue;
       final h = _normalizeHeader(raw);
-      if (!headers.contains(h)) {
+      if (!fullHeaders.contains(h)) {
         fileErrors.add('Unknown column "${raw.trim()}".');
       } else if (!seen.add(h)) {
         fileErrors.add('Column "$h" appears more than once.');
@@ -231,6 +299,80 @@ class BulkProductValidator {
         }
       }
 
+      bool? flag(String h) {
+        final raw = cell(row, h);
+        if (raw.isEmpty) return null;
+        final v = parseBool(raw);
+        if (v == null) {
+          errors.add('$h must be 1 (yes) or 0 (no).');
+        }
+        return v;
+      }
+
+      final setCustomPrice = flag('allow_custom_price');
+      if (setCustomPrice == true && !canSetCustomPrice) {
+        errors.add(
+          'You do not have permission to set allow_custom_price (Edit Selling Price).',
+        );
+      }
+
+      final isManaged = flag('manage_quantity');
+      if (isManaged == false && !canManageQuantity) {
+        errors.add(
+          'You do not have permission to change manage_quantity (Update Item Quantity).',
+        );
+      }
+
+      final deriveQuantity = flag('derive_quantity_from_price');
+      if (deriveQuantity == true && hasAnyDimension) {
+        errors.add(
+          'derive_quantity_from_price can only be 1 for 1D items (leave width and height blank).',
+        );
+      }
+
+      final manageWastage = flag('manage_wastage');
+      if (manageWastage == true && !hasAnyDimension) {
+        errors.add(
+          'manage_wastage can only be 1 for 2D items (set width and height).',
+        );
+      }
+
+      double? discount;
+      final discountRaw = cell(row, 'discount_percent');
+      if (discountRaw.isNotEmpty) {
+        final v = double.tryParse(
+          discountRaw.replaceAll(RegExp(r'[,\s%]'), ''),
+        );
+        if (v == null || v.isNaN || v.isInfinite) {
+          errors.add('discount_percent must be a number.');
+        } else if (v < 0 || v > 100) {
+          errors.add('discount_percent must be between 0 and 100.');
+        } else {
+          discount = v;
+        }
+      }
+
+      String? sizeType;
+      final sizeRaw = cell(row, 'size_type');
+      if (sizeRaw.isNotEmpty) {
+        if (!canSetSizeType) {
+          errors.add('size_type is not available on your plan.');
+        } else {
+          final k = _key(sizeRaw).replaceAll(RegExp(r'\s+'), ' ');
+          for (final s in sizeTypes) {
+            if (_key(s) == k) {
+              sizeType = s;
+              break;
+            }
+          }
+          if (sizeType == null) {
+            errors.add(
+              'size_type must be one of: ${sizeTypes.join(', ')}.',
+            );
+          }
+        }
+      }
+
       if (name.isNotEmpty) {
         final k = _key(name);
         fileNameCount[k] = (fileNameCount[k] ?? 0) + 1;
@@ -252,6 +394,12 @@ class BulkProductValidator {
           expiryDate: expiry,
           width: width,
           height: height,
+          setCustomPrice: setCustomPrice,
+          isManaged: isManaged,
+          deriveQuantityFromPrice: deriveQuantity,
+          manageSalesWastage: manageWastage,
+          discount: discount,
+          sizeType: sizeType,
           errors: errors,
           warnings: warnings,
         ),
