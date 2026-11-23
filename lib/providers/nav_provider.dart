@@ -27,7 +27,6 @@ class NavProvider extends ChangeNotifier {
   }
 
   Future<void> navigate(int index) async {
-    await Future.delayed(Duration(milliseconds: 5));
     settingNow = false;
     currentIndex = index;
     currentPage = index;

@@ -66,7 +66,7 @@ class DrawerNavItems extends StatelessWidget {
       safeContext,
       listen: false,
     ).navigate(tabIndex);
-    if (tabIndex == 0 || Navigator.of(context).canPop()) {
+    if (Navigator.of(context).canPop()) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const Home()),
@@ -92,8 +92,8 @@ class DrawerNavItems extends StatelessWidget {
       return;
     }
     final nav = returnNavProvider(context, listen: false);
-    if (nav.currentIndex != 0 ||
-        nav.currentIndex != 1 ||
+    if (nav.currentIndex != 0 &&
+        nav.currentIndex != 1 &&
         nav.currentIndex != 2) {
       if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();

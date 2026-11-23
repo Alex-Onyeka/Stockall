@@ -21,21 +21,20 @@ class ShopLogosFunc {
     await mainLocalLog('Shop Logos Box Initialized ✅');
   }
 
-  TempShopLogos? getLogo() {
-    TempShopLogos? logo =
-        shopLogosBox.values.isNotEmpty
-            ? shopLogosBox.values.first
-            : null;
-    return logo;
+  TempShopLogos? getLogo({int? shopId}) {
+    final targetShopId =
+        shopId ?? returnShopProvider().userShop()?.shopId;
+    if (targetShopId == null) return null;
+    return shopLogosBox.get(targetShopId);
   }
 
   Future<int> createLogo(TempShopLogos logo) async {
     try {
+      final targetShopId =
+          returnShopProvider().userShop()?.shopId;
+      if (targetShopId == null) return 0;
       await clearLogos();
-      await shopLogosBox.put(
-        returnShopProvider().userShop()!.shopId!,
-        logo,
-      );
+      await shopLogosBox.put(targetShopId, logo);
       await mainLocalLog(
         'Offline Logo inserted Successfully',
       );
