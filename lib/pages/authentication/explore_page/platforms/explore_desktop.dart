@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
+import 'package:stockall/pages/settings/components/view_app_logs_widget.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ExploreDesktop extends StatefulWidget {
@@ -22,47 +24,101 @@ class _ExploreDesktopState extends State<ExploreDesktop> {
     var theme = returnTheme(context);
     return Scaffold(
       body: DesktopCenterContainer(
-        mainWidget: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 15.0,
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: 10),
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(mainLogoIcon, height: 20),
-                  Text(
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 25,
-                      fontWeight:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .h3
-                              .fontWeightBold,
+        mainWidget: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15.0,
+              vertical: 10.0,
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  spacing: 5,
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          20,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(
+                            10,
+                          ),
+                          child: Icon(
+                            size: 22,
+                            color: Colors.grey,
+                            Icons
+                                .arrow_back_ios_new_rounded,
+                          ),
+                        ),
+                      ),
                     ),
-                    appName,
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              LoginDemoSectionWidget(theme: theme),
-              SizedBox(height: 20),
-              ContactSupportSectionWidget(theme: theme),
-              SizedBox(height: 20),
-              MainButtonTransparent(
-                themeProvider: widget.theme,
-                constraints: BoxConstraints(),
-                text: 'Go Back',
-                action: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+                    Row(
+                      spacing: 10,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          mainLogoIcon,
+                          height: 20,
+                        ),
+                        Text(
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 25,
+                            fontWeight:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontWeightBold,
+                          ),
+                          appName,
+                        ),
+                      ],
+                    ),
+                    Opacity(
+                      opacity: 0,
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.all(10),
+                        child: Icon(
+                          size: 22,
+                          color: Colors.grey,
+                          Icons.arrow_back_ios_new_rounded,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15),
+                LoginDemoSectionWidget(theme: theme),
+                SizedBox(height: 20),
+                ContactSupportSectionWidget(theme: theme),
+                SizedBox(height: 20),
+                DownloadSoftwareSectionWidget(theme: theme),
+                SizedBox(height: 20),
+                AppLogsSectionWidget(theme: theme),
+                SizedBox(height: 20),
+                MainButtonTransparent(
+                  themeProvider: widget.theme,
+                  constraints: BoxConstraints(),
+                  text: 'Go Back',
+                  action: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
       ),
@@ -390,6 +446,169 @@ class ContactSupportSectionWidget extends StatelessWidget {
             ),
             action: () {
               openWhatsApp();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DownloadSoftwareSectionWidget
+    extends StatelessWidget {
+  const DownloadSoftwareSectionWidget({
+    super.key,
+    required this.theme,
+  });
+
+  final ThemeProvider theme;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop =
+        screenWidth(context) > tabletScreenSmall;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 25,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(20, 0, 0, 0),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        spacing: 5,
+        children: [
+          Text(
+            style: TextStyle(
+              fontSize: theme.mobileTexts.h4.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+            'Download Software',
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  'Download and install our official Native application for a better experience.',
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          ActionButtonAlt(
+            text:
+                isDesktop
+                    ? 'Download Desktop App'
+                    : 'Download Mobile App',
+            icon: Icon(
+              size: 20,
+              color: Colors.white,
+              Icons.download_outlined,
+            ),
+            action: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return ConfirmationAlert(
+                    theme: theme,
+                    message:
+                        'You are about to download and install our official Native application, for better experience.',
+                    title:
+                        isDesktop
+                            ? 'Proceed to Download Desktop App'
+                            : 'Proceed to Download Mobile App',
+                    action: () async {
+                      Navigator.of(context).pop();
+                      await downloadApkFromApp(
+                        context: context,
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AppLogsSectionWidget extends StatelessWidget {
+  const AppLogsSectionWidget({
+    super.key,
+    required this.theme,
+  });
+
+  final ThemeProvider theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 25,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(20, 0, 0, 0),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Column(
+        spacing: 5,
+        children: [
+          Text(
+            style: TextStyle(
+              fontSize: theme.mobileTexts.h4.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+            'App Logs & Diagnostics',
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  'View application logs and diagnostics to troubleshoot issues or share details with support.',
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          ActionButtonAlt(
+            text: 'View App Logs & Diagnostics',
+            icon: Icon(
+              size: 20,
+              color: Colors.white,
+              Icons.terminal_rounded,
+            ),
+            action: () {
+              ViewAppLogsWidget.show(context);
             },
           ),
         ],

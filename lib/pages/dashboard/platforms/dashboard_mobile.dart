@@ -14,7 +14,6 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/local_database/new_feature_pop_up_func/new_feature_pop_up_func.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/contact_us_float_widget.dart';
@@ -92,13 +91,19 @@ class _DashboardMobileState extends State<DashboardMobile> {
         context,
         listen: false,
       ).isLoaded) {
-        await RefreshFunctions(
-          context,
-        ).refreshDashboard(context);
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).load(true);
+        try {
+          await RefreshFunctions(
+            context,
+          ).refreshDashboard(context);
+        } finally {
+          if (mounted) {
+            returnReceiptProvider(
+              context,
+              listen: false,
+            ).load(true);
+          }
+          returnData().toggleRefreshing(false);
+        }
         await mainLocalLog('Data Loaded');
       }
     });
@@ -160,27 +165,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                       message: 'You are about to Logout',
                       title: 'Are you Sure?',
                       action: () async {
-                        var res = await AuthService()
-                            .signOut(
-                              context: context,
-                              allowLogout: false,
-                            );
-                        if (res == 1) {
-                          if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AuthScreensPage();
-                                },
-                              ),
-                            );
-                            returnNavProvider(
-                              context,
-                              listen: false,
-                            ).navigate(0);
-                          }
-                        }
+                        await AuthService().signOut(
+                          context: context,
+                          allowLogout: false,
+                        );
                       },
                     );
                   },

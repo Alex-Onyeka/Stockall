@@ -106,7 +106,7 @@ class RefreshFunctions {
     DateTime? startDate,
     DateTime? endDate,
     bool fetchAll = false,
-    bool forceRefresh = false,
+    bool forceRefresh = true,
   }) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
@@ -171,7 +171,7 @@ class RefreshFunctions {
     DateTime? startDate,
     DateTime? endDate,
     bool fetchAll = false,
-    bool forceRefresh = false,
+    bool forceRefresh = true,
   }) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
@@ -433,7 +433,7 @@ class RefreshFunctions {
     DateTime? startDate,
     DateTime? endDate,
     bool fetchAll = false,
-    bool forceRefresh = false,
+    bool forceRefresh = true,
   }) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
@@ -482,12 +482,8 @@ class RefreshFunctions {
 
   Future<List<TempUserClass>> getEmployees() async {
     await shopProvider.getUserShops();
-    if (context.mounted) {
-      var users = await userProvider.fetchUsersByShop();
-      return users;
-    } else {
-      return [];
-    }
+    var users = await userProvider.fetchUsersByShop();
+    return users;
   }
 
   Future<void> refreshEmployees(context) async {
@@ -529,18 +525,24 @@ class RefreshFunctions {
   //
   //
 
-  Future<List<TempCustomersClass>> getCustomers() async {
+  Future<List<TempCustomersClass>> getCustomers({
+    bool forceRefresh = false,
+  }) async {
     var customers = await returnCustomers(
       context,
       listen: false,
     ).fetchCustomers(
       returnShopProvider().userShop()!.shopId!,
+      forceRefresh: forceRefresh,
     );
 
     return customers;
   }
 
-  Future<void> refreshCustomers(context) async {
+  Future<void> refreshCustomers(
+    context, {
+    bool forceRefresh = true,
+  }) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
     if (isOnline && isSynced() == 0) {
@@ -557,13 +559,15 @@ class RefreshFunctions {
               await returnData().syncData(
                 context: safeContext,
               );
-              await getCustomers();
+              await getCustomers(
+                forceRefresh: forceRefresh,
+              );
             },
           );
         },
       );
     } else {
-      await getCustomers();
+      await getCustomers(forceRefresh: forceRefresh);
     }
   }
 
@@ -638,54 +642,97 @@ class RefreshFunctions {
       dataProvider.setAllowedRange(plan: subs?.plan);
     }
 
-    await returnDepartmentProvider().getDepartments();
-    await getProducts();
-    if (safeContext.mounted) {
-      await getMainReceipts();
+    if (shopProvider.userShop()?.manageDepartments ==
+        true) {
+      await returnDepartmentProvider().getDepartments();
     }
-    await getInvoices();
-    await getExpenses();
-    await getCustomers();
-    await getEmployees();
+    await getProducts();
+    await getMainReceipts(forceRefresh: true);
+    await getInvoices(forceRefresh: true, fetchAll: true);
+    await getExpenses(forceRefresh: true);
     await fetchNotifications();
+  }
+
+  Future<void> _safeStep(
+    String name,
+    Future<void> Function() step,
+  ) async {
+    try {
+      await step();
+    } catch (e, s) {
+      await mainLocalLog(
+        '⚠️ $name failed during dashboard refresh: $e',
+        error: e,
+        stackTrace: s,
+      );
+    }
   }
 
   Future<void> _fetchDashboardStartup(
     BuildContext safeContext,
   ) async {
-    await loadDashboardDataOffline();
+    await _safeStep(
+      'loadDashboardDataOffline',
+      loadDashboardDataOffline,
+    );
     if (returnShopProvider().userShops.isEmpty) {
-      await getUserShop();
+      await _safeStep('getUserShop', getUserShop);
     }
-    var subs =
+    SubscriptionClass? subs =
         returnSubcsription(
           safeContext,
           listen: false,
-        ).subscription ??
-        await loadSubscription();
+        ).subscription;
+    if (subs == null) {
+      await _safeStep('loadSubscription', () async {
+        subs = await loadSubscription();
+      });
+    }
     await mainLocalLog(
       "Subscription Plan RefreshDashboard: ${subs?.plan}",
     );
     if (safeContext.mounted) {
       dataProvider.setAllowedRange(plan: subs?.plan);
     }
-    await returnDepartmentProvider().getDepartments();
-    if (safeContext.mounted) {
-      await getMainReceipts();
+    await _safeStep(
+      'getUtilityConstants',
+      () => utilityConstantProvider.getUtilityConstants(),
+    );
+    if (shopProvider.userShop()?.manageDepartments ==
+        true) {
+      await _safeStep(
+        'getDepartments',
+        () => returnDepartmentProvider().getDepartments(),
+      );
     }
-    await getExpenses();
+    await _safeStep('getProducts', () => getProducts());
+    await _safeStep(
+      'getMainReceipts',
+      () => getMainReceipts(),
+    );
+    await _safeStep(
+      'getInvoices',
+      () => getInvoices(fetchAll: true),
+    );
+    await _safeStep('getExpenses', () => getExpenses());
     if (safeContext.mounted &&
         returnUserProvider(
               safeContext,
               listen: false,
             ).currentUserMain ==
             null) {
-      await returnUserProvider(
-        safeContext,
-        listen: false,
-      ).fetchCurrentUser(safeContext);
+      await _safeStep(
+        'fetchCurrentUser',
+        () => returnUserProvider(
+          safeContext,
+          listen: false,
+        ).fetchCurrentUser(safeContext),
+      );
     }
-    await fetchNotifications();
+    await _safeStep(
+      'fetchNotifications',
+      fetchNotifications,
+    );
   }
 
   Future<void> refreshDashboard(
@@ -701,59 +748,73 @@ class RefreshFunctions {
 
       dataProvider.toggleRefreshing(true);
 
-      List<TempShopClass> shop = await getUserShop();
-      if (shop.isEmpty) {
-        navPro.nullShop(
-          logoutAction: () {
-            navPro.navPush(context);
-          },
-        );
-      } else {
-        bool isOnline =
-            returnConnectivityProvider().isConnected;
-        if (isSynced() == 0 &&
-            context.mounted &&
-            isOnline) {
-          showDialog(
-            context: context,
-            builder: (confirmDialog) {
-              return ConfirmationAlert(
-                theme: returnTheme(context, listen: false),
-                message:
-                    'You have unsynced Records, are you sure you want to proceed?',
-                title: 'Unsynced Records Detected',
-                action: () async {
-                  Navigator.of(confirmDialog).pop();
-                  dataProvider.toggleRefreshing(true);
-                  if (safeContext.mounted) {
-                    await returnData().syncData(
-                      context: safeContext,
-                    );
-                  }
-                  if (isManualRefresh) {
-                    await _fetchDashboardOnline(
-                      safeContext,
-                    );
-                  } else {
-                    await _fetchDashboardStartup(
-                      safeContext,
-                    );
-                  }
-                  dataProvider.toggleRefreshing(false);
-                },
-              );
+      try {
+        List<TempShopClass> shop = await getUserShop();
+        if (shop.isEmpty) {
+          navPro.nullShop(
+            logoutAction: () {
+              navPro.navPush(context);
             },
           );
         } else {
-          if (isManualRefresh) {
-            await _fetchDashboardOnline(safeContext);
+          bool isOnline =
+              returnConnectivityProvider().isConnected;
+          if (isSynced() == 0 &&
+              context.mounted &&
+              isOnline) {
+            showDialog(
+              context: context,
+              builder: (confirmDialog) {
+                return ConfirmationAlert(
+                  theme: returnTheme(
+                    context,
+                    listen: false,
+                  ),
+                  message:
+                      'You have unsynced Records, are you sure you want to proceed?',
+                  title: 'Unsynced Records Detected',
+                  action: () async {
+                    Navigator.of(confirmDialog).pop();
+                    dataProvider.toggleRefreshing(true);
+                    try {
+                      if (safeContext.mounted) {
+                        await returnData().syncData(
+                          context: safeContext,
+                        );
+                      }
+                      if (isManualRefresh) {
+                        await _fetchDashboardOnline(
+                          safeContext,
+                        );
+                      } else {
+                        await _fetchDashboardStartup(
+                          safeContext,
+                        );
+                      }
+                    } finally {
+                      dataProvider.toggleRefreshing(false);
+                    }
+                  },
+                );
+              },
+            );
           } else {
-            await _fetchDashboardStartup(safeContext);
+            if (isManualRefresh) {
+              await _fetchDashboardOnline(safeContext);
+            } else {
+              await _fetchDashboardStartup(safeContext);
+            }
           }
         }
+      } catch (e, s) {
+        await mainLocalLog(
+          '❌ refreshDashboard error: $e',
+          error: e,
+          stackTrace: s,
+        );
+      } finally {
+        dataProvider.toggleRefreshing(false);
       }
-
-      dataProvider.toggleRefreshing(false);
     }
   }
 

@@ -862,6 +862,8 @@ class ShopProvider extends ChangeNotifier {
         .clearProductionMainCart();
     returnProductionRecordsProvider()
         .clearProductionRecords();
+    returnData().toggleRefreshing(false);
+    returnData().isSyncing = false;
     returnData().clearProducts();
     returnData().clearDepartment();
     returnQuantityUpdateProvider().clearQuantityUpdates();

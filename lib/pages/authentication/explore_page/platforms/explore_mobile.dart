@@ -105,6 +105,12 @@ class _ExploreMobileState extends State<ExploreMobile> {
                       theme: theme,
                     ),
                     SizedBox(height: 20),
+                    DownloadSoftwareSectionWidget(
+                      theme: theme,
+                    ),
+                    SizedBox(height: 20),
+                    AppLogsSectionWidget(theme: theme),
+                    SizedBox(height: 20),
                     MainButtonTransparent(
                       themeProvider: widget.theme,
                       constraints: BoxConstraints(),

@@ -38,7 +38,10 @@ class OrderListDesktop extends StatefulWidget {
 class _OrderListDesktopState
     extends State<OrderListDesktop> {
   Future<void> getOrders() async {
-    await returnOrdersProvider().loadOrders(shopId());
+    await returnOrdersProvider().loadOrders(
+      shopId(),
+      forceRefresh: true,
+    );
     setState(() {});
   }
 
@@ -484,7 +487,10 @@ class OrderListBodyDesktop extends StatefulWidget {
 class _OrderListBodyDesktopState
     extends State<OrderListBodyDesktop> {
   Future<void> getOrders() async {
-    await returnOrdersProvider().loadOrders(shopId());
+    await returnOrdersProvider().loadOrders(
+      shopId(),
+      forceRefresh: true,
+    );
     setState(() {});
   }
 

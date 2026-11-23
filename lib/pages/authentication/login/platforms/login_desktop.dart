@@ -88,7 +88,11 @@ class _LoginDesktopState extends State<LoginDesktop> {
 
           Future.delayed(Duration(seconds: 3), () {
             if (context.mounted) {
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/',
+                (_) => false,
+              );
             }
             setState(() {
               showwSuccess = false;

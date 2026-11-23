@@ -416,7 +416,10 @@ class _TopNavBarState extends State<TopNavBar> {
                           );
                           await RefreshFunctions(
                             context,
-                          ).refreshAll(context);
+                          ).refreshDashboard(
+                            context,
+                            isManualRefresh: true,
+                          );
                           if (context.mounted) {
                             returnData().toggleRefreshing(
                               false,

@@ -47,6 +47,7 @@ class _SupplierListMobileState
   Future<void> getSuppliers(BuildContext context) async {
     await returnSuppliersProvider().fetchSuppliers(
       shopId(),
+      forceRefresh: true,
     );
   }
 
@@ -182,7 +183,16 @@ class _SupplierListMobileState
                                     ),
                               )
                               .isNotEmpty) {
-                            return ListView.builder(
+                            return RefreshIndicator(
+                              onRefresh: () {
+                                return getSuppliers(
+                                  context,
+                                );
+                              },
+                              backgroundColor: Colors.white,
+                              color: Colors.amber,
+                              displacement: 10,
+                              child: ListView.builder(
                               itemCount:
                                   suppliers
                                       .where(
@@ -264,7 +274,8 @@ class _SupplierListMobileState
                                       widget.isPurchase,
                                 );
                               },
-                            );
+                            ),
+                          );
                           } else {
                             return Column(
                               crossAxisAlignment:

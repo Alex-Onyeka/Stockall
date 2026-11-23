@@ -27,7 +27,10 @@ class PurchaseListMobile extends StatefulWidget {
 class _PurchaseListMobileState
     extends State<PurchaseListMobile> {
   Future<void> getPurchases() async {
-    await returnPurchaseProvider().loadPurchases(shopId());
+    await returnPurchaseProvider().loadPurchases(
+      shopId(),
+      forceRefresh: true,
+    );
     setState(() {});
   }
 

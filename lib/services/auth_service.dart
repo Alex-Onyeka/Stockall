@@ -364,8 +364,31 @@ class AuthService extends ChangeNotifier {
         );
         return 0;
       } else {
-        await returnShopProvider().clearAll(
+        final rootNav = Navigator.of(
           context,
+          rootNavigator: true,
+        );
+        final navContext = rootNav.context;
+        final nav = returnNavProvider(
+          navContext,
+          listen: false,
+        );
+        nav.navigateAuth(1);
+        nav.navigate(0);
+
+        // Navigate to AuthLanding before clearing shop/user providers so Home
+        // never rebuilds ShopBannerScreen while logout cleanup runs.
+        rootNav.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) {
+              return const AuthScreensPage();
+            },
+          ),
+          (_) => false,
+        );
+
+        await returnShopProvider().clearAll(
+          navContext,
           includeAuthAndShop: true,
         );
         await CurrentShopFunc().clearCurrentShop();
@@ -381,22 +404,6 @@ class AuthService extends ChangeNotifier {
         }
         returnShopProvider().clearShop();
         returnUserProviderSingle().clearUsers();
-        if (context.mounted) {
-          returnNavProvider(
-            context,
-            listen: false,
-          ).navigate(0);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AuthScreensPage();
-              },
-            ),
-          );
-        } else {
-          await mainLocalLog('Context is Not Mounted');
-        }
 
         notifyListeners();
         return 1;

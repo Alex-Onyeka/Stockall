@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
@@ -12,6 +13,7 @@ import 'package:stockall/pages/profile/edit/edit.dart';
 import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/providers/nav_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/barcode_generation/barcode_import_helper.dart';
 
 class Home extends StatefulWidget {
@@ -89,6 +91,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    if (AuthService().currentUser == null) {
+      return const AuthScreensPage();
+    }
     final navProv = Provider.of<NavProvider>(context);
     final theme = returnTheme(context);
 

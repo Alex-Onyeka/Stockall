@@ -356,7 +356,10 @@ class _CustomerListDesktopState
                                 await returnCustomers(
                                   context,
                                   listen: false,
-                                ).fetchCustomers(shopId());
+                                ).fetchCustomers(
+                                  shopId(),
+                                  forceRefresh: true,
+                                );
                               },
                               altActionText: 'Refresh',
                               altIcon: Icons.refresh,

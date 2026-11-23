@@ -83,11 +83,13 @@ class _LoginMobileState extends State<LoginMobile> {
           });
 
           Future.delayed(Duration(seconds: 3), () {
-            Navigator.pushReplacementNamed(
-              // ignore: use_build_context_synchronously
-              context,
-              '/',
-            );
+            if (context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/',
+                (_) => false,
+              );
+            }
             setState(() {
               showwSuccess = false;
             });

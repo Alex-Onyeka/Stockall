@@ -30,7 +30,10 @@ class OrderListMobile extends StatefulWidget {
 
 class OrderListMobileState extends State<OrderListMobile> {
   Future<void> getOrders() async {
-    await returnOrdersProvider().loadOrders(shopId());
+    await returnOrdersProvider().loadOrders(
+      shopId(),
+      forceRefresh: true,
+    );
     setState(() {});
   }
 
@@ -254,7 +257,10 @@ class OrderListBodyMobile extends StatefulWidget {
 class _OrderListBodyMobileState
     extends State<OrderListBodyMobile> {
   Future<void> getOrders() async {
-    await returnOrdersProvider().loadOrders(shopId());
+    await returnOrdersProvider().loadOrders(
+      shopId(),
+      forceRefresh: true,
+    );
     setState(() {});
   }
 

@@ -57,6 +57,7 @@ class _SupplierListDesktopState
   ) async {
     await returnSuppliersProvider().fetchSuppliers(
       shopId(),
+      forceRefresh: true,
     );
   }
 
@@ -322,6 +323,7 @@ class _SupplierListDesktopState
                                 await returnSuppliersProvider()
                                     .fetchSuppliers(
                                       shopId(),
+                                      forceRefresh: true,
                                     );
                               },
                               altActionText: 'Refresh',

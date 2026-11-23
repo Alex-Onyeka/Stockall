@@ -65,8 +65,13 @@ class SupplierMainTile extends StatelessWidget {
                               height: 1,
                               color: Colors.black,
                             ),
-                            supplier.name.characters.first
-                                .toUpperCase(),
+                            supplier.name.trim().isNotEmpty
+                                ? supplier.name
+                                    .trim()
+                                    .characters
+                                    .first
+                                    .toUpperCase()
+                                : '?',
                           ),
                         ),
                         // Icon(

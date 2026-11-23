@@ -8,17 +8,18 @@ import 'package:stockall/main.dart';
 class ViewAppLogsWidget extends StatelessWidget {
   const ViewAppLogsWidget({super.key});
 
+  static void show(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => const _AppLogsDialog(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return NavListTileDesktopAlt(
       height: 18,
-      action: () {
-        showDialog(
-          context: context,
-          builder:
-              (dialogContext) => const _AppLogsDialog(),
-        );
-      },
+      action: () => show(context),
       title: 'App Logs & Diagnostics',
       icon: Icons.terminal_rounded,
     );

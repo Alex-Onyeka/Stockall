@@ -34,7 +34,10 @@ class PurchaseListDesktop extends StatefulWidget {
 class _PurchaseListDesktopState
     extends State<PurchaseListDesktop> {
   Future<void> getPurchases() async {
-    await returnPurchaseProvider().loadPurchases(shopId());
+    await returnPurchaseProvider().loadPurchases(
+      shopId(),
+      forceRefresh: true,
+    );
     setState(() {});
   }
 

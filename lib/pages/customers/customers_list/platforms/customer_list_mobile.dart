@@ -176,7 +176,10 @@ class _CustomerListMobileState
                   await returnCustomers(
                     context,
                     listen: false,
-                  ).fetchCustomers(shopId());
+                  ).fetchCustomers(
+                    shopId(),
+                    forceRefresh: true,
+                  );
                 },
                 altActionText: 'Refresh',
                 altIcon: Icons.refresh,
@@ -223,6 +226,7 @@ class _CustomerListMobileState
                                 return returnCustomersSingle()
                                     .fetchCustomers(
                                       shopId(),
+                                      forceRefresh: true,
                                     );
                               },
                               backgroundColor: Colors.white,

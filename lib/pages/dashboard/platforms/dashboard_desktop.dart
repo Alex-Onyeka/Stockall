@@ -91,11 +91,17 @@ class _DashboardDesktopState
         context,
         listen: false,
       ).isLoaded) {
-        await RefreshFunctions(context).refreshDashboard(context);
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).load(true);
+        try {
+          await RefreshFunctions(context).refreshDashboard(context);
+        } finally {
+          if (mounted) {
+            returnReceiptProvider(
+              context,
+              listen: false,
+            ).load(true);
+          }
+          returnData().toggleRefreshing(false);
+        }
         await mainLocalLog('Data Loaded');
       }
     });
@@ -235,8 +241,9 @@ class _DashboardDesktopState
                                     refreshAction: () async {
                                       await RefreshFunctions(
                                         context,
-                                      ).refreshAll(
+                                      ).refreshDashboard(
                                         context,
+                                        isManualRefresh: true,
                                       );
                                       // setState(() {});
                                     },
