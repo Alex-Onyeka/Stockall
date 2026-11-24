@@ -32,6 +32,9 @@ class _ProductsPageState extends State<ProductsPage> {
         child: PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, result) {
+            if (returnData().isSelectProducts) {
+              return;
+            }
             returnNavProvider(
               context,
               listen: false,

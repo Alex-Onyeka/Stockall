@@ -197,6 +197,7 @@ class _TotalProductsMobileState
 
     return SelectionBackScope(
       onCancelSelection: _cancelSelection,
+      isMainTab: widget.isMainTab,
       child: Stack(
         children: [
           Scaffold(

@@ -9,11 +9,13 @@ import 'package:stockall/main.dart';
 /// selection is cleared from provider code (after a bulk action).
 class SelectionBackScope extends StatelessWidget {
   final VoidCallback onCancelSelection;
+  final bool isMainTab;
   final Widget child;
 
   const SelectionBackScope({
     super.key,
     required this.onCancelSelection,
+    this.isMainTab = false,
     required this.child,
   });
 
@@ -22,12 +24,13 @@ class SelectionBackScope extends StatelessWidget {
     final isSelecting =
         returnData(context: context).isSelectProducts;
     return PopScope(
-      canPop: !isSelecting,
+      canPop: !isMainTab && !isSelecting,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (returnData().isSelectProducts) {
           onCancelSelection();
-        } else {
+        } else if (!isMainTab &&
+            Navigator.of(context).canPop()) {
           Navigator.of(context).pop();
         }
       },

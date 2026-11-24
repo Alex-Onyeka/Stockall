@@ -238,6 +238,7 @@ class _TotalProductsDesktopState
 
     return SelectionBackScope(
       onCancelSelection: _cancelSelection,
+      isMainTab: widget.isMainTab,
       child: Scaffold(
         key: _scaffoldKey,
         drawer:
