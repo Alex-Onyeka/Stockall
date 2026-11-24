@@ -22,6 +22,8 @@ import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'package:file_saver/file_saver.dart';
+import 'package:stockall/services/navigation_service.dart' show navigatorKey;
+import 'package:stockall/services/pos_printing/a4_print_dispatcher.dart';
 
 void downloadPdfWebInvoice({
   required TempInvoice invoice,
@@ -1549,5 +1551,39 @@ Future<Uint8List> buildInvoiceRollPdf({
     shop: shop,
     context: context,
     printerType: printerType,
+  );
+}
+
+// The A4 Invoice on the A4 printer from Printer Settings (the system
+// print dialog where none can be chosen). The app navigator shows any
+// printer dialog, so it works after the menu or dialog that started it
+// has closed.
+Future<void> printA4Invoice({
+  required TempInvoice invoice,
+  required List<TempMainReceipt> receipts,
+  required String staffName,
+  required List<TempProductSaleRecord> records,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      try {
+        await printA4Pdf(
+          navigatorKey.currentContext ?? context,
+          name: 'Invoice',
+          buildPdf: () => _buildPdfInvoice(
+            invoice: invoice,
+            shop: returnShopProvider().userShop()!,
+            receipts: receipts,
+            staffName: staffName,
+            records: records,
+            context: context,
+          ),
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog('❌ Error printing invoice A4: $e\n$stackTrace');
+      }
+    },
   );
 }

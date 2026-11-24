@@ -18,6 +18,7 @@ import 'package:stockall/pages/purchases/components/purchase_linked_expense_row.
 import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/purchases/purchase_page/platforms/purchase_page_desktop.dart';
+import 'package:stockall/components/buttons/printer_settings_button.dart';
 
 class PurchasePageMobile extends StatefulWidget {
   final String purchaseUuid;
@@ -739,6 +740,24 @@ class _PurchasePageMobileState
                                         : 'Share',
                                   ),
                                 ),
+                                PopupMenuItem(
+                                  height: 35,
+                                  onTap: () {
+                                      printA4Purchase(
+                                        purchase: purchase,
+                                        records: saleRecords,
+                                        context: context,
+                                      );
+                                  },
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize: theme.mobileTexts.b3.fontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    'Print A4',
+                                  ),
+                                ),
+                                printerSettingsMenuItem(context),
                                 PopupMenuItem(
                                   height: 35,
                                   onTap: () {

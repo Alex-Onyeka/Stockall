@@ -22,6 +22,8 @@ import 'package:stockall/services/documents/document_model.dart'
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:stockall/services/navigation_service.dart' show navigatorKey;
+import 'package:stockall/services/pos_printing/a4_print_dispatcher.dart';
 
 // Order roll layout, modelled on _buildPdfRollInvoice so all three
 // documents print with the same header, fonts and 58mm/80mm sizing.
@@ -664,5 +666,31 @@ Future<Uint8List> _buildPdfOrder(
       assets: DocShopAssets.current(),
     ),
     shop,
+  );
+}
+
+// The A4 Order on the A4 printer from Printer Settings (the system
+// print dialog where none can be chosen). The app navigator shows any
+// printer dialog, so it works after the menu or dialog that started it
+// has closed.
+Future<void> printA4Order({
+  required Orders order,
+  required List<OrderItems> items,
+  required List<TempMainReceipt> receipts,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      try {
+        await printA4Pdf(
+          navigatorKey.currentContext ?? context,
+          name: 'Order',
+          buildPdf: () => _buildPdfOrder(order, items, receipts),
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog('❌ Error printing order A4: $e\n$stackTrace');
+      }
+    },
   );
 }

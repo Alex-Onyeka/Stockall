@@ -454,8 +454,15 @@ void _escPair(EscPosBuilder b, RollPair p) {
 }
 
 /// Byte chunks for the printer, ending with a partial cut (GS V 1).
-List<Uint8List> buildRollEscPos(List<RollLine> lines, RollPaper paper) {
+/// [cut] ends the print with a partial cut (Printer Settings' "cut paper
+/// after print").
+List<Uint8List> buildRollEscPos(
+  List<RollLine> lines,
+  RollPaper paper, {
+  bool cut = true,
+}) {
   final chunks = renderRollEscPos(lines, paper).build();
+  if (!cut) return chunks;
   return [...chunks, Uint8List.fromList(const [0x1D, 0x56, 0x01])];
 }
 

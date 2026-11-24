@@ -29,6 +29,8 @@ import 'package:flutter/services.dart'
     show rootBundle, Clipboard, ClipboardData;
 import 'dart:io';
 import 'package:file_saver/file_saver.dart';
+import 'package:stockall/services/navigation_service.dart' show navigatorKey;
+import 'package:stockall/services/pos_printing/a4_print_dispatcher.dart';
 
 Future<void> copyToClipboard({
   required BuildContext context,
@@ -4266,4 +4268,31 @@ class _DownloadOptionTile extends StatelessWidget {
       ),
     );
   }
+}
+
+// The A4 Receipt on the A4 printer from Printer Settings (the system
+// print dialog where none can be chosen). The app navigator shows any
+// printer dialog, so it works after the menu or dialog that started it
+// has closed.
+Future<void> printA4Receipt({
+  required TempMainReceipt receipt,
+  required String staffName,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      try {
+        await printA4Pdf(
+          navigatorKey.currentContext ?? context,
+          name: 'Receipt',
+          buildPdf: () => _buildPdf(receipt, staffName, records, shop, context),
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog('❌ Error printing receipt A4: $e\n$stackTrace');
+      }
+    },
+  );
 }

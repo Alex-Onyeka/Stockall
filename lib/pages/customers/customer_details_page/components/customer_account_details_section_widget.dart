@@ -16,6 +16,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_page/components/payment_type_button_invoice.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart';
 
 class CustomerAccountDetailsSectionWidget
     extends StatefulWidget {
@@ -1328,6 +1329,25 @@ class CustomerPrintButtonWidget extends StatelessWidget {
                         }
                         Navigator.of(context).pop();
                       },
+                    ),
+                    MainButtonTransparent(
+                      themeProvider: theme,
+                      constraints: BoxConstraints(),
+                      text: 'Print A4',
+                      action: () {
+                        printA4CustomerAccountBalance(
+                          customer: customer,
+                          context: context,
+                        );
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    // Leaves this dialog open, so printing can go on.
+                    MainButtonTransparent(
+                      themeProvider: theme,
+                      constraints: BoxConstraints(),
+                      text: 'Printer Settings',
+                      action: () => openPrinterSettings(context),
                     ),
                   ],
                 ),

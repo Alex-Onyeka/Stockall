@@ -22,6 +22,7 @@ class _Call {
 class _FakeBackend implements ReportExportBackend {
   final Set<ReportPrintGate> denied;
   Object? printError;
+  Object? printA4Error;
   Object? pdfError;
   bool showSaved;
   RollPaper? saved;
@@ -55,6 +56,17 @@ class _FakeBackend implements ReportExportBackend {
   }) async {
     calls.add(_Call('print', paper: paper, groupings: groupings));
     if (printError != null) throw printError!;
+  }
+
+  @override
+  Future<void> printA4(
+    BuildContext context,
+    ReportExportSpec spec,
+    ExportContext ctx, {
+    required VoidCallback beforeUi,
+  }) async {
+    calls.add(const _Call('printA4'));
+    if (printA4Error != null) throw printA4Error!;
   }
 
   @override
@@ -223,8 +235,10 @@ void main() {
       testWidgets('shows the four entries', (tester) async {
         await _pump(tester, desktop: desktop, backend: _FakeBackend());
         await _openMenu(tester);
-        expect(find.text('Print 80mm'), findsOneWidget);
-        expect(find.text('Print 58mm'), findsOneWidget);
+        expect(find.text('Print'), findsOneWidget);
+        expect(find.text('Print A4'), findsOneWidget);
+        expect(find.text('Print 80mm'), findsNothing);
+        expect(find.text('Print 58mm'), findsNothing);
         expect(find.text('Download PDF'), findsOneWidget);
         expect(find.text('Export Excel'), findsOneWidget);
       });
@@ -269,7 +283,7 @@ void main() {
           );
           await _openMenu(tester);
           expect(_menuItem(tester, 'Export Excel').onPressed, isNotNull);
-          expect(_menuItem(tester, 'Print 80mm').onPressed, isNotNull);
+          expect(_menuItem(tester, 'Print').onPressed, isNotNull);
           await _tapText(tester, 'Export Excel');
           expect(find.text('All in one sheet'), findsNothing);
           expect(backend.calls.single.kind, 'excel');
@@ -284,7 +298,7 @@ void main() {
             spec: _oneSplitSpec,
           );
           await _openMenu(tester);
-          await _tapText(tester, 'Print 80mm');
+          await _tapText(tester, 'Print');
           expect(find.text('As shown'), findsOneWidget);
           expect(find.text('By Category'), findsOneWidget);
           expect(find.text('All groupings'), findsNothing);
@@ -298,12 +312,15 @@ void main() {
         await _pump(tester, desktop: desktop, backend: backend);
         await _openMenu(tester);
 
-        expect(_menuItem(tester, 'Print 80mm').onPressed, isNull);
-        expect(_menuItem(tester, 'Print 58mm').onPressed, isNull);
+        expect(_menuItem(tester, 'Print').onPressed, isNull);
+        expect(_menuItem(tester, 'Print A4').onPressed, isNull);
         expect(find.text(reportExportNotOnPlan), findsNWidgets(2));
         expect(_menuItem(tester, 'Download PDF').onPressed, isNotNull);
 
-        await tester.tap(find.text('Print 80mm'), warnIfMissed: false);
+        await tester.tap(find.text('Print'), warnIfMissed: false);
+        await tester.pumpAndSettle();
+        expect(backend.calls, isEmpty);
+        await tester.tap(find.text('Print A4'), warnIfMissed: false);
         await tester.pumpAndSettle();
         expect(backend.calls, isEmpty);
 
@@ -334,17 +351,18 @@ void main() {
         await _openMenu(tester);
         expect(_menuItem(tester, 'Download PDF').onPressed, isNull);
         expect(_menuItem(tester, 'Export Excel').onPressed, isNull);
-        expect(find.text('Print 80mm'), findsOneWidget);
+        expect(find.text('Print'), findsOneWidget);
+        expect(_menuItem(tester, 'Print A4').onPressed, isNotNull);
       });
 
       group('print confirmation', () {
         testWidgets('shows the record count; cancel prints nothing', (
           tester,
         ) async {
-          final backend = _FakeBackend();
+          final backend = _FakeBackend(saved: RollPaper.mm80);
           await _pump(tester, desktop: desktop, backend: backend);
           await _openMenu(tester);
-          await _tapText(tester, 'Print 80mm');
+          await _tapText(tester, 'Print');
           await _tapText(tester, 'As shown');
 
           expect(find.text('Print Report'), findsOneWidget);
@@ -366,7 +384,7 @@ void main() {
             spec: () => itemsSpec(_rows(501)),
           );
           await _openMenu(tester);
-          await _tapText(tester, 'Print 58mm');
+          await _tapText(tester, 'Print');
           await _tapText(tester, 'As shown');
           expect(find.textContaining('501 records'), findsOneWidget);
           expect(
@@ -386,7 +404,7 @@ void main() {
             spec: () => itemsSpec(const []),
           );
           await _openMenu(tester);
-          await _tapText(tester, 'Print 80mm');
+          await _tapText(tester, 'Print');
           await _tapText(tester, 'As shown');
           expect(find.text('No Matching Records'), findsOneWidget);
           await _tapText(tester, 'OK');
@@ -397,33 +415,41 @@ void main() {
       group('choices reach the backend', () {
         Future<_FakeBackend> printWith(
           WidgetTester tester,
-          String paper,
+          RollPaper? saved,
           String option,
         ) async {
-          final backend = _FakeBackend();
+          final backend = _FakeBackend(saved: saved);
           await _pump(tester, desktop: desktop, backend: backend);
           await _openMenu(tester);
-          await _tapText(tester, paper);
+          await _tapText(tester, 'Print');
           await _tapText(tester, option);
           await _tapText(tester, 'Print');
           return backend;
         }
 
         testWidgets('58mm as shown', (tester) async {
-          final b = await printWith(tester, 'Print 58mm', 'As shown');
+          final b = await printWith(tester, RollPaper.mm58, 'As shown');
           expect(b.calls.single.paper, RollPaper.mm58);
           expect(b.calls.single.groupings, [null]);
         });
 
         testWidgets('80mm by category', (tester) async {
-          final b = await printWith(tester, 'Print 80mm', 'By Category');
+          final b = await printWith(tester, RollPaper.mm80, 'By Category');
           expect(b.calls.single.paper, RollPaper.mm80);
           expect(b.calls.single.groupings, ['category']);
         });
 
         testWidgets('all groupings', (tester) async {
-          final b = await printWith(tester, 'Print 80mm', 'All groupings');
+          final b = await printWith(tester, RollPaper.mm80, 'All groupings');
           expect(b.calls.single.groupings, [null, 'category', 'department']);
+        });
+
+        testWidgets('Print A4', (tester) async {
+          final backend = _FakeBackend();
+          await _pump(tester, desktop: desktop, backend: backend);
+          await _openMenu(tester);
+          await _tapText(tester, 'Print A4');
+          expect(backend.calls.single.kind, 'printA4');
         });
 
         testWidgets('Excel one sheet per department', (tester) async {
@@ -437,52 +463,32 @@ void main() {
         });
       });
 
-      group('" · your printer" marks the saved paper width', () {
+      group('Print uses the roll width from Printer Settings', () {
         testWidgets('80mm saved', (tester) async {
-          await _pump(
-            tester,
-            desktop: desktop,
-            backend: _FakeBackend(saved: RollPaper.mm80),
-          );
-          await _openMenu(tester);
-          expect(find.text('Print 80mm · your printer'), findsOneWidget);
-          expect(find.text('Print 58mm'), findsOneWidget);
-          expect(find.text('Print 58mm · your printer'), findsNothing);
-        });
-
-        testWidgets('58mm saved', (tester) async {
-          await _pump(
-            tester,
-            desktop: desktop,
-            backend: _FakeBackend(saved: RollPaper.mm58),
-          );
-          await _openMenu(tester);
-          expect(find.text('Print 58mm · your printer'), findsOneWidget);
-          expect(find.text('Print 80mm'), findsOneWidget);
-          expect(find.text('Print 80mm · your printer'), findsNothing);
-        });
-
-        testWidgets('nothing saved: neither is marked', (tester) async {
-          await _pump(tester, desktop: desktop, backend: _FakeBackend());
-          await _openMenu(tester);
-          expect(find.textContaining('your printer'), findsNothing);
-        });
-
-        testWidgets('the marked entry still prints at its width', (
-          tester,
-        ) async {
-          final backend = _FakeBackend(saved: RollPaper.mm58);
+          final backend = _FakeBackend(saved: RollPaper.mm80);
           await _pump(tester, desktop: desktop, backend: backend);
           await _openMenu(tester);
-          await _tapText(tester, 'Print 58mm · your printer');
+          await _tapText(tester, 'Print');
+          await _tapText(tester, 'As shown');
+          expect(
+            find.textContaining('on 80mm roll paper'),
+            findsOneWidget,
+          );
+          await _tapText(tester, 'Print');
+          expect(backend.calls.single.paper, RollPaper.mm80);
+        });
+
+        testWidgets('nothing saved: 58mm', (tester) async {
+          final backend = _FakeBackend();
+          await _pump(tester, desktop: desktop, backend: backend);
+          await _openMenu(tester);
+          await _tapText(tester, 'Print');
           await _tapText(tester, 'As shown');
           await _tapText(tester, 'Print');
           expect(backend.calls.single.paper, RollPaper.mm58);
         });
 
-        testWidgets('plain (no splits) entries are marked too', (
-          tester,
-        ) async {
+        testWidgets('plain (no splits) entry too', (tester) async {
           final backend = _FakeBackend(saved: RollPaper.mm80);
           await _pump(
             tester,
@@ -491,7 +497,7 @@ void main() {
             spec: _noSplitSpec,
           );
           await _openMenu(tester);
-          await _tapText(tester, 'Print 80mm · your printer');
+          await _tapText(tester, 'Print');
           await _tapText(tester, 'Print');
           expect(backend.calls.single.paper, RollPaper.mm80);
         });
@@ -560,10 +566,24 @@ void main() {
             ..printError = const ReportExportException('Printer is offline.');
           await _pump(tester, desktop: desktop, backend: backend);
           await _openMenu(tester);
-          await _tapText(tester, 'Print 80mm');
+          await _tapText(tester, 'Print');
           await _tapText(tester, 'As shown');
           await _tapText(tester, 'Print');
           expect(find.text('Printer is offline.'), findsOneWidget);
+        });
+
+        testWidgets('a Print A4 failure shows the print message', (
+          tester,
+        ) async {
+          final backend = _FakeBackend()..printA4Error = StateError('boom');
+          await _pump(tester, desktop: desktop, backend: backend);
+          await _openMenu(tester);
+          await _tapText(tester, 'Print A4');
+          expect(
+            find.text("Couldn't print the report. Please try again."),
+            findsOneWidget,
+          );
+          expect(backend.logged, ['print a4']);
         });
 
         testWidgets('desktop/web saves show "Saved <file name>"', (

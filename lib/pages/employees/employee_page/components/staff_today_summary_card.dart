@@ -129,6 +129,8 @@ class StaffTodaySummaryCard extends StatelessWidget {
               ReportExportButton(
                 label: 'Print Report',
                 backend: exportBackend,
+                // The card is narrow on every screen size.
+                compactPrinterSettings: true,
                 buildSpec:
                     () =>
                         data.printSpec(currency: currency),

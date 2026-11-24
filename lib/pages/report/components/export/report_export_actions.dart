@@ -1,11 +1,15 @@
 // The real export paths, per platform:
 //
-// | Platform     | Roll print                         | PDF            | Excel          |
-// |--------------|------------------------------------|----------------|----------------|
-// | Android/iOS  | ESC/POS over Bluetooth             | share sheet    | share sheet    |
-// | Windows      | raw ESC/POS to the receipt printer | save (FileSaver) | save (FileSaver) |
-// | macOS/Linux  | roll PDF in the system print dialog| save (FileSaver) | save (FileSaver) |
-// | Web          | roll PDF in the browser print dialog | download     | download       |
+// | Platform     | Roll print                               | Print A4                      | PDF / Excel      |
+// |--------------|------------------------------------------|-------------------------------|------------------|
+// | Android/iOS  | the roll printer in Printer Settings     | system dialog (iOS: the saved | share sheet      |
+// |              | (Bluetooth or network)                   | AirPrint printer)             |                  |
+// | Windows      | the roll printer (spooler or network)    | the saved A4 printer          | save (FileSaver) |
+// | macOS/Linux  | the roll printer (CUPS or network)       | the saved A4 printer          | save (FileSaver) |
+// | Web          | roll PDF in the browser print dialog     | browser print dialog          | download         |
+//
+// Roll prints use the width and cut from Printer Settings
+// (lib/services/pos_printing).
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,16 +25,19 @@ import 'package:stockall/main.dart'
 import 'package:stockall/pages/report/components/export/report_document_parts.dart';
 import 'package:stockall/pages/report/components/export/report_excel_builder.dart';
 import 'package:stockall/pages/report/components/export/report_export_backend.dart';
-import 'package:stockall/pages/report/components/export/report_export_bluetooth.dart';
 import 'package:stockall/pages/report/components/export/report_export_resolve.dart';
 import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/components/export/report_pdf_builder.dart';
 import 'package:stockall/pages/report/components/export/report_roll_builder.dart';
 import 'package:stockall/providers/excel_provider.dart';
-import 'package:stockall/services/barcode_generation/barcode_import_helper.dart'
-    show listPrinters;
-import 'package:stockall/services/receipt_print_service/receipt_import_helper.dart'
-    show checkPrint, printerSelectionDialog;
+import 'package:stockall/providers/printer_settings_provider.dart';
+import 'package:stockall/services/pos_printing/a4_print_dispatcher.dart';
+import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
+    as pos
+    show printRoll;
+import 'package:stockall/services/pos_printing/pos_print_rules.dart';
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart'
+    show shopDefaultPrintType;
 import 'package:universal_html/html.dart' as html;
 
 class DefaultReportExportBackend implements ReportExportBackend {
@@ -52,9 +59,6 @@ class DefaultReportExportBackend implements ReportExportBackend {
   }
 
   static bool get _isMobile => usesBluetoothPrint();
-
-  static bool get _isWindows =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
 
   // ------------------------------------------------------------------
   // Gate and context
@@ -119,20 +123,22 @@ class DefaultReportExportBackend implements ReportExportBackend {
     );
   }
 
-  /// Same settings the receipt and Items roll prints read:
-  /// the chosen receipt printer's size, else the shop's print type
+  /// The roll width in Printer Settings, else the shop's default
   /// (1 = 58mm, 2 = 80mm).
   @override
   RollPaper? savedPaper() {
     try {
-      final shop = returnShopProvider();
-      final size =
-          shop.getReceiptPrinter()?.printerSize ?? shop.userShop()?.printType;
-      if (size == 1) return RollPaper.mm58;
-      if (size == 2) return RollPaper.mm80;
+      final paper =
+          PrinterSettingsProvider()
+              .rollOptions(shopPrintType: shopDefaultPrintType())
+              .paper;
+      return _rollPaper(paper);
     } catch (_) {}
     return null;
   }
+
+  static RollPaper _rollPaper(PosPaper paper) =>
+      paper == PosPaper.mm80 ? RollPaper.mm80 : RollPaper.mm58;
 
   @override
   void logError(String action, Object error, StackTrace stack) {
@@ -143,6 +149,9 @@ class DefaultReportExportBackend implements ReportExportBackend {
   // Roll print
   // ------------------------------------------------------------------
 
+  /// On the roll printer from Printer Settings, laid out for the width it
+  /// prints at; the roll PDF in the system dialog on web and as the
+  /// fallback.
   @override
   Future<void> printRoll(
     BuildContext context,
@@ -152,75 +161,58 @@ class DefaultReportExportBackend implements ReportExportBackend {
     required List<String?> groupings,
     required VoidCallback beforeUi,
   }) async {
-    final lines = buildRollLines(
-      spec,
-      ctx,
-      paper: paper,
-      groupings: groupings,
-    );
+    List<RollLine> lines(RollPaper p) =>
+        buildRollLines(spec, ctx, paper: p, groupings: groupings);
+    RollPaper fromType(int type) =>
+        type == 2 ? RollPaper.mm80 : RollPaper.mm58;
 
-    if (!kIsWeb && _isMobile) {
-      final chunks = buildRollEscPos(lines, paper);
-      if (!context.mounted) return;
-      await reportPrintBluetooth(context, chunks, beforeUi: beforeUi);
-      return;
-    }
-
-    if (_isWindows) {
-      await _printWindows(context, buildRollEscPos(lines, paper), beforeUi);
-      return;
-    }
-
-    // macOS, Linux and web: the system print dialog with a roll-sized PDF.
-    final bytes = await buildRollPdf(lines, paper, fonts: await fonts());
-    beforeUi();
-    await Printing.layoutPdf(
-      name: reportExportBaseName(spec, now: ctx.generatedAt),
-      format: paper.pdfFormat,
-      dynamicLayout: false,
-      onLayout: (_) async => bytes,
+    await pos.printRoll(
+      context: context,
+      shopPrintType: paper == RollPaper.mm80 ? 2 : 1,
+      beforeUi: beforeUi,
+      escPos: (target) {
+        final p = _rollPaper(target.paper);
+        return buildRollEscPos(lines(p), p, cut: target.cut);
+      },
+      rollPdf:
+          (type) async => buildRollPdf(
+            lines(fromType(type)),
+            fromType(type),
+            fonts: await fonts(),
+          ),
+      systemPrint: (posPaper) async {
+        final p = _rollPaper(posPaper);
+        final bytes = await buildRollPdf(lines(p), p, fonts: await fonts());
+        beforeUi();
+        await Printing.layoutPdf(
+          name: reportExportBaseName(spec, now: ctx.generatedAt),
+          format: p.pdfFormat,
+          dynamicLayout: false,
+          onLayout: (_) async => bytes,
+        );
+      },
     );
   }
 
-  // Same condition checkPrint uses to decide whether a printer is set.
-  static bool _windowsPrinterReady() {
-    final shop = returnShopProvider();
-    final printer = shop.getReceiptPrinter();
-    final size = printer?.printerSize;
-    return (size == 1 || size == 2) &&
-        shop.printers.any((p) => p.name == printer?.printerName);
-  }
+  // ------------------------------------------------------------------
+  // Print A4
+  // ------------------------------------------------------------------
 
-  Future<void> _printWindows(
+  @override
+  Future<void> printA4(
     BuildContext context,
-    List<Uint8List> chunks,
-    VoidCallback beforeUi,
-  ) async {
-    try {
-      listPrinters();
-    } catch (_) {}
-
-    if (!_windowsPrinterReady()) {
-      beforeUi();
-      if (!context.mounted) return;
-      await printerSelectionDialog(
-        context: context,
-        title: 'Receipt Printer & Paper Size',
-        message:
-            'Select your receipt printer and paper size to print this report.',
-      );
-      // Closed without choosing a printer: nothing to print.
-      if (!_windowsPrinterReady()) return;
-    }
-
-    if (!context.mounted) return;
-    final bytes = Uint8List.fromList([for (final c in chunks) ...c]);
-    final sent = await checkPrint(context: context, receiptBytes: bytes);
-    if (!sent) {
-      throw const ReportExportException(
-        "Couldn't reach the printer. Check that it is on and connected.",
-      );
-    }
+    ReportExportSpec spec,
+    ExportContext ctx, {
+    required VoidCallback beforeUi,
+  }) async {
+    await printA4Pdf(
+      context,
+      name: reportExportBaseName(spec, now: ctx.generatedAt),
+      beforeUi: beforeUi,
+      buildPdf:
+          () async =>
+              buildReportPdf(resolveExport(spec, ctx), fonts: await fonts()),
+    );
   }
 
   // ------------------------------------------------------------------

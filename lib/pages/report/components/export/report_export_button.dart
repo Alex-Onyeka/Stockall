@@ -1,10 +1,13 @@
-// The one Export pill each report puts on its toolbar. Its menu is built
-// when it opens, from a spec of what the screen shows right then:
+// The one Export pill each report puts on its toolbar, with the Printer
+// Settings button beside it. Its menu is built when it opens, from a spec
+// of what the screen shows right then:
 //
-//   Print 80mm  [▸ As shown / By <split> / All groupings]
-//   Print 58mm  [▸ same]
+//   Print        [▸ As shown / By <split> / All groupings]
+//   Print A4
 //   Download PDF
 //   Export Excel [▸ All in one sheet / One sheet per <split>]
+//
+// Print uses the roll width from Printer Settings.
 //
 // Printing is guarded by the spec's `gate`; PDF and Excel by
 // `downloadGate` when it is set. Roll prints ask for confirmation with
@@ -13,6 +16,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/buttons/printer_settings_button.dart';
+import 'package:stockall/constants/constants_main.dart' show mobileScreen;
 import 'package:stockall/main.dart' show returnTheme;
 import 'package:stockall/pages/report/components/export/report_export_actions.dart';
 import 'package:stockall/pages/report/components/export/report_export_backend.dart';
@@ -22,15 +27,13 @@ import 'package:stockall/pages/report/components/export/report_export_spec.dart'
 import 'package:stockall/pages/report/components/export/report_roll_builder.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart';
 
 /// Above this many records a roll print warns about paper use.
 const int reportExportLongRollRows = 500;
 
 const String reportExportNotOnPlan =
     'Not available on your plan';
-
-/// Added to the print entry whose width matches the saved printer.
-const String reportExportYourPrinter = ' · your printer';
 
 class ReportExportButton extends StatefulWidget {
   /// Called when the menu opens, so the export matches the screen.
@@ -42,12 +45,23 @@ class ReportExportButton extends StatefulWidget {
   /// pill, for tight headers. The menu is the same.
   final bool iconOnly;
 
+  /// Shows the Printer Settings button next to the export button. With
+  /// [iconOnly] it is the menu's last entry instead, so tight headers
+  /// keep their width. Off where the screen has its own.
+  final bool showPrinterSettings;
+
+  /// True shows Printer Settings as an icon-only pill, for narrow cards.
+  /// Null: icon only on phones, the labelled pill elsewhere.
+  final bool? compactPrinterSettings;
+
   const ReportExportButton({
     super.key,
     required this.buildSpec,
     this.backend = const DefaultReportExportBackend(),
     this.label = 'Export',
     this.iconOnly = false,
+    this.showPrinterSettings = true,
+    this.compactPrinterSettings,
   });
 
   @override
@@ -138,9 +152,7 @@ class _ReportExportButtonState
     ReportExportSpec spec,
     RollPaper paper,
   ) {
-    final title =
-        'Print ${_paperLabel(paper)}'
-        '${paper == _savedPaper ? reportExportYourPrinter : ''}';
+    const title = 'Print';
     const icon = Icon(Icons.print_outlined, size: 16);
     final splits = spec.splitOptions;
 
@@ -176,7 +188,7 @@ class _ReportExportButtonState
             child: const Text('All groupings'),
           ),
       ],
-      child: Text(title),
+      child: const Text(title),
     );
   }
 
@@ -214,8 +226,12 @@ class _ReportExportButtonState
     final spec = _spec;
     if (spec == null) return const [];
     return [
-      _printEntry(spec, RollPaper.mm80),
-      _printEntry(spec, RollPaper.mm58),
+      _printEntry(spec, _savedPaper ?? RollPaper.mm58),
+      MenuItemButton(
+        leadingIcon: const Icon(Icons.description_outlined, size: 16),
+        onPressed: _printAllowed ? _printA4 : null,
+        child: _title('Print A4', disabled: !_printAllowed),
+      ),
       MenuItemButton(
         leadingIcon: const Icon(
           Icons.picture_as_pdf_outlined,
@@ -228,11 +244,38 @@ class _ReportExportButtonState
         ),
       ),
       _excelEntry(spec),
+      if (widget.showPrinterSettings && widget.iconOnly)
+        MenuItemButton(
+          leadingIcon: const Icon(Icons.settings_outlined, size: 16),
+          onPressed: () {
+            _menu.close();
+            openPrinterSettings(context);
+          },
+          child: _title(printerSettingsLabel),
+        ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
+    final export = _exportButton(context);
+    if (!widget.showPrinterSettings || widget.iconOnly) return export;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: widget.iconOnly ? 0 : 6,
+      children: [
+        export,
+        PrinterSettingsButton(
+          // Phones: icon only, so tight toolbars and cards still fit.
+          compact:
+              widget.compactPrinterSettings ??
+              MediaQuery.sizeOf(context).width < mobileScreen,
+        ),
+      ],
+    );
+  }
+
+  Widget _exportButton(BuildContext context) {
     final theme = returnTheme(context);
     return MenuAnchor(
       controller: _menu,
@@ -333,6 +376,21 @@ class _ReportExportButtonState
               );
             },
           ),
+    );
+  }
+
+  void _printA4() {
+    _menu.close();
+    final spec = _spec;
+    if (spec == null) return;
+    _run(
+      action: 'print a4',
+      loading: 'Preparing print…',
+      failure: "Couldn't print the report. Please try again.",
+      task: (ctx, beforeUi) async {
+        await _backend.printA4(context, spec, ctx, beforeUi: beforeUi);
+        return null;
+      },
     );
   }
 

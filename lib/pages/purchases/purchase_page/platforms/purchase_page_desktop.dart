@@ -20,6 +20,7 @@ import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/purchases/components/purchase_linked_expense_row.dart';
 import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart';
 
 class PurchasePageDesktop extends StatefulWidget {
   final String purchaseUuid;
@@ -587,6 +588,20 @@ class _PurchasePageDesktopState
                               );
                             },
                             text: 'Download',
+                          ),
+                          ActionButtonSmall(
+                            action: () {
+                              printA4Purchase(
+                                purchase: purchase,
+                                records: saleRecords,
+                                context: context,
+                              );
+                            },
+                            text: 'Print A4',
+                          ),
+                          ActionButtonSmall(
+                            action: () => openPrinterSettings(context),
+                            text: 'Printer Settings',
                           ),
                           ActionButtonSmall(
                             action: () {
@@ -2392,6 +2407,29 @@ class _PurchasePaymentWidgetState
                         },
                         title: 'Download',
                         isLoading: isDownloading,
+                      ),
+                      PurchasePaymentButtonWidget(
+                        action: () {
+                          printA4PurchasePayment(
+                            purchase:
+                                returnPurchaseProvider().purchases
+                                    .firstWhere(
+                                      (purch) =>
+                                          purch.uuid ==
+                                          widget.payment.purchaseId,
+                                    )
+                                    .copyWith(),
+                            payment: widget.payment,
+                            context: context,
+                          );
+                        },
+                        title: 'Print A4',
+                        isLoading: false,
+                      ),
+                      PurchasePaymentButtonWidget(
+                        action: () => openPrinterSettings(context),
+                        title: 'Printer Settings',
+                        isLoading: false,
                       ),
                       PurchasePaymentButtonWidget(
                         action: () {

@@ -22,6 +22,7 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/printing/printer_service_mobile.dart'
     show scanBluetoothPrintersinvoice;
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart';
 
 class InvoicePageDesktop extends StatefulWidget {
   final CheckoutResponse checkoutResponse;
@@ -449,6 +450,29 @@ class _InvoicePageDesktopState
                             );
                           },
                           text: 'Download',
+                        ),
+                        ActionButtonSmall(
+                          action: () {
+                            printA4Invoice(
+                              invoice: invoice,
+                              staffName: invoice.staffName,
+                              context: context,
+                              receipts:
+                                  returnReceiptProviderSingle().receipts
+                                      .where(
+                                        (rec) =>
+                                            rec.invoiceUuid ==
+                                            widget.checkoutResponse.invoice?.uuid,
+                                      )
+                                      .toList(),
+                              records: saleRecords,
+                            );
+                          },
+                          text: 'Print A4',
+                        ),
+                        ActionButtonSmall(
+                          action: () => openPrinterSettings(context),
+                          text: 'Printer Settings',
                         ),
                         Visibility(
                           visible:

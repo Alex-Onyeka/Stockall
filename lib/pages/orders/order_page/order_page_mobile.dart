@@ -19,6 +19,7 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/printing/printer_service_mobile.dart'
     show scanBluetoothPrintersOrder;
+import 'package:stockall/components/buttons/printer_settings_button.dart';
 
 class OrderPageMobile extends StatefulWidget {
   final CheckoutResponse checkoutResponse;
@@ -515,6 +516,28 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                       : 'Share',
                                 ),
                               ),
+                              PopupMenuItem(
+                                height: 35,
+                                onTap: () {
+                                    printA4Order(
+                                      order: order,
+                                      items: saleRecords,
+                                      receipts:
+                                          returnReceiptProviderSingle().receipts
+                                              .where((rec) => rec.orderUuid == order.uuid)
+                                              .toList(),
+                                      context: context,
+                                    );
+                                },
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  'Print A4',
+                                ),
+                              ),
+                              printerSettingsMenuItem(context),
                               PopupMenuItem(
                                 enabled: authorization(
                                   authorized:

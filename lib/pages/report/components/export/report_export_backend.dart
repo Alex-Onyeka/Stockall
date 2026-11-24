@@ -36,8 +36,8 @@ abstract class ReportExportBackend {
   /// Shop and current user details, stamped with the current time.
   ExportContext exportContext();
 
-  /// The paper width of the saved receipt printer setting, or null when
-  /// none is saved. The menu marks that width " · your printer".
+  /// The roll width this device prints at (Printer Settings, else the
+  /// shop's default). Print uses it; null prints at 58mm.
   RollPaper? savedPaper();
 
   /// Records a failure for debugging (the user sees a snackbar).
@@ -53,6 +53,15 @@ abstract class ReportExportBackend {
     ExportContext ctx, {
     required RollPaper paper,
     required List<String?> groupings,
+    required VoidCallback beforeUi,
+  });
+
+  /// The report PDF on the A4 printer from Printer Settings (the system
+  /// print dialog where none can be chosen). Same contract as [printRoll].
+  Future<void> printA4(
+    BuildContext context,
+    ReportExportSpec spec,
+    ExportContext ctx, {
     required VoidCallback beforeUi,
   });
 

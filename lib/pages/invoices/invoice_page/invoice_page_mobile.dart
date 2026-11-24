@@ -18,6 +18,7 @@ import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/printing/printer_service_mobile.dart';
+import 'package:stockall/components/buttons/printer_settings_button.dart';
 
 class InvoicePageMobile extends StatefulWidget {
   final CheckoutResponse checkoutResponse;
@@ -527,6 +528,33 @@ class _InvoicePageMobileState
                                       : 'Share',
                                 ),
                               ),
+                              PopupMenuItem(
+                                height: 35,
+                                onTap: () {
+                                    printA4Invoice(
+                                      invoice: invoice,
+                                      staffName: invoice.staffName,
+                                      context: context,
+                                      receipts:
+                                          returnReceiptProviderSingle().receipts
+                                              .where(
+                                                (rec) =>
+                                                    rec.invoiceUuid ==
+                                                    widget.checkoutResponse.invoice?.uuid,
+                                              )
+                                              .toList(),
+                                      records: saleRecords,
+                                    );
+                                },
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize: theme.mobileTexts.b3.fontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  'Print A4',
+                                ),
+                              ),
+                              printerSettingsMenuItem(context),
                               PopupMenuItem(
                                 enabled:
                                     authorization(

@@ -137,6 +137,14 @@ class CaptureBackend implements ReportExportBackend {
   }) async => specs.add(spec);
 
   @override
+  Future<void> printA4(
+    BuildContext context,
+    ReportExportSpec spec,
+    ExportContext ctx, {
+    required VoidCallback beforeUi,
+  }) async => specs.add(spec);
+
+  @override
   Future<ReportSaveResult> downloadPdf(
     BuildContext context,
     ReportExportSpec spec,
@@ -720,8 +728,8 @@ void main() {
         );
         await tester.tap(find.text('Print Report'));
         await frames(tester);
-        expect(find.text('Print 80mm'), findsOneWidget);
-        expect(find.text('Print 58mm'), findsOneWidget);
+        expect(find.text('Print'), findsOneWidget);
+        expect(find.text('Print A4'), findsOneWidget);
         await tester.tap(find.text('Download PDF'));
         await frames(tester);
 

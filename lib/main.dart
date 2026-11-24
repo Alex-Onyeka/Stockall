@@ -59,6 +59,7 @@ import 'package:stockall/providers/production_folder/production_items_quantity_u
 import 'package:stockall/providers/production_folder/production_record_provider.dart';
 import 'package:stockall/providers/production_folder/productions_action_provider.dart';
 import 'package:stockall/providers/purchase_action_provider.dart';
+import 'package:stockall/providers/printer_settings_provider.dart';
 import 'package:stockall/providers/purchase_provider.dart';
 import 'package:stockall/providers/quantity_update_provider.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
@@ -131,6 +132,8 @@ void main(List<String> args) async {
         anonKey: supabaseAnonKey,
       );
       await MainDatabase().initHive();
+      // This device's printer settings, read in the background.
+      unawaited(PrinterSettingsProvider().ensureLoaded());
       if (returnShopProvider().isDesktop()) {
         await windowManager.ensureInitialized();
         maxWindow();
@@ -738,6 +741,20 @@ ShopProvider returnShopProvider({
     return ShopProvider();
   } else {
     return Provider.of<ShopProvider>(
+      context,
+      listen: listen,
+    );
+  }
+}
+
+PrinterSettingsProvider returnPrinterSettingsProvider({
+  BuildContext? context,
+  bool listen = true,
+}) {
+  if (context == null) {
+    return PrinterSettingsProvider();
+  } else {
+    return Provider.of<PrinterSettingsProvider>(
       context,
       listen: listen,
     );
@@ -1526,6 +1543,9 @@ class _MyAppState extends State<MyApp>
         ),
         ChangeNotifierProvider(
           create: (_) => StorageItemHistoryProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PrinterSettingsProvider(),
         ),
       ],
       child: MaterialApp(

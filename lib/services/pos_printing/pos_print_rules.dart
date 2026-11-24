@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 // Which way a roll document goes to the printer, as pure rules: the
 // printer saved on this device, the ways each platform can reach a
 // printer, and what to offer when a direct send fails.
@@ -258,3 +260,149 @@ List<String> parseLpstatQueues(String output) {
   }
   return queues;
 }
+
+// ---------------------------------------------------------------------
+// Printer settings: the roll options and the A4 printer, both saved on
+// this device next to the roll printer.
+
+// How roll documents are laid out and finished, whichever way they reach
+// the printer. Kept apart from the roll printer so the width also applies
+// where no printer can be chosen (web, the system print dialog).
+class RollOptions {
+  final PosPaper paper;
+
+  // Cut the paper after printing (printers without a cutter ignore it).
+  final bool cut;
+
+  const RollOptions({required this.paper, this.cut = false});
+
+  RollOptions copyWith({PosPaper? paper, bool? cut}) =>
+      RollOptions(paper: paper ?? this.paper, cut: cut ?? this.cut);
+
+  Map<String, dynamic> toMap() => {'paper': paper.name, 'cut': cut};
+
+  // Null without a known paper size. Unknown keys are ignored, so options
+  // added later don't break older saves.
+  static RollOptions? fromMap(Object? map) {
+    if (map is! Map) return null;
+    final paper = _byName(PosPaper.values, map['paper']);
+    if (paper == null) return null;
+    return RollOptions(paper: paper, cut: map['cut'] == true);
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is RollOptions && other.paper == paper && other.cut == cut;
+
+  @override
+  int get hashCode => Object.hash(paper, cut);
+
+  @override
+  String toString() => 'RollOptions(${toMap()})';
+}
+
+// The roll options in force: the ones saved, else the paper and cut kept
+// with the roll printer (saves from before roll options existed), else
+// the shop's print type with no cut.
+RollOptions effectiveRollOptions({
+  RollOptions? saved,
+  PosPrinterConfig? printer,
+  int? shopPrintType,
+}) {
+  if (saved != null) return saved;
+  if (printer != null) {
+    return RollOptions(paper: printer.paper, cut: printer.cut);
+  }
+  return RollOptions(paper: paperFromPrinterType(shopPrintType));
+}
+
+// The roll printer with the roll options applied, as it is sent to.
+PosPrinterConfig printerWithOptions(
+  PosPrinterConfig printer,
+  RollOptions options,
+) => printer.copyWith(paper: options.paper, cut: options.cut);
+
+// The A4 printer saved on this device: a system printer as the printing
+// package names it (its url is the queue name on desktop and the AirPrint
+// URL on iOS).
+class A4PrinterConfig {
+  final String url;
+
+  // Shown to the user.
+  final String name;
+
+  const A4PrinterConfig({required this.url, required this.name});
+
+  Map<String, dynamic> toMap() => {'url': url, 'name': name};
+
+  // Null for anything that isn't a complete saved printer.
+  static A4PrinterConfig? fromMap(Object? map) {
+    if (map is! Map) return null;
+    final url = map['url'];
+    if (url is! String || url.trim().isEmpty) return null;
+    final name = map['name'];
+    return A4PrinterConfig(
+      url: url.trim(),
+      name: name is String && name.trim().isNotEmpty ? name.trim() : url.trim(),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is A4PrinterConfig && other.url == url && other.name == name;
+
+  @override
+  int get hashCode => Object.hash(url, name);
+
+  @override
+  String toString() => 'A4PrinterConfig(${toMap()})';
+}
+
+// Desktop can list the system printers. iOS can't list them, only pick
+// one in the AirPrint picker. Android and web can't do either.
+bool canListA4Printers(PosPlatform platform) =>
+    platform == PosPlatform.windows ||
+    platform == PosPlatform.macos ||
+    platform == PosPlatform.linux;
+
+bool canPickA4Printer(PosPlatform platform) => platform == PosPlatform.ios;
+
+// Printing to a chosen printer without the system dialog: desktop and
+// iOS. Android and web always print through the system dialog.
+bool canDirectPrintA4(PosPlatform platform) =>
+    canListA4Printers(platform) || canPickA4Printer(platform);
+
+sealed class A4Route {
+  const A4Route();
+}
+
+// The system print dialog with the A4 PDF.
+class A4SystemPrintRoute extends A4Route {
+  const A4SystemPrintRoute();
+}
+
+// Ask which A4 printer to use, save it, then print.
+class A4SetupRoute extends A4Route {
+  const A4SetupRoute();
+}
+
+// Send straight to the saved A4 printer.
+class A4DirectRoute extends A4Route {
+  final A4PrinterConfig printer;
+
+  const A4DirectRoute(this.printer);
+}
+
+A4Route chooseA4Route(PosPlatform platform, A4PrinterConfig? saved) {
+  if (!canDirectPrintA4(platform)) return const A4SystemPrintRoute();
+  if (saved == null) return const A4SetupRoute();
+  return A4DirectRoute(saved);
+}
+
+// Feed to the cutter and cut, leaving a little paper attached (GS V 66 0),
+// as EscPosBuilder.cut does. Printers without a cutter ignore it.
+const List<int> escPosCutCommand = [0x1D, 0x56, 0x42, 0x00];
+
+// [chunks] with the cut command after them when [cut] is on.
+List<Uint8List> withCut(List<Uint8List> chunks, {required bool cut}) =>
+    cut ? [...chunks, Uint8List.fromList(escPosCutCommand)] : chunks;

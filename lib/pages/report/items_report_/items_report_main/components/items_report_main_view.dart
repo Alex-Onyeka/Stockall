@@ -1,5 +1,4 @@
 ﻿import 'dart:math' as math;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -16,7 +15,7 @@ import 'package:stockall/pages/report/items_report_/items_report_main/class/item
 import 'package:stockall/pages/report/components/export/report_export_button.dart';
 import 'package:stockall/pages/report/components/export/report_export_spec.dart';
 import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_export_spec.dart';
-import 'package:stockall/pages/report/items_report_/items_report_main/class/items_report_pos_print.dart';
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class _Col {
@@ -922,22 +921,19 @@ class _ItemsReportMainViewState
                   padding: const EdgeInsets.only(left: 6.0),
                   child: ReportExportButton(
                     buildSpec: _exportSpec,
+                    // The Printer Settings pill below is this screen's own.
+                    showPrinterSettings: false,
                   ),
                 ),
-                if (!kIsWeb) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 6.0),
-                    child: _pill(
-                      theme: theme,
-                      icon: Icons.print_outlined,
-                      label: 'Printer Settings',
-                      onTap:
-                          () => openPrinterAndPaperSizeDialog(
-                            context,
-                          ),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 6.0),
+                  child: _pill(
+                    theme: theme,
+                    icon: Icons.print_outlined,
+                    label: 'Printer Settings',
+                    onTap: () => openPrinterSettings(context),
                   ),
-                ],
+                ),
               ],
             ],
           );

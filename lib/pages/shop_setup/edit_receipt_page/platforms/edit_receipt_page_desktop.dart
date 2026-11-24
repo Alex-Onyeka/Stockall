@@ -12,8 +12,10 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
-    show openPosPrinterSettings;
+import 'package:stockall/services/pos_printing/pos_print_rules.dart'
+    show PosPaperDetails;
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart'
+    show openPrinterSettings;
 
 class EditReceiptPageDesktop extends StatefulWidget {
   const EditReceiptPageDesktop({super.key});
@@ -62,221 +64,44 @@ class _EditReceiptPageDesktopState
                       ),
                       Align(
                         alignment: Alignment(0.95, -0.95),
-                        child: PopupMenuButton(
-                          offset: Offset(-20, 30),
-                          color: Colors.white,
-                          itemBuilder: (context) {
-                            return [
-                              PopupMenuItem(
-                                onTap: () {
-                                  returnShopProvider()
-                                              .userShop()!
-                                              .printType !=
-                                          1
-                                      ? returnShopProvider()
-                                          .updatePrintType(
-                                            shopId:
-                                                shopId(),
-                                            type: 1,
-                                          )
-                                      : {};
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            returnShopProvider().userShop()!.printType !=
-                                                        null &&
-                                                    returnShopProvider().userShop()!.printType ==
-                                                        1
-                                                ? FontWeight
-                                                    .bold
-                                                : null,
-                                      ),
-                                      // kIsWeb
-                                      //     ?
-                                      'Printer Type -- 58mm',
-                                      // : 'Select USB Printer',
-                                    ),
-                                    Visibility(
-                                      visible:
-                                          returnShopProvider()
-                                              .userShop()!
-                                              .printType ==
-                                          1,
-                                      child: Icon(
-                                        size: 17,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                        Icons.check,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                // enabled:
-                                //     kIsWeb ||
-                                //     platforms(context) ==
-                                //         TargetPlatform
-                                //             .android ||
-                                //     platforms(context) ==
-                                //         TargetPlatform.iOS,
-                                onTap: () {
-                                  returnShopProvider()
-                                              .userShop()!
-                                              .printType !=
-                                          2
-                                      ? returnShopProvider()
-                                          .updatePrintType(
-                                            shopId:
-                                                shopId(),
-                                            type: 2,
-                                          )
-                                      : {};
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            returnShopProvider().userShop()!.printType !=
-                                                        null &&
-                                                    returnShopProvider().userShop()!.printType ==
-                                                        2
-                                                ? FontWeight
-                                                    .bold
-                                                : null,
-                                      ),
-                                      // kIsWeb
-                                      //     ?
-                                      'Printer Type -- 80mm',
-                                      // : 'Select Bluetooth Printer',
-                                    ),
-                                    Visibility(
-                                      visible:
-                                          returnShopProvider()
-                                              .userShop()!
-                                              .printType ==
-                                          2,
-                                      child: Icon(
-                                        size: 17,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                        Icons.check,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // The saved POS printer, its paper size and cut
-                              // (lib/services/pos_printing).
-                              if (!kIsWeb)
-                                PopupMenuItem(
-                                  onTap: openPosPrinterSettings,
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize: theme.mobileTexts.b2.fontSize,
-                                    ),
-                                    'Choose POS Printer',
-                                  ),
-                                ),
-                            ];
-                          },
+                        child: InkWell(
+                          key: const ValueKey('printer-settings-button'),
+                          onTap: () => openPrinterSettings(context),
                           child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                mainAxisSize:
-                                    MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
                                       color: Colors.white,
                                     ),
-                                    'Printer Type:',
+                                    'Printer:',
                                   ),
+                                  // The roll width this device prints at.
                                   Text(
                                     style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
+                                      fontSize: theme.mobileTexts.b4.fontSize,
                                       color: Colors.white,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType !=
-                                                null &&
-                                            returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType ==
-                                                2
-                                        ? (
-                                        // kIsWeb
-                                        //   ?
-                                        '80mm'
-                                        // : '( Bluetooth )'
+                                    returnPrinterSettingsProvider(context: context)
+                                        .rollOptions(
+                                          shopPrintType:
+                                              returnShopProvider(
+                                                context: context,
+                                              ).userShop()?.printType,
                                         )
-                                        : returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType !=
-                                                null &&
-                                            returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType ==
-                                                1
-                                        ? (
-                                        // kIsWeb
-                                        //   ?
-                                        '58mm'
-                                        // : '( USB )'
-                                        )
-                                        // : sortIndex == 2
-                                        // ? 'Price'
-                                        : 'Settings',
+                                        .paper
+                                        .label,
                                   ),
                                 ],
                               ),
-                              Icon(Icons.more_vert_rounded),
+                              Icon(color: Colors.amber, Icons.settings_outlined),
                             ],
                           ),
                         ),

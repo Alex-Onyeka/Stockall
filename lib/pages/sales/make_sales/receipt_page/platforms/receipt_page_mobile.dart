@@ -16,8 +16,10 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
-    show openPosPrinterSettings;
+import 'package:stockall/services/pos_printing/pos_print_rules.dart'
+    show PosPaperDetails;
+import 'package:stockall/services/pos_printing/printer_settings_panel.dart'
+    show openPrinterSettings;
 
 class ReceiptPageMobile extends StatefulWidget {
   final bool isMain;
@@ -115,177 +117,44 @@ class _ReceiptPageMobileState
                     ),
                     Align(
                       alignment: Alignment(0.95, -0.95),
-                      child: PopupMenuButton(
-                        offset: Offset(-20, 30),
-                        color: Colors.white,
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                              onTap: () {
-                                returnShopProvider()
-                                    .updatePrintType(
-                                      shopId: shopId(),
-                                      type: 1,
-                                    );
-                              },
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      returnShopProvider()
-                                                      .userShop()!
-                                                      .printType !=
-                                                  null &&
-                                              returnShopProvider()
-                                                      .userShop()!
-                                                      .printType ==
-                                                  1
-                                          ? FontWeight.bold
-                                          : null,
-                                ),
-                                // kIsWeb
-                                //     ?
-                                'Printer Type -- 58mm',
-                                // : 'Select USB Printer',
-                              ),
-                            ),
-                            PopupMenuItem(
-                              onTap: () {
-                                returnShopProvider()
-                                    .updatePrintType(
-                                      shopId: shopId(),
-                                      type: 2,
-                                    );
-                              },
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      returnShopProvider()
-                                                      .userShop()!
-                                                      .printType !=
-                                                  null &&
-                                              returnShopProvider()
-                                                      .userShop()!
-                                                      .printType ==
-                                                  2
-                                          ? FontWeight.bold
-                                          : null,
-                                ),
-                                // kIsWeb
-                                //     ?
-                                'Printer Type -- 80mm',
-                                // : 'Select Bluetooth Printer',
-                              ),
-                            ),
-                            if (!kIsWeb)
-                              PopupMenuItem(
-                                onTap:
-                                    openPosPrinterSettings,
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                  ),
-                                  'Choose POS Printer',
-                                ),
-                              ),
-                          ];
-                        },
+                      child: InkWell(
+                        key: const ValueKey('printer-settings-button'),
+                        onTap: () => openPrinterSettings(context),
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              mainAxisSize:
-                                  MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
+                                    fontSize: theme.mobileTexts.b4.fontSize,
                                     color: Colors.white,
                                   ),
                                   'Printer:',
                                 ),
+                                // The roll width this device prints at.
                                 Text(
                                   style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
-                                            .fontSize,
+                                    fontSize: theme.mobileTexts.b4.fontSize,
                                     color: Colors.white,
-                                    fontWeight:
-                                        FontWeight.bold,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType !=
-                                              null &&
-                                          returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType ==
-                                              2
-                                      ? (
-                                      // kIsWeb
-                                      //   ?
-                                      '80mm'
-                                      // : '( Bluetooth )'
+                                  returnPrinterSettingsProvider(context: context)
+                                      .rollOptions(
+                                        shopPrintType:
+                                            returnShopProvider(
+                                              context: context,
+                                            ).userShop()?.printType,
                                       )
-                                      : returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType !=
-                                              null &&
-                                          returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType ==
-                                              1
-                                      ? (
-                                      // kIsWeb
-                                      //   ?
-                                      '58mm'
-                                      // : '( USB )'
-                                      )
-                                      // : sortIndex == 2
-                                      // ? 'Price'
-                                      : 'Settings',
+                                      .paper
+                                      .label,
                                 ),
                               ],
                             ),
-                            Icon(
-                              color: Colors.amber,
-                              Icons.more_vert_rounded,
-                            ),
+                            Icon(color: Colors.amber, Icons.settings_outlined),
                           ],
                         ),
                       ),
@@ -2113,6 +1982,25 @@ class _ReceiptDetailsContainerState
                     theme: widget.theme,
                     text: kIsWeb ? 'Download' : 'Share',
                   ),
+                  BottomActionButton(
+                    action: () {
+                      printA4Receipt(
+                        staffName:
+                            staff?.name ??
+                            widget.mainReceipt.staffName ??
+                            'Not Set',
+                        context: context,
+                        receipt: widget.mainReceipt,
+                        records: records,
+                        shop: returnShopProvider().userShop()!,
+                      );
+                    },
+                    color: Colors.grey,
+                    icon: Icons.description_outlined,
+                    iconSize: 20,
+                    theme: widget.theme,
+                    text: 'Print A4',
+                  ),
                   Visibility(
                     visible: !kIsWeb,
                     child: BottomActionButton(
@@ -2121,14 +2009,16 @@ class _ReceiptDetailsContainerState
                           context: context,
                           action: () async {
                             var safeContext = context;
-                            if (returnShopProvider()
-                                    .userShop()!
-                                    .printType ==
-                                null) {
-                              selectPrinterDialog(
-                                context,
-                                safeContext,
-                              );
+                            // No roll width yet: choose one (and a
+                            // printer) in Printer Settings.
+                            if (!returnPrinterSettingsProvider()
+                                .hasRollWidth(
+                                  shopPrintType:
+                                      returnShopProvider()
+                                          .userShop()
+                                          ?.printType,
+                                )) {
+                              openPrinterSettings(context);
                             } else {
                               showDialog(
                                 context: context,

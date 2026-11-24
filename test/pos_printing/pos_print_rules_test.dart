@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/services/pos_printing/pos_print_rules.dart';
 
@@ -292,6 +294,140 @@ void main() {
       expect(kept.port, 9100);
       expect(kept.paper, PosPaper.mm58);
       expect(kept.cut, isFalse);
+    });
+  });
+
+  group('roll options', () {
+    test('saved options win over the printer and the shop', () {
+      const saved = RollOptions(paper: PosPaper.mm58, cut: true);
+      expect(
+        effectiveRollOptions(saved: saved, printer: _network, shopPrintType: 2),
+        saved,
+      );
+    });
+    test('older saves: the paper and cut kept with the printer', () {
+      expect(
+        effectiveRollOptions(printer: _network, shopPrintType: 1),
+        const RollOptions(paper: PosPaper.mm80, cut: true),
+      );
+    });
+    test('nothing saved: the shop print type, no cut', () {
+      expect(
+        effectiveRollOptions(shopPrintType: 2),
+        const RollOptions(paper: PosPaper.mm80),
+      );
+      expect(
+        effectiveRollOptions(),
+        const RollOptions(paper: PosPaper.mm58),
+      );
+    });
+    test('the printer is sent to with the options applied', () {
+      final target = printerWithOptions(
+        _bluetooth,
+        const RollOptions(paper: PosPaper.mm80, cut: true),
+      );
+      expect(target.paper, PosPaper.mm80);
+      expect(target.cut, isTrue);
+      expect(target.address, _bluetooth.address);
+    });
+    test('round trip, and unknown keys are ignored', () {
+      const options = RollOptions(paper: PosPaper.mm80, cut: true);
+      expect(RollOptions.fromMap(options.toMap()), options);
+      expect(
+        RollOptions.fromMap({'paper': 'mm58', 'cut': true, 'darkness': 3}),
+        const RollOptions(paper: PosPaper.mm58, cut: true),
+      );
+    });
+    test('incomplete saves are ignored', () {
+      expect(RollOptions.fromMap(null), isNull);
+      expect(RollOptions.fromMap({'cut': true}), isNull);
+      expect(RollOptions.fromMap({'paper': 'a4'}), isNull);
+    });
+  });
+
+  group('A4 printer', () {
+    test('round trip', () {
+      const printer = A4PrinterConfig(url: 'HP_LaserJet', name: 'HP LaserJet');
+      expect(A4PrinterConfig.fromMap(printer.toMap()), printer);
+    });
+    test('a missing name shows the url', () {
+      expect(
+        A4PrinterConfig.fromMap({'url': 'ipp://printer.local'}),
+        const A4PrinterConfig(
+          url: 'ipp://printer.local',
+          name: 'ipp://printer.local',
+        ),
+      );
+    });
+    test('incomplete saves are ignored', () {
+      expect(A4PrinterConfig.fromMap(null), isNull);
+      expect(A4PrinterConfig.fromMap({'name': 'HP'}), isNull);
+      expect(A4PrinterConfig.fromMap({'url': '  '}), isNull);
+    });
+    test('desktop lists printers; iOS picks one; Android and web neither', () {
+      for (final p in [
+        PosPlatform.windows,
+        PosPlatform.macos,
+        PosPlatform.linux,
+      ]) {
+        expect(canListA4Printers(p), isTrue);
+        expect(canPickA4Printer(p), isFalse);
+        expect(canDirectPrintA4(p), isTrue);
+      }
+      expect(canListA4Printers(PosPlatform.ios), isFalse);
+      expect(canPickA4Printer(PosPlatform.ios), isTrue);
+      expect(canDirectPrintA4(PosPlatform.ios), isTrue);
+      for (final p in [PosPlatform.android, PosPlatform.web]) {
+        expect(canListA4Printers(p), isFalse);
+        expect(canPickA4Printer(p), isFalse);
+        expect(canDirectPrintA4(p), isFalse);
+      }
+    });
+  });
+
+  group('choosing the A4 route', () {
+    const saved = A4PrinterConfig(url: 'HP_LaserJet', name: 'HP LaserJet');
+    test('Android and web always use the system print dialog', () {
+      for (final p in [PosPlatform.android, PosPlatform.web]) {
+        expect(chooseA4Route(p, null), isA<A4SystemPrintRoute>());
+        expect(chooseA4Route(p, saved), isA<A4SystemPrintRoute>());
+      }
+    });
+    test('desktop and iOS: nothing saved asks for a printer', () {
+      for (final p in [
+        PosPlatform.windows,
+        PosPlatform.macos,
+        PosPlatform.linux,
+        PosPlatform.ios,
+      ]) {
+        expect(chooseA4Route(p, null), isA<A4SetupRoute>());
+      }
+    });
+    test('desktop and iOS: a saved printer is printed to directly', () {
+      for (final p in [
+        PosPlatform.windows,
+        PosPlatform.macos,
+        PosPlatform.linux,
+        PosPlatform.ios,
+      ]) {
+        final route = chooseA4Route(p, saved);
+        expect(route, isA<A4DirectRoute>());
+        expect((route as A4DirectRoute).printer, saved);
+      }
+    });
+  });
+
+  group('cut after print', () {
+    final chunks = [
+      Uint8List.fromList([1, 2]),
+    ];
+    test('cut on: the cut command goes last', () {
+      final out = withCut(chunks, cut: true);
+      expect(out.length, 2);
+      expect(out.last, escPosCutCommand);
+    });
+    test('cut off: unchanged', () {
+      expect(withCut(chunks, cut: false), chunks);
     });
   });
 }

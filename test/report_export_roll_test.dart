@@ -350,6 +350,20 @@ void main() {
   });
 
   group('outputs', () {
+    test('ESC/POS without the cut when Printer Settings turns it off', () {
+      final lines = buildRollLines(
+        itemsSpec(sampleItems),
+        testContext,
+        paper: RollPaper.mm80,
+      );
+      final chunks = buildRollEscPos(lines, RollPaper.mm80, cut: false);
+      expect(chunks.last, isNot([0x1D, 0x56, 0x01]));
+      expect(
+        chunks.where((c) => c.length == 3 && c[0] == 0x1D && c[1] == 0x56),
+        isEmpty,
+      );
+    });
+
     test('ESC/POS ends with a feed and a partial cut', () {
       final lines = buildRollLines(
         itemsSpec(sampleItems),

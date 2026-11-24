@@ -21,6 +21,8 @@ import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'package:file_saver/file_saver.dart';
+import 'package:stockall/services/navigation_service.dart' show navigatorKey;
+import 'package:stockall/services/pos_printing/a4_print_dispatcher.dart';
 
 void downloadPdfWebPurchase({
   required TempPurchase purchase,
@@ -1091,6 +1093,36 @@ Future<void> generateAndPreviewPdfRollPurchase({
         );
       } catch (e, stackTrace) {
         await mainLocalLog('❌ Error printing purchase: $e\n$stackTrace');
+      }
+    },
+  );
+}
+
+// The A4 Purchase on the A4 printer from Printer Settings (the system
+// print dialog where none can be chosen). The app navigator shows any
+// printer dialog, so it works after the menu or dialog that started it
+// has closed.
+Future<void> printA4Purchase({
+  required TempPurchase purchase,
+  required List<TempItemPurchaseRecord> records,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      try {
+        await printA4Pdf(
+          navigatorKey.currentContext ?? context,
+          name: 'Purchase',
+          buildPdf: () => _buildPdfPurchase(
+            purchase: purchase,
+            shop: returnShopProvider().userShop()!,
+            records: records,
+            context: context,
+          ),
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog('❌ Error printing purchase A4: $e\n$stackTrace');
       }
     },
   );

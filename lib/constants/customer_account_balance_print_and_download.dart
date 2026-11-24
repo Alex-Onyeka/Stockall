@@ -14,6 +14,10 @@ import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'package:file_saver/file_saver.dart';
+import 'package:stockall/services/navigation_service.dart' show navigatorKey;
+import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
+    show printRollPdf;
+import 'package:stockall/services/pos_printing/a4_print_dispatcher.dart';
 
 void downloadPdfWebCustomerAccountBalance({
   required TempCustomersClass customer,
@@ -960,17 +964,48 @@ generateAndPreviewPdfRollCustomerAccountBalance({
   SalesAuthAction().printReceiptAction(
     context: context,
     action: () async {
-      final Uint8List pdfBytes =
-          await _buildPdfRollCustomerAccountBalance(
-            customer: customer,
-            shop: shop,
-            context: context,
-            printerType: printerType,
-          );
-
-      await Printing.layoutPdf(
-        onLayout: (_) async => pdfBytes,
+      // On the roll printer from Printer Settings. The app navigator
+      // shows any printer dialog, because the dialog that started the
+      // print closes straight away.
+      await printRollPdf(
+        context: navigatorKey.currentContext ?? context,
+        shopPrintType: printerType,
+        rollPdf:
+            (type) => _buildPdfRollCustomerAccountBalance(
+              customer: customer,
+              shop: shop,
+              context: context,
+              printerType: type,
+            ),
       );
+    },
+  );
+}
+
+// The A4 Customer Account Balance on the A4 printer from Printer Settings (the system
+// print dialog where none can be chosen). The app navigator shows any
+// printer dialog, so it works after the menu or dialog that started it
+// has closed.
+Future<void> printA4CustomerAccountBalance({
+  required TempCustomersClass customer,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      try {
+        await printA4Pdf(
+          navigatorKey.currentContext ?? context,
+          name: 'Customer Account Balance',
+          buildPdf: () => _buildPdfCustomerAccountBalance(
+            customer: customer,
+            shop: returnShopProvider().userShop()!,
+            context: context,
+          ),
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog('❌ Error printing customer balance A4: $e\n$stackTrace');
+      }
     },
   );
 }
