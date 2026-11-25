@@ -19,21 +19,25 @@ class _InventoryUpdateWidgetState extends State<InventoryUpdateWidget> {
     if (parsed == null) {
       return value.isNotEmpty ? value : 'Null';
     } else {
-      if (widget.update.title.split(' ')[1] == 'Selling') {
+      final parts = widget.update.title.split(' ');
+      if (parts.length > 1 && parts[1] == 'Selling') {
         return formatMoneyMid(amount: parsed, context: context);
       } else {
-        return value.isNotEmpty ? formatLargeNumber(value) : 'Null';
+        final formatted = formatLargeNumber(value);
+        return value.startsWith('+') && !formatted.startsWith('+')
+            ? '+$formatted'
+            : formatted;
       }
     }
   }
 
   String valueChange({required String one, required String two}) {
-    double? parsed = double.tryParse(one);
-    double? parsedOld = double.tryParse(two);
-    if (parsed == null || parsedOld == null) {
+    double? parsedOld = double.tryParse(one);
+    double? parsedNew = double.tryParse(two);
+    if (parsedOld == null || parsedNew == null) {
       return one;
     } else {
-      var res = (parsedOld - parsed);
+      var res = (parsedNew - parsedOld);
       if (res.isNegative) {
         return formatLargeNumberDouble(res);
       } else {

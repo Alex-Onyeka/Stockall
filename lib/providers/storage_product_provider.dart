@@ -167,8 +167,13 @@ class StorageProductProvider extends ChangeNotifier {
           '${data.length} items deleted successfully ✅',
         );
 
-        await DeletedStorageProductsFunc()
-            .clearDeletedStorageProduct();
+        for (final row in (data as List)) {
+          final deletedUuid = row['uuid'] as String?;
+          if (deletedUuid != null) {
+            await DeletedStorageProductsFunc()
+                .deletedDeletedStorageProduct(deletedUuid);
+          }
+        }
         await mainLocalLog(
           'Unsynced deleted Storage products cleared',
         );
@@ -209,6 +214,7 @@ class StorageProductProvider extends ChangeNotifier {
             await mainLocalLog(
               'Local Storage Product Uuid is Null',
             );
+            continue;
           }
           final remoteData =
               await supabase
@@ -267,21 +273,26 @@ class StorageProductProvider extends ChangeNotifier {
               await mainLocalLog(
                 'Skipped Storage product ${localProduct.uuid}, remote is newer ✅',
               );
+              await UpdatedStorageProductsFunc()
+                  .deleteUpdatedStorageProduct(
+                    localProduct.uuid ?? '',
+                  );
             }
           }
         }
 
-        await UpdatedStorageProductsFunc()
-            .clearUpdatedStorageProduct();
-        await mainLocalLog(
-          'Unsynced updated Storage products cleared',
-        );
         await mainLocalLog(
           'Mounted, refreshing products ✅',
         );
-        await getStorageProducts(
-          returnShopProvider().userShop()!.shopId!,
-        );
+        final currentShopId =
+            returnShopProvider().userShop()?.shopId;
+        if (currentShopId != null) {
+          await getStorageProducts(
+            currentShopId,
+            forceRefresh: true,
+            ignoreSyncing: true,
+          );
+        }
       }
     } catch (e) {
       await mainLocalLog(
@@ -343,11 +354,14 @@ class StorageProductProvider extends ChangeNotifier {
   Future<List<TempStorageProducts>> getStorageProducts(
     int shopId, {
     bool forceRefresh = false,
+    bool ignoreSyncing = false,
   }) async {
     await getStorageProductsOffline(shopId);
     bool isOnline = await connectivity.isOnline();
-    await mainLocalLog('✅✅ Products List Cleared');
-    if (isOnline && StorageProductsFunc().isSynced()) {
+    if (isOnline &&
+        StorageProductsFunc().isSynced(
+          ignoreSyncing: ignoreSyncing,
+        )) {
       if (!forceRefresh &&
           _lastSyncAt != null &&
           _lastSyncShopId == shopId &&
@@ -412,79 +426,52 @@ class StorageProductProvider extends ChangeNotifier {
         }
       }
 
-      final data = await supabase
-          .from(tableName)
-          .select()
-          .eq('shop_id', shopId)
-          .order('name', ascending: true)
-          .range(
-            0,
-            allowedRangeItems != null
-                ? (allowedRangeItems ?? 0) - 1
-                : 1000,
-          );
-
-      await mainLocalLog('Items gotten: ${data.length}');
-
-      storageProductListMain =
-          (data as List)
-              .map(
-                (json) =>
-                    TempStorageProducts.fromJson(json),
-              )
-              .toList();
-      storageProductListMain.sort(
-        (a, b) => a.name.toLowerCase().compareTo(
-          b.name.toLowerCase(),
-        ),
-      );
-      await mainLocalLog(
-        'Product List Set: ${storageProductListMain.length}',
-      );
-      if (data.length > 999) {
-        final data2 = await supabase
+      try {
+        final firstPageEnd =
+            allowedRangeItems != null && allowedRangeItems! > 0
+                ? allowedRangeItems! - 1
+                : 999;
+        final data = await supabase
             .from(tableName)
             .select()
             .eq('shop_id', shopId)
             .order('name', ascending: true)
-            .range(
-              1001,
-              allowedRangeItems != null
-                  ? (allowedRangeItems ?? 0) - 1
-                  : 2000,
-            );
-        await mainLocalLog(
-          'Items 2 gotten: ${data2.length}',
-        );
-        storageProductListMain.addAll(
-          (data2 as List)
-              .map(
-                (stuff) =>
-                    TempStorageProducts.fromJson(stuff),
-              )
-              .toList(),
-        );
+            .range(0, firstPageEnd);
+
+        await mainLocalLog('Items gotten: ${data.length}');
+
+        storageProductListMain =
+            (data as List)
+                .map(
+                  (json) =>
+                      TempStorageProducts.fromJson(json),
+                )
+                .toList();
         storageProductListMain.sort(
           (a, b) => a.name.toLowerCase().compareTo(
             b.name.toLowerCase(),
           ),
         );
         await mainLocalLog(
-          'Product List 2 Set: ${storageProductListMain.length}',
+          'Product List Set: ${storageProductListMain.length}',
         );
-
-        if (storageProductListMain.length > 1999) {
-          final data3 = await supabase
+        if (data.length >= 1000) {
+          final secondPageEnd =
+              allowedRangeItems != null &&
+                      allowedRangeItems! > 1000
+                  ? allowedRangeItems! - 1
+                  : 1999;
+          final data2 = await supabase
               .from(tableName)
               .select()
               .eq('shop_id', shopId)
               .order('name', ascending: true)
-              .range(2001, allowedRangeItems ?? 3000);
+              .range(1000, secondPageEnd);
           await mainLocalLog(
-            'Items 3 gotten: ${data3.length}',
+            'Items 2 gotten: ${data2.length}',
           );
           storageProductListMain.addAll(
-            (data3 as List)
+            (data2 as List)
                 .map(
                   (stuff) =>
                       TempStorageProducts.fromJson(stuff),
@@ -497,26 +484,62 @@ class StorageProductProvider extends ChangeNotifier {
             ),
           );
           await mainLocalLog(
-            'Product List 3 Set: ${storageProductListMain.length}',
+            'Product List 2 Set: ${storageProductListMain.length}',
           );
+
+          if (storageProductListMain.length >= 2000) {
+            final data3 = await supabase
+                .from(tableName)
+                .select()
+                .eq('shop_id', shopId)
+                .order('name', ascending: true)
+                .range(2000, allowedRangeItems ?? 2999);
+            await mainLocalLog(
+              'Items 3 gotten: ${data3.length}',
+            );
+            storageProductListMain.addAll(
+              (data3 as List)
+                  .map(
+                    (stuff) =>
+                        TempStorageProducts.fromJson(stuff),
+                  )
+                  .toList(),
+            );
+            storageProductListMain.sort(
+              (a, b) => a.name.toLowerCase().compareTo(
+                b.name.toLowerCase(),
+              ),
+            );
+            await mainLocalLog(
+              'Product List 3 Set: ${storageProductListMain.length}',
+            );
+          }
+          notifyListeners();
         }
         notifyListeners();
-      }
-      notifyListeners();
-      await returnInventoryUpdatesProvider()
-          .getInventoryUpdates();
+        await returnInventoryUpdatesProvider()
+            .getInventoryUpdates();
 
-      await StorageProductsFunc().insertAllStorageProducts(
-        storageProductListMain,
-      );
-      _lastSyncAt = DateTime.now().toUtc();
-      _lastSyncShopId = shopId;
+        await StorageProductsFunc()
+            .insertAllStorageProducts(
+              storageProductListMain,
+            );
+        _lastSyncAt = DateTime.now().toUtc();
+        _lastSyncShopId = shopId;
+      } catch (e) {
+        await mainLocalLog(
+          'Full Storage Products fetch error: $e',
+        );
+      }
     } else {
       await mainLocalLog(
         "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
       );
       storageProductListMain =
-          StorageProductsFunc().getStorageProducts();
+          StorageProductsFunc()
+              .getStorageProducts()
+              .where((item) => item.shopId == shopId)
+              .toList();
       notifyListeners();
       await returnInventoryUpdatesProvider()
           .getInventoryUpdatesOffline();
@@ -553,30 +576,39 @@ class StorageProductProvider extends ChangeNotifier {
           );
           return null;
         }
-        notifyListeners();
 
         TempStorageProducts tempItem =
             TempStorageProducts.fromJson(data);
         mainLocalLog(
           'Single Storage Product item Gotten Successfully: ${tempItem.name}',
         );
-        StorageProductsFunc().createStorageProduct(
+        await StorageProductsFunc().createStorageProduct(
           tempItem,
         );
         insertSingleStorageItemIntoCache(newItem: tempItem);
         notifyListeners();
+        return tempItem;
       } else {
         returnData().syncData();
         await mainLocalLog(
           "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
         );
+        final currentShopId =
+            returnShopProvider().userShop()?.shopId;
         storageProductListMain =
-            StorageProductsFunc().getStorageProducts();
+            currentShopId == null
+                ? StorageProductsFunc().getStorageProducts()
+                : StorageProductsFunc()
+                    .getStorageProducts()
+                    .where(
+                      (item) => item.shopId == currentShopId,
+                    )
+                    .toList();
         notifyListeners();
+        return storageProductListMain
+            .where((item) => item.uuid == itemUuid)
+            .firstOrNull;
       }
-
-      notifyListeners();
-      return null;
     } catch (e) {
       await mainLocalLog(
         "Error Getting Storage Product Items Online: ${e.toString()}",
@@ -595,7 +627,10 @@ class StorageProductProvider extends ChangeNotifier {
       "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
     );
     storageProductListMain =
-        StorageProductsFunc().getStorageProducts();
+        StorageProductsFunc()
+            .getStorageProducts()
+            .where((item) => item.shopId == shopId)
+            .toList();
     notifyListeners();
     await returnInventoryUpdatesProvider()
         .getInventoryUpdatesOffline();
@@ -613,10 +648,11 @@ class StorageProductProvider extends ChangeNotifier {
     TempStorageProducts? oldProduct,
   }) async {
     try {
+      if (product.uuid == null) return 0;
+      product.updatedAt = DateTime.now().toUtc();
       var res = await StorageProductsFunc()
           .updateStorageProduct(product);
       if (res == 1) {
-        // if (isQuantityUpdate == false) {
         List<CreatedStorageProducts> containsCreated =
             CreatedStorageProductsFunc()
                 .getStorageProducts()
@@ -644,8 +680,7 @@ class StorageProductProvider extends ChangeNotifier {
         await getStorageProductsOffline(
           returnShopProvider().userShop()!.shopId!,
         );
-        if (isQuantityUpdate &&
-            storageItemHistory != null) {
+        if (storageItemHistory != null) {
           storageItemHistory.storageItemName = product.name;
           storageItemHistory.storageItemUuid = product.uuid;
           await returnStorageItemHistoryProvider()
@@ -749,7 +784,8 @@ class StorageProductProvider extends ChangeNotifier {
     }
     for (var item in storageProductListMain) {
       tempTotal +=
-          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
+          ((item.sellingPrice ?? 0) *
+              (item.getActualQuantity() ?? 0));
     }
     return tempTotal;
   }
@@ -764,7 +800,8 @@ class StorageProductProvider extends ChangeNotifier {
     }
     for (var item in storageProductListMain) {
       tempTotal +=
-          ((item.costPrice ?? 0) * (item.quantity ?? 0));
+          ((item.costPrice ?? 0) *
+              (item.getActualQuantity() ?? 0));
     }
     return tempTotal;
   }

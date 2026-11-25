@@ -55,6 +55,7 @@ class _HomeState extends State<Home> {
   late Future<TempShopClass?> shopFuture;
   Future<TempShopClass?> getUserShop() async {
     try {
+      await userFuture;
       await mainLocalLog('About to get Stores');
       var shop = await returnShopProvider().getUserShops();
       await mainLocalLog('Stores Gotten: ${shop.length}');
@@ -78,6 +79,8 @@ class _HomeState extends State<Home> {
     shopFuture = getUserShop();
     listPrinters();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await userFuture;
+      if (!mounted) return;
       if (returnShopProvider()
               .userShop()
               ?.manageDepartments !=

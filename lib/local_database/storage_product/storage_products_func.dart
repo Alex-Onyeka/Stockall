@@ -57,9 +57,10 @@ class StorageProductsFunc {
   Future<int> insertAllStorageProducts(
     List<TempStorageProducts> storageProducts,
   ) async {
-    await clearStorageProducts();
     try {
+      await clearStorageProducts();
       for (var rec in storageProducts) {
+        if (rec.uuid == null) continue;
         await storageProductsBox.put(rec.uuid, rec);
       }
       await mainLocalLog(
@@ -142,7 +143,7 @@ class StorageProductsFunc {
     }
   }
 
-  bool isSynced() {
+  bool isSynced({bool ignoreSyncing = false}) {
     if (CreatedStorageProductsFunc()
             .getStorageProducts()
             .isEmpty &&
@@ -152,7 +153,7 @@ class StorageProductsFunc {
         DeletedStorageProductsFunc()
             .getStorageProductIds()
             .isEmpty &&
-        returnData().isSyncing == false) {
+        (ignoreSyncing || returnData().isSyncing == false)) {
       return true;
     } else {
       return false;

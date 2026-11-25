@@ -239,7 +239,7 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                   groupUnit: dataProvider.selectedGroupUnit,
                   qttyPerGroup:
                       widget.qttyPerGroupController.text.isNotEmpty
-                          ? double.parse(
+                          ? double.tryParse(
                             widget.qttyPerGroupController.text.replaceAll(
                               ',',
                               '',
@@ -249,13 +249,13 @@ class _AddStorageItemDesktopState extends State<AddStorageItemDesktop> {
                   quantity: widget.storageProduct?.quantity,
                   costPrice:
                       widget.costPriceController.text.isNotEmpty
-                          ? double.parse(
+                          ? double.tryParse(
                             widget.costPriceController.text.replaceAll(',', ''),
                           )
                           : null,
                   sellingPrice:
                       widget.sellingPriceController.text.isNotEmpty
-                          ? double.parse(
+                          ? double.tryParse(
                             widget.sellingPriceController.text.replaceAll(
                               ',',
                               '',

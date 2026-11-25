@@ -8,6 +8,7 @@ import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/authentication/explore_page/platforms/explore_desktop.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/forgot_password_page.dart';
 import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
 import 'package:stockall/pages/authentication/translations/general.dart';
@@ -301,37 +302,85 @@ class _LoginDesktopState extends State<LoginDesktop> {
 
                 SizedBox(height: 20),
                 Row(
+                  spacing: 5,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    InkWell(
-                      mouseCursor: SystemMouseCursors.click,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return ForgotPasswordPage();
-                            },
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onTap: () {
+                          loginDemoAccountAction(
+                            context: context,
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            right: 10.0,
+                            top: 10,
+                            bottom: 10,
+                            left: 15,
                           ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          right: 0.0,
-                          top: 15,
-                          bottom: 15,
-                          left: 20,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  widget
+                                      .theme
+                                      .lightModeColor
+                                      .secColor100,
+                            ),
+                            'Login Demo',
+                          ),
                         ),
-                        child: Text(
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color:
-                                widget
-                                    .theme
-                                    .lightModeColor
-                                    .secColor100,
+                      ),
+                    ),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        mouseCursor:
+                            SystemMouseCursors.click,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ForgotPasswordPage();
+                              },
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            right: 15.0,
+                            top: 10,
+                            bottom: 10,
+                            left: 10,
                           ),
-                          LoginPageTexts().forgetPassword,
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  widget
+                                      .theme
+                                      .lightModeColor
+                                      .secColor100,
+                            ),
+                            LoginPageTexts().forgetPassword,
+                          ),
                         ),
                       ),
                     ),

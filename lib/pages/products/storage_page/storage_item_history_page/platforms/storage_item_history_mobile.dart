@@ -49,41 +49,21 @@ class StorageItemHistoryMobileState extends State<StorageItemHistoryMobile> {
         returnStorageItemHistoryProvider(
           context: context,
         ).returnItemHistories().where((history) {
+          final q = searchController.text.toLowerCase();
+          final matchesQuery =
+              history.storageItemName?.toLowerCase().contains(q) == true ||
+              history.storageDepartmentName?.toLowerCase().contains(q) == true ||
+              history.storageStaffName?.toLowerCase().contains(q) == true ||
+              history.salesItemName?.toLowerCase().contains(q) == true ||
+              history.salesDepartmentName?.toLowerCase().contains(q) == true ||
+              history.salesStaffName?.toLowerCase().contains(q) == true ||
+              (history.desc?.toLowerCase().contains(q) == true) ||
+              history.title.toLowerCase().contains(q);
           if (widget.productUuid != null) {
             return history.storageItemUuid == widget.productUuid &&
-                (history.storageItemName?.toLowerCase().contains(
-                          searchController.text.toLowerCase(),
-                        ) ==
-                        true ||
-                    history.storageDepartmentName?.toLowerCase().contains(
-                          searchController.text.toLowerCase(),
-                        ) ==
-                        true ||
-                    history.storageStaffName?.toLowerCase().contains(
-                          searchController.text.toLowerCase(),
-                        ) ==
-                        true ||
-                    history.title.toLowerCase().contains(
-                          searchController.text.toLowerCase(),
-                        ) ==
-                        true);
+                matchesQuery;
           } else {
-            return (history.storageItemName?.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true ||
-                history.storageDepartmentName?.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true ||
-                history.storageStaffName?.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true ||
-                history.title.toLowerCase().contains(
-                      searchController.text.toLowerCase(),
-                    ) ==
-                    true);
+            return matchesQuery;
           }
         }).toList();
     return Scaffold(

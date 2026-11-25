@@ -55,55 +55,14 @@ class _ManageThisItemToggleSwitchState
                         isIncrement: null,
                         isQuantityUpdate: false,
                         quantityChange: null,
-                        product: TempProductClass(
-                          manageSalesWastage: widget.product.manageSalesWastage,
-                          deriveQuantityFromPrice:
-                              widget.product.deriveQuantityFromPrice,
-                          heightDimension: widget.product.heightDimension,
-                          widthDimension: widget.product.widthDimension,
-                          dimensionUnit: widget.product.dimensionUnit,
-                          dimensionUnitConversion:
-                              widget.product.dimensionUnitConversion,
-                          quantityType: widget.product.quantityType,
-                          pricesList: widget.product.pricesList,
-                          unitsList: widget.product.unitsList,
-                          categories: widget.product.categories,
-                          useGroupUnit: widget.product.useGroupUnit,
-                          storageUuid: widget.product.storageUuid,
-                          departmentName: widget.product.departmentName,
-                          departmentUuid: widget.product.departmentUuid,
-                          groupUnit: widget.product.groupUnit,
-                          qttyPerGroup: widget.product.qttyPerGroup,
+                        product: widget.product.copyWith(
                           updatedAt: DateTime.now(),
-                          totalQttyInStorageDouble:
-                              widget.product.totalQttyInStorageDouble,
-                          setCustomPrice: widget.product.setCustomPrice,
-                          isManaged: widget.product.isManaged ? false : true,
-                          // id:
-                          //     product.id,
-                          name: widget.product.name,
-                          unit: widget.product.unit,
-                          isRefundable: widget.product.isRefundable,
-                          costPrice: widget.product.costPrice,
-                          sellingPrice: widget.product.sellingPrice,
-                          wholeSalePrice: widget.product.wholeSalePrice,
+                          isManaged: !widget.product.isManaged,
                           quantity:
                               !widget.product.isManaged &&
                                       widget.product.getActualQuantity() == null
                                   ? 0
-                                  : widget.product.getActualQuantity(),
-                          shopId: widget.product.shopId,
-                          barcode: widget.product.barcode,
-                          // categoryUuid:
-                          //     product.categoryUuid,
-                          createdAt: widget.product.createdAt,
-                          discount: widget.product.discount,
-                          endDate: widget.product.endDate,
-                          expiryDate: widget.product.expiryDate,
-                          lowQtty: widget.product.lowQtty,
-                          sizeType: widget.product.sizeType,
-                          startDate: widget.product.startDate,
-                          uuid: widget.product.uuid,
+                                  : widget.product.quantity,
                         ),
                         oldProduct: widget.product,
                       );

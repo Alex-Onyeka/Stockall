@@ -101,7 +101,7 @@ class TempStorageProducts {
               : null,
       shopId: json['shop_id'] as int,
       name: json['name'] as String,
-      desc: json['desc'] as String?,
+      desc: (json['desc'] ?? json['description']) as String?,
       quantity:
           json['quantity'] != null
               ? (json['quantity'] as num).toDouble()
@@ -151,14 +151,14 @@ class TempStorageProducts {
   Map<String, dynamic> toJson() {
     return {
       'uuid': uuid,
-      'created_at': createdAt?.toIso8601String(),
+      'created_at': createdAt?.toUtc().toIso8601String(),
       'shop_id': shopId,
       'name': name,
       'description': desc,
       'quantity': quantity,
       'single_unit': unit,
       'group_unit': groupUnit,
-      'updated_at': updatedAt?.toIso8601String(),
+      'updated_at': updatedAt?.toUtc().toIso8601String(),
       'qtty_per_group': qttyPerGroup,
       'cost_price': costPrice,
       'selling_price': sellingPrice,

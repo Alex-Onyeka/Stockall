@@ -20,18 +20,23 @@ class _SupplierPageState extends State<SupplierPage> {
   @override
   void initState() {
     super.initState();
-    if (returnSuppliersProvider().getSupplierByIdMain(widget.uuid) ==
-        null) {
-      _loading = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await returnPurchaseProvider().loadPurchases(shopId());
+      if (returnSuppliersProvider().getSupplierByIdMain(
+            widget.uuid,
+          ) ==
+          null) {
+        if (mounted) setState(() => _loading = true);
         try {
-          await returnSuppliersProvider().fetchSuppliers(shopId());
+          await returnSuppliersProvider().fetchSuppliers(
+            shopId(),
+          );
         } catch (e) {
           await mainLocalLog('Supplier page fetch failed: $e');
         }
         if (mounted) setState(() => _loading = false);
-      });
-    }
+      }
+    });
   }
 
   @override

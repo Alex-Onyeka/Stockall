@@ -27,20 +27,27 @@ class StorageItemHistoriesFunc {
   }
 
   List<StorageItemHistory> getStorageItemHistories() {
-    List<StorageItemHistory> storageItemHistory =
-        storageItemHistoryBox.values.toList();
-    storageItemHistory.sort(
-      (a, b) => a.createdAt!.compareTo(b.createdAt!),
-    );
-    return storageItemHistory;
+    try {
+      List<StorageItemHistory> storageItemHistory =
+          storageItemHistoryBox.values.toList();
+      storageItemHistory.sort(
+        (a, b) => (b.createdAt ?? DateTime(0)).compareTo(
+          a.createdAt ?? DateTime(0),
+        ),
+      );
+      return storageItemHistory;
+    } catch (e) {
+      return [];
+    }
   }
 
   Future<int> insertAllStorageItemHistories(
     List<StorageItemHistory> storageItemHistory,
   ) async {
-    await clearStorageItemHistories();
     try {
+      await clearStorageItemHistories();
       for (var history in storageItemHistory) {
+        if (history.uuid == null) continue;
         await storageItemHistoryBox.put(
           history.uuid,
           history,
@@ -99,11 +106,11 @@ class StorageItemHistoriesFunc {
     }
   }
 
-  bool isSynced() {
+  bool isSynced({bool ignoreSyncing = false}) {
     if (CreatedStorageItemHistoriesFunc()
             .getCreatedStorageItemHistoriess()
             .isEmpty &&
-        returnData().isSyncing == false) {
+        (ignoreSyncing || returnData().isSyncing == false)) {
       return true;
     } else {
       return false;

@@ -33,12 +33,14 @@ class _TableRowRecordWidgetState extends State<TableRowRecordWidget> {
             .where((item) => item.storageUuid == widget.product.uuid)
             .toList();
 
-    return items
-        .map(
-          (item) =>
-              widget.product.getProductUnit().getQuantityEquivDivided(index: 4),
-        )
-        .fold(0, (a, b) => a + b);
+    final double totalSalesActual = items
+        .map((item) => item.getActualQuantity() ?? 0)
+        .fold(0.0, (a, b) => a + b);
+
+    return widget.product.getProductUnit().getQuantityEquivDivided(
+      index: 4,
+      newQuantity: totalSalesActual,
+    );
   }
 
   double getOverallTotal() {

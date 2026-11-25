@@ -32,13 +32,14 @@ class StorageProductTile extends StatelessWidget {
             .where((item) => item.storageUuid == product.uuid)
             .toList();
 
-    return items
-        .map(
-          (item) => product
-              .getProductUnit()
-              .getQuantityEquivDivided(index: 4),
-        )
-        .fold(0, (a, b) => a + b);
+    final double totalSalesActual = items
+        .map((item) => item.getActualQuantity() ?? 0)
+        .fold(0.0, (a, b) => a + b);
+
+    return product.getProductUnit().getQuantityEquivDivided(
+      index: 4,
+      newQuantity: totalSalesActual,
+    );
   }
 
   void _openDetails(BuildContext context) {

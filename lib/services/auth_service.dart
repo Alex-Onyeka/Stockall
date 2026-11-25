@@ -198,7 +198,7 @@ class AuthService extends ChangeNotifier {
     // BuildContext context,
   ) async {
     NavProvider navProvider = NavProvider();
-    bool isOnline = ConnectivityProvider().isConnected;
+    bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       try {
         final authResponse = await _client.auth
@@ -394,7 +394,7 @@ class AuthService extends ChangeNotifier {
         await CurrentShopFunc().clearCurrentShop();
         await returnMultiDisplayProvider()
             .closeAllWindows();
-        bool isOnline = ConnectivityProvider().isConnected;
+        bool isOnline = await ConnectivityProvider().isOnline();
 
         if (isOnline) {
           await _client.auth.signOut();
@@ -510,7 +510,7 @@ class AuthService extends ChangeNotifier {
           ?.email;
 
   Future<String?> checkAuth() async {
-    bool isOnline = ConnectivityProvider().isConnected;
+    bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       await mainLocalLog('Online Auth Validated');
       return currentUserAuth?.id;

@@ -84,7 +84,16 @@ _deletedStorageProductBox = await openBoxSafely<DeletedStorageProduct>(deletedSt
     String uuid,
   ) async {
     try {
-      await deletedStorageProductBox.delete(uuid);
+      final matchingKeys =
+          deletedStorageProductBox.keys.where((key) {
+            final item = deletedStorageProductBox.get(key);
+            return item?.storageProducteUuid == uuid;
+          }).toList();
+      if (matchingKeys.isNotEmpty) {
+        await deletedStorageProductBox.deleteAll(matchingKeys);
+      } else {
+        await deletedStorageProductBox.delete(uuid);
+      }
       await mainLocalLog(
         'Delete Storage Product cleared ✅',
       );

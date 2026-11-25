@@ -1301,8 +1301,8 @@ class TempProductClass {
                 .where(
                   (storage) => storage.uuid == storageUuid,
                 )
-                .first
-                .groupUnit ??
+                .firstOrNull
+                ?.groupUnit ??
             'Group(s)';
       } else {
         return '${groupUnit?.substring(0, 1).toUpperCase()}${groupUnit?.substring(1) ?? 'Unit(s)'}';

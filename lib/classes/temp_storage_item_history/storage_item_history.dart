@@ -160,7 +160,10 @@ class StorageItemHistory {
           json['storage_item_old_value'] as String?,
       storageStaffName:
           json['storage_staff_name'] as String?,
-      storageStaffId: json['storage_staff_uuid'] as String?,
+      storageStaffId:
+          (json['storage_staff_uuid'] ??
+                  json['storage_staff_id'])
+              as String?,
       storageDepartmentName:
           json['storage_department_name'] as String?,
       storageDepartmentUuid:

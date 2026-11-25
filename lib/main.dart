@@ -1408,8 +1408,8 @@ class _MyAppState extends State<MyApp>
         ChangeNotifierProvider(
           create: (_) => TranslationProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => ConnectivityProvider(),
+        ChangeNotifierProvider.value(
+          value: ConnectivityProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => SubscriptionProvider(),

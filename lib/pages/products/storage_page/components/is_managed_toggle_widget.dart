@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -21,6 +22,11 @@ class _IsManagedToggleWidgetState extends State<IsManagedToggleWidget> {
     return InkWell(
       mouseCursor: SystemMouseCursors.click,
       onTap: () {
+        if (!authorization(
+          authorized: Authorizations().updateProduct,
+        )) {
+          return;
+        }
         ItemsAuthAction().allowStockallToManageItemAction(
           context: context,
           action: () async {
@@ -46,59 +52,22 @@ class _IsManagedToggleWidgetState extends State<IsManagedToggleWidget> {
                       isIncrement: null,
                       isQuantityUpdate: false,
                       quantityChange: null,
-                      product: TempProductClass(
-                        manageSalesWastage: widget.product.manageSalesWastage,
-                        deriveQuantityFromPrice:
-                            widget.product.deriveQuantityFromPrice,
-                        heightDimension: widget.product.heightDimension,
-                        widthDimension: widget.product.widthDimension,
-                        dimensionUnit: widget.product.dimensionUnit,
-                        dimensionUnitConversion:
-                            widget.product.dimensionUnitConversion,
-                        quantityType: widget.product.quantityType,
-                        unitsList: widget.product.unitsList,
-                        pricesList: widget.product.pricesList,
-                        useGroupUnit: widget.product.useGroupUnit,
-                        categories: widget.product.categories,
-                        departmentName: widget.product.departmentName,
-                        departmentUuid: widget.product.departmentUuid,
-                        groupUnit: widget.product.groupUnit,
-                        qttyPerGroup: widget.product.qttyPerGroup,
+                      product: widget.product.copyWith(
                         updatedAt: DateTime.now(),
-                        setCustomPrice: widget.product.setCustomPrice,
-                        isManaged: widget.product.isManaged ? false : true,
-                        name: widget.product.name,
-                        totalQttyInStorageDouble:
-                            widget.product.totalQttyInStorageDouble,
-                        unit: widget.product.unit,
-                        isRefundable: widget.product.isRefundable,
-                        costPrice: widget.product.costPrice,
-                        sellingPrice: widget.product.sellingPrice,
-                        wholeSalePrice: widget.product.wholeSalePrice,
+                        isManaged: !widget.product.isManaged,
                         quantity:
                             !widget.product.isManaged &&
                                     widget.product.getActualQuantity() == null
                                 ? 0
-                                : widget.product.getActualQuantity(),
-                        shopId: widget.product.shopId,
-                        barcode: widget.product.barcode,
-                        // categoryUuid:
-                        //     widget.product.categoryUuid,
-                        createdAt: widget.product.createdAt,
-                        discount: widget.product.discount,
-                        endDate: widget.product.endDate,
-                        expiryDate: widget.product.expiryDate,
-                        lowQtty: widget.product.lowQtty,
-                        sizeType: widget.product.sizeType,
-                        startDate: widget.product.startDate,
-                        uuid: widget.product.uuid,
-                        storageUuid: widget.product.storageUuid,
+                                : widget.product.quantity,
                       ),
                       oldProduct: widget.product,
                     );
-                    setState(() {
-                      isLoading = false;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
                   },
                 );
               },

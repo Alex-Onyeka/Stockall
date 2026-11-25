@@ -48,9 +48,7 @@ _updatedStorageProductBox = await openBoxSafely<UpdatedStorageProduct>(updatedSt
     try {
       updatedStorageProduct
           .updatedStorageProduct
-          .updatedAt = DateTime.now().toUtc().add(
-        const Duration(hours: 1),
-      );
+          .updatedAt = DateTime.now().toUtc();
       await updatedStorageProductBox.put(
         updatedStorageProduct.updatedStorageProduct.uuid,
         updatedStorageProduct,
@@ -73,9 +71,7 @@ _updatedStorageProductBox = await openBoxSafely<UpdatedStorageProduct>(updatedSt
     try {
       updatedStorageProduct
           .updatedStorageProduct
-          .updatedAt = DateTime.now().toUtc().add(
-        const Duration(hours: 1),
-      );
+          .updatedAt = DateTime.now().toUtc();
       await updatedStorageProductBox.put(
         updatedStorageProduct.updatedStorageProduct.uuid,
         updatedStorageProduct,

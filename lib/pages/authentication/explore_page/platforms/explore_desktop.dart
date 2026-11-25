@@ -315,20 +315,41 @@ class LoginDemoSectionWidget extends StatelessWidget {
               Icons.login,
             ),
             action: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return LoginPage(useDemoLogin: true);
-                  },
-                ),
-              );
+              loginDemoAccountAction(context: context);
             },
           ),
         ],
       ),
     );
   }
+}
+
+void loginDemoAccountAction({
+  required BuildContext context,
+}) {
+  var theme = returnTheme(context, listen: false);
+  showDialog(
+    context: context,
+    builder: (confirmContext) {
+      return ConfirmationAlert(
+        theme: theme,
+        message:
+            'You are about use a demo account to Explore the Software. Are you sure you want to Proceed?',
+        title: 'Login Demo Account?',
+        action: () {
+          Navigator.of(confirmContext).pop();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return LoginPage(useDemoLogin: true);
+              },
+            ),
+          );
+        },
+      );
+    },
+  );
 }
 
 class ContactSupportSectionWidget extends StatelessWidget {

@@ -17,6 +17,11 @@ class CustomersMainTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final trimmedName = customer.name.trim();
+    final initial =
+        trimmedName.isNotEmpty
+            ? trimmedName.characters.first.toUpperCase()
+            : '?';
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
@@ -66,8 +71,7 @@ class CustomersMainTile extends StatelessWidget {
                                 height: 1,
                                 color: Colors.black,
                               ),
-                              customer.name.characters.first
-                                  .toUpperCase(),
+                              initial,
                             ),
                           ),
                         ),
@@ -86,8 +90,9 @@ class CustomersMainTile extends StatelessWidget {
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-
-                                customer.name,
+                                trimmedName.isNotEmpty
+                                    ? customer.name
+                                    : 'Unnamed Customer',
                               ),
                               Text(
                                 style: TextStyle(

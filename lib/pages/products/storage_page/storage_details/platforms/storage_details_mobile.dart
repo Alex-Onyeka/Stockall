@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/edit_button.dart';
@@ -125,7 +126,7 @@ class _StorageDetailsMobileState extends State<StorageDetailsMobile> {
                                       widget.theme.lightModeColor.secColor200,
                                   fontWeight: FontWeight.normal,
                                 ),
-                                'Date Created: ${formatDateTime(product.createdAt!)}',
+                                'Date Created: ${formatDateTime(product.createdAt ?? DateTime.now())}',
                               ),
                               if (product.quantityType == 2)
                                 Text(
@@ -262,94 +263,106 @@ class _StorageDetailsMobileState extends State<StorageDetailsMobile> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 15,
                     children: [
-                      Expanded(
-                        child: EditButton(
-                          text: 'Delete Item',
-                          action: () {
-                            final safeContext = context;
-                            showDialog(
-                              context: safeContext,
-                              builder: (confirmDialog) {
-                                var provider = returnStorageProductProvider();
-                                var shopId =
-                                    returnShopProvider().userShop()!.shopId!;
-                                return ConfirmationAlert(
-                                  theme: returnTheme(context),
-                                  message:
-                                      'Are you sure you want to proceed with action?',
-                                  title: 'Are you sure?',
-                                  action: () async {
-                                    Navigator.of(confirmDialog).pop();
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    StorageItemHistory
-                                    itemHistory = StorageItemHistory(
-                                      event:
-                                          StorageItemHistoryEventClass
-                                              .itemDeleted,
-                                      source:
-                                          StorageItemHistoryEventClass
-                                              .storageSource,
-                                      destination:
-                                          StorageItemHistoryEventClass
-                                              .deletedDestination,
-                                      shopId: shopId,
-                                      title: 'Item Deleted',
-                                      quantityChange: 0,
-                                      storageItemNewValue:
-                                          (product.quantity ?? 0).toString(),
-                                      desc: 'Item Deleted Now',
-                                      isIncreased: false,
-                                      storageItemOldValue:
-                                          (product.quantity ?? 0).toString(),
-                                    );
-                                    await provider.deleteProductMain(
-                                      product: product,
-                                      itemHistory: itemHistory,
-                                    );
-                                    await provider.getStorageProducts(shopId);
-                                    setState(() {
-                                      isLoading = false;
-                                      showSuccess = true;
-                                    });
-                                    Future.delayed(Duration(seconds: 2), () {
+                      Visibility(
+                        visible: authorization(
+                          authorized: Authorizations().deleteProduct,
+                        ),
+                        child: Expanded(
+                          child: EditButton(
+                            text: 'Delete Item',
+                            action: () {
+                              final safeContext = context;
+                              showDialog(
+                                context: safeContext,
+                                builder: (confirmDialog) {
+                                  var provider = returnStorageProductProvider();
+                                  var shopId =
+                                      returnShopProvider().userShop()!.shopId!;
+                                  return ConfirmationAlert(
+                                    theme: returnTheme(context),
+                                    message:
+                                        'Are you sure you want to proceed with action?',
+                                    title: 'Are you sure?',
+                                    action: () async {
+                                      Navigator.of(confirmDialog).pop();
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      StorageItemHistory
+                                      itemHistory = StorageItemHistory(
+                                        event:
+                                            StorageItemHistoryEventClass
+                                                .itemDeleted,
+                                        source:
+                                            StorageItemHistoryEventClass
+                                                .storageSource,
+                                        destination:
+                                            StorageItemHistoryEventClass
+                                                .deletedDestination,
+                                        shopId: shopId,
+                                        title: 'Item Deleted',
+                                        quantityChange: 0,
+                                        storageItemNewValue:
+                                            (product.quantity ?? 0).toString(),
+                                        desc: 'Item Deleted Now',
+                                        isIncreased: false,
+                                        storageItemOldValue:
+                                            (product.quantity ?? 0).toString(),
+                                      );
+                                      await provider.deleteProductMain(
+                                        product: product,
+                                        itemHistory: itemHistory,
+                                      );
+                                      await provider.getStorageProducts(shopId);
+                                      if (mounted) {
+                                        setState(() {
+                                          isLoading = false;
+                                          showSuccess = true;
+                                        });
+                                      }
                                       if (safeContext.mounted) {
                                         Navigator.of(safeContext).pop();
                                       }
-                                    });
-                                  },
-                                );
-                              },
-                            );
-                          },
-                          theme: returnTheme(context),
-                          icon: Icons.delete_forever_outlined,
-                          color: Colors.redAccent,
-                        ),
-                      ),
-                      Expanded(
-                        child: EditButton(
-                          text: 'Edit Item',
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AddStorageItem(
-                                    productStorage: product,
+                                    },
                                   );
                                 },
-                              ),
-                            ).then((context) {
-                              returnStorageProductProvider()
-                                  .getSingleStorageProductItemOnline(
-                                    itemUuid: widget.productUuid,
-                                  );
-                              setState(() {});
-                            });
-                          },
-                          theme: returnTheme(context),
+                              );
+                            },
+                            theme: returnTheme(context),
+                            icon: Icons.delete_forever_outlined,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: authorization(
+                          authorized: Authorizations().updateProduct,
+                        ),
+                        child: Expanded(
+                          child: EditButton(
+                            text: 'Edit Item',
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return AddStorageItem(
+                                      productStorage: product,
+                                    );
+                                  },
+                                ),
+                              ).then((_) async {
+                                await returnStorageProductProvider()
+                                    .getSingleStorageProductItemOnline(
+                                      itemUuid: widget.productUuid,
+                                    );
+                                if (mounted) {
+                                  setState(() {});
+                                }
+                              });
+                            },
+                            theme: returnTheme(context),
+                          ),
                         ),
                       ),
                     ],

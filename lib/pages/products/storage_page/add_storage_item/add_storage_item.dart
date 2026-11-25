@@ -29,6 +29,8 @@ class _AddStorageItemState extends State<AddStorageItem> {
     nameController.dispose();
     quantityController.dispose();
     qttyPerGroupController.dispose();
+    costPriceController.dispose();
+    sellingPriceController.dispose();
     widthController.dispose();
     heightController.dispose();
   }

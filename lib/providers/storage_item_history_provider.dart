@@ -100,23 +100,24 @@ class StorageItemHistoryProvider with ChangeNotifier {
               if (cat.salesDepartmentUuid != null)
                 cat.salesDepartmentUuid!,
             ],
+            includeUnassignedWhenDeptSelected: true,
           );
     }).toList();
   }
 
   List<StorageItemHistory> returnItemHistories() {
-    departmentStorageItemHistories().sort(
-      (a, b) => b.createdAt!.compareTo(a.createdAt!),
+    final list = departmentStorageItemHistories();
+    list.sort(
+      (a, b) => (b.createdAt ?? DateTime(0)).compareTo(
+        a.createdAt ?? DateTime(0),
+      ),
     );
     if (dateSet == null &&
         rangeEndDate == null &&
         rangeStartDate == null) {
-      departmentStorageItemHistories().sort(
-        (a, b) => b.createdAt!.compareTo(a.createdAt!),
-      );
-      return departmentStorageItemHistories();
+      return list;
     } else {
-      return departmentStorageItemHistories()
+      return list
           .where(
             (itemHistory) => isDateTimeInBusinessWindow(
               dateTime: itemHistory.createdAt,
@@ -135,13 +136,19 @@ class StorageItemHistoryProvider with ChangeNotifier {
     DateTime? endDate,
     bool fetchAll = false,
     bool forceRefresh = false,
+    bool ignoreSyncing = false,
   }) async {
     await getItemHistoriesOffline();
     bool isOnline = await ConnectivityProvider().isOnline();
-    var shop = returnShopProvider().userShop()!;
-    var shopId = shop.shopId!;
+    var shop = returnShopProvider().userShop();
+    if (shop?.shopId == null) {
+      return storageItemHistories;
+    }
+    var shopId = shop!.shopId!;
     if (isOnline &&
-        StorageItemHistoriesFunc().isSynced() &&
+        StorageItemHistoriesFunc().isSynced(
+          ignoreSyncing: ignoreSyncing,
+        ) &&
         ItemsAuthAction().trackItemHistoryAction(
           context: null,
         ) &&
@@ -249,12 +256,19 @@ class StorageItemHistoryProvider with ChangeNotifier {
         await mainLocalLog(
           '❌❌ Storage Item Histories Getting Online Failed: ${e.toString()}',
         );
-        return [];
+        return storageItemHistories;
       }
     } else {
+      final currentShopId =
+          returnShopProvider().userShop()?.shopId;
       storageItemHistories =
-          StorageItemHistoriesFunc()
-              .getStorageItemHistories();
+          currentShopId == null
+              ? StorageItemHistoriesFunc()
+                  .getStorageItemHistories()
+              : StorageItemHistoriesFunc()
+                  .getStorageItemHistories()
+                  .where((h) => h.shopId == currentShopId)
+                  .toList();
       await mainLocalLog(
         'Storage Item Histories Gotten Successfully Offline',
       );
@@ -265,9 +279,16 @@ class StorageItemHistoryProvider with ChangeNotifier {
 
   Future<List<StorageItemHistory>>
   getItemHistoriesOffline() async {
+    final currentShopId =
+        returnShopProvider().userShop()?.shopId;
     storageItemHistories =
-        StorageItemHistoriesFunc()
-            .getStorageItemHistories();
+        currentShopId == null
+            ? StorageItemHistoriesFunc()
+                .getStorageItemHistories()
+            : StorageItemHistoriesFunc()
+                .getStorageItemHistories()
+                .where((h) => h.shopId == currentShopId)
+                .toList();
     await mainLocalLog(
       'Storage Item Histories Gotten Successfully Offline',
     );
@@ -326,36 +347,39 @@ class StorageItemHistoryProvider with ChangeNotifier {
             CreatedStorageItemHistoriesFunc()
                 .getCreatedStorageItemHistoriess()
                 .toList();
-        var newItemHistories = tempItemHistories.map((
-          itemHistory,
-        ) {
-          itemHistory.storageItemHistory.createdAt =
-              itemHistory.storageItemHistory.createdAt!;
-          return itemHistory;
-        });
-        final payload =
-            newItemHistories
-                .map((p) => p.storageItemHistory.toJson())
-                .toList();
+        int syncedCount = 0;
+        for (final itemHistory in tempItemHistories) {
+          final history = itemHistory.storageItemHistory;
+          history.createdAt =
+              (history.createdAt ?? DateTime.now()).toUtc();
+          final uuid = history.uuid;
+          if (uuid == null) continue;
+          try {
+            await client
+                .from(tableName)
+                .insert(history.toJson());
+            await CreatedStorageItemHistoriesFunc()
+                .deleteCreatedStorageItemHistory(uuid);
+            syncedCount++;
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedStorageItemHistoriesFunc()
+                  .deleteCreatedStorageItemHistory(uuid);
+            } else {
+              await mainLocalLog(
+                'Storage Item History insert failed ❌ ($uuid): $e',
+              );
+            }
+          }
+        }
 
-        // Insert all at once
-        final data = await client
-            .from(tableName)
-            .insert(payload)
-            .select('uuid');
-
         await mainLocalLog(
-          '${data.length} Storage Item Histories added successfully ✅',
+          '$syncedCount Storage Item Histories added successfully ✅',
         );
-        await CreatedStorageItemHistoriesFunc()
-            .clearStorageItemHistory();
-        await mainLocalLog(
-          'Unsynced Storage Item Histories Cleared',
+        await getItemHistories(
+          forceRefresh: true,
+          ignoreSyncing: true,
         );
-        await mainLocalLog(
-          'Mounted, refreshing Storage Item Histories ✅',
-        );
-        await getItemHistories();
       }
     } catch (e) {
       await mainLocalLog(

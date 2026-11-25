@@ -130,7 +130,7 @@ class _StorageQuantityUpdateWidgetState
       if (currentIndex == 0 && productUuid != null) {
         return returnData().productListMain
             .where((pro) => pro.uuid == productUuid)
-            .first;
+            .firstOrNull;
       } else {
         return null;
       }
@@ -162,6 +162,7 @@ class _StorageQuantityUpdateWidgetState
                   currentIndex = 0;
                   productUuid = null;
                   staffUuid = null;
+                  unitUuid = null;
                 });
               },
             ),
@@ -175,6 +176,7 @@ class _StorageQuantityUpdateWidgetState
                   currentIndex = 1;
                   productUuid = null;
                   staffUuid = null;
+                  unitUuid = null;
                 });
                 setState(() {
                   quantityController.text = '0';
@@ -191,6 +193,7 @@ class _StorageQuantityUpdateWidgetState
                   currentIndex = 2;
                   productUuid = null;
                   staffUuid = null;
+                  unitUuid = null;
                 });
               },
             ),
@@ -213,7 +216,7 @@ class _StorageQuantityUpdateWidgetState
         EditCartTextField(
           title: 'Quantity',
           hint:
-              'Enter ${widget.storageProduct.getProductUnit(unitUuid: unitUuid).name} Quantity',
+              'Enter ${(product() != null ? product()!.getProductUnit(unitUuid: unitUuid) : widget.storageProduct.getProductUnit(unitUuid: unitUuid)).name} Quantity',
           controller: quantityController,
           theme: theme,
           showTitle: false,
@@ -960,30 +963,19 @@ class _StorageQuantityUpdateWidgetState
                                   title:
                                       'Item ${(salesNewQuantity > salesOldQuantity) ? "Received From" : 'Returned To'} Storage.',
                                   quantityChange:
-                                      product() != null
-                                          ? newPr
-                                              .getProductUnit(
-                                                unitUuid:
-                                                    unitUuid,
-                                              )
-                                              .getQuantityEquivDivided(
-                                                index: 1,
-                                                newQuantity:
-                                                    salesNewQuantity -
-                                                    salesOldQuantity,
-                                              )
-                                          : widget
-                                              .storageProduct
-                                              .getProductUnit(
-                                                unitUuid:
-                                                    unitUuid,
-                                              )
-                                              .getQuantityEquivDivided(
-                                                index: 4,
-                                                newQuantity:
-                                                    salesNewQuantity -
-                                                    salesOldQuantity,
-                                              ),
+                                      newPr
+                                          .getProductUnit(
+                                            unitUuid:
+                                                product() != null
+                                                    ? unitUuid
+                                                    : null,
+                                          )
+                                          .getQuantityEquivDivided(
+                                            index: 1,
+                                            newQuantity:
+                                                salesNewQuantity -
+                                                salesOldQuantity,
+                                          ),
                                   newValue: formatLargeNumberDouble(
                                     newPr
                                         .getProductUnit()
@@ -1000,12 +992,8 @@ class _StorageQuantityUpdateWidgetState
                                   unit: formatHistoryUnit(
                                     selectedUnit:
                                         product() == null
-                                            ? widget
-                                                .storageProduct
-                                                .getProductUnit(
-                                                  unitUuid:
-                                                      unitUuid,
-                                                )
+                                            ? newPr
+                                                .getProductUnit()
                                                 .name
                                             : newPr
                                                 .getProductUnit(
@@ -1227,44 +1215,47 @@ class _StorageQuantityUpdateWidgetState
                                     ),
                                 uuid: uuidGen(),
                                 salesItemOldValue:
-                                    productUuid == null
+                                    productUuid == null ||
+                                            newPr == null
                                         ? null
                                         : formatLargeNumberDouble(
-                                          salesOldQuantity,
+                                          newPr
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 1,
+                                                newQuantity:
+                                                    salesOldQuantity,
+                                              ),
                                         ),
                                 salesItemNewValue:
-                                    productUuid == null
+                                    productUuid == null ||
+                                            newPr == null
                                         ? null
                                         : formatLargeNumberDouble(
-                                          salesNewQuantity,
+                                          newPr
+                                              .getProductUnit()
+                                              .getQuantityEquivDivided(
+                                                index: 1,
+                                                newQuantity:
+                                                    salesNewQuantity,
+                                              ),
                                         ),
                                 salesItemUuid: productUuid,
                                 salesItemName: newPr?.name,
                                 quantityChange:
-                                    product() == null
-                                        ? widget
-                                            .storageProduct
-                                            .getProductUnit(
-                                              unitUuid:
-                                                  unitUuid,
-                                            )
-                                            .getQuantityEquivDivided(
-                                              index: 4,
-                                              newQuantity:
-                                                  (storageNewQuantity -
-                                                      storageOldQty),
-                                            )
-                                        : newPr
-                                            ?.getProductUnit(
-                                              unitUuid:
-                                                  unitUuid,
-                                            )
-                                            .getQuantityEquivDivided(
-                                              index: 1,
-                                              newQuantity:
-                                                  (storageNewQuantity -
-                                                      storageOldQty),
-                                            ),
+                                    widget.storageProduct
+                                        .getProductUnit(
+                                          unitUuid:
+                                              product() == null
+                                                  ? unitUuid
+                                                  : null,
+                                        )
+                                        .getQuantityEquivDivided(
+                                          index: 4,
+                                          newQuantity:
+                                              (storageNewQuantity -
+                                                  storageOldQty),
+                                        ),
                                 isIncreased:
                                     storageNewQuantity >
                                     storageOldQty,
@@ -1275,12 +1266,8 @@ class _StorageQuantityUpdateWidgetState
                                         .name,
                                 salesUnit:
                                     product() == null
-                                        ? widget
-                                            .storageProduct
-                                            .getProductUnit(
-                                              unitUuid:
-                                                  unitUuid,
-                                            )
+                                        ? newPr
+                                            ?.getProductUnit()
                                             .name
                                         : newPr
                                             ?.getProductUnit(
@@ -1302,19 +1289,9 @@ class _StorageQuantityUpdateWidgetState
                                                     unitUuid,
                                               )
                                               .name
-                                          : (newPr
-                                                  ?.getProductUnit(
-                                                    unitUuid:
-                                                        unitUuid,
-                                                  )
-                                                  .name ??
-                                              widget
-                                                  .storageProduct
-                                                  .getProductUnit(
-                                                    unitUuid:
-                                                        unitUuid,
-                                                  )
-                                                  .name),
+                                          : widget.storageProduct
+                                              .getProductUnit()
+                                              .name,
                                   primaryUnit:
                                       widget.storageProduct
                                           .getProductUnit()
@@ -1594,69 +1571,78 @@ class _ManageProductsStorageState
                                         true,
                                       );
                                   setState(() {});
-                                  for (var pr in returnData()
-                                      .productListMain
-                                      .where(
-                                        (pro) =>
-                                            list.contains(
-                                              pro.uuid,
-                                            ) &&
-                                            pro.storageUuid !=
-                                                widget
-                                                    .productUuid,
-                                      )) {
-                                    var newPr =
-                                        pr.copyWith();
-                                    newPr.storageUuid =
-                                        widget.productUuid;
-                                    await returnData()
-                                        .updateProduct(
-                                          itemHistory: null,
-                                          includeQuantity:
-                                              false,
-                                          isIncrement: null,
-                                          isQuantityUpdate:
-                                              false,
-                                          quantityChange:
-                                              null,
-                                          product: newPr,
-                                        );
-                                  }
+                                  try {
+                                    for (var pr in returnData()
+                                        .productListMain
+                                        .where(
+                                          (pro) =>
+                                              list.contains(
+                                                pro.uuid,
+                                              ) &&
+                                              pro.storageUuid !=
+                                                  widget
+                                                      .productUuid,
+                                        )) {
+                                      var newPr =
+                                          pr.copyWith();
+                                      newPr.storageUuid =
+                                          widget.productUuid;
+                                      await returnData()
+                                          .updateProduct(
+                                            itemHistory: null,
+                                            includeQuantity:
+                                                false,
+                                            isIncrement: null,
+                                            isQuantityUpdate:
+                                                false,
+                                            quantityChange:
+                                                null,
+                                            product: newPr,
+                                          );
+                                    }
 
-                                  for (var pr
-                                      in returnData()
-                                          .productListMain
-                                          .where(
-                                            (
-                                              pro,
-                                            ) => tempList
-                                                .contains(
-                                                  pro.uuid,
-                                                ),
-                                          )) {
-                                    var newPr =
-                                        pr.copyWith();
-                                    newPr.storageUuid =
-                                        null;
+                                    for (var pr
+                                        in returnData()
+                                            .productListMain
+                                            .where(
+                                              (pro) =>
+                                                  tempList
+                                                      .contains(
+                                                        pro.uuid,
+                                                      ) &&
+                                                  pro.storageUuid ==
+                                                      widget
+                                                          .productUuid,
+                                            )) {
+                                      var newPr =
+                                          pr.copyWith();
+                                      newPr.storageUuid =
+                                          null;
 
-                                    await returnData()
-                                        .updateProduct(
-                                          itemHistory: null,
-                                          includeQuantity:
-                                              false,
-                                          isIncrement: null,
-                                          isQuantityUpdate:
-                                              false,
-                                          quantityChange:
-                                              null,
-                                          product: newPr,
+                                      await returnData()
+                                          .updateProduct(
+                                            itemHistory: null,
+                                            includeQuantity:
+                                                false,
+                                            isIncrement: null,
+                                            isQuantityUpdate:
+                                                false,
+                                            quantityChange:
+                                                null,
+                                            product: newPr,
+                                          );
+                                    }
+                                  } finally {
+                                    returnStorageProductProvider()
+                                        .toggleIsLoading(
+                                          false,
                                         );
                                   }
 
                                   if (firstContext
                                       .mounted) {
                                     Navigator.of(
-                                      context,
+                                      firstContext,
                                     ).pop();
                                   }
                                 },

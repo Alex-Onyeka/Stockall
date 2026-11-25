@@ -88,6 +88,20 @@ class CreatedStorageItemHistoriesFunc {
     }
   }
 
+  Future<int> deleteCreatedStorageItemHistory(
+    String uuid,
+  ) async {
+    try {
+      await createdStorageItemHistoriesBox.delete(uuid);
+      return 1;
+    } catch (e) {
+      await mainLocalLog(
+        'Error deleting Created Storage Item History ❌: $e',
+      );
+      return 0;
+    }
+  }
+
   Future<int> clearStorageItemHistory() async {
     try {
       await createdStorageItemHistoriesBox.clear();
