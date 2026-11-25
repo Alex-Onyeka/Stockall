@@ -17,7 +17,6 @@ import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/production/production_page.dart';
-import 'package:stockall/pages/products/storage_page/storage_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
@@ -94,7 +93,8 @@ class DrawerNavItems extends StatelessWidget {
     final nav = returnNavProvider(context, listen: false);
     if (nav.currentIndex != 0 &&
         nav.currentIndex != 1 &&
-        nav.currentIndex != 2) {
+        nav.currentIndex != 2 &&
+        nav.currentIndex != 11) {
       if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
@@ -167,17 +167,14 @@ class DrawerNavItems extends StatelessWidget {
         Visibility(
           visible: manageStorage,
           child: buildTile(
-            itemIndex: -1,
+            itemIndex: 11,
             height: 14,
             action: () {
               ItemsAuthAction()
                   .manageInventoryStorageAction(
                     context: context,
                     action:
-                        () => _pushPage(
-                          context,
-                          const StoragePage(),
-                        ),
+                        () => _navigateHomeTab(context, 11),
                   );
             },
             title: 'Storage',

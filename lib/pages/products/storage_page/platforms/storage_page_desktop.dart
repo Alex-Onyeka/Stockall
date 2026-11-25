@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
-import 'package:stockall/components/major/desktop_center_container.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
+import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
+import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -13,26 +16,69 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/tab_container.dart';
 import 'package:stockall/pages/products/storage_page/add_storage_item/add_storage_item.dart';
 import 'package:stockall/pages/products/storage_page/components/inventory_update_widget.dart';
-import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
-import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
+import 'package:stockall/pages/products/storage_page/components/storage_product_tile.dart';
 import 'package:stockall/pages/products/storage_page/storage_item_history_page/item_history_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 
 class StoragePageDesktop extends StatefulWidget {
   final String? itemName;
-  const StoragePageDesktop({super.key, this.itemName});
+  final bool isMainTab;
+  const StoragePageDesktop({
+    super.key,
+    this.itemName,
+    this.isMainTab = false,
+  });
 
   @override
-  State<StoragePageDesktop> createState() => StoragePageDesktopState();
+  State<StoragePageDesktop> createState() =>
+      StoragePageDesktopState();
 }
 
-class StoragePageDesktopState extends State<StoragePageDesktop> {
+class StoragePageDesktopState
+    extends State<StoragePageDesktop> {
   int sortIndex = 1;
 
   bool viewUpdateSummary = false;
+  bool isLogoutLoading = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>();
+
+  void _confirmLogout(dynamic theme) {
+    var safeContext = context;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ConfirmationAlert(
+          theme: theme,
+          message: 'You are about to Logout',
+          title: 'Are you Sure?',
+          action: () async {
+            Navigator.of(context).pop();
+            setState(() {
+              isLogoutLoading = true;
+            });
+            if (safeContext.mounted) {
+              var res = await AuthService().signOut(
+                context: safeContext,
+                allowLogout: false,
+              );
+              if (res == 0 && safeContext.mounted) {
+                setState(() {
+                  isLogoutLoading = false;
+                });
+              }
+            }
+          },
+        );
+      },
+    );
+  }
 
   Future<void> getProducts() async {
-    await RefreshFunctions(context).refreshProducts(context);
+    await RefreshFunctions(
+      context,
+    ).refreshProducts(context);
   }
 
   int start = 0;
@@ -119,23 +165,31 @@ class StoragePageDesktopState extends State<StoragePageDesktop> {
                 .toList()
                 .sublist(
                   0,
-                  returnStorageProductProvider(context: context)
-                              .storageProductListMain
+                  returnStorageProductProvider(
+                                context: context,
+                              ).storageProductListMain
                               .where(
-                                (pr) => pr.name.toLowerCase().contains(
-                                  searchController.text.toLowerCase(),
-                                ),
+                                (pr) => pr.name
+                                    .toLowerCase()
+                                    .contains(
+                                      searchController.text
+                                          .toLowerCase(),
+                                    ),
                               )
                               .toList()
                               .length >
                           100
                       ? 100
-                      : returnStorageProductProvider(context: context)
-                          .storageProductListMain
+                      : returnStorageProductProvider(
+                            context: context,
+                          ).storageProductListMain
                           .where(
-                            (pr) => pr.name.toLowerCase().contains(
-                              searchController.text.toLowerCase(),
-                            ),
+                            (pr) => pr.name
+                                .toLowerCase()
+                                .contains(
+                                  searchController.text
+                                      .toLowerCase(),
+                                ),
                           )
                           .toList()
                           .length,
@@ -154,619 +208,321 @@ class StoragePageDesktopState extends State<StoragePageDesktop> {
                   ).storageProductListMain.length,
             );
 
-    return Stack(
-      children: [
-        DesktopCenterContainer(
-          width: double.infinity,
-          mainWidget: Scaffold(
-            appBar: appBar(
-              backAction: () {
-                if (sortIndex != 1 && widget.itemName == null) {
-                  setState(() {
-                    sortIndex = 1;
-                    viewUpdateSummary = false;
-                  });
-                  returnInventoryUpdatesProvider().clearDate();
-                } else {
-                  Navigator.of(context).pop();
-                }
-                searchController.clear();
-              },
-              context: context,
-              title:
-                  sortIndex == 1
-                      ? 'Items'
-                      : sortIndex == 2
-                      ? 'Summary'
-                      : 'History',
-              widget: Row(
-                spacing: 10,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      mouseCursor: SystemMouseCursors.click,
-                      borderRadius: BorderRadius.circular(10),
-                      onTap: () async {
-                        await getProducts();
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer:
+          widget.isMainTab
+              ? MyDrawerWidgetDesktopMain(
+                action: () => _confirmLogout(theme),
+                theme: theme,
+                notifications:
+                    returnNotificationProvider(
+                          context,
+                        ).notifications().isEmpty
+                        ? []
+                        : returnNotificationProvider(
+                          context,
+                        ).notifications(),
+                globalKey: _scaffoldKey,
+              )
+              : null,
+      body: Stack(
+        children: [
+          Row(
+            spacing: 15,
+            children: [
+              if (widget.isMainTab)
+                MyDrawerWidget(
+                  globalKey: _scaffoldKey,
+                  action: () => _confirmLogout(theme),
+                  theme: theme,
+                  notifications:
+                      returnNotificationProvider(
+                            context,
+                          ).notifications().isEmpty
+                          ? []
+                          : returnNotificationProvider(
+                            context,
+                          ).notifications(),
+                )
+              else
+                Container(
+                  width:
+                      screenWidth(context) <
+                              tabletScreenSmall
+                          ? 50
+                          : (screenWidth(context) >
+                                  tabletScreenSmall &&
+                              screenWidth(context) <
+                                  tabletScreen + 100)
+                          ? 100
+                          : 230,
+                ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    vertical: 15,
+                  ),
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(
+                          39,
+                          4,
+                          1,
+                          41,
+                        ),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Scaffold(
+                    appBar: appBar(
+                      turnOff:
+                          widget.isMainTab &&
+                          (sortIndex == 1 ||
+                              widget.itemName != null),
+                      backAction: () {
+                        if (sortIndex != 1 &&
+                            widget.itemName == null) {
+                          setState(() {
+                            sortIndex = 1;
+                            viewUpdateSummary = false;
+                          });
+                          returnInventoryUpdatesProvider()
+                              .clearDate();
+                        } else if (!widget.isMainTab) {
+                          Navigator.of(context).pop();
+                        }
+                        searchController.clear();
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Row(
-                          spacing: 5,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize: theme.mobileTexts.b3.fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Refresh',
-                            ),
-                            Icon(size: 18, Icons.refresh_rounded),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: widget.itemName == null,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 15.0),
-                      child: PopupMenuButton(
-                        offset: Offset(-20, 30),
-                        color: Colors.white,
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                              onTap: () {
-                                setState(() {
-                                  sortIndex = 1;
-                                  viewUpdateSummary = false;
-                                });
-                                returnData().requestFocusSearchNode();
-                                returnData().addSearchNodeListener();
-                                searchController.clear();
-                                returnInventoryUpdatesProvider().clearDate();
-                              },
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize: theme.mobileTexts.b2.fontSize,
-                                  fontWeight:
-                                      sortIndex == 1 ? FontWeight.bold : null,
-                                ),
-                                'View Table',
-                              ),
-                            ),
-                            PopupMenuItem(
-                              enabled: authorization(
-                                authorized:
-                                    Authorizations().viewAllTransactionRecords,
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  sortIndex = 2;
-                                  viewUpdateSummary = false;
-                                });
-                                searchController.clear();
-                                returnInventoryUpdatesProvider().clearDate();
-                              },
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize: theme.mobileTexts.b2.fontSize,
-                                  fontWeight:
-                                      sortIndex == 2 ? FontWeight.bold : null,
-                                ),
-                                'View Total Summary',
-                              ),
-                            ),
-                            PopupMenuItem(
-                              enabled: authorization(
-                                authorized: Authorizations().viewItemsHistory,
-                              ),
-                              onTap: () {
-                                returnStorageItemHistoryProvider().clearDate();
-                                returnData().removeSearchNodeListener();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return StorageItemHistoryPage(
-                                        fromItemDetails: false,
-                                      );
-                                    },
-                                  ),
-                                ).then((_) {
-                                  returnData().requestFocusSearchNode();
-                                  returnData().addSearchNodeListener();
-                                });
-                              },
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize: theme.mobileTexts.b2.fontSize,
-                                  fontWeight:
-                                      sortIndex == 3 ? FontWeight.bold : null,
-                                ),
-                                'View History',
-                              ),
-                            ),
-                          ];
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize: theme.mobileTexts.b4.fontSize,
-                                  ),
-                                  'View:',
-                                ),
-                                Text(
-                                  style: TextStyle(
-                                    fontSize: theme.mobileTexts.b3.fontSize,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  sortIndex == 1
-                                      ? 'Table'
-                                      : sortIndex == 2
-                                      ? 'Summary'
-                                      : 'History',
-                                ),
-                              ],
-                            ),
-                            Icon(Icons.more_vert_rounded),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            body: Stack(
-              children: [
-                Column(
-                  children: [
-                    Expanded(
-                      child: Stack(
+                      context: context,
+                      title:
+                          sortIndex == 1
+                              ? 'Storage Items'
+                              : sortIndex == 2
+                              ? 'Summary'
+                              : 'History',
+                      widget: Row(
+                        spacing: 10,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                            ),
-                            child: Builder(
-                              builder: (context) {
-                                if (sortIndex == 1) {
-                                  return Center(
-                                    child: ListView(
-                                      primary: false,
-                                      scrollDirection: Axis.horizontal,
-                                      children: [
-                                        SizedBox(
-                                          width: screenWidth(context) - 40,
-                                          child: RefreshIndicator(
-                                            onRefresh: () {
-                                              return getProducts();
-                                            },
-                                            backgroundColor: Colors.white,
-                                            color:
-                                                theme.lightModeColor.prColor300,
-                                            displacement: 10,
-                                            child: ListView(
-                                              children: [
-                                                SummaryTableHeadingBar(
-                                                  isHeading: true,
-                                                  theme: theme,
-                                                  product: products,
-                                                ),
-                                                Builder(
-                                                  builder: (context) {
-                                                    if (products.isEmpty) {
-                                                      return Padding(
-                                                        padding:
-                                                            const EdgeInsets.only(
-                                                              top: 100.0,
-                                                            ),
-                                                        child: EmptyWidgetDisplayOnly(
-                                                          title: 'Empty List',
-                                                          subText:
-                                                              'No Item has been recorded yet',
-                                                          theme: theme,
-                                                          height: 35,
-                                                          icon: Icons.clear,
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      return RefreshIndicator(
-                                                        onRefresh: () {
-                                                          return getProducts();
-                                                        },
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        color:
-                                                            theme
-                                                                .lightModeColor
-                                                                .prColor300,
-                                                        displacement: 10,
-                                                        child: SingleChildScrollView(
-                                                          primary: true,
-                                                          child: Column(
-                                                            children: [
-                                                              ListView.builder(
-                                                                shrinkWrap:
-                                                                    true,
-                                                                itemCount:
-                                                                    products
-                                                                        .length,
-                                                                physics:
-                                                                    NeverScrollableScrollPhysics(),
-
-                                                                itemBuilder: (
-                                                                  context,
-                                                                  index,
-                                                                ) {
-                                                                  var product =
-                                                                      products[index];
-                                                                  return TableRowRecordWidget(
-                                                                    theme:
-                                                                        theme,
-                                                                    product:
-                                                                        product,
-                                                                  );
-                                                                },
-                                                              ),
-                                                              SummaryTableHeadingBar(
-                                                                isHeading:
-                                                                    false,
-                                                                theme: theme,
-                                                                product:
-                                                                    products,
-                                                              ),
-                                                              SizedBox(
-                                                                height: 20,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                } else if (sortIndex == 2) {
-                                  return StorageSummaryWidget(theme: theme);
-                                } else {
-                                  return SizedBox(
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          width: double.infinity,
-                                          height: 1.5,
-                                          color: Colors.grey.shade200,
-                                        ),
-                                        SizedBox(height: 15),
-                                        Expanded(
-                                          child: Builder(
-                                            builder: (context) {
-                                              if (returnInventoryUpdatesProvider(
-                                                    context: context,
-                                                  )
-                                                  .returnInventoryUpdates()
-                                                  .where(
-                                                    (update) =>
-                                                        update.itemName
-                                                                ?.toLowerCase()
-                                                                .contains(
-                                                                  searchController
-                                                                      .text
-                                                                      .toLowerCase(),
-                                                                ) ==
-                                                            true ||
-                                                        update.title
-                                                            .toLowerCase()
-                                                            .contains(
-                                                              searchController
-                                                                  .text
-                                                                  .toLowerCase(),
-                                                            ),
-                                                  )
-                                                  .isEmpty) {
-                                                return Padding(
-                                                  padding:
-                                                      EdgeInsetsGeometry.only(
-                                                        top: 100,
-                                                      ),
-                                                  child: EmptyWidgetDisplayOnly(
-                                                    title:
-                                                        'No History Recorded',
-                                                    subText:
-                                                        'No History Has been recorded for this day.',
-                                                    theme: theme,
-                                                    height: 30,
-                                                    altIcon: Icons.refresh,
-                                                    altActionText:
-                                                        'Refresh History',
-                                                    icon: Icons.clear,
-                                                    altAction: () async {
-                                                      await getProducts();
-                                                    },
-                                                  ),
-                                                );
-                                              }
-                                              return ListView(
-                                                shrinkWrap: true,
-                                                children:
-                                                    returnInventoryUpdatesProvider(
-                                                          context: context,
-                                                        )
-                                                        .returnInventoryUpdates()
-                                                        .where(
-                                                          (update) =>
-                                                              update.itemName
-                                                                      ?.toLowerCase()
-                                                                      .contains(
-                                                                        searchController
-                                                                            .text
-                                                                            .toLowerCase(),
-                                                                      ) ==
-                                                                  true ||
-                                                              update.title
-                                                                  .toLowerCase()
-                                                                  .contains(
-                                                                    searchController
-                                                                        .text
-                                                                        .toLowerCase(),
-                                                                  ),
-                                                        )
-                                                        .map(
-                                                          (update) =>
-                                                              InventoryUpdateWidget(
-                                                                update: update,
-                                                              ),
-                                                        )
-                                                        .toList(),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              mouseCursor:
+                                  SystemMouseCursors.click,
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              onTap: () async {
+                                await getProducts();
                               },
-                            ),
-                          ),
-                          Visibility(
-                            visible: viewUpdateSummary,
-                            child: Align(
-                              alignment: AlignmentGeometry.xy(0, 1),
-                              child: Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color.fromARGB(30, 0, 0, 0),
-                                      offset: Offset(0, 1),
-                                      blurRadius: 10,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(
+                                      10,
+                                    ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Refresh',
+                                    ),
+                                    Icon(
+                                      size: 18,
+                                      Icons.refresh_rounded,
                                     ),
                                   ],
                                 ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  spacing: 5,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Opacity(
-                                          opacity: 0,
-                                          child: IconButton(
-                                            mouseCursor:
-                                                SystemMouseCursors.click,
-                                            onPressed: () {},
-                                            icon: Icon(Icons.clear),
+                              ),
+                            ),
+                          ),
+                          Visibility(
+                            visible:
+                                widget.itemName == null,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(
+                                    right: 15.0,
+                                  ),
+                              child: PopupMenuButton(
+                                offset: Offset(-20, 30),
+                                color: Colors.white,
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem(
+                                      onTap: () {
+                                        setState(() {
+                                          sortIndex = 1;
+                                          viewUpdateSummary =
+                                              false;
+                                        });
+                                        returnData()
+                                            .requestFocusSearchNode();
+                                        returnData()
+                                            .addSearchNodeListener();
+                                        searchController
+                                            .clear();
+                                        returnInventoryUpdatesProvider()
+                                            .clearDate();
+                                      },
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              sortIndex == 1
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                        'View Table',
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      enabled: authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewAllTransactionRecords,
+                                      ),
+                                      onTap: () {
+                                        setState(() {
+                                          sortIndex = 2;
+                                          viewUpdateSummary =
+                                              false;
+                                        });
+                                        searchController
+                                            .clear();
+                                        returnInventoryUpdatesProvider()
+                                            .clearDate();
+                                      },
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              sortIndex == 2
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                        'View Total Summary',
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      enabled: authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewItemsHistory,
+                                      ),
+                                      onTap: () {
+                                        returnStorageItemHistoryProvider()
+                                            .clearDate();
+                                        returnData()
+                                            .removeSearchNodeListener();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return StorageItemHistoryPage(
+                                                fromItemDetails:
+                                                    false,
+                                              );
+                                            },
                                           ),
+                                        ).then((_) {
+                                          returnData()
+                                              .requestFocusSearchNode();
+                                          returnData()
+                                              .addSearchNodeListener();
+                                        });
+                                      },
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              sortIndex == 3
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                        'View History',
+                                      ),
+                                    ),
+                                  ];
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .center,
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                          ),
+                                          'View:',
                                         ),
                                         Text(
                                           style: TextStyle(
                                             fontSize:
-                                                theme.mobileTexts.b1.fontSize,
-                                            fontWeight: FontWeight.bold,
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
                                           ),
-                                          'Update Summary',
-                                        ),
-                                        IconButton(
-                                          mouseCursor: SystemMouseCursors.click,
-                                          onPressed: () {
-                                            setState(() {
-                                              viewUpdateSummary = false;
-                                            });
-                                          },
-                                          icon: Icon(size: 20, Icons.clear),
+                                          sortIndex == 1
+                                              ? 'Table'
+                                              : sortIndex ==
+                                                  2
+                                              ? 'Summary'
+                                              : 'History',
                                         ),
                                       ],
                                     ),
-                                    Divider(),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      spacing: 5,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            spacing: 1,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize: 8,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                'Total Stock In:',
-                                              ),
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                returnTotalStockIn(
-                                                  updates:
-                                                      returnInventoryUpdatesProvider(
-                                                            context: context,
-                                                          )
-                                                          .returnInventoryUpdates()
-                                                          .where(
-                                                            (update) =>
-                                                                update.itemName
-                                                                        ?.toLowerCase()
-                                                                        .contains(
-                                                                          searchController
-                                                                              .text
-                                                                              .toLowerCase(),
-                                                                        ) ==
-                                                                    true ||
-                                                                update.title
-                                                                    .toLowerCase()
-                                                                    .contains(
-                                                                      searchController
-                                                                          .text
-                                                                          .toLowerCase(),
-                                                                    ),
-                                                          )
-                                                          .toList(),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            spacing: 1,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize: 8,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                'Total Stock Out:',
-                                              ),
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                returnTotalStockOut(
-                                                  updates:
-                                                      returnInventoryUpdatesProvider(
-                                                            context: context,
-                                                          )
-                                                          .returnInventoryUpdates()
-                                                          .where(
-                                                            (update) =>
-                                                                update.itemName
-                                                                        ?.toLowerCase()
-                                                                        .contains(
-                                                                          searchController
-                                                                              .text
-                                                                              .toLowerCase(),
-                                                                        ) ==
-                                                                    true ||
-                                                                update.title
-                                                                    .toLowerCase()
-                                                                    .contains(
-                                                                      searchController
-                                                                          .text
-                                                                          .toLowerCase(),
-                                                                    ),
-                                                          )
-                                                          .toList(),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            spacing: 1,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize: 8,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                'Net:',
-                                              ),
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                returnNet(
-                                                  updates:
-                                                      returnInventoryUpdatesProvider(
-                                                            context: context,
-                                                          )
-                                                          .returnInventoryUpdates()
-                                                          .where(
-                                                            (update) =>
-                                                                update.itemName
-                                                                        ?.toLowerCase()
-                                                                        .contains(
-                                                                          searchController
-                                                                              .text
-                                                                              .toLowerCase(),
-                                                                        ) ==
-                                                                    true ||
-                                                                update.title
-                                                                    .toLowerCase()
-                                                                    .contains(
-                                                                      searchController
-                                                                          .text
-                                                                          .toLowerCase(),
-                                                                    ),
-                                                          )
-                                                          .toList(),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                                    Icon(
+                                      Icons
+                                          .more_vert_rounded,
                                     ),
-                                    SizedBox(height: 20),
                                   ],
                                 ),
                               ),
@@ -775,333 +531,924 @@ class StoragePageDesktopState extends State<StoragePageDesktop> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Visibility(
-                      visible: sortIndex != 2,
-                      child: Row(
-                        spacing: 5,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Visibility(
-                            visible: sortIndex == 1,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                mouseCursor: SystemMouseCursors.click,
-                                borderRadius: BorderRadius.circular(3),
-                                onTap: () {
-                                  if (screenWidth(context) > mobileScreen) {
-                                    returnData().unFocusSearchNode();
-                                    returnData().removeSearchNodeListener();
-                                  }
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
+                    body: Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
+                                    child: Builder(
                                       builder: (context) {
-                                        return AddStorageItem();
+                                        if (sortIndex ==
+                                            1) {
+                                          if (products
+                                              .isEmpty) {
+                                            return Center(
+                                              child: EmptyWidgetDisplayOnly(
+                                                title:
+                                                    'Empty List',
+                                                subText:
+                                                    'No Item has been recorded yet',
+                                                theme:
+                                                    theme,
+                                                height: 35,
+                                                icon:
+                                                    Icons
+                                                        .clear,
+                                              ),
+                                            );
+                                          }
+                                          return RefreshIndicator(
+                                            onRefresh: () {
+                                              return getProducts();
+                                            },
+                                            backgroundColor:
+                                                Colors
+                                                    .white,
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                            displacement:
+                                                10,
+                                            child: ListView.builder(
+                                              itemCount:
+                                                  products
+                                                      .length,
+                                              itemBuilder: (
+                                                context,
+                                                index,
+                                              ) {
+                                                var product =
+                                                    products[index];
+                                                return StorageProductTile(
+                                                  theme:
+                                                      theme,
+                                                  product:
+                                                      product,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        } else if (sortIndex ==
+                                            2) {
+                                          return StorageSummaryWidget(
+                                            theme: theme,
+                                          );
+                                        } else {
+                                          return SizedBox(
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  width:
+                                                      double
+                                                          .infinity,
+                                                  height:
+                                                      1.5,
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade200,
+                                                ),
+                                                SizedBox(
+                                                  height:
+                                                      15,
+                                                ),
+                                                Expanded(
+                                                  child: Builder(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      if (returnInventoryUpdatesProvider(
+                                                            context:
+                                                                context,
+                                                          )
+                                                          .returnInventoryUpdates()
+                                                          .where(
+                                                            (
+                                                              update,
+                                                            ) =>
+                                                                update.itemName?.toLowerCase().contains(
+                                                                      searchController.text.toLowerCase(),
+                                                                    ) ==
+                                                                    true ||
+                                                                update.title.toLowerCase().contains(
+                                                                  searchController.text.toLowerCase(),
+                                                                ),
+                                                          )
+                                                          .isEmpty) {
+                                                        return Padding(
+                                                          padding: EdgeInsetsGeometry.only(
+                                                            top:
+                                                                100,
+                                                          ),
+                                                          child: EmptyWidgetDisplayOnly(
+                                                            title:
+                                                                'No History Recorded',
+                                                            subText:
+                                                                'No History Has been recorded for this day.',
+                                                            theme:
+                                                                theme,
+                                                            height:
+                                                                30,
+                                                            altIcon:
+                                                                Icons.refresh,
+                                                            altActionText:
+                                                                'Refresh History',
+                                                            icon:
+                                                                Icons.clear,
+                                                            altAction: () async {
+                                                              await getProducts();
+                                                            },
+                                                          ),
+                                                        );
+                                                      }
+                                                      return ListView(
+                                                        shrinkWrap:
+                                                            true,
+                                                        children:
+                                                            returnInventoryUpdatesProvider(
+                                                                  context:
+                                                                      context,
+                                                                )
+                                                                .returnInventoryUpdates()
+                                                                .where(
+                                                                  (
+                                                                    update,
+                                                                  ) =>
+                                                                      update.itemName?.toLowerCase().contains(
+                                                                            searchController.text.toLowerCase(),
+                                                                          ) ==
+                                                                          true ||
+                                                                      update.title.toLowerCase().contains(
+                                                                        searchController.text.toLowerCase(),
+                                                                      ),
+                                                                )
+                                                                .map(
+                                                                  (
+                                                                    update,
+                                                                  ) => InventoryUpdateWidget(
+                                                                    update:
+                                                                        update,
+                                                                  ),
+                                                                )
+                                                                .toList(),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }
                                       },
                                     ),
-                                  ).then((_) {
-                                    if (screenWidth(context) > mobileScreen) {
-                                      returnData().requestFocusSearchNode();
-                                      returnData().addSearchNodeListener();
-                                    }
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(7.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    spacing: 3,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme.mobileTexts.b3.fontSize,
-                                          fontWeight: FontWeight.bold,
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        viewUpdateSummary,
+                                    child: Align(
+                                      alignment:
+                                          AlignmentGeometry.xy(
+                                            0,
+                                            1,
+                                          ),
+                                      child: Container(
+                                        width:
+                                            double.infinity,
+                                        padding:
+                                            EdgeInsets.fromLTRB(
+                                              20,
+                                              10,
+                                              20,
+                                              20,
+                                            ),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                5,
+                                              ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  const Color.fromARGB(
+                                                    30,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                  ),
+                                              offset:
+                                                  Offset(
+                                                    0,
+                                                    1,
+                                                  ),
+                                              blurRadius:
+                                                  10,
+                                            ),
+                                          ],
                                         ),
-                                        'Add New',
-                                      ),
-                                      Icon(size: 18, Icons.add),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: sortIndex == 3,
-                            child: IconButton(
-                              mouseCursor: SystemMouseCursors.click,
-                              onPressed: () {
-                                setState(() {
-                                  viewUpdateSummary = !viewUpdateSummary;
-                                });
-                              },
-                              icon: Icon(
-                                viewUpdateSummary
-                                    ? Icons.keyboard_arrow_up_outlined
-                                    : Icons.keyboard_arrow_down_outlined,
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: widget.itemName == null,
-                            child: SizedBox(
-                              height: 30,
-                              width: 200,
-                              child: TextField(
-                                focusNode: returnData().searchNode,
-                                controller: searchController,
-                                onChanged: (value) async {
-                                  if (sortIndex == 1) {
-                                    if (value.isNotEmpty) {
-                                      if (value.length > 20) {
-                                        searchController.clear();
-                                      } else {
-                                        var allPrs =
-                                            returnData()
-                                                .productList()
-                                                .where(
-                                                  (pr) =>
-                                                      pr.barcode ==
-                                                      searchController.text,
-                                                )
-                                                .toList();
-                                        if (allPrs.isNotEmpty) {
-                                          await playBeep();
-                                        }
-                                      }
-                                    }
-                                    setState(() {
-                                      start = 0;
-                                      end =
-                                          returnData().productList().length > 50
-                                              ? 50
-                                              : returnData()
-                                                  .productList()
-                                                  .length;
-                                      count = 1;
-                                    });
-                                    // setState(() {});
-                                  } else {
-                                    setState(() {});
-                                  }
-                                },
-                                style: TextStyle(fontSize: 12),
-                                decoration: InputDecoration(
-                                  suffixIcon: InkWell(
-                                    mouseCursor: SystemMouseCursors.click,
-                                    onTap: () {
-                                      if (searchController.text.isNotEmpty) {
-                                        searchController.clear();
-                                        setState(() {
-                                          count = 1;
-                                        });
-                                      }
-                                    },
-                                    child: Icon(size: 16, Icons.clear),
-                                  ),
-                                  hintText:
-                                      sortIndex == 1
-                                          ? 'Search Name or Scan'
-                                          : 'Search Event or Item Name',
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 5,
-                                    horizontal: 5,
-                                  ),
-                                  fillColor: Colors.grey.shade200,
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.grey.shade200,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.grey.shade400,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(3),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: sortIndex == 1,
-                            child: Opacity(
-                              opacity: searchController.text.isNotEmpty ? 0 : 1,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                spacing: 0,
-                                children: [
-                                  IconButton(
-                                    mouseCursor: SystemMouseCursors.click,
-                                    onPressed: () {
-                                      if (start != 0) {
-                                        navigate(
-                                          false,
-                                          returnStorageProductProvider()
-                                              .storageProductListMain
-                                              .length,
-                                        );
-                                      }
-                                    },
-                                    icon: Icon(
-                                      size: 20,
-                                      color:
-                                          start == 0
-                                              ? Colors.grey.shade400
-                                              : Colors.grey.shade800,
-                                      Icons.arrow_back_sharp,
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    spacing: 3,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme.mobileTexts.b2.fontSize,
-                                          fontWeight: FontWeight.bold,
+                                        child: Column(
+                                          mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                          spacing: 5,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Opacity(
+                                                  opacity:
+                                                      0,
+                                                  child: IconButton(
+                                                    mouseCursor:
+                                                        SystemMouseCursors.click,
+                                                    onPressed:
+                                                        () {},
+                                                    icon: Icon(
+                                                      Icons
+                                                          .clear,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b1.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  'Update Summary',
+                                                ),
+                                                IconButton(
+                                                  mouseCursor:
+                                                      SystemMouseCursors
+                                                          .click,
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      viewUpdateSummary =
+                                                          false;
+                                                    });
+                                                  },
+                                                  icon: Icon(
+                                                    size:
+                                                        20,
+                                                    Icons
+                                                        .clear,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Divider(),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              spacing: 5,
+                                              children: [
+                                                Expanded(
+                                                  child: Column(
+                                                    spacing:
+                                                        1,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              8,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        'Total Stock In:',
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        returnTotalStockIn(
+                                                          updates:
+                                                              returnInventoryUpdatesProvider(
+                                                                    context:
+                                                                        context,
+                                                                  )
+                                                                  .returnInventoryUpdates()
+                                                                  .where(
+                                                                    (
+                                                                      update,
+                                                                    ) =>
+                                                                        update.itemName?.toLowerCase().contains(
+                                                                              searchController.text.toLowerCase(),
+                                                                            ) ==
+                                                                            true ||
+                                                                        update.title.toLowerCase().contains(
+                                                                          searchController.text.toLowerCase(),
+                                                                        ),
+                                                                  )
+                                                                  .toList(),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: Column(
+                                                    spacing:
+                                                        1,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              8,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        'Total Stock Out:',
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        returnTotalStockOut(
+                                                          updates:
+                                                              returnInventoryUpdatesProvider(
+                                                                    context:
+                                                                        context,
+                                                                  )
+                                                                  .returnInventoryUpdates()
+                                                                  .where(
+                                                                    (
+                                                                      update,
+                                                                    ) =>
+                                                                        update.itemName?.toLowerCase().contains(
+                                                                              searchController.text.toLowerCase(),
+                                                                            ) ==
+                                                                            true ||
+                                                                        update.title.toLowerCase().contains(
+                                                                          searchController.text.toLowerCase(),
+                                                                        ),
+                                                                  )
+                                                                  .toList(),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: Column(
+                                                    spacing:
+                                                        1,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              8,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        'Net:',
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b3.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        returnNet(
+                                                          updates:
+                                                              returnInventoryUpdatesProvider(
+                                                                    context:
+                                                                        context,
+                                                                  )
+                                                                  .returnInventoryUpdates()
+                                                                  .where(
+                                                                    (
+                                                                      update,
+                                                                    ) =>
+                                                                        update.itemName?.toLowerCase().contains(
+                                                                              searchController.text.toLowerCase(),
+                                                                            ) ==
+                                                                            true ||
+                                                                        update.title.toLowerCase().contains(
+                                                                          searchController.text.toLowerCase(),
+                                                                        ),
+                                                                  )
+                                                                  .toList(),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                          ],
                                         ),
-                                        count.toString(),
                                       ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme.mobileTexts.b2.fontSize,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey,
-                                        ),
-                                        '/',
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme.mobileTexts.b2.fontSize,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey,
-                                        ),
-                                        "${returnStorageProductProvider(context: context).storageProductListMain.length > 50 ? (returnStorageProductProvider(context: context).storageProductListMain.length / 50).ceil() : 1}",
-                                      ),
-                                    ],
-                                  ),
-                                  IconButton(
-                                    mouseCursor: SystemMouseCursors.click,
-                                    onPressed: () {
-                                      if (end !=
-                                          returnStorageProductProvider()
-                                              .storageProductListMain
-                                              .length) {
-                                        navigate(
-                                          true,
-                                          returnStorageProductProvider()
-                                              .storageProductListMain
-                                              .length,
-                                        );
-                                      }
-                                    },
-                                    icon: Icon(
-                                      size: 20,
-                                      color:
-                                          end ==
-                                                      returnStorageProductProvider(
-                                                            context: context,
-                                                          )
-                                                          .storageProductListMain
-                                                          .length ||
-                                                  returnStorageProductProvider(
-                                                            context: context,
-                                                          )
-                                                          .storageProductListMain
-                                                          .length <=
-                                                      50
-                                              ? Colors.grey.shade400
-                                              : Colors.grey.shade800,
-                                      Icons.arrow_forward_sharp,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          Visibility(
-                            visible: sortIndex == 3 && widget.itemName == null,
-                            child: Container(
-                              color: Colors.white,
+                            SizedBox(height: 10),
+                            Visibility(
+                              visible: sortIndex != 2,
                               child: Row(
-                                spacing: 3,
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                spacing: 5,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.end,
                                 children: [
-                                  InkWell(
-                                    mouseCursor: SystemMouseCursors.click,
-                                    onTap: () {
-                                      returnInventoryUpdatesProvider()
-                                                      .dateSet ==
-                                                  null &&
-                                              returnInventoryUpdatesProvider()
-                                                      .rangeStartDate ==
-                                                  null
-                                          ? mainDatePicker(
-                                            context: context,
-                                            theme: theme,
-                                            singleDate: (date) {
-                                              returnInventoryUpdatesProvider()
-                                                  .setDate(date!);
-                                            },
-                                            rangeDate: (firstDate, lastDate) {
-                                              returnInventoryUpdatesProvider()
-                                                  .setRange(
-                                                    firstDate!,
-                                                    lastDate ?? DateTime.now(),
-                                                  );
-                                            },
-                                          )
-                                          : returnInventoryUpdatesProvider()
-                                              .clearDate();
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: Row(
-                                        spacing: 4,
-                                        children: [
-                                          Icon(
-                                            size: 22,
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .secColor200,
-                                            returnInventoryUpdatesProvider(
-                                                          context: context,
-                                                        ).dateSet ==
-                                                        null &&
-                                                    returnInventoryUpdatesProvider(
-                                                          context: context,
-                                                        ).rangeStartDate ==
-                                                        null
-                                                ? Icons.calendar_month
-                                                : Icons.clear,
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme.mobileTexts.b2.fontSize,
+                                  Visibility(
+                                    visible: sortIndex == 1,
+                                    child: Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: InkWell(
+                                        mouseCursor:
+                                            SystemMouseCursors
+                                                .click,
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              3,
                                             ),
-                                            returnInventoryUpdatesProvider(
-                                                          context: context,
-                                                        ).dateSet !=
-                                                        null ||
+                                        onTap: () {
+                                          if (screenWidth(
+                                                context,
+                                              ) >
+                                              mobileScreen) {
+                                            returnData()
+                                                .unFocusSearchNode();
+                                            returnData()
+                                                .removeSearchNodeListener();
+                                          }
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return AddStorageItem();
+                                              },
+                                            ),
+                                          ).then((_) {
+                                            if (screenWidth(
+                                                  context,
+                                                ) >
+                                                mobileScreen) {
+                                              returnData()
+                                                  .requestFocusSearchNode();
+                                              returnData()
+                                                  .addSearchNodeListener();
+                                            }
+                                          });
+                                        },
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.all(
+                                                7.0,
+                                              ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            mainAxisSize:
+                                                MainAxisSize
+                                                    .min,
+                                            spacing: 3,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                'Add New',
+                                              ),
+                                              Icon(
+                                                size: 18,
+                                                Icons.add,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: sortIndex == 3,
+                                    child: IconButton(
+                                      mouseCursor:
+                                          SystemMouseCursors
+                                              .click,
+                                      onPressed: () {
+                                        setState(() {
+                                          viewUpdateSummary =
+                                              !viewUpdateSummary;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        viewUpdateSummary
+                                            ? Icons
+                                                .keyboard_arrow_up_outlined
+                                            : Icons
+                                                .keyboard_arrow_down_outlined,
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        widget.itemName ==
+                                        null,
+                                    child: SizedBox(
+                                      height: 30,
+                                      width: 200,
+                                      child: TextField(
+                                        focusNode:
+                                            returnData()
+                                                .searchNode,
+                                        controller:
+                                            searchController,
+                                        onChanged: (
+                                          value,
+                                        ) async {
+                                          if (sortIndex ==
+                                              1) {
+                                            if (value
+                                                .isNotEmpty) {
+                                              if (value
+                                                      .length >
+                                                  20) {
+                                                searchController
+                                                    .clear();
+                                              } else {
+                                                var allPrs =
+                                                    returnData()
+                                                        .productList()
+                                                        .where(
+                                                          (
+                                                            pr,
+                                                          ) =>
+                                                              pr.barcode ==
+                                                              searchController.text,
+                                                        )
+                                                        .toList();
+                                                if (allPrs
+                                                    .isNotEmpty) {
+                                                  await playBeep();
+                                                }
+                                              }
+                                            }
+                                            setState(() {
+                                              start = 0;
+                                              end =
+                                                  returnData().productList().length >
+                                                          50
+                                                      ? 50
+                                                      : returnData().productList().length;
+                                              count = 1;
+                                            });
+                                            // setState(() {});
+                                          } else {
+                                            setState(() {});
+                                          }
+                                        },
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                        decoration: InputDecoration(
+                                          suffixIcon: InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
+                                            onTap: () {
+                                              if (searchController
+                                                  .text
+                                                  .isNotEmpty) {
+                                                searchController
+                                                    .clear();
+                                                setState(
+                                                  () {
+                                                    count =
+                                                        1;
+                                                  },
+                                                );
+                                              }
+                                            },
+                                            child: Icon(
+                                              size: 16,
+                                              Icons.clear,
+                                            ),
+                                          ),
+                                          hintText:
+                                              sortIndex == 1
+                                                  ? 'Search Name or Scan'
+                                                  : 'Search Event or Item Name',
+                                          contentPadding:
+                                              EdgeInsets.symmetric(
+                                                vertical: 5,
+                                                horizontal:
+                                                    5,
+                                              ),
+                                          fillColor:
+                                              Colors
+                                                  .grey
+                                                  .shade200,
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade200,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  3,
+                                                ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade400,
+                                              width: 2,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  3,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: sortIndex == 1,
+                                    child: Opacity(
+                                      opacity:
+                                          searchController
+                                                  .text
+                                                  .isNotEmpty
+                                              ? 0
+                                              : 1,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .end,
+                                        spacing: 0,
+                                        children: [
+                                          IconButton(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
+                                            onPressed: () {
+                                              if (start !=
+                                                  0) {
+                                                navigate(
+                                                  false,
+                                                  returnStorageProductProvider()
+                                                      .storageProductListMain
+                                                      .length,
+                                                );
+                                              }
+                                            },
+                                            icon: Icon(
+                                              size: 20,
+                                              color:
+                                                  start == 0
+                                                      ? Colors
+                                                          .grey
+                                                          .shade400
+                                                      : Colors
+                                                          .grey
+                                                          .shade800,
+                                              Icons
+                                                  .arrow_back_sharp,
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            spacing: 3,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b2
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                count
+                                                    .toString(),
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b2
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  color:
+                                                      Colors
+                                                          .grey,
+                                                ),
+                                                '/',
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b2
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  color:
+                                                      Colors
+                                                          .grey,
+                                                ),
+                                                "${returnStorageProductProvider(context: context).storageProductListMain.length > 50 ? (returnStorageProductProvider(context: context).storageProductListMain.length / 50).ceil() : 1}",
+                                              ),
+                                            ],
+                                          ),
+                                          IconButton(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
+                                            onPressed: () {
+                                              if (end !=
+                                                  returnStorageProductProvider()
+                                                      .storageProductListMain
+                                                      .length) {
+                                                navigate(
+                                                  true,
+                                                  returnStorageProductProvider()
+                                                      .storageProductListMain
+                                                      .length,
+                                                );
+                                              }
+                                            },
+                                            icon: Icon(
+                                              size: 20,
+                                              color:
+                                                  end ==
+                                                              returnStorageProductProvider(
+                                                                context:
+                                                                    context,
+                                                              ).storageProductListMain.length ||
+                                                          returnStorageProductProvider(
+                                                                context:
+                                                                    context,
+                                                              ).storageProductListMain.length <=
+                                                              50
+                                                      ? Colors
+                                                          .grey
+                                                          .shade400
+                                                      : Colors.grey.shade800,
+                                              Icons
+                                                  .arrow_forward_sharp,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        sortIndex == 3 &&
+                                        widget.itemName ==
+                                            null,
+                                    child: Container(
+                                      color: Colors.white,
+                                      child: Row(
+                                        spacing: 3,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .end,
+                                        children: [
+                                          InkWell(
+                                            mouseCursor:
+                                                SystemMouseCursors
+                                                    .click,
+                                            onTap: () {
+                                              returnInventoryUpdatesProvider().dateSet ==
+                                                          null &&
+                                                      returnInventoryUpdatesProvider().rangeStartDate ==
+                                                          null
+                                                  ? mainDatePicker(
+                                                    context:
+                                                        context,
+                                                    theme:
+                                                        theme,
+                                                    singleDate: (
+                                                      date,
+                                                    ) {
+                                                      returnInventoryUpdatesProvider().setDate(
+                                                        date!,
+                                                      );
+                                                    },
+                                                    rangeDate: (
+                                                      firstDate,
+                                                      lastDate,
+                                                    ) {
+                                                      returnInventoryUpdatesProvider().setRange(
+                                                        firstDate!,
+                                                        lastDate ??
+                                                            DateTime.now(),
+                                                      );
+                                                    },
+                                                  )
+                                                  : returnInventoryUpdatesProvider()
+                                                      .clearDate();
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(
+                                                    10.0,
+                                                  ),
+                                              child: Row(
+                                                spacing: 4,
+                                                children: [
+                                                  Icon(
+                                                    size:
+                                                        22,
+                                                    color:
+                                                        theme.lightModeColor.secColor200,
                                                     returnInventoryUpdatesProvider(
-                                                          context: context,
-                                                        ).rangeStartDate !=
-                                                        null
-                                                ? 'Clear'
-                                                : 'Set Date',
+                                                                  context:
+                                                                      context,
+                                                                ).dateSet ==
+                                                                null &&
+                                                            returnInventoryUpdatesProvider(
+                                                                  context:
+                                                                      context,
+                                                                ).rangeStartDate ==
+                                                                null
+                                                        ? Icons.calendar_month
+                                                        : Icons.clear,
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                    ),
+                                                    returnInventoryUpdatesProvider(
+                                                                  context:
+                                                                      context,
+                                                                ).dateSet !=
+                                                                null ||
+                                                            returnInventoryUpdatesProvider(
+                                                                  context:
+                                                                      context,
+                                                                ).rangeStartDate !=
+                                                                null
+                                                        ? 'Clear'
+                                                        : 'Set Date',
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -1110,30 +1457,56 @@ class StoragePageDesktopState extends State<StoragePageDesktop> {
                                 ],
                               ),
                             ),
+                          ],
+                        ),
+                        Visibility(
+                          visible: returnData().isLoading,
+                          child: returnCompProvider(
+                            context,
+                            listen: false,
+                          ).showLoader(
+                            message: 'Generating Record',
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-                Visibility(
-                  visible: returnData().isLoading,
-                  child: returnCompProvider(
-                    context,
-                    listen: false,
-                  ).showLoader(message: 'Generating Record'),
+              ),
+              if (widget.isMainTab)
+                RightSideBar(theme: theme)
+              else
+                Container(
+                  width:
+                      screenWidth(context) <
+                              tabletScreenSmall
+                          ? 50
+                          : (screenWidth(context) >
+                                  tabletScreenSmall &&
+                              screenWidth(context) <
+                                  tabletScreen + 100)
+                          ? 100
+                          : 230,
                 ),
-              ],
-            ),
+            ],
           ),
-        ),
-      ],
+          Visibility(
+            visible: isLogoutLoading,
+            child: returnCompProvider(
+              context,
+            ).showLoader(message: 'Logging Out...'),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class StorageSummaryWidget extends StatelessWidget {
-  const StorageSummaryWidget({super.key, required this.theme});
+  const StorageSummaryWidget({
+    super.key,
+    required this.theme,
+  });
 
   final ThemeProvider theme;
 
@@ -1155,11 +1528,16 @@ class StorageSummaryWidget extends StatelessWidget {
                 Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
                       children: [
                         Text(
                           style: TextStyle(
-                            fontSize: theme.mobileTexts.b2.fontSize,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
                           'FINANCE',
@@ -1169,11 +1547,16 @@ class StorageSummaryWidget extends StatelessWidget {
                     SizedBox(height: 8),
                     Row(
                       spacing: 10,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
                       children: [
                         Expanded(
                           child: TabContainer(
-                            priceTextSize: theme.mobileTexts.h3.fontSize,
+                            priceTextSize:
+                                theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontSize,
                             isMoney: true,
                             text: 'Total Cost Value',
                             price:
@@ -1181,13 +1564,28 @@ class StorageSummaryWidget extends StatelessWidget {
                                   context: context,
                                 ).getTotalCostPrice(),
                             theme: theme,
-                            backGround: const Color.fromARGB(11, 15, 4, 114),
-                            border: const Color.fromARGB(32, 45, 3, 255),
+                            backGround:
+                                const Color.fromARGB(
+                                  11,
+                                  15,
+                                  4,
+                                  114,
+                                ),
+                            border: const Color.fromARGB(
+                              32,
+                              45,
+                              3,
+                              255,
+                            ),
                           ),
                         ),
                         Expanded(
                           child: TabContainer(
-                            priceTextSize: theme.mobileTexts.h3.fontSize,
+                            priceTextSize:
+                                theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontSize,
                             isMoney: true,
                             text: 'Total Selling Value',
                             price:
@@ -1195,8 +1593,19 @@ class StorageSummaryWidget extends StatelessWidget {
                                   context: context,
                                 ).getTotalSellingPrice(),
                             theme: theme,
-                            backGround: const Color.fromARGB(18, 2, 163, 31),
-                            border: const Color.fromARGB(63, 2, 163, 31),
+                            backGround:
+                                const Color.fromARGB(
+                                  18,
+                                  2,
+                                  163,
+                                  31,
+                                ),
+                            border: const Color.fromARGB(
+                              63,
+                              2,
+                              163,
+                              31,
+                            ),
                           ),
                         ),
                       ],
@@ -1220,7 +1629,8 @@ class StorageSummaryWidget extends StatelessWidget {
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b2.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     'STORAGE ITEMS',
@@ -1238,11 +1648,24 @@ class StorageSummaryWidget extends StatelessWidget {
                       text: 'Total Items',
                       price:
                           returnStorageProductProvider(
-                            context: context,
-                          ).storageProductListMain.length.toDouble(),
+                                context: context,
+                              )
+                              .storageProductListMain
+                              .length
+                              .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(11, 15, 4, 114),
-                      border: const Color.fromARGB(32, 45, 3, 255),
+                      backGround: const Color.fromARGB(
+                        11,
+                        15,
+                        4,
+                        114,
+                      ),
+                      border: const Color.fromARGB(
+                        32,
+                        45,
+                        3,
+                        255,
+                      ),
                     ),
                   ),
                 ],
@@ -1257,17 +1680,29 @@ class StorageSummaryWidget extends StatelessWidget {
                       isMoney: false,
                       text: 'In Stock',
                       price:
-                          returnStorageProductProvider(context: context)
-                              .storageProductListMain
+                          returnStorageProductProvider(
+                                context: context,
+                              ).storageProductListMain
                               .where(
                                 (item) =>
-                                    item.quantity != null && item.quantity != 0,
+                                    item.quantity != null &&
+                                    item.quantity != 0,
                               )
                               .length
                               .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(18, 2, 163, 31),
-                      border: const Color.fromARGB(63, 2, 163, 31),
+                      backGround: const Color.fromARGB(
+                        18,
+                        2,
+                        163,
+                        31,
+                      ),
+                      border: const Color.fromARGB(
+                        63,
+                        2,
+                        163,
+                        31,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -1275,17 +1710,29 @@ class StorageSummaryWidget extends StatelessWidget {
                       isMoney: false,
                       text: 'Out Of Stock',
                       price:
-                          returnStorageProductProvider(context: context)
-                              .storageProductListMain
+                          returnStorageProductProvider(
+                                context: context,
+                              ).storageProductListMain
                               .where(
                                 (item) =>
-                                    item.quantity != null && item.quantity == 0,
+                                    item.quantity != null &&
+                                    item.quantity == 0,
                               )
                               .length
                               .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(25, 235, 150, 3),
-                      border: const Color.fromARGB(74, 232, 148, 3),
+                      backGround: const Color.fromARGB(
+                        25,
+                        235,
+                        150,
+                        3,
+                      ),
+                      border: const Color.fromARGB(
+                        74,
+                        232,
+                        148,
+                        3,
+                      ),
                     ),
                   ),
                 ],
@@ -1298,13 +1745,21 @@ class StorageSummaryWidget extends StatelessWidget {
                     child: TabContainer(
                       isMoney: false,
                       text: 'Total Quantity',
-                      price: returnStorageProductProvider(context: context)
-                          .storageProductListMain
-                          .where((item) => item.quantity != null)
+                      price: returnStorageProductProvider(
+                            context: context,
+                          ).storageProductListMain
+                          .where(
+                            (item) => item.quantity != null,
+                          )
                           .map((item) => item.quantity)
                           .fold(0, (a, b) => a + (b ?? 0)),
                       theme: theme,
-                      backGround: const Color.fromARGB(141, 245, 245, 245),
+                      backGround: const Color.fromARGB(
+                        141,
+                        245,
+                        245,
+                        245,
+                      ),
                       border: Colors.grey.shade300,
                     ),
                   ),
@@ -1320,10 +1775,11 @@ class StorageSummaryWidget extends StatelessWidget {
                 children: [
                   Text(
                     style: TextStyle(
-                      fontSize: theme.mobileTexts.b2.fontSize,
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
-                    'ITEMS',
+                    'SALES ITEMS',
                   ),
                 ],
               ),
@@ -1341,8 +1797,18 @@ class StorageSummaryWidget extends StatelessWidget {
                             context: context,
                           ).productList().length.toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(11, 15, 4, 114),
-                      border: const Color.fromARGB(32, 45, 3, 255),
+                      backGround: const Color.fromARGB(
+                        11,
+                        15,
+                        4,
+                        114,
+                      ),
+                      border: const Color.fromARGB(
+                        32,
+                        45,
+                        3,
+                        255,
+                      ),
                     ),
                   ),
                 ],
@@ -1361,14 +1827,25 @@ class StorageSummaryWidget extends StatelessWidget {
                               .productList()
                               .where(
                                 (item) =>
-                                    item.getActualQuantity() != null &&
+                                    item.getActualQuantity() !=
+                                        null &&
                                     item.getActualQuantity() != 0,
                               )
                               .length
                               .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(18, 2, 163, 31),
-                      border: const Color.fromARGB(63, 2, 163, 31),
+                      backGround: const Color.fromARGB(
+                        18,
+                        2,
+                        163,
+                        31,
+                      ),
+                      border: const Color.fromARGB(
+                        63,
+                        2,
+                        163,
+                        31,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -1380,14 +1857,25 @@ class StorageSummaryWidget extends StatelessWidget {
                               .productList()
                               .where(
                                 (item) =>
-                                    item.getActualQuantity() != null &&
+                                    item.getActualQuantity() !=
+                                        null &&
                                     item.getActualQuantity() == 0,
                               )
                               .length
                               .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(25, 235, 150, 3),
-                      border: const Color.fromARGB(74, 232, 148, 3),
+                      backGround: const Color.fromARGB(
+                        25,
+                        235,
+                        150,
+                        3,
+                      ),
+                      border: const Color.fromARGB(
+                        74,
+                        232,
+                        148,
+                        3,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -1397,11 +1885,18 @@ class StorageSummaryWidget extends StatelessWidget {
                       price:
                           returnData(context: context)
                               .productList()
-                              .where((item) => !item.isManaged)
+                              .where(
+                                (item) => !item.isManaged,
+                              )
                               .length
                               .toDouble(),
                       theme: theme,
-                      backGround: const Color.fromARGB(141, 245, 245, 245),
+                      backGround: const Color.fromARGB(
+                        141,
+                        245,
+                        245,
+                        245,
+                      ),
                       border: Colors.grey.shade300,
                     ),
                   ),
@@ -1417,11 +1912,23 @@ class StorageSummaryWidget extends StatelessWidget {
                       text: 'Total Quantity',
                       price: returnData(context: context)
                           .productList()
-                          .where((item) => item.getActualQuantity() != null)
-                          .map((item) => item.getActualQuantity())
+                          .where(
+                            (item) =>
+                                item.getActualQuantity() !=
+                                null,
+                          )
+                          .map(
+                            (item) =>
+                                item.getActualQuantity(),
+                          )
                           .fold(0, (a, b) => a + (b ?? 0)),
                       theme: theme,
-                      backGround: const Color.fromARGB(141, 245, 245, 245),
+                      backGround: const Color.fromARGB(
+                        141,
+                        245,
+                        245,
+                        245,
+                      ),
                       border: Colors.grey.shade300,
                     ),
                   ),
@@ -1435,7 +1942,9 @@ class StorageSummaryWidget extends StatelessWidget {
   }
 }
 
-String returnTotalStockIn({required List<TempInventoryUpdateClass> updates}) {
+String returnTotalStockIn({
+  required List<TempInventoryUpdateClass> updates,
+}) {
   List<TempInventoryUpdateClass> tempUpdates = [];
   for (var up in updates) {
     if ((double.tryParse(up.oldValue ?? '0') ?? 0) <=
@@ -1452,7 +1961,9 @@ String returnTotalStockIn({required List<TempInventoryUpdateClass> updates}) {
   return formatLargeNumberDouble(tempTotal);
 }
 
-String returnTotalStockOut({required List<TempInventoryUpdateClass> updates}) {
+String returnTotalStockOut({
+  required List<TempInventoryUpdateClass> updates,
+}) {
   List<TempInventoryUpdateClass> tempUpdates = [];
   for (var up in updates) {
     if ((double.tryParse(up.oldValue ?? '0') ?? 0) >
@@ -1469,11 +1980,18 @@ String returnTotalStockOut({required List<TempInventoryUpdateClass> updates}) {
   return formatLargeNumberDouble(tempTotal);
 }
 
-String returnNet({required List<TempInventoryUpdateClass> updates}) {
+String returnNet({
+  required List<TempInventoryUpdateClass> updates,
+}) {
   return formatLargeNumberDouble(
-    ((double.tryParse(returnTotalStockIn(updates: updates)) ?? 0) -
+    ((double.tryParse(
+              returnTotalStockIn(updates: updates),
+            ) ??
+            0) -
         (double.tryParse(
-              returnTotalStockOut(updates: updates).replaceAll('-', ''),
+              returnTotalStockOut(
+                updates: updates,
+              ).replaceAll('-', ''),
             ) ??
             0)),
   );

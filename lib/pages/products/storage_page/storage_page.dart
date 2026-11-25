@@ -6,7 +6,12 @@ import 'package:stockall/pages/products/storage_page/platforms/storage_page_mobi
 
 class StoragePage extends StatefulWidget {
   final String? itemName;
-  const StoragePage({super.key, this.itemName});
+  final bool isMainTab;
+  const StoragePage({
+    super.key,
+    this.itemName,
+    this.isMainTab = false,
+  });
 
   @override
   State<StoragePage> createState() => _StoragePageState();
@@ -17,6 +22,9 @@ class _StoragePageState extends State<StoragePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.isMainTab) {
+        returnNavProvider(context, listen: false).navigate(11);
+      }
       returnStorageItemHistoryProvider().clearDate();
       returnStorageProductProvider().getStorageProducts(shopId());
     });
@@ -24,14 +32,42 @@ class _StoragePageState extends State<StoragePage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
+    final content = LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < tabletScreenSmall) {
-          return StoragePageMobile(itemName: widget.itemName);
+          return StoragePageMobile(
+            itemName: widget.itemName,
+            isMainTab: widget.isMainTab,
+          );
         } else {
-          return StoragePageDesktop(itemName: widget.itemName);
+          return StoragePageDesktop(
+            itemName: widget.itemName,
+            isMainTab: widget.isMainTab,
+          );
         }
       },
+    );
+
+    if (!widget.isMainTab) {
+      return content;
+    }
+
+    return SafeArea(
+      child: GestureDetector(
+        onTap:
+            () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop) return;
+            returnNavProvider(
+              context,
+              listen: false,
+            ).navigate(0);
+          },
+          child: content,
+        ),
+      ),
     );
   }
 }

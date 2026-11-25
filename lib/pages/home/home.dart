@@ -9,6 +9,7 @@ import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/pages/products/products_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_page.dart';
 import 'package:stockall/pages/profile/edit/edit.dart';
 import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
@@ -222,6 +223,10 @@ class _HomeState extends State<Home> {
                               return const ProductsPage();
                             case 2:
                               return const SalesPage();
+                            case 11:
+                              return const StoragePage(
+                                isMainTab: true,
+                              );
                             default:
                               return Dashboard(
                                 shopId:
@@ -262,6 +267,10 @@ class _HomeState extends State<Home> {
                       return const ProductsPage();
                     case 2:
                       return const SalesPage();
+                    case 11:
+                      return const StoragePage(
+                        isMainTab: true,
+                      );
                     default:
                       return Dashboard(
                         shopId: shop(context)?.shopId!,
