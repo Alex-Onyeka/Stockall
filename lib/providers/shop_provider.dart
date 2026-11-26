@@ -3123,6 +3123,10 @@ class ShopProvider extends ChangeNotifier {
     return ReceiptPrinterFunc().getReceiptPrinterClass();
   }
 
+  void notifyReceiptPrinterChanged() {
+    notifyListeners();
+  }
+
   Future<void> selectReceiptPrinter(
     ReceiptPrinterClass newPrinter,
     bool isPaperSize,

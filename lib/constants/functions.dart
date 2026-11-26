@@ -16,6 +16,7 @@ import 'package:stockall/pages/report/general_report/class/general_report_class.
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/documents/document_downloads.dart';
 import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/services/documents/pdf_document_kit.dart'
     show docPageTheme;
 import 'package:stockall/services/documents/document_model.dart'
@@ -391,6 +392,48 @@ final List<CurrencyClass> currencies = [
 //
 //
 // PDF RECEIPT GENERATOR
+Future<void> printReceiptA4Pdf({
+  required TempMainReceipt receipt,
+  required String staffName,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(true);
+      try {
+        final Uint8List bytes = await _buildPdf(
+          receipt,
+          staffName,
+          records,
+          shop,
+          context,
+        );
+        await AppPrinterService.printPdf(
+          onLayout: (_) async => bytes,
+          name: 'Receipt_${receipt.uuid ?? ''}',
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog(
+          '❌ Error printing A4 receipt: $e\n$stackTrace',
+        );
+      } finally {
+        if (context.mounted) {
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
+      }
+    },
+  );
+}
+
 Future<void> generateAndPreviewPdf({
   required TempMainReceipt receipt,
   required String staffName,
@@ -1917,7 +1960,7 @@ void downloadPdfWebRoll({
         html.Url.revokeObjectUrl(url);
 
         // Step 2: Print (make sure this runs in same click event if possible)
-        await Printing.layoutPdf(
+        await AppPrinterService.printPdf(
           onLayout: (format) async => pdfUint8,
         );
 
@@ -1976,7 +2019,7 @@ Future<void> generateAndPreviewPdfProducts({
   );
 
   // 2. Open native print/share/save dialog (cross-platform)
-  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  await AppPrinterService.printPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
     returnData().toggleIsLoading(false);
   }
@@ -2868,7 +2911,7 @@ Future<void> generateAndPreviewPdfSales({
   );
 
   // 2. Open native print/share/save dialog (cross-platform)
-  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  await AppPrinterService.printPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
     returnData().toggleIsLoading(false);
   }
@@ -3535,7 +3578,7 @@ Future<void> generateAndPreviewPdfSalesSummary({
   );
 
   // 2. Open native print/share/save dialog (cross-platform)
-  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+  await AppPrinterService.printPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
     returnData().toggleIsLoading(false);
   }

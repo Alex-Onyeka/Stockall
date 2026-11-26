@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -17,6 +18,7 @@ import 'package:stockall/pages/orders/order_page/components/order_item_list_tile
 import 'package:stockall/pages/orders/order_page/deliver_order_items/deliver_order_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/services/printing/printer_service_mobile.dart'
     show scanBluetoothPrintersOrder;
 
@@ -335,8 +337,33 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                     action: () async {
                                       var safeContext =
                                           context;
+                                      final printerSettings =
+                                          await AppPrinterService
+                                              .loadSettings();
+                                      if (!safeContext.mounted) {
+                                        return;
+                                      }
+                                      if (!printerSettings
+                                              .hasPrinter &&
+                                          returnShopProvider()
+                                                  .userShop()!
+                                                  .printType ==
+                                              null) {
+                                        final saved =
+                                            await showPrinterSettingsDialog(
+                                              safeContext,
+                                            );
+                                        if (saved == null ||
+                                            !safeContext
+                                                .mounted) {
+                                          return;
+                                        }
+                                      }
+                                      if (!safeContext.mounted) {
+                                        return;
+                                      }
                                       showDialog(
-                                        context: context,
+                                        context: safeContext,
                                         builder: (
                                           confirmDialog,
                                         ) {
@@ -351,41 +378,70 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                                 isPrintingOrder =
                                                     true;
                                               });
-                                              if (usesSystemPrintDialog()) {
-                                                generateAndPreviewPdfRollOrder(
-                                                  order:
-                                                      order,
-                                                  printerType:
-                                                      returnShopProvider()
-                                                          .userShop()!
-                                                          .printType ??
-                                                      1,
-                                                  staffName:
-                                                      order.staffName ??
-                                                      'Not Set',
-                                                  context:
-                                                      context,
-                                                  records:
-                                                      saleRecords,
-                                                  shop:
-                                                      returnShopProvider()
-                                                          .userShop()!,
-                                                );
-                                              } else {
-                                                scanBluetoothPrintersOrder(
-                                                  order:
-                                                      order,
-                                                  records:
-                                                      saleRecords,
-                                                  shop:
-                                                      shopSingle()!,
-                                                  context:
-                                                      context,
-                                                );
-                                              }
                                               Navigator.of(
                                                 confirmDialog,
                                               ).pop();
+                                              final activeSettings =
+                                                  await AppPrinterService
+                                                      .loadSettings();
+                                              if (activeSettings
+                                                      .documentType ==
+                                                  AppPrintDocumentType
+                                                      .a4) {
+                                                final receipts =
+                                                    returnReceiptProviderSingle()
+                                                        .receipts
+                                                        .where(
+                                                          (
+                                                            rec,
+                                                          ) =>
+                                                              rec.orderUuid ==
+                                                              order.uuid,
+                                                        )
+                                                        .toList();
+                                                await printOrderA4Pdf(
+                                                  order: order,
+                                                  items:
+                                                      saleRecords,
+                                                  receipts:
+                                                      receipts,
+                                                );
+                                              } else if (usesSystemPrintDialog()) {
+                                                if (safeContext
+                                                    .mounted) {
+                                                  await generateAndPreviewPdfRollOrder(
+                                                    order:
+                                                        order,
+                                                    printerType:
+                                                        activeSettings
+                                                            .printerTypeInt,
+                                                    staffName:
+                                                        order.staffName ??
+                                                        'Not Set',
+                                                    context:
+                                                        safeContext,
+                                                    records:
+                                                        saleRecords,
+                                                    shop:
+                                                        returnShopProvider()
+                                                            .userShop()!,
+                                                  );
+                                                }
+                                              } else {
+                                                if (safeContext
+                                                    .mounted) {
+                                                  scanBluetoothPrintersOrder(
+                                                    order:
+                                                        order,
+                                                    records:
+                                                        saleRecords,
+                                                    shop:
+                                                        shopSingle()!,
+                                                    context:
+                                                        safeContext,
+                                                  );
+                                                }
+                                              }
                                             },
                                           );
                                         },
@@ -412,6 +468,26 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                         FontWeight.bold,
                                   ),
                                   'Print',
+                                ),
+                              ),
+                              PopupMenuItem(
+                                height: 35,
+                                onTap: () {
+                                  showPrinterSettingsDialog(
+                                    context,
+                                  );
+                                },
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Printer Settings',
                                 ),
                               ),
                               PopupMenuItem(

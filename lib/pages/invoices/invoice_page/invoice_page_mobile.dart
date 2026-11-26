@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -17,6 +18,7 @@ import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/services/printing/printer_service_mobile.dart';
 
 class InvoicePageMobile extends StatefulWidget {
@@ -331,8 +333,35 @@ class _InvoicePageMobileState
                                     action: () async {
                                       var safeContext =
                                           context;
+                                      final printerSettings =
+                                          await AppPrinterService.loadSettings();
+                                      if (!safeContext
+                                          .mounted) {
+                                        return;
+                                      }
+                                      if (!printerSettings
+                                              .hasPrinter &&
+                                          returnShopProvider()
+                                                  .userShop()!
+                                                  .printType ==
+                                              null) {
+                                        final saved =
+                                            await showPrinterSettingsDialog(
+                                              safeContext,
+                                            );
+                                        if (saved == null ||
+                                            !safeContext
+                                                .mounted) {
+                                          return;
+                                        }
+                                      }
+                                      if (!safeContext
+                                          .mounted) {
+                                        return;
+                                      }
                                       showDialog(
-                                        context: context,
+                                        context:
+                                            safeContext,
                                         builder: (
                                           confirmDialog,
                                         ) {
@@ -347,6 +376,11 @@ class _InvoicePageMobileState
                                                 isPrintingInvoice =
                                                     true;
                                               });
+                                              Navigator.of(
+                                                confirmDialog,
+                                              ).pop();
+                                              final activeSettings =
+                                                  await AppPrinterService.loadSettings();
                                               final invoiceReceipts =
                                                   returnReceiptProviderSingle()
                                                       .receipts
@@ -358,45 +392,62 @@ class _InvoicePageMobileState
                                                             widget.checkoutResponse.invoice?.uuid,
                                                       )
                                                       .toList();
-                                              if (usesSystemPrintDialog()) {
-                                                generateAndPreviewPdfRollInvoice(
-                                                  invoice:
-                                                      invoice,
-                                                  printerType:
-                                                      returnShopProvider()
-                                                          .userShop()!
-                                                          .printType ??
-                                                      1,
-                                                  staffName:
-                                                      invoice
-                                                          .staffName,
-                                                  context:
-                                                      context,
-                                                  receipts:
-                                                      invoiceReceipts,
-                                                  records:
-                                                      saleRecords,
-                                                  shop:
-                                                      returnShopProvider()
-                                                          .userShop()!,
-                                                );
+                                              if (activeSettings
+                                                      .documentType ==
+                                                  AppPrintDocumentType
+                                                      .a4) {
+                                                if (safeContext
+                                                    .mounted) {
+                                                  await printInvoiceA4Pdf(
+                                                    invoice:
+                                                        invoice,
+                                                    receipts:
+                                                        invoiceReceipts,
+                                                    staffName:
+                                                        invoice.staffName,
+                                                    records:
+                                                        saleRecords,
+                                                    context:
+                                                        safeContext,
+                                                  );
+                                                }
+                                              } else if (usesSystemPrintDialog()) {
+                                                if (safeContext
+                                                    .mounted) {
+                                                  await generateAndPreviewPdfRollInvoice(
+                                                    invoice:
+                                                        invoice,
+                                                    printerType:
+                                                        activeSettings.printerTypeInt,
+                                                    staffName:
+                                                        invoice.staffName,
+                                                    context:
+                                                        safeContext,
+                                                    receipts:
+                                                        invoiceReceipts,
+                                                    records:
+                                                        saleRecords,
+                                                    shop:
+                                                        returnShopProvider().userShop()!,
+                                                  );
+                                                }
                                               } else {
-                                                scanBluetoothPrintersinvoice(
-                                                  invoice:
-                                                      invoice,
-                                                  receipts:
-                                                      invoiceReceipts,
-                                                  records:
-                                                      saleRecords,
-                                                  shop:
-                                                      shopSingle()!,
-                                                  context:
-                                                      context,
-                                                );
+                                                if (safeContext
+                                                    .mounted) {
+                                                  scanBluetoothPrintersinvoice(
+                                                    invoice:
+                                                        invoice,
+                                                    receipts:
+                                                        invoiceReceipts,
+                                                    records:
+                                                        saleRecords,
+                                                    shop:
+                                                        shopSingle()!,
+                                                    context:
+                                                        safeContext,
+                                                  );
+                                                }
                                               }
-                                              Navigator.of(
-                                                confirmDialog,
-                                              ).pop();
                                             },
                                           );
                                         },
@@ -423,6 +474,26 @@ class _InvoicePageMobileState
                                         FontWeight.bold,
                                   ),
                                   'Print',
+                                ),
+                              ),
+                              PopupMenuItem(
+                                height: 35,
+                                onTap: () {
+                                  showPrinterSettingsDialog(
+                                    context,
+                                  );
+                                },
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Printer Settings',
                                 ),
                               ),
                               PopupMenuItem(
@@ -536,6 +607,7 @@ class _InvoicePageMobileState
                                     ) &&
                                     returnReceiptProvider(
                                           context,
+                                          listen: false,
                                         ).receipts
                                         .where(
                                           (rec) =>

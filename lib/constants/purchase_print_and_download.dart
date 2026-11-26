@@ -18,6 +18,7 @@ import 'package:universal_html/html.dart' as html;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:io';
 import 'package:file_saver/file_saver.dart';
@@ -66,6 +67,39 @@ Future<Uint8List> _buildPdfPurchase({
       assets: DocShopAssets.current(),
     ),
     shop,
+  );
+}
+
+Future<void> printPurchaseA4Pdf({
+  required TempPurchase purchase,
+  required List<TempItemPurchaseRecord> records,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      returnPurchaseProvider().toggleIsLoading(true);
+      try {
+        final Uint8List bytes = await _buildPdfPurchase(
+          purchase: purchase,
+          shop: returnShopProvider().userShop()!,
+          records: records,
+          context: context,
+        );
+        await AppPrinterService.printPdf(
+          onLayout: (_) async => bytes,
+          name: 'Purchase_${purchase.uuid ?? ''}',
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog(
+          '❌ Error printing A4 purchase: $e\n$stackTrace',
+        );
+      } finally {
+        if (context.mounted) {
+          returnPurchaseProvider().toggleIsLoading(false);
+        }
+      }
+    },
   );
 }
 
@@ -182,7 +216,7 @@ void downloadPdfWebRollPurchase({
         html.Url.revokeObjectUrl(url);
 
         // Step 2: Print (make sure this runs in same click event if possible)
-        await Printing.layoutPdf(
+        await AppPrinterService.printPdf(
           onLayout: (format) async => pdfUint8,
         );
 

@@ -1650,18 +1650,18 @@ class DiscountSelectionTab extends StatelessWidget {
         mouseCursor: SystemMouseCursors.click,
         onTap: action,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 5),
+          padding: EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
             color:
                 myNum == genNum
                     ? Color.fromARGB(55, 255, 168, 7)
-                    : Colors.transparent,
+                    : Colors.grey.shade100,
             border: Border(
               bottom: BorderSide(
                 color:
                     myNum == genNum
                         ? Colors.amber
-                        : Colors.transparent,
+                        : Colors.grey.shade400,
               ),
             ),
           ),

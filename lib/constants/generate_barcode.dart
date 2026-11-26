@@ -3,6 +3,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -495,7 +496,7 @@ Future<bool> printBarcodeWebAndMobile(
   } else {
     if (screenWidth(context) > tabletScreenSmall) {
       // Desktop printing
-      var res = await Printing.layoutPdf(
+      var res = await AppPrinterService.printPdf(
         onLayout: (PdfPageFormat format) async => pdfBytes,
       );
       return res;

@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -17,9 +18,11 @@ import 'package:stockall/constants/purchase_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/purchases/components/purchase_linked_expense_row.dart';
 import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 
 class PurchasePageDesktop extends StatefulWidget {
   final String purchaseUuid;
@@ -464,9 +467,32 @@ class _PurchasePageDesktopState
                           ),
                           ActionButtonSmall(
                             isLoading: isPrintLoading,
-                            action: () {
+                            action: () async {
+                              final safeContext = context;
+                              final printerSettings =
+                                  await AppPrinterService.loadSettings();
+                              if (!safeContext.mounted)
+                                return;
+                              if (!kIsWeb &&
+                                  !printerSettings
+                                      .hasPrinter &&
+                                  returnShopProvider()
+                                          .userShop()!
+                                          .printType ==
+                                      null) {
+                                final saved =
+                                    await showPrinterSettingsDialog(
+                                      safeContext,
+                                    );
+                                if (saved == null ||
+                                    !safeContext.mounted) {
+                                  return;
+                                }
+                              }
+                              if (!safeContext.mounted)
+                                return;
                               showDialog(
-                                context: context,
+                                context: safeContext,
                                 builder: (confirmDialog) {
                                   return ConfirmationAlert(
                                     theme: theme,
@@ -482,33 +508,62 @@ class _PurchasePageDesktopState
                                       Navigator.of(
                                         confirmDialog,
                                       ).pop();
-                                      // One path: the POS printer on desktop, the system
-                                      // print dialog (once) on web.
-                                      await generateAndPreviewPdfRollPurchase(
-                                        purchase: purchase,
-                                        printerType:
-                                            returnShopProvider()
-                                                .userShop()!
-                                                .printType ??
-                                            1,
-                                        context: context,
-                                        records:
-                                            saleRecords,
-
-                                        shop:
-                                            returnShopProvider()
-                                                .userShop()!,
-                                      );
-                                      setState(() {
-                                        isPrintLoading =
-                                            false;
-                                      });
+                                      final activeSettings =
+                                          await AppPrinterService.loadSettings();
+                                      if (activeSettings
+                                              .documentType ==
+                                          AppPrintDocumentType
+                                              .a4) {
+                                        if (safeContext
+                                            .mounted) {
+                                          await printPurchaseA4Pdf(
+                                            purchase:
+                                                purchase,
+                                            records:
+                                                saleRecords,
+                                            context:
+                                                safeContext,
+                                          );
+                                        }
+                                      } else {
+                                        if (safeContext
+                                            .mounted) {
+                                          await generateAndPreviewPdfRollPurchase(
+                                            purchase:
+                                                purchase,
+                                            printerType:
+                                                activeSettings
+                                                    .printerTypeInt,
+                                            context:
+                                                safeContext,
+                                            records:
+                                                saleRecords,
+                                            shop:
+                                                returnShopProvider()
+                                                    .userShop()!,
+                                          );
+                                        }
+                                      }
+                                      if (mounted) {
+                                        setState(() {
+                                          isPrintLoading =
+                                              false;
+                                        });
+                                      }
                                     },
                                   );
                                 },
                               );
                             },
                             text: 'Print',
+                          ),
+                          ActionButtonSmall(
+                            action: () {
+                              showPrinterSettingsDialog(
+                                context,
+                              );
+                            },
+                            text: 'Printer Settings',
                           ),
                           ActionButtonSmall(
                             isLoading: isDownloadLoading,
@@ -1362,8 +1417,10 @@ class _PurchasePageDesktopState
                                                 ),
                                                 PurchaseLinkedExpenseRow(
                                                   purchaseUuid:
-                                                      purchase.uuid,
-                                                  theme: theme,
+                                                      purchase
+                                                          .uuid,
+                                                  theme:
+                                                      theme,
                                                 ),
                                               ],
                                             ),
@@ -2539,74 +2596,6 @@ class PurchasePaymentButtonWidget extends StatelessWidget {
                 },
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ActionButtonSmall extends StatelessWidget {
-  final Function()? action;
-  final Color? textColor;
-  final String text;
-  final bool? isLoading;
-  const ActionButtonSmall({
-    super.key,
-    this.textColor,
-    required this.action,
-    required this.text,
-    this.isLoading,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = returnTheme(context);
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        mouseCursor: SystemMouseCursors.click,
-        onTap: action,
-        borderRadius: BorderRadius.circular(3),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 20,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(3),
-            border: Border.all(
-              color: textColor ?? Colors.grey.shade200,
-            ),
-          ),
-          child: Builder(
-            builder: (context) {
-              if (isLoading != null && isLoading == true) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
-                  child: SizedBox(
-                    width: 15,
-                    height: 15,
-                    child: CircularProgressIndicator(
-                      color:
-                          theme.lightModeColor.secColor200,
-                      strokeWidth: 2.5,
-                    ),
-                  ),
-                );
-              } else {
-                return Text(
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.b3.fontSize,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                  text,
-                );
-              }
-            },
           ),
         ),
       ),

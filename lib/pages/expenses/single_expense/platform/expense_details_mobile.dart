@@ -1,12 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
+import 'package:stockall/constants/expense_print_and_download.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/single_expense/components/expense_breakdown_section_widget.dart';
 import 'package:stockall/pages/expenses/single_expense/components/expense_details_section_widget.dart';
 import 'package:stockall/pages/expenses/single_expense/components/stock_purchase_expense_actions.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 
 class ExpenseDetailsMobile extends StatefulWidget {
   final String expenseUuid;
@@ -182,6 +187,135 @@ class _ExpenseDetailsMobileState
                         color: Colors.white,
                         itemBuilder: (context) {
                           return [
+                            PopupMenuItem(
+                              enabled: !kIsWeb,
+                              height: 45,
+                              onTap: () {
+                                SalesAuthAction().printReceiptAction(
+                                  context: context,
+                                  action: () async {
+                                    final safeContext = context;
+                                    final printerSettings =
+                                        await AppPrinterService.loadSettings();
+                                    if (!safeContext.mounted) return;
+                                    if (!printerSettings.hasPrinter &&
+                                        returnShopProvider()
+                                                .userShop()!
+                                                .printType ==
+                                            null) {
+                                      final saved =
+                                          await showPrinterSettingsDialog(
+                                            safeContext,
+                                          );
+                                      if (saved == null ||
+                                          !safeContext.mounted) {
+                                        return;
+                                      }
+                                    }
+                                    if (!safeContext.mounted) return;
+                                    showDialog(
+                                      context: safeContext,
+                                      builder: (confirmDialog) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              'You are about to Print This Expense. Are you sure you want to Proceed?',
+                                          title: 'Print Expense',
+                                          action: () async {
+                                            Navigator.of(confirmDialog).pop();
+                                            final activeSettings =
+                                                await AppPrinterService
+                                                    .loadSettings();
+                                            if (activeSettings.documentType ==
+                                                AppPrintDocumentType.a4) {
+                                              if (safeContext.mounted) {
+                                                await printExpenseA4Pdf(
+                                                  expense: expense,
+                                                  context: safeContext,
+                                                );
+                                              }
+                                            } else {
+                                              if (safeContext.mounted) {
+                                                await generateAndPreviewPdfRollExpense(
+                                                  expense: expense,
+                                                  printerType:
+                                                      activeSettings
+                                                          .printerTypeInt,
+                                                  context: safeContext,
+                                                  shop:
+                                                      returnShopProvider()
+                                                          .userShop()!,
+                                                );
+                                              }
+                                            }
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                'Print',
+                              ),
+                            ),
+                            PopupMenuItem(
+                              height: 45,
+                              onTap: () {
+                                showPrinterSettingsDialog(context);
+                              },
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                'Printer Settings',
+                              ),
+                            ),
+                            PopupMenuItem(
+                              height: 45,
+                              onTap: () {
+                                SalesAuthAction().downloadReceiptAction(
+                                  context: context,
+                                  action: () async {
+                                    showDialog(
+                                      context: context,
+                                      builder: (confirmDialog) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              'You are about to download This Expense. Are you sure you want to Proceed?',
+                                          title: 'Download Expense',
+                                          action: () async {
+                                            Navigator.of(confirmDialog).pop();
+                                            if (kIsWeb) {
+                                              await downloadPdfWebExpense(
+                                                expense: expense,
+                                              );
+                                            } else {
+                                              await generateAndPreviewPdfExpense(
+                                                expense: expense,
+                                              );
+                                            }
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize: theme.mobileTexts.b3.fontSize,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                kIsWeb ? 'Download' : 'Share',
+                              ),
+                            ),
                             PopupMenuItem(
                               height: 45,
                               onTap: () {

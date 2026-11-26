@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_orders/order_items.dart';
 import 'package:stockall/classes/temp_orders/orders.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
@@ -12,11 +13,13 @@ import 'package:stockall/constants/order_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/orders/order_page/components/order_item_list_tile_order_page.dart';
 import 'package:stockall/pages/orders/order_page/deliver_order_items/deliver_order_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/services/printing/printer_service_mobile.dart'
     show scanBluetoothPrintersOrder;
 
@@ -223,9 +226,30 @@ class _OrderPageDesktopState
                         // ),
                         ActionButtonSmall(
                           isLoading: isPrintLoading,
-                          action: () {
+                          action: () async {
+                            final safeContext = context;
+                            final printerSettings =
+                                await AppPrinterService
+                                    .loadSettings();
+                            if (!safeContext.mounted) return;
+                            if (!kIsWeb &&
+                                !printerSettings.hasPrinter &&
+                                returnShopProvider()
+                                        .userShop()!
+                                        .printType ==
+                                    null) {
+                              final saved =
+                                  await showPrinterSettingsDialog(
+                                    safeContext,
+                                  );
+                              if (saved == null ||
+                                  !safeContext.mounted) {
+                                return;
+                              }
+                            }
+                            if (!safeContext.mounted) return;
                             showDialog(
-                              context: context,
+                              context: safeContext,
                               builder: (confirmDialog) {
                                 return ConfirmationAlert(
                                   theme: theme,
@@ -239,45 +263,74 @@ class _OrderPageDesktopState
                                     Navigator.of(
                                       confirmDialog,
                                     ).pop();
-                                    if (usesBluetoothPrint()) {
-                                      scanBluetoothPrintersOrder(
+                                    final activeSettings =
+                                        await AppPrinterService
+                                            .loadSettings();
+                                    if (activeSettings
+                                            .documentType ==
+                                        AppPrintDocumentType
+                                            .a4) {
+                                      final receipts =
+                                          returnReceiptProviderSingle()
+                                              .receipts
+                                              .where(
+                                                (rec) =>
+                                                    rec.orderUuid ==
+                                                    order.uuid,
+                                              )
+                                              .toList();
+                                      await printOrderA4Pdf(
                                         order: order,
-                                        records: orderItems,
-                                        shop:
-                                            returnShopProvider()
-                                                .userShop()!,
-                                        context: context,
+                                        items: orderItems,
+                                        receipts: receipts,
                                       );
+                                    } else if (usesBluetoothPrint()) {
+                                      if (safeContext.mounted) {
+                                        scanBluetoothPrintersOrder(
+                                          order: order,
+                                          records: orderItems,
+                                          shop:
+                                              returnShopProvider()
+                                                  .userShop()!,
+                                          context: safeContext,
+                                        );
+                                      }
                                     } else {
-                                      // POS printer on desktop, the system
-                                      // print dialog on web.
-                                      await generateAndPreviewPdfRollOrder(
-                                        order: order,
-                                        printerType:
-                                            returnShopProvider()
-                                                .userShop()!
-                                                .printType ??
-                                            1,
-                                        staffName:
-                                            order.staffName ??
-                                            'Not Set',
-                                        context: context,
-                                        records: orderItems,
-                                        shop:
-                                            returnShopProvider()
-                                                .userShop()!,
-                                      );
+                                      if (safeContext.mounted) {
+                                        await generateAndPreviewPdfRollOrder(
+                                          order: order,
+                                          printerType:
+                                              activeSettings
+                                                  .printerTypeInt,
+                                          staffName:
+                                              order
+                                                  .staffName ??
+                                              'Not Set',
+                                          context: safeContext,
+                                          records: orderItems,
+                                          shop:
+                                              returnShopProvider()
+                                                  .userShop()!,
+                                        );
+                                      }
                                     }
-                                    setState(() {
-                                      isPrintLoading =
-                                          false;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        isPrintLoading = false;
+                                      });
+                                    }
                                   },
                                 );
                               },
                             );
                           },
                           text: 'Print',
+                        ),
+                        ActionButtonSmall(
+                          action: () {
+                            showPrinterSettingsDialog(context);
+                          },
+                          text: 'Printer Settings',
                         ),
                         ActionButtonSmall(
                           isLoading: isDownloadLoading,
@@ -310,20 +363,27 @@ class _OrderPageDesktopState
                                                 .where(
                                                   (rec) =>
                                                       rec.orderUuid ==
-                                                      order.uuid,
+                                                      order
+                                                          .uuid,
                                                 )
                                                 .toList();
                                         final downloaded =
                                             kIsWeb
                                                 ? await downloadPdfWebOrder(
-                                                  order: order,
-                                                  items: orderItems,
-                                                  receipts: receipts,
+                                                  order:
+                                                      order,
+                                                  items:
+                                                      orderItems,
+                                                  receipts:
+                                                      receipts,
                                                 )
                                                 : await generateAndPreviewPdfOrder(
-                                                  order: order,
-                                                  items: orderItems,
-                                                  receipts: receipts,
+                                                  order:
+                                                      order,
+                                                  items:
+                                                      orderItems,
+                                                  receipts:
+                                                      receipts,
                                                 );
                                         if (context
                                             .mounted) {
@@ -334,7 +394,8 @@ class _OrderPageDesktopState
                                                 downloaded
                                                     ? 'Order Downloaded'
                                                     : 'Could not download this order',
-                                            isSuccess: downloaded,
+                                            isSuccess:
+                                                downloaded,
                                           );
                                         }
                                         setState(() {
@@ -1658,90 +1719,6 @@ class _OrderPageDesktopState
           ),
         );
       },
-    );
-  }
-}
-
-class ActionButtonSmall extends StatelessWidget {
-  final Function()? action;
-  final Color? textColor;
-  final String text;
-  final bool? isLoading;
-  final Icon? icon;
-  const ActionButtonSmall({
-    super.key,
-    this.textColor,
-    required this.action,
-    required this.text,
-    this.isLoading,
-    this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = returnTheme(context);
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        mouseCursor: SystemMouseCursors.click,
-        onTap: action,
-        borderRadius: BorderRadius.circular(3),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 5,
-            horizontal: 15,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(3),
-            border: Border.all(
-              color: textColor ?? Colors.grey.shade200,
-            ),
-          ),
-          child: Builder(
-            builder: (context) {
-              if (isLoading != null && isLoading == true) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
-                  child: SizedBox(
-                    width: 15,
-                    height: 15,
-                    child: CircularProgressIndicator(
-                      color:
-                          theme.lightModeColor.secColor200,
-                      strokeWidth: 2.5,
-                    ),
-                  ),
-                );
-              } else {
-                return Row(
-                  children: [
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.b4.fontSize,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                      text,
-                    ),
-                    Visibility(
-                      visible: icon != null,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 5.0,
-                        ),
-                        child: icon ?? Container(),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            },
-          ),
-        ),
-      ),
     );
   }
 }

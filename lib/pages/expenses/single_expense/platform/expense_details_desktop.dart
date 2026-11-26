@@ -1,12 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
+import 'package:stockall/constants/expense_print_and_download.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/single_expense/components/expense_breakdown_section_widget.dart';
 import 'package:stockall/pages/expenses/single_expense/components/expense_details_section_widget.dart';
 import 'package:stockall/pages/expenses/single_expense/components/stock_purchase_expense_actions.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 
 class ExpenseDetailsDesktop extends StatefulWidget {
   final String expenseUuid;
@@ -23,6 +28,8 @@ class ExpenseDetailsDesktop extends StatefulWidget {
 class _ExpenseDetailsDesktopState
     extends State<ExpenseDetailsDesktop> {
   bool isDeleting = false;
+  bool isPrintLoading = false;
+  bool isDownloadLoading = false;
 
   void _handleDelete(
     BuildContext context,
@@ -185,7 +192,118 @@ class _ExpenseDetailsDesktopState
                           Icons.arrow_forward_ios_rounded,
                         ),
                       ),
-                    if (expense != null)
+                    if (expense != null) ...[
+                      ActionButtonSmall(
+                        isLoading: isPrintLoading,
+                        action: () async {
+                          final safeContext = context;
+                          final printerSettings =
+                              await AppPrinterService.loadSettings();
+                          if (!safeContext.mounted) return;
+                          if (!kIsWeb &&
+                              !printerSettings.hasPrinter &&
+                              returnShopProvider().userShop()!.printType ==
+                                  null) {
+                            final saved = await showPrinterSettingsDialog(
+                              safeContext,
+                            );
+                            if (saved == null || !safeContext.mounted) return;
+                          }
+                          if (!safeContext.mounted) return;
+                          showDialog(
+                            context: safeContext,
+                            builder: (confirmDialog) {
+                              return ConfirmationAlert(
+                                theme: theme,
+                                message:
+                                    'You are about to Print This Expense. Are you sure you want to Proceed?',
+                                title: 'Print Expense',
+                                action: () async {
+                                  setState(() {
+                                    isPrintLoading = true;
+                                  });
+                                  Navigator.of(confirmDialog).pop();
+                                  final activeSettings =
+                                      await AppPrinterService.loadSettings();
+                                  if (activeSettings.documentType ==
+                                      AppPrintDocumentType.a4) {
+                                    if (safeContext.mounted) {
+                                      await printExpenseA4Pdf(
+                                        expense: expense,
+                                        context: safeContext,
+                                      );
+                                    }
+                                  } else {
+                                    if (safeContext.mounted) {
+                                      await generateAndPreviewPdfRollExpense(
+                                        expense: expense,
+                                        printerType:
+                                            activeSettings.printerTypeInt,
+                                        context: safeContext,
+                                        shop: returnShopProvider().userShop()!,
+                                      );
+                                    }
+                                  }
+                                  if (mounted) {
+                                    setState(() {
+                                      isPrintLoading = false;
+                                    });
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        },
+                        text: 'Print',
+                      ),
+                      ActionButtonSmall(
+                        action: () {
+                          showPrinterSettingsDialog(context);
+                        },
+                        text: 'Printer Settings',
+                      ),
+                      ActionButtonSmall(
+                        isLoading: isDownloadLoading,
+                        action: () {
+                          SalesAuthAction().downloadReceiptAction(
+                            context: context,
+                            action: () async {
+                              showDialog(
+                                context: context,
+                                builder: (confirmDialog) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to download This Expense. Are you sure you want to Proceed?',
+                                    title: 'Download Expense',
+                                    action: () async {
+                                      setState(() {
+                                        isDownloadLoading = true;
+                                      });
+                                      Navigator.of(confirmDialog).pop();
+                                      if (kIsWeb) {
+                                        await downloadPdfWebExpense(
+                                          expense: expense,
+                                        );
+                                      } else {
+                                        await generateAndPreviewPdfExpense(
+                                          expense: expense,
+                                        );
+                                      }
+                                      if (mounted) {
+                                        setState(() {
+                                          isDownloadLoading = false;
+                                        });
+                                      }
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                        text: 'Download',
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(
                           right: 20.0,
@@ -207,6 +325,7 @@ class _ExpenseDetailsDesktopState
                           ),
                         ),
                       ),
+                    ],
                   ],
                 ),
               ],

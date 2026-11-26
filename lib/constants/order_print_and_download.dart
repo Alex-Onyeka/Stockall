@@ -15,6 +15,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/documents/document_downloads.dart';
 import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/services/documents/pdf_document_kit.dart'
     show docPageTheme;
 import 'package:stockall/services/documents/document_model.dart'
@@ -600,6 +601,23 @@ Future<Uint8List> buildOrderRollPdf({
     context: context,
     printerType: printerType,
   );
+}
+
+Future<bool> printOrderA4Pdf({
+  required Orders order,
+  required List<OrderItems> items,
+  required List<TempMainReceipt> receipts,
+}) async {
+  try {
+    final bytes = await _buildPdfOrder(order, items, receipts);
+    return await AppPrinterService.printPdf(
+      onLayout: (_) async => bytes,
+      name: 'Order_${order.uuid ?? ''}',
+    );
+  } catch (e, stackTrace) {
+    await mainLocalLog('❌ Error printing A4 order PDF: $e\n$stackTrace');
+    return false;
+  }
 }
 
 // A4 order download, from the shared document builder. Shares on

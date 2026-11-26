@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/constants/functions.dart'
     show savePdfDesktop, savePdfMobile, usesBluetoothPrint;
 import 'package:stockall/constants/subscription/report_auth.dart';
@@ -174,7 +174,7 @@ class DefaultReportExportBackend implements ReportExportBackend {
     // macOS, Linux and web: the system print dialog with a roll-sized PDF.
     final bytes = await buildRollPdf(lines, paper, fonts: await fonts());
     beforeUi();
-    await Printing.layoutPdf(
+    await AppPrinterService.printPdf(
       name: reportExportBaseName(spec, now: ctx.generatedAt),
       format: paper.pdfFormat,
       dynamicLayout: false,

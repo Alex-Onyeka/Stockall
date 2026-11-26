@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -16,6 +17,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/services/printing/import_helper.dart'
     show scanBluetoothPrinters;
 
@@ -142,213 +144,50 @@ class _ReceiptPageDesktopState
                       ),
                       Align(
                         alignment: Alignment(0.95, -0.95),
-                        child: PopupMenuButton(
-                          offset: Offset(-20, 30),
-                          color: Colors.white,
-                          itemBuilder: (context) {
-                            return [
-                              PopupMenuItem(
-                                onTap: () {
-                                  returnShopProvider()
-                                              .userShop()!
-                                              .printType !=
-                                          1
-                                      ? returnShopProvider()
-                                          .updatePrintType(
-                                            shopId:
-                                                shopId(),
-                                            type: 1,
-                                          )
-                                      : {};
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            returnShopProvider().userShop()!.printType !=
-                                                        null &&
-                                                    returnShopProvider().userShop()!.printType ==
-                                                        1
-                                                ? FontWeight
-                                                    .bold
-                                                : null,
-                                      ),
-                                      // kIsWeb
-                                      //     ?
-                                      'Printer Type -- 58mm',
-                                      // : 'Select USB Printer',
-                                    ),
-                                    Visibility(
-                                      visible:
-                                          returnShopProvider()
-                                              .userShop()!
-                                              .printType ==
-                                          1,
-                                      child: Icon(
-                                        size: 17,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                        Icons.check,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                // enabled:
-                                //     kIsWeb ||
-                                //     platforms(context) ==
-                                //         TargetPlatform
-                                //             .android ||
-                                //     platforms(context) ==
-                                //         TargetPlatform.iOS,
-                                onTap: () {
-                                  returnShopProvider()
-                                              .userShop()!
-                                              .printType !=
-                                          2
-                                      ? returnShopProvider()
-                                          .updatePrintType(
-                                            shopId:
-                                                shopId(),
-                                            type: 2,
-                                          )
-                                      : {};
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            returnShopProvider().userShop()!.printType !=
-                                                        null &&
-                                                    returnShopProvider().userShop()!.printType ==
-                                                        2
-                                                ? FontWeight
-                                                    .bold
-                                                : null,
-                                      ),
-                                      // kIsWeb
-                                      //     ?
-                                      'Printer Type -- 80mm',
-                                      // : 'Select Bluetooth Printer',
-                                    ),
-                                    Visibility(
-                                      visible:
-                                          returnShopProvider()
-                                              .userShop()!
-                                              .printType ==
-                                          2,
-                                      child: Icon(
-                                        size: 17,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                        Icons.check,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ];
-                          },
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            mouseCursor:
+                                SystemMouseCursors.click,
+                            borderRadius:
+                                BorderRadius.circular(6),
+                            onTap: () {
+                              showPrinterSettingsDialog(
+                                context,
+                              );
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                              child: Row(
                                 mainAxisSize:
                                     MainAxisSize.min,
+                                spacing: 4,
                                 children: [
                                   Text(
+                                    'Settings',
                                     style: TextStyle(
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                      color: Colors.white,
-                                    ),
-                                    'Printer:',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b4
+                                              .b3
                                               .fontSize,
                                       color: Colors.white,
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType !=
-                                                null &&
-                                            returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType ==
-                                                2
-                                        ? (
-                                        // kIsWeb
-                                        //   ?
-                                        '80mm'
-                                        // : '( Bluetooth )'
-                                        )
-                                        : returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType !=
-                                                null &&
-                                            returnShopProvider(
-                                                  context:
-                                                      context,
-                                                ).userShop()!.printType ==
-                                                1
-                                        ? (
-                                        // kIsWeb
-                                        //   ?
-                                        '58mm'
-                                        // : '( USB )'
-                                        )
-                                        // : sortIndex == 2
-                                        // ? 'Price'
-                                        : 'Settings',
+                                  ),
+                                  Icon(
+                                    Icons.settings_outlined,
+                                    color: Colors.amber,
+                                    size: 18,
                                   ),
                                 ],
                               ),
-                              Icon(
-                                color: Colors.amber,
-                                Icons.more_vert_rounded,
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -2180,223 +2019,29 @@ class _ReceiptDetailsContainerState
                         context: context,
                         action: () async {
                           var safeContext = context;
-                          if (returnShopProvider()
-                                  .userShop()!
-                                  .printType ==
-                              null) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  backgroundColor:
-                                      Colors.white,
-                                  title: Text(
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    'SELECT PRINTER TYPE',
-                                  ),
-                                  content: Column(
-                                    mainAxisSize:
-                                        MainAxisSize.min,
-                                    children: [
-                                      Divider(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade200,
-                                        height: 0,
-                                      ),
-                                      ListTile(
-                                        onTap: () async {
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          returnReceiptProvider(
-                                            safeContext,
-                                            listen: false,
-                                          ).toggleIsLoading(
-                                            true,
-                                          );
-                                          await returnShopProvider()
-                                              .updatePrintType(
-                                                shopId:
-                                                    shopId(),
-                                                type: 1,
-                                              );
-
-                                          if (safeContext
-                                              .mounted) {
-                                            returnReceiptProvider(
-                                              safeContext,
-                                              listen: false,
-                                            ).toggleIsLoading(
-                                              false,
-                                            );
-                                          }
-                                        },
-                                        title: Text(
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          // kIsWeb
-                                          //     ?
-                                          'Select Paper Size -- 58mm',
-                                          // : 'Select Type - USB',
-                                        ),
-                                        trailing: Container(
-                                          padding:
-                                              EdgeInsets.all(
-                                                2,
-                                              ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  2,
-                                                ),
-                                            border: Border.all(
-                                              color:
-                                                  returnShopProvider().userShop()!.printType ==
-                                                          1
-                                                      ? Colors
-                                                          .grey
-                                                      : Colors.transparent,
-                                            ),
-                                            color:
-                                                returnShopProvider()
-                                                            .userShop()!
-                                                            .printType ==
-                                                        1
-                                                    ? widget
-                                                        .theme
-                                                        .lightModeColor
-                                                        .prColor250
-                                                    : Colors
-                                                        .transparent,
-                                          ),
-                                          child: Opacity(
-                                            opacity:
-                                                returnShopProvider().userShop()!.printType ==
-                                                        1
-                                                    ? 1
-                                                    : 0,
-                                            child: Icon(
-                                              size: 14,
-                                              color:
-                                                  Colors
-                                                      .white,
-                                              Icons.check,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Divider(
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade200,
-                                        height: 5,
-                                      ),
-                                      ListTile(
-                                        onTap: () async {
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          returnReceiptProvider(
-                                            safeContext,
-                                            listen: false,
-                                          ).toggleIsLoading(
-                                            true,
-                                          );
-                                          await returnShopProvider()
-                                              .updatePrintType(
-                                                shopId:
-                                                    shopId(),
-                                                type: 2,
-                                              );
-
-                                          if (safeContext
-                                              .mounted) {
-                                            returnReceiptProvider(
-                                              safeContext,
-                                              listen: false,
-                                            ).toggleIsLoading(
-                                              false,
-                                            );
-                                          }
-                                        },
-                                        title: Text(
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          // kIsWeb
-                                          //     ?
-                                          'Select Paper Size -- 80mm',
-                                          // : 'Select Type - Bluetooth',
-                                        ),
-                                        trailing: Container(
-                                          padding:
-                                              EdgeInsets.all(
-                                                2,
-                                              ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  2,
-                                                ),
-                                            border: Border.all(
-                                              color:
-                                                  returnShopProvider().userShop()!.printType ==
-                                                          2
-                                                      ? Colors
-                                                          .grey
-                                                      : Colors.transparent,
-                                            ),
-                                            color:
-                                                returnShopProvider()
-                                                            .userShop()!
-                                                            .printType ==
-                                                        2
-                                                    ? widget
-                                                        .theme
-                                                        .lightModeColor
-                                                        .prColor250
-                                                    : Colors
-                                                        .transparent,
-                                          ),
-                                          child: Opacity(
-                                            opacity:
-                                                returnShopProvider().userShop()!.printType ==
-                                                        2
-                                                    ? 1
-                                                    : 0,
-                                            child: Icon(
-                                              size: 14,
-                                              color:
-                                                  Colors
-                                                      .white,
-                                              Icons.check,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                          final printerSettings =
+                              await AppPrinterService
+                                  .loadSettings();
+                          if (!safeContext.mounted) return;
+                          if (!kIsWeb &&
+                              !printerSettings.hasPrinter &&
+                              returnShopProvider()
+                                      .userShop()!
+                                      .printType ==
+                                  null) {
+                            final saved =
+                                await showPrinterSettingsDialog(
+                                  safeContext,
                                 );
-                              },
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
+                            if (saved == null ||
+                                !safeContext.mounted) {
+                              return;
+                            }
+                          }
+                          if (!safeContext.mounted) return;
+                          showDialog(
+                              context: safeContext,
+                              builder: (dialogContext) {
                                 return ConfirmationAlert(
                                   theme: widget.theme,
                                   message:
@@ -2404,16 +2049,44 @@ class _ReceiptDetailsContainerState
                                   title: 'Print Receipt',
                                   action: () async {
                                     returnReceiptProvider(
-                                      context,
+                                      dialogContext,
                                       listen: false,
                                     ).toggleIsLoading(true);
                                     Navigator.of(
-                                      context,
+                                      dialogContext,
                                     ).pop();
-                                    // One path for every platform: the POS
-                                    // printer on mobile and desktop, the
-                                    // system print dialog on web.
-                                    if (usesBluetoothPrint()) {
+                                    final activeSettings =
+                                        await AppPrinterService
+                                            .loadSettings();
+                                    if (activeSettings
+                                            .documentType ==
+                                        AppPrintDocumentType
+                                            .a4) {
+                                      if (!safeContext
+                                          .mounted) {
+                                        return;
+                                      }
+                                      await printReceiptA4Pdf(
+                                        staffName:
+                                            staff?.name ??
+                                            widget
+                                                .mainReceipt
+                                                .staffName ??
+                                            "Not Set",
+                                        context: safeContext,
+                                        receipt:
+                                            widget
+                                                .mainReceipt,
+                                        records: records,
+                                        shop:
+                                            returnShopProvider()
+                                                .userShop()!,
+                                      );
+                                    } else if (usesBluetoothPrint()) {
+                                      if (!safeContext
+                                          .mounted) {
+                                        return;
+                                      }
                                       scanBluetoothPrinters(
                                         receipt:
                                             widget
@@ -2431,14 +2104,15 @@ class _ReceiptDetailsContainerState
                                                 .staffName ??
                                             "Not Set",
                                       );
-                                      // }
                                     } else {
+                                      if (!safeContext
+                                          .mounted) {
+                                        return;
+                                      }
                                       await generateAndPreviewPdfRoll(
                                         printerType:
-                                            widget
-                                                .shop
-                                                .printType ??
-                                            1,
+                                            activeSettings
+                                                .printerTypeInt,
                                         staffName:
                                             staff?.name ??
                                             widget
@@ -2451,7 +2125,6 @@ class _ReceiptDetailsContainerState
                                             widget
                                                 .mainReceipt,
                                         records: records,
-
                                         shop:
                                             returnShopProvider()
                                                 .userShop()!,
@@ -2471,7 +2144,6 @@ class _ReceiptDetailsContainerState
                                 );
                               },
                             );
-                          }
                         },
                       );
                     },

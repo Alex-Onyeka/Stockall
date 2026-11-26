@@ -5,7 +5,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:stockall/main.dart';
 
@@ -239,7 +239,7 @@ Future<void> generateAndPreviewPdfRollCustomAccountBalance({
             shop: returnShopProvider().userShop()!,
           );
 
-      await Printing.layoutPdf(
+      await AppPrinterService.printPdf(
         onLayout: (_) async => pdfBytes,
       );
     },

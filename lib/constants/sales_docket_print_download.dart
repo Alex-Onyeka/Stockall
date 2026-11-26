@@ -8,7 +8,7 @@ import 'package:stockall/main.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 Future<bool> downloadDocket({
@@ -48,7 +48,7 @@ Future<bool> downloadDocket({
     html.Url.revokeObjectUrl(url);
 
     // Step 2: Print (make sure this runs in same click event if possible)
-    var res = await Printing.layoutPdf(
+    var res = await AppPrinterService.printPdf(
       onLayout: (format) async => pdfUint8,
     );
     if (res) {
@@ -89,7 +89,7 @@ Future<bool> printDocket({
     setTotal: setTotal,
   );
 
-  var res = await Printing.layoutPdf(
+  var res = await AppPrinterService.printPdf(
     onLayout: (_) async => pdfBytes,
   );
   if (res) {

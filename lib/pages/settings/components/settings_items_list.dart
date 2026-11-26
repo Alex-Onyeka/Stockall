@@ -4,6 +4,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/manage_payment_methods_dialog.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
@@ -441,6 +442,14 @@ class _SettingsItemsListState
               icon: Icons.width_normal_outlined,
             ),
           ),
+        ),
+        NavListTileDesktopAlt(
+          height: 18,
+          action: () {
+            showPrinterSettingsDialog(context);
+          },
+          title: 'Printer Settings',
+          icon: Icons.print_outlined,
         ),
         TogglePrintSalesDocket(),
         TogglePrintContinuousDocket(),

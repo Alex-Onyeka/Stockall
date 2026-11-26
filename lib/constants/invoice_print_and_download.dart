@@ -11,6 +11,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/documents/document_downloads.dart';
 import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:stockall/services/documents/document_model.dart'
     show DocType;
 import 'package:stockall/services/documents/pdf_document_kit.dart'
@@ -81,6 +82,49 @@ Future<Uint8List> _buildPdfInvoice({
       assets: DocShopAssets.current(),
     ),
     shop,
+  );
+}
+
+Future<void> printInvoiceA4Pdf({
+  required TempInvoice invoice,
+  required List<TempMainReceipt> receipts,
+  required String staffName,
+  required List<TempProductSaleRecord> records,
+  required BuildContext context,
+}) async {
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(true);
+      try {
+        final Uint8List bytes = await _buildPdfInvoice(
+          invoice: invoice,
+          shop: returnShopProvider().userShop()!,
+          receipts: receipts,
+          staffName: staffName,
+          records: records,
+          context: context,
+        );
+        await AppPrinterService.printPdf(
+          onLayout: (_) async => bytes,
+          name: 'Invoice_${invoice.uuid ?? ''}',
+        );
+      } catch (e, stackTrace) {
+        await mainLocalLog(
+          '❌ Error printing A4 invoice: $e\n$stackTrace',
+        );
+      } finally {
+        if (context.mounted) {
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
+      }
+    },
   );
 }
 
@@ -213,7 +257,7 @@ void downloadPdfWebRollInvoice({
         html.Url.revokeObjectUrl(url);
 
         // Step 2: Print (make sure this runs in same click event if possible)
-        await Printing.layoutPdf(
+        await AppPrinterService.printPdf(
           onLayout: (format) async => pdfUint8,
         );
 

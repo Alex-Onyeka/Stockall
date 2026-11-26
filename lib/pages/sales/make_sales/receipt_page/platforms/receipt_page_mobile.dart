@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -16,8 +17,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:stockall/services/pos_printing/pos_print_dispatcher.dart'
-    show openPosPrinterSettings;
+import 'package:stockall/services/printing/app_printer_service.dart';
 
 class ReceiptPageMobile extends StatefulWidget {
   final bool isMain;
@@ -115,178 +115,50 @@ class _ReceiptPageMobileState
                     ),
                     Align(
                       alignment: Alignment(0.95, -0.95),
-                      child: PopupMenuButton(
-                        offset: Offset(-20, 30),
-                        color: Colors.white,
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                              onTap: () {
-                                returnShopProvider()
-                                    .updatePrintType(
-                                      shopId: shopId(),
-                                      type: 1,
-                                    );
-                              },
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      returnShopProvider()
-                                                      .userShop()!
-                                                      .printType !=
-                                                  null &&
-                                              returnShopProvider()
-                                                      .userShop()!
-                                                      .printType ==
-                                                  1
-                                          ? FontWeight.bold
-                                          : null,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          mouseCursor:
+                              SystemMouseCursors.click,
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          onTap: () {
+                            showPrinterSettingsDialog(
+                              context,
+                            );
+                          },
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
                                 ),
-                                // kIsWeb
-                                //     ?
-                                'Printer Type -- 58mm',
-                                // : 'Select USB Printer',
-                              ),
-                            ),
-                            PopupMenuItem(
-                              onTap: () {
-                                returnShopProvider()
-                                    .updatePrintType(
-                                      shopId: shopId(),
-                                      type: 2,
-                                    );
-                              },
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      returnShopProvider()
-                                                      .userShop()!
-                                                      .printType !=
-                                                  null &&
-                                              returnShopProvider()
-                                                      .userShop()!
-                                                      .printType ==
-                                                  2
-                                          ? FontWeight.bold
-                                          : null,
-                                ),
-                                // kIsWeb
-                                //     ?
-                                'Printer Type -- 80mm',
-                                // : 'Select Bluetooth Printer',
-                              ),
-                            ),
-                            if (!kIsWeb)
-                              PopupMenuItem(
-                                onTap:
-                                    openPosPrinterSettings,
-                                child: Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                  ),
-                                  'Choose POS Printer',
-                                ),
-                              ),
-                          ];
-                        },
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                            child: Row(
                               mainAxisSize:
                                   MainAxisSize.min,
+                              spacing: 4,
                               children: [
                                 Text(
+                                  'Settings',
                                   style: TextStyle(
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b4
-                                            .fontSize,
-                                    color: Colors.white,
-                                  ),
-                                  'Printer:',
-                                ),
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b4
+                                            .b3
                                             .fontSize,
                                     color: Colors.white,
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType !=
-                                              null &&
-                                          returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType ==
-                                              2
-                                      ? (
-                                      // kIsWeb
-                                      //   ?
-                                      '80mm'
-                                      // : '( Bluetooth )'
-                                      )
-                                      : returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType !=
-                                              null &&
-                                          returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()!
-                                                  .printType ==
-                                              1
-                                      ? (
-                                      // kIsWeb
-                                      //   ?
-                                      '58mm'
-                                      // : '( USB )'
-                                      )
-                                      // : sortIndex == 2
-                                      // ? 'Price'
-                                      : 'Settings',
+                                ),
+                                Icon(
+                                  Icons.settings_outlined,
+                                  color: Colors.amber,
+                                  size: 18,
                                 ),
                               ],
                             ),
-                            Icon(
-                              color: Colors.amber,
-                              Icons.more_vert_rounded,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -2121,48 +1993,61 @@ class _ReceiptDetailsContainerState
                           context: context,
                           action: () async {
                             var safeContext = context;
-                            if (returnShopProvider()
-                                    .userShop()!
-                                    .printType ==
-                                null) {
-                              selectPrinterDialog(
-                                context,
-                                safeContext,
-                              );
-                            } else {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return ConfirmationAlert(
-                                    theme: widget.theme,
-                                    message:
-                                        'You are about to Print This Receipt. Are you sure you want to Proceed?',
-                                    title: 'Print Receipt',
-                                    action: () async {
-                                      returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).toggleIsLoading(
-                                        true,
-                                      );
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                      try {
-                                        await generateAndPreviewPdfRoll(
-                                          printerType:
-                                              widget
-                                                  .shop
-                                                  .printType ??
-                                              1,
+                            final printerSettings =
+                                await AppPrinterService
+                                    .loadSettings();
+                            if (!safeContext.mounted) return;
+                            if (!printerSettings.hasPrinter &&
+                                returnShopProvider()
+                                        .userShop()!
+                                        .printType ==
+                                    null) {
+                              final saved =
+                                  await showPrinterSettingsDialog(
+                                    safeContext,
+                                  );
+                              if (saved == null ||
+                                  !safeContext.mounted) {
+                                return;
+                              }
+                            }
+                            if (!safeContext.mounted) return;
+                            showDialog(
+                              context: safeContext,
+                              builder: (dialogContext) {
+                                return ConfirmationAlert(
+                                  theme: widget.theme,
+                                  message:
+                                      'You are about to Print This Receipt. Are you sure you want to Proceed?',
+                                  title: 'Print Receipt',
+                                  action: () async {
+                                    returnReceiptProvider(
+                                      dialogContext,
+                                      listen: false,
+                                    ).toggleIsLoading(true);
+                                    Navigator.of(
+                                      dialogContext,
+                                    ).pop();
+                                    try {
+                                      final activeSettings =
+                                          await AppPrinterService
+                                              .loadSettings();
+                                      if (activeSettings
+                                              .documentType ==
+                                          AppPrintDocumentType
+                                              .a4) {
+                                        if (!safeContext
+                                            .mounted) {
+                                          return;
+                                        }
+                                        await printReceiptA4Pdf(
                                           staffName:
                                               staff?.name ??
                                               widget
                                                   .mainReceipt
                                                   .staffName ??
                                               "Not Set",
-                                          context:
-                                              safeContext,
+                                          context: safeContext,
                                           receipt:
                                               widget
                                                   .mainReceipt,
@@ -2171,7 +2056,32 @@ class _ReceiptDetailsContainerState
                                               returnShopProvider()
                                                   .userShop()!,
                                         );
-                                      } catch (e, st) {
+                                      } else {
+                                        if (!safeContext
+                                            .mounted) {
+                                          return;
+                                        }
+                                        await generateAndPreviewPdfRoll(
+                                          printerType:
+                                              activeSettings
+                                                  .printerTypeInt,
+                                          staffName:
+                                              staff?.name ??
+                                              widget
+                                                  .mainReceipt
+                                                  .staffName ??
+                                              "Not Set",
+                                          context: safeContext,
+                                          receipt:
+                                              widget
+                                                  .mainReceipt,
+                                          records: records,
+                                          shop:
+                                              returnShopProvider()
+                                                  .userShop()!,
+                                        );
+                                      }
+                                    } catch (e, st) {
                                         await mainLocalLog(
                                           'Error printing receipt on mobile: $e\n$st',
                                         );
@@ -2190,7 +2100,6 @@ class _ReceiptDetailsContainerState
                                   );
                                 },
                               );
-                            }
                           },
                         );
                       },

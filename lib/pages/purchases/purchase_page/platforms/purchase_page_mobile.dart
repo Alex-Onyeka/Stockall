@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -18,6 +19,7 @@ import 'package:stockall/pages/purchases/components/purchase_linked_expense_row.
 import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/purchases/purchase_page/platforms/purchase_page_desktop.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 
 class PurchasePageMobile extends StatefulWidget {
   final String purchaseUuid;
@@ -588,9 +590,35 @@ class _PurchasePageMobileState
                                 PopupMenuItem(
                                   enabled: !kIsWeb,
                                   height: 35,
-                                  onTap: () {
+                                  onTap: () async {
+                                    final safeContext =
+                                        context;
+                                    final printerSettings =
+                                        await AppPrinterService
+                                            .loadSettings();
+                                    if (!safeContext.mounted) {
+                                      return;
+                                    }
+                                    if (!printerSettings
+                                            .hasPrinter &&
+                                        returnShopProvider()
+                                                .userShop()!
+                                                .printType ==
+                                            null) {
+                                      final saved =
+                                          await showPrinterSettingsDialog(
+                                            safeContext,
+                                          );
+                                      if (saved == null ||
+                                          !safeContext.mounted) {
+                                        return;
+                                      }
+                                    }
+                                    if (!safeContext.mounted) {
+                                      return;
+                                    }
                                     showDialog(
-                                      context: context,
+                                      context: safeContext,
                                       builder: (
                                         confirmDialog,
                                       ) {
@@ -608,27 +636,49 @@ class _PurchasePageMobileState
                                             Navigator.of(
                                               confirmDialog,
                                             ).pop();
-                                            // The POS printer, as on desktop.
-                                            await generateAndPreviewPdfRollPurchase(
-                                              purchase:
-                                                  purchase,
-                                              printerType:
-                                                  returnShopProvider()
-                                                      .userShop()!
-                                                      .printType ??
-                                                  1,
-                                              context:
-                                                  context,
-                                              records:
-                                                  saleRecords,
-                                              shop:
-                                                  returnShopProvider()
-                                                      .userShop()!,
-                                            );
-                                            setState(() {
-                                              isPrintLoading =
-                                                  false;
-                                            });
+                                            final activeSettings =
+                                                await AppPrinterService
+                                                    .loadSettings();
+                                            if (activeSettings
+                                                    .documentType ==
+                                                AppPrintDocumentType
+                                                    .a4) {
+                                              if (safeContext
+                                                  .mounted) {
+                                                await printPurchaseA4Pdf(
+                                                  purchase:
+                                                      purchase,
+                                                  records:
+                                                      saleRecords,
+                                                  context:
+                                                      safeContext,
+                                                );
+                                              }
+                                            } else {
+                                              if (safeContext
+                                                  .mounted) {
+                                                await generateAndPreviewPdfRollPurchase(
+                                                  purchase:
+                                                      purchase,
+                                                  printerType:
+                                                      activeSettings
+                                                          .printerTypeInt,
+                                                  context:
+                                                      safeContext,
+                                                  records:
+                                                      saleRecords,
+                                                  shop:
+                                                      returnShopProvider()
+                                                          .userShop()!,
+                                                );
+                                              }
+                                            }
+                                            if (mounted) {
+                                              setState(() {
+                                                isPrintLoading =
+                                                    false;
+                                              });
+                                            }
                                           },
                                         );
                                       },
@@ -645,6 +695,26 @@ class _PurchasePageMobileState
                                           FontWeight.bold,
                                     ),
                                     'Print',
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  height: 35,
+                                  onTap: () {
+                                    showPrinterSettingsDialog(
+                                      context,
+                                    );
+                                  },
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Printer Settings',
                                   ),
                                 ),
                                 PopupMenuItem(

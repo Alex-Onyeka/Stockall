@@ -8,7 +8,7 @@ import 'package:stockall/pages/report/general_report/class/general_report_class.
 import 'package:universal_html/html.dart' as html;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 void downloadItemSalesPdfWebRoll({
@@ -46,7 +46,7 @@ void downloadItemSalesPdfWebRoll({
         html.Url.revokeObjectUrl(url);
 
         // Step 2: Print (make sure this runs in same click event if possible)
-        await Printing.layoutPdf(
+        await AppPrinterService.printPdf(
           onLayout: (format) async => pdfUint8,
         );
 
@@ -82,7 +82,7 @@ Future<void> generateAndPreviewItemSalesPdfRoll({
         records,
       );
 
-      await Printing.layoutPdf(
+      await AppPrinterService.printPdf(
         onLayout: (_) async => pdfBytes,
       );
       if (context.mounted) {
