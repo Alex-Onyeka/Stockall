@@ -27,10 +27,11 @@ import 'package:stockall/pages/report/components/export/report_export_spec.dart'
 import 'package:stockall/pages/report/components/export/report_pdf_builder.dart';
 import 'package:stockall/pages/report/components/export/report_roll_builder.dart';
 import 'package:stockall/providers/excel_provider.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/services/barcode_generation/barcode_import_helper.dart'
     show listPrinters;
 import 'package:stockall/services/receipt_print_service/receipt_import_helper.dart'
-    show checkPrint, printerSelectionDialog;
+    show checkPrint;
 import 'package:universal_html/html.dart' as html;
 
 class DefaultReportExportBackend implements ReportExportBackend {
@@ -203,12 +204,7 @@ class DefaultReportExportBackend implements ReportExportBackend {
     if (!_windowsPrinterReady()) {
       beforeUi();
       if (!context.mounted) return;
-      await printerSelectionDialog(
-        context: context,
-        title: 'Receipt Printer & Paper Size',
-        message:
-            'Select your receipt printer and paper size to print this report.',
-      );
+      await showPrinterSettingsDialog(context);
       // Closed without choosing a printer: nothing to print.
       if (!_windowsPrinterReady()) return;
     }
@@ -226,6 +222,23 @@ class DefaultReportExportBackend implements ReportExportBackend {
   // ------------------------------------------------------------------
   // PDF and Excel
   // ------------------------------------------------------------------
+
+  static Future<void> printA4Report(
+    BuildContext context,
+    ReportExportSpec spec,
+    ExportContext ctx, {
+    required VoidCallback beforeUi,
+  }) async {
+    final bytes = await buildReportPdf(
+      resolveExport(spec, ctx),
+      fonts: await fonts(),
+    );
+    beforeUi();
+    await AppPrinterService.printPdf(
+      name: reportExportBaseName(spec, now: ctx.generatedAt),
+      onLayout: (_) async => bytes,
+    );
+  }
 
   @override
   Future<ReportSaveResult> downloadPdf(

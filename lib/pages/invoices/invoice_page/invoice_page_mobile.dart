@@ -13,7 +13,7 @@ import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/invoice_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -71,6 +71,19 @@ class _InvoicePageMobileState
   bool isDownloadLoading = false;
   bool isPrintingInvoice = false;
 
+  void _handleBack(BuildContext context) {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      returnNavProvider(context, listen: false).navigate(0);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Home()),
+        (_) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -123,7 +136,14 @@ class _InvoicePageMobileState
 
     return Builder(
       builder: (context) {
-        return SafeArea(
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) {
+              _handleBack(context);
+            }
+          },
+          child: SafeArea(
           child: Scaffold(
             backgroundColor: const Color.fromARGB(
               255,
@@ -160,22 +180,7 @@ class _InvoicePageMobileState
                             child: InkWell(
                               mouseCursor:
                                   SystemMouseCursors.click,
-                              onTap: () {
-                                if (Navigator.canPop(
-                                  context,
-                                )) {
-                                  Navigator.pop(context);
-                                } else {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return BasePage();
-                                      },
-                                    ),
-                                  );
-                                }
-                              },
+                              onTap: () => _handleBack(context),
                               borderRadius:
                                   BorderRadius.circular(30),
                               child: Container(
@@ -2181,6 +2186,7 @@ class _InvoicePageMobileState
               ],
             ),
           ),
+        ),
         );
       },
     );

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
@@ -997,7 +997,10 @@ class _StaffReportTableViewState extends State<StaffReportTableView> {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            child: ReportExportButton(
+              showRollWidthEntries: false,
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             ReportPill(

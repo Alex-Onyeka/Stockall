@@ -33,6 +33,10 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
     super.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnInvoicesProvider().clearDate();
+      final nav = returnNavProviderSingle();
+      if (nav.currentPage == 7 || nav.currentPage == 5) {
+        nav.navigate(0);
+      }
     });
   }
 

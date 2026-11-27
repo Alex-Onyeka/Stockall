@@ -17,7 +17,7 @@ import 'package:stockall/constants/purchase_payment_print_and_download.dart';
 import 'package:stockall/constants/purchase_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/pages/purchases/components/purchase_linked_expense_row.dart';
 import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
@@ -250,13 +250,16 @@ class _PurchasePageDesktopState
                               )) {
                                 Navigator.pop(context);
                               } else {
-                                Navigator.pushReplacement(
+                                returnNavProvider(
+                                  context,
+                                  listen: false,
+                                ).navigate(0);
+                                Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) {
-                                      return BasePage();
-                                    },
+                                    builder: (context) => const Home(),
                                   ),
+                                  (_) => false,
                                 );
                               }
                             },
@@ -391,13 +394,16 @@ class _PurchasePageDesktopState
                               )) {
                                 Navigator.pop(context);
                               } else {
-                                Navigator.pushReplacement(
+                                returnNavProvider(
+                                  context,
+                                  listen: false,
+                                ).navigate(0);
+                                Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) {
-                                      return BasePage();
-                                    },
+                                    builder: (context) => const Home(),
                                   ),
+                                  (_) => false,
                                 );
                               }
                             },

@@ -31,6 +31,10 @@ PreferredSizeWidget appBar({
               backAction();
             } else {
               if (isMain != null) {
+                returnNavProvider(
+                  context,
+                  listen: false,
+                ).navigate(0);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -42,6 +46,10 @@ PreferredSizeWidget appBar({
               } else if (main == true) {
                 return;
               } else if (!Navigator.of(context).canPop()) {
+                returnNavProvider(
+                  context,
+                  listen: false,
+                ).navigate(0);
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

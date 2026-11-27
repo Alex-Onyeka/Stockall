@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -402,7 +402,10 @@ class _UsageSummaryViewState extends State<UsageSummaryView> {
                   enabled: _env.canPickDate(),
                   onChanged: _setPeriod,
                 ),
-                ReportExportButton(buildSpec: _exportSpec),
+                ReportExportButton(
+                  showRollWidthEntries: false,
+                  buildSpec: _exportSpec,
+                ),
               ],
             ),
           ),

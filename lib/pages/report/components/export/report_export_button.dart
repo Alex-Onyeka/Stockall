@@ -11,9 +11,12 @@
 // the record count. Work runs under a loading overlay, failures show a
 // snackbar, and desktop/web saves confirm the file name.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/main.dart' show returnTheme;
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
+import 'package:stockall/main.dart'
+    show returnShopProvider, returnTheme;
 import 'package:stockall/pages/report/components/export/report_export_actions.dart';
 import 'package:stockall/pages/report/components/export/report_export_backend.dart';
 import 'package:stockall/pages/report/components/export/report_export_format.dart';
@@ -22,6 +25,8 @@ import 'package:stockall/pages/report/components/export/report_export_spec.dart'
 import 'package:stockall/pages/report/components/export/report_roll_builder.dart';
 import 'package:stockall/pages/report/components/report_pill.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/pos_printing/pos_print_rules.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 
 /// Above this many records a roll print warns about paper use.
 const int reportExportLongRollRows = 500;
@@ -42,12 +47,16 @@ class ReportExportButton extends StatefulWidget {
   /// pill, for tight headers. The menu is the same.
   final bool iconOnly;
 
+  /// Whether to show the explicit "Print 80mm" and "Print 58mm" entries.
+  final bool showRollWidthEntries;
+
   const ReportExportButton({
     super.key,
     required this.buildSpec,
     this.backend = const DefaultReportExportBackend(),
     this.label = 'Export',
     this.iconOnly = false,
+    this.showRollWidthEntries = true,
   });
 
   @override
@@ -159,12 +168,12 @@ class _ReportExportButtonState
       menuChildren: [
         MenuItemButton(
           onPressed: () => _print(paper, const [null]),
-          child: const Text('As shown'),
+          child: _title('As shown'),
         ),
         for (final s in splits)
           MenuItemButton(
             onPressed: () => _print(paper, [s.id]),
-            child: Text('By ${s.label}'),
+            child: _title('By ${s.label}'),
           ),
         if (splits.length > 1)
           MenuItemButton(
@@ -173,10 +182,10 @@ class _ReportExportButtonState
                   null,
                   for (final s in splits) s.id,
                 ]),
-            child: const Text('All groupings'),
+            child: _title('All groupings'),
           ),
       ],
-      child: Text(title),
+      child: _title(title),
     );
   }
 
@@ -198,15 +207,15 @@ class _ReportExportButtonState
       menuChildren: [
         MenuItemButton(
           onPressed: () => _excel(null),
-          child: const Text('All in one sheet'),
+          child: _title('All in one sheet'),
         ),
         for (final s in splits)
           MenuItemButton(
             onPressed: () => _excel(s.id),
-            child: Text('One sheet per ${s.label}'),
+            child: _title('One sheet per ${s.label}'),
           ),
       ],
-      child: const Text(title),
+      child: _title(title),
     );
   }
 
@@ -214,8 +223,32 @@ class _ReportExportButtonState
     final spec = _spec;
     if (spec == null) return const [];
     return [
-      _printEntry(spec, RollPaper.mm80),
-      _printEntry(spec, RollPaper.mm58),
+      MenuItemButton(
+        leadingIcon: const Icon(Icons.print, size: 16),
+        onPressed:
+            _printAllowed ? _printWithSettings : null,
+        child: _title(
+          'Print',
+          disabled:
+              !widget.showRollWidthEntries &&
+              !_printAllowed,
+        ),
+      ),
+      MenuItemButton(
+        leadingIcon: const Icon(
+          Icons.settings_outlined,
+          size: 16,
+        ),
+        onPressed: () {
+          _menu.close();
+          showPrinterSettingsDialog(context);
+        },
+        child: _title('Printer Settings'),
+      ),
+      if (widget.showRollWidthEntries) ...[
+        _printEntry(spec, RollPaper.mm80),
+        _printEntry(spec, RollPaper.mm58),
+      ],
       MenuItemButton(
         leadingIcon: const Icon(
           Icons.picture_as_pdf_outlined,
@@ -243,16 +276,18 @@ class _ReportExportButtonState
                   ? Tooltip(
                     message: widget.label,
                     child: IconButton(
-                      icon: const Icon(Icons.print_outlined),
+                      icon: const Icon(
+                        Icons.print_outlined,
+                      ),
                       onPressed: _open,
                     ),
                   )
                   : ReportPill(
-            theme: theme,
-            icon: Icons.ios_share_rounded,
-            label: widget.label,
-            onTap: _open,
-          ),
+                    theme: theme,
+                    icon: Icons.ios_share_rounded,
+                    label: widget.label,
+                    onTap: _open,
+                  ),
     );
   }
 
@@ -266,6 +301,106 @@ class _ReportExportButtonState
   String _records(int n) {
     final count = ExportFormatter(currency: '').integer(n);
     return n == 1 ? '$count record' : '$count records';
+  }
+
+  Future<void> _printWithSettings() async {
+    _menu.close();
+    final spec = _spec;
+    if (spec == null) return;
+    final settings = await AppPrinterService.loadSettings();
+    if (!mounted) return;
+    if (!kIsWeb &&
+        !settings.hasPrinter &&
+        returnShopProvider().userShop()?.printType ==
+            null) {
+      final saved = await showPrinterSettingsDialog(
+        context,
+      );
+      if (saved == null || !mounted) return;
+    }
+    final activeSettings =
+        await AppPrinterService.loadSettings();
+    if (!mounted) return;
+    final count = spec.recordCount;
+    final recordsText =
+        count > 0 ? _records(count) : 'this record';
+
+    if (activeSettings.documentType ==
+        AppPrintDocumentType.a4) {
+      showDialog<void>(
+        context: context,
+        builder:
+            (dialog) => ConfirmationAlert(
+              theme: _theme,
+              title: 'Print Report',
+              actionButtonText: 'Print',
+              message:
+                  'You are about to print $recordsText as an A4 document. '
+                  'Are you sure you want to proceed?',
+              action: () {
+                Navigator.of(dialog).pop();
+                _run(
+                  action: 'print A4',
+                  loading: 'Preparing print…',
+                  failure:
+                      "Couldn't print the report. Please try again.",
+                  task: (ctx, beforeUi) async {
+                    await DefaultReportExportBackend.printA4Report(
+                      context,
+                      spec,
+                      ctx,
+                      beforeUi: beforeUi,
+                    );
+                    return null;
+                  },
+                );
+              },
+            ),
+      );
+      return;
+    }
+
+    final paper =
+        activeSettings.paper == PosPaper.mm80
+            ? RollPaper.mm80
+            : RollPaper.mm58;
+    final long =
+        count > reportExportLongRollRows
+            ? ' This is a long print and will use a lot of paper.'
+            : '';
+    showDialog<void>(
+      context: context,
+      builder:
+          (dialog) => ConfirmationAlert(
+            theme: _theme,
+            title: 'Print Report',
+            actionButtonText: 'Print',
+            message:
+                'You are about to print $recordsText on '
+                '${_paperLabel(paper)} roll paper.$long '
+                'Are you sure you want to proceed?',
+            action: () {
+              Navigator.of(dialog).pop();
+              _run(
+                action: 'print ${_paperLabel(paper)}',
+                loading: 'Preparing print…',
+                failure:
+                    "Couldn't print the report. Please try again.",
+                task: (ctx, beforeUi) async {
+                  await _backend.printRoll(
+                    context,
+                    spec,
+                    ctx,
+                    paper: paper,
+                    groupings: const [null],
+                    beforeUi: beforeUi,
+                  );
+                  return null;
+                },
+              );
+            },
+          ),
+    );
   }
 
   void _print(RollPaper paper, List<String?> groupings) {

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history_event_class.dart';
@@ -845,7 +845,10 @@ class _StorageItemHistoryReportViewState
           ),
           Padding(
             padding: const EdgeInsets.only(right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            child: ReportExportButton(
+              showRollWidthEntries: false,
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             ReportPill(

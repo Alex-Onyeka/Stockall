@@ -1,4 +1,4 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -371,7 +371,10 @@ class _PurchaseSummaryViewState extends State<PurchaseSummaryView> {
                   enabled: _env.canPickDate(),
                   onChanged: _setPeriod,
                 ),
-                ReportExportButton(buildSpec: _exportSpec),
+                ReportExportButton(
+                  showRollWidthEntries: false,
+                  buildSpec: _exportSpec,
+                ),
               ],
             ),
           ),

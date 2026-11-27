@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/alert_dialogues/printer_settings_dialog.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -16,6 +17,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_page/components/payment_type_button_invoice.dart';
 import 'package:stockall/pages/invoices/invoice_page/invoice_page_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/printing/app_printer_service.dart';
 
 class CustomerAccountDetailsSectionWidget
     extends StatefulWidget {
@@ -1282,29 +1284,52 @@ class CustomerPrintButtonWidget extends StatelessWidget {
                 widget: Column(
                   spacing: 5,
                   children: [
-                    Visibility(
-                      visible:
-                          !kIsWeb &&
-                          screenWidth(context) >
-                              mobileScreen,
-                      child: MainButtonTransparent(
-                        themeProvider: theme,
-                        constraints: BoxConstraints(),
-                        text: 'Print',
-                        action: () {
-                          var shop =
-                              returnShopProvider()
-                                  .userShop();
-                          generateAndPreviewPdfRollCustomerAccountBalance(
-                            context: context,
+                    MainButtonTransparent(
+                      themeProvider: theme,
+                      constraints: BoxConstraints(),
+                      text: 'Print',
+                      action: () async {
+                        final parentContext = context;
+                        Navigator.of(context).pop();
+                        final shop = returnShopProvider().userShop();
+                        final settings =
+                            await AppPrinterService.loadSettings();
+                        if (!parentContext.mounted) return;
+                        if (!kIsWeb &&
+                            !settings.hasPrinter &&
+                            shop?.printType == null) {
+                          final saved = await showPrinterSettingsDialog(
+                            parentContext,
+                          );
+                          if (saved == null || !parentContext.mounted) return;
+                        }
+                        final activeSettings =
+                            await AppPrinterService.loadSettings();
+                        if (!parentContext.mounted) return;
+                        if (activeSettings.documentType ==
+                            AppPrintDocumentType.a4) {
+                          await printCustomerAccountBalanceA4Pdf(
                             customer: customer,
-                            printerType:
-                                shop?.printType ?? 1,
+                            context: parentContext,
+                          );
+                        } else {
+                          await generateAndPreviewPdfRollCustomerAccountBalance(
+                            context: parentContext,
+                            customer: customer,
+                            printerType: activeSettings.printerTypeInt,
                             shop: shop!,
                           );
-                          Navigator.of(context).pop();
-                        },
-                      ),
+                        }
+                      },
+                    ),
+                    MainButtonTransparent(
+                      themeProvider: theme,
+                      constraints: BoxConstraints(),
+                      text: 'Printer Settings',
+                      action: () {
+                        Navigator.of(context).pop();
+                        showPrinterSettingsDialog(context);
+                      },
                     ),
                     MainButtonTransparent(
                       themeProvider: theme,

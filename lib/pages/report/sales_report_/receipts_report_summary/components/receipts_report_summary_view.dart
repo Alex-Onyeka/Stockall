@@ -1,4 +1,4 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -628,7 +628,10 @@ class _ReceiptsReportSummaryViewState
           ),
         Padding(
           padding: const EdgeInsets.only(left: 5),
-          child: ReportExportButton(buildSpec: _exportSpec),
+          child: ReportExportButton(
+            showRollWidthEntries: false,
+            buildSpec: _exportSpec,
+          ),
         ),
       ],
     );

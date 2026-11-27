@@ -326,7 +326,7 @@ class TempShopClass {
       manageProductionsStorage:
           json['manage_productions_storage'] as bool?,
       manageProductionItems:
-          json['manage_production_items'] as bool?,
+          json['manage_production_items'] as bool? ?? false,
       manageCustomerReward:
           json['manage_customer_reward'] as bool?,
       customerPercentageReward:

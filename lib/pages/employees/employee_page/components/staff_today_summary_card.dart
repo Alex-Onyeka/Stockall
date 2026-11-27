@@ -128,6 +128,7 @@ class StaffTodaySummaryCard extends StatelessWidget {
               ),
               ReportExportButton(
                 label: 'Print Report',
+                showRollWidthEntries: false,
                 backend: exportBackend,
                 buildSpec:
                     () =>

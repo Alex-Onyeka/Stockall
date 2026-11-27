@@ -27,6 +27,17 @@ class _PurchaseListState extends State<PurchaseList> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final nav = returnNavProviderSingle();
+      if (nav.currentPage == 5) {
+        nav.navigate(0);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {

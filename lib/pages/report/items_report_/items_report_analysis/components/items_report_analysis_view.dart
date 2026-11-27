@@ -1,4 +1,4 @@
-﻿import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
@@ -456,7 +456,10 @@ class _ItemsReportAnalysisViewState
           spacing: 6,
           children: [
             _buildPeriodSelector(theme),
-            ReportExportButton(buildSpec: _exportSpec),
+            ReportExportButton(
+              showRollWidthEntries: false,
+              buildSpec: _exportSpec,
+            ),
           ],
         ),
       ],

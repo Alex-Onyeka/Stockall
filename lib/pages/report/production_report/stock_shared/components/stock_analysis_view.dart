@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -251,7 +251,10 @@ class _StockAnalysisViewState extends State<StockAnalysisView> {
                 enabled: _env.canPickDate(),
                 onChanged: _setPeriod,
               ),
-              ReportExportButton(buildSpec: _exportSpec),
+              ReportExportButton(
+                showRollWidthEntries: false,
+                buildSpec: _exportSpec,
+              ),
             ],
           ),
           stockNotes(

@@ -1,4 +1,4 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
@@ -895,6 +895,7 @@ class _InvoiceReportTableViewState
               right: 5,
             ),
             child: ReportExportButton(
+              showRollWidthEntries: false,
               buildSpec: _exportSpec,
             ),
           ),

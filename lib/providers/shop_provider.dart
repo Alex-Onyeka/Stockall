@@ -1686,7 +1686,8 @@ class ShopProvider extends ChangeNotifier {
                 .from('shops')
                 .update({
                   'manage_customer_reward':
-                      !userShop()!.manageCustomerReward!,
+                      !(userShop()!.manageCustomerReward ??
+                          true),
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
@@ -1709,7 +1710,7 @@ class ShopProvider extends ChangeNotifier {
         try {
           userShop()!.updatedAt = DateTime.now();
           userShop()!.manageCustomerReward =
-              !userShop()!.manageCustomerReward!;
+              !(userShop()!.manageCustomerReward ?? false);
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -2325,9 +2326,8 @@ class ShopProvider extends ChangeNotifier {
       );
 
       final currentShopId = userShop()?.shopId;
-      final createdLogo = CreatedShopLogosFunc().getCreatedLogo(
-        shopId: currentShopId,
-      );
+      final createdLogo = CreatedShopLogosFunc()
+          .getCreatedLogo(shopId: currentShopId);
       if (createdLogo != null &&
           currentShopId != null &&
           isOnline) {
@@ -2472,7 +2472,9 @@ class ShopProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (logoPicked && selectedLogo != null && rawImage != null) {
+    if (logoPicked &&
+        selectedLogo != null &&
+        rawImage != null) {
       try {
         var res = await uploadLogo(
           image: rawImage!,
@@ -2658,7 +2660,9 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _deleteOldLogoFromStorage(String? logoUrl) async {
+  Future<void> _deleteOldLogoFromStorage(
+    String? logoUrl,
+  ) async {
     if (logoUrl == null || logoUrl.isEmpty) return;
     try {
       final uri = Uri.tryParse(logoUrl);
@@ -2666,12 +2670,18 @@ class ShopProvider extends ChangeNotifier {
       const marker = '/object/public/logos/';
       final idx = uri.path.indexOf(marker);
       if (idx == -1) return;
-      final objectPath = uri.path.substring(idx + marker.length);
+      final objectPath = uri.path.substring(
+        idx + marker.length,
+      );
       if (objectPath.isNotEmpty) {
-        await supabase.storage.from('logos').remove([objectPath]);
+        await supabase.storage.from('logos').remove([
+          objectPath,
+        ]);
       }
     } catch (e) {
-      await mainLocalLog('⚠️ Failed to delete old logo: $e');
+      await mainLocalLog(
+        '⚠️ Failed to delete old logo: $e',
+      );
     }
   }
 
@@ -2737,7 +2747,8 @@ class ShopProvider extends ChangeNotifier {
           return null;
         }
 
-        if (selectedLogo != null && _selectedLogoUrl == logoUrl) {
+        if (selectedLogo != null &&
+            _selectedLogoUrl == logoUrl) {
           imageHeight = currentShop.imageHeight;
           imageWidth = currentShop.imageWidth;
           return selectedLogo;
@@ -2785,8 +2796,10 @@ class ShopProvider extends ChangeNotifier {
           var imageBytes = base64Decode(logo.logoPath);
           selectedLogo = imageBytes;
           _selectedLogoUrl = currentShop.logoUrl;
-          imageHeight = currentShop.imageHeight ?? logo.imageHeight;
-          imageWidth = currentShop.imageWidth ?? logo.imageWidth;
+          imageHeight =
+              currentShop.imageHeight ?? logo.imageHeight;
+          imageWidth =
+              currentShop.imageWidth ?? logo.imageWidth;
           notifyListeners();
           return imageBytes;
         }

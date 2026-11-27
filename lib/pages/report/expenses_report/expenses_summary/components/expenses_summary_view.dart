@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -351,7 +351,10 @@ class _ExpensesSummaryViewState extends State<ExpensesSummaryView> {
                   enabled: _access.canPickDate,
                   onChanged: _setPeriod,
                 ),
-                ReportExportButton(buildSpec: _exportSpec),
+                ReportExportButton(
+                  showRollWidthEntries: false,
+                  buildSpec: _exportSpec,
+                ),
               ],
             ),
           ),

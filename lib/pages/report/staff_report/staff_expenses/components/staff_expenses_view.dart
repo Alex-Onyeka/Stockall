@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -555,7 +555,10 @@ class _StaffExpensesViewState extends State<StaffExpensesView> {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 5),
-            child: ReportExportButton(buildSpec: _exportSpec),
+            child: ReportExportButton(
+              showRollWidthEntries: false,
+              buildSpec: _exportSpec,
+            ),
           ),
           if (_filters.hasAnything)
             ReportPill(

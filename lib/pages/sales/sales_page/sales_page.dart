@@ -10,16 +10,6 @@ class SalesPage extends StatefulWidget {
 }
 
 class _SalesPageState extends State<SalesPage> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        returnNavProvider(context, listen: false).navigate(2);
-      }
-    });
-  }
-
   void clearDate() {
     returnReceiptProvider(
       context,

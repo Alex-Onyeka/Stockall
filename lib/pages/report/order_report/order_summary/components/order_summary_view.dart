@@ -1,4 +1,4 @@
-﻿import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -459,7 +459,10 @@ class _OrderSummaryViewState
                   enabled: _env.canPickDate(),
                   onChanged: _setPeriod,
                 ),
-                ReportExportButton(buildSpec: _exportSpec),
+                ReportExportButton(
+                  showRollWidthEntries: false,
+                  buildSpec: _exportSpec,
+                ),
               ],
             ),
           ),

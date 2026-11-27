@@ -1,4 +1,4 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
@@ -101,6 +101,11 @@ class _ItemHistoryReportViewState
   @override
   void initState() {
     super.initState();
+    final today = resolveBusinessDate(DateTime.now());
+    _filters.dateRange = DateTimeRange(
+      start: today,
+      end: today,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _load(refreshFromStore: true);
     });
@@ -499,8 +504,12 @@ class _ItemHistoryReportViewState
   }
 
   void _resetAll() {
+    final hadDate = _filters.dateRange != null;
     _searchCtrl.clear();
     _apply(_filters.clearAll);
+    if (hadDate) {
+      _load(refreshFromStore: true);
+    }
   }
 
   void _pickRange() {
@@ -556,6 +565,7 @@ class _ItemHistoryReportViewState
 
   void _clearDate() {
     _apply(() => _filters.dateRange = null);
+    _load(refreshFromStore: true);
   }
 
   String get _dateLabel {
@@ -999,6 +1009,7 @@ class _ItemHistoryReportViewState
           Padding(
             padding: const EdgeInsets.only(left: 6.0),
             child: ReportExportButton(
+              showRollWidthEntries: false,
               buildSpec: _exportSpec,
             ),
           ),

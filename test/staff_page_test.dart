@@ -720,8 +720,10 @@ void main() {
         );
         await tester.tap(find.text('Print Report'));
         await frames(tester);
-        expect(find.text('Print 80mm'), findsOneWidget);
-        expect(find.text('Print 58mm'), findsOneWidget);
+        expect(find.text('Print'), findsOneWidget);
+        expect(find.text('Printer Settings'), findsOneWidget);
+        expect(find.text('Print 80mm'), findsNothing);
+        expect(find.text('Print 58mm'), findsNothing);
         await tester.tap(find.text('Download PDF'));
         await frames(tester);
 

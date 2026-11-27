@@ -12,7 +12,7 @@ import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/order_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/orders/order_list/order_list_page.dart';
 import 'package:stockall/pages/orders/order_page/components/order_item_list_tile_order_page.dart';
 import 'package:stockall/pages/orders/order_page/deliver_order_items/deliver_order_page.dart';
@@ -170,13 +170,16 @@ class _OrderPageMobileState extends State<OrderPageMobile> {
                                 )) {
                                   Navigator.pop(context);
                                 } else {
-                                  Navigator.pushReplacement(
+                                  returnNavProvider(
+                                    context,
+                                    listen: false,
+                                  ).navigate(0);
+                                  Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) {
-                                        return BasePage();
-                                      },
+                                      builder: (context) => const Home(),
                                     ),
+                                    (_) => false,
                                   );
                                 }
                               },

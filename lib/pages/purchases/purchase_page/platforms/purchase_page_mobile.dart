@@ -14,7 +14,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/purchase_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/purchases/components/purchase_linked_expense_row.dart';
 import 'package:stockall/pages/purchases/components/purchase_payment_channel_selector.dart';
 import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
@@ -185,6 +185,19 @@ class _PurchasePageMobileState
   bool isPrintLoading = false;
   bool isDownloadLoading = false;
 
+  void _handleBack(BuildContext context) {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      returnNavProvider(context, listen: false).navigate(0);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Home()),
+        (_) => false,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -208,8 +221,15 @@ class _PurchasePageMobileState
             .toList();
     SuppliersClass? supplier =
         supps.isNotEmpty ? supps.first : null;
-    return Builder(
-      builder: (context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          _handleBack(context);
+        }
+      },
+      child: Builder(
+        builder: (context) {
         if (purchase == null) {
           return SafeArea(
             child: Scaffold(
@@ -244,22 +264,7 @@ class _PurchasePageMobileState
                                 mouseCursor:
                                     SystemMouseCursors
                                         .click,
-                                onTap: () {
-                                  if (Navigator.canPop(
-                                    context,
-                                  )) {
-                                    Navigator.pop(context);
-                                  } else {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return BasePage();
-                                        },
-                                      ),
-                                    );
-                                  }
-                                },
+                                onTap: () => _handleBack(context),
                                 borderRadius:
                                     BorderRadius.circular(
                                       30,
@@ -456,22 +461,7 @@ class _PurchasePageMobileState
                                 mouseCursor:
                                     SystemMouseCursors
                                         .click,
-                                onTap: () {
-                                  if (Navigator.canPop(
-                                    context,
-                                  )) {
-                                    Navigator.pop(context);
-                                  } else {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return BasePage();
-                                        },
-                                      ),
-                                    );
-                                  }
-                                },
+                                onTap: () => _handleBack(context),
                                 borderRadius:
                                     BorderRadius.circular(
                                       30,
@@ -2226,6 +2216,7 @@ class _PurchasePageMobileState
           );
         }
       },
+      ),
     );
   }
 

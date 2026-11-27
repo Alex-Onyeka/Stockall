@@ -11,16 +11,6 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        returnNavProvider(context, listen: false).navigate(1);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return SafeArea(

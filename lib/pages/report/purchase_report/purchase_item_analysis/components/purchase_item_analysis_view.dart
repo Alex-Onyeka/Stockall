@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -532,7 +532,10 @@ class _PurchaseItemAnalysisViewState
               ),
         ),
         if (_result != null)
-          ReportExportButton(buildSpec: _exportSpec),
+          ReportExportButton(
+            showRollWidthEntries: false,
+            buildSpec: _exportSpec,
+          ),
         if (_hasFilters)
           ReportPill(
             theme: theme,

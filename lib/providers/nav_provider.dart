@@ -27,6 +27,11 @@ class NavProvider extends ChangeNotifier {
   }
 
   Future<void> navigate(int index) async {
+    if (currentIndex == index &&
+        currentPage == index &&
+        !settingNow) {
+      return;
+    }
     settingNow = false;
     currentIndex = index;
     currentPage = index;

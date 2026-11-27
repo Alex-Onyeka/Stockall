@@ -1,4 +1,4 @@
-﻿import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_storage_item_history/storage_item_history.dart';
@@ -454,7 +454,10 @@ class _StorageReportAnalysisViewState
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             _buildPeriodSelector(theme),
-            ReportExportButton(buildSpec: _exportSpec),
+            ReportExportButton(
+              showRollWidthEntries: false,
+              buildSpec: _exportSpec,
+            ),
           ],
         ),
       ],

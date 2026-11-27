@@ -57,6 +57,7 @@ class _CustomerPrintRecordButtonState
     return ReportExportButton(
       label: 'Print Record',
       iconOnly: widget.iconOnly,
+      showRollWidthEntries: false,
       backend: widget.exportBackend,
       buildSpec: () {
         final source = _env.source();

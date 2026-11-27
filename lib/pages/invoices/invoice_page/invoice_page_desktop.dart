@@ -16,7 +16,7 @@ import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/invoice_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/base_page/base_page.dart';
+import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/invoices/invoice_page/components/payment_type_button_invoice.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -177,13 +177,16 @@ class _InvoicePageDesktopState
                             if (Navigator.canPop(context)) {
                               Navigator.pop(context);
                             } else {
-                              Navigator.pushReplacement(
+                              returnNavProvider(
+                                context,
+                                listen: false,
+                              ).navigate(0);
+                              Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) {
-                                    return BasePage();
-                                  },
+                                  builder: (context) => const Home(),
                                 ),
+                                (_) => false,
                               );
                             }
                           },

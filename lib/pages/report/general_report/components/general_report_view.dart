@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
@@ -655,6 +655,7 @@ class _GeneralReportViewState
       children: [
         periodButton,
         ReportExportButton(
+          showRollWidthEntries: false,
           buildSpec:
               () => generalReportExportSpec(
                 figures: figures,

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_production_folder/temp_production_materials_usage/production_materials_usage.dart';
 import 'package:stockall/classes/temp_production_folder/temp_productions/production_record.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -1036,6 +1036,7 @@ class _UsageRecordsTableViewState
               right: 5,
             ),
             child: ReportExportButton(
+              showRollWidthEntries: false,
               buildSpec: _exportSpec,
             ),
           ),
