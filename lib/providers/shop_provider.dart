@@ -74,7 +74,7 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createShop(
+  Future<bool> createShop(
     TempShopClass shop,
     BuildContext context,
   ) async {
@@ -82,7 +82,7 @@ class ShopProvider extends ChangeNotifier {
     shop.bulkSale = false;
     shop.updatedAt = DateTime.now();
     shop.employees = [];
-    shop.refCode?.toLowerCase();
+    shop.refCode = shop.refCode?.toLowerCase();
     try {
       await mainLocalLog('Starting Creating Shop');
       await getUserShops();
@@ -93,16 +93,6 @@ class ShopProvider extends ChangeNotifier {
           listen: false,
           // ignore: use_build_context_synchronously
         ).createSubscription(context);
-        // if (tempRole != 'Owner') {
-        //   await mainLocalLog('User is not Owner');
-        //   shop.employees!.add(
-        //     AuthService().currentUser ??
-        //         returnUserProviderSingle()
-        //             .currentUserMain
-        //             ?.userId ??
-        //         '',
-        //   );
-        // }
         shop.isHeadQuarters = true;
         await supabase.from('shops').insert(shop.toJson());
         await supabase
@@ -145,10 +135,12 @@ class ShopProvider extends ChangeNotifier {
         }
         await supabase.from('shops').insert(shop.toJson());
       }
+      return true;
     } catch (e) {
       await mainLocalLog(
         'Error Creating Shop: ${e.toString()}',
       );
+      return false;
     }
   }
 

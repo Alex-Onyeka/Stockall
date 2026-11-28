@@ -1,7 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -14,7 +15,6 @@ import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
 import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginDesktop extends StatefulWidget {
   final TextEditingController emailController;
@@ -35,13 +35,6 @@ class LoginDesktop extends StatefulWidget {
 }
 
 class _LoginDesktopState extends State<LoginDesktop> {
-  bool isValidEmail(String email) {
-    final emailRegex = RegExp(
-      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-    );
-    return emailRegex.hasMatch(email);
-  }
-
   bool issLoading = false;
   bool showwSuccess = false;
 
@@ -76,109 +69,71 @@ class _LoginDesktopState extends State<LoginDesktop> {
       setState(() {
         issLoading = true;
       });
-      try {
-        var res = await AuthService().signIn(
-          widget.emailController.text,
-          widget.passwordController.text,
-        );
-        if (res == 1 && context.mounted) {
-          setState(() {
-            issLoading = false;
-            showwSuccess = true;
-          });
+      final cleanEmail = widget.emailController.text.trim().toLowerCase();
+      final res = await AuthService().signInWithResult(
+        cleanEmail,
+        widget.passwordController.text,
+      );
+      if (!mounted) return;
+      if (res.ok) {
+        setState(() {
+          issLoading = false;
+          showwSuccess = true;
+        });
 
-          Future.delayed(Duration(seconds: 3), () {
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/',
-                (_) => false,
+        Future.delayed(const Duration(seconds: 2), () {
+          if (!mounted) return;
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/',
+            (_) => false,
+          );
+        });
+      } else {
+        setState(() {
+          issLoading = false;
+        });
+        if (res.code == 'email_not_confirmed') {
+          showDialog(
+            context: context,
+            builder: (dialogCtx) {
+              return ConfirmationAlert(
+                theme: widget.theme,
+                title: 'Email Not Verified',
+                message: res.message,
+                actionButtonText: 'Resend Email',
+                action: () async {
+                  Navigator.of(dialogCtx).pop();
+                  final resend = await AuthService()
+                      .resendVerificationLinkWithResult(cleanEmail);
+                  if (!mounted) return;
+                  showDialog(
+                    context: context,
+                    builder: (c) => InfoAlert(
+                      theme: widget.theme,
+                      title: resend.ok ? 'Verification Sent' : 'Resend Failed',
+                      message:
+                          resend.ok
+                              ? 'A verification email has been sent to $cleanEmail. Please verify your email and log in again.'
+                              : resend.message,
+                    ),
+                  );
+                },
               );
-            }
-            setState(() {
-              showwSuccess = false;
-            });
-          });
+            },
+          );
         } else {
-          setState(() {
-            issLoading = false;
-          });
-          if (context.mounted) {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return InfoAlert(
-                  theme: widget.theme,
-                  message:
-                      'Login Failed. Please check your email and password. Also check to see if your internet is properly connected',
-                  title: General().authenticationError,
-                );
-              },
-            );
-          }
-        }
-      } on SocketException catch (_) {
-        setState(() {
-          issLoading = false;
-        });
-        // No internet
-        if (context.mounted) {
           showDialog(
             context: context,
             builder: (context) {
               return InfoAlert(
                 theme: widget.theme,
-                message: General().noInternetConnection,
+                message: res.message,
                 title: General().authenticationError,
               );
             },
           );
         }
-      } on AuthException catch (e) {
-        setState(() {
-          issLoading = false;
-        });
-        if (!context.mounted) return;
-        if (context.mounted) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return InfoAlert(
-                theme: widget.theme,
-                message:
-                    e.statusCode == '400'
-                        ? General().invalidEmailOrPassword
-                        : e.statusCode == '401'
-                        ? General().invalidEmailOrPassword
-                        : e.statusCode == '404'
-                        ? '${General().userNotFound}. Please check your email and try again.'
-                        : e.statusCode == '500'
-                        ? General()
-                            .anErrorOccuredOnTheServer
-                        : e.statusCode == null
-                        ? General().noInternetConnection
-                        : General().anErrorOccured,
-                title: General().authenticationError,
-              );
-            },
-          );
-        }
-      } catch (e) {
-        setState(() {
-          issLoading = false;
-        });
-
-        if (!context.mounted) return;
-        showDialog(
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              theme: widget.theme,
-              message: e.toString(),
-              title: General().unexpectedError,
-            );
-          },
-        );
       }
     }
   }

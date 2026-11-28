@@ -39,12 +39,17 @@ class _VerifyEmailDesktopState
   Timer? _timer;
 
   void startCountDownTimer() {
+    _timer?.cancel();
     setState(() {
       time = 120;
     });
-    _timer = Timer.periodic(Duration(seconds: 1), (
+    _timer = Timer.periodic(const Duration(seconds: 1), (
       timer,
-    ) async {
+    ) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       if (time > 0) {
         setState(() {
           time--;
@@ -58,13 +63,10 @@ class _VerifyEmailDesktopState
   String formatTime(int time) {
     if (time < 60) {
       return '${time.toString()} secs';
-    } else if (time >= 60 && time < 120) {
-      return '1:${time - 60} secs';
-    } else if (time >= 120 && time < 180) {
-      return '2:${time - 120} secs';
-    } else {
-      return '3:${time - 180} secs';
     }
+    final mins = time ~/ 60;
+    final secs = (time % 60).toString().padLeft(2, '0');
+    return '$mins:$secs secs';
   }
 
   @override
@@ -260,26 +262,30 @@ class _VerifyEmailDesktopState
                                             SystemMouseCursors
                                                 .click,
                                         onTap: () async {
-                                          if (time < 20) {
+                                          if (!isResendLoading && time < 1) {
                                             setState(() {
-                                              isResendLoading =
-                                                  true;
+                                              isResendLoading = true;
                                             });
-                                            await AuthService()
-                                                .resendVerificationLink(
-                                                  widget
-                                                      .user
-                                                      .email,
-                                                  widget
-                                                      .user
-                                                      .password,
+                                            final res = await AuthService()
+                                                .resendVerificationLinkWithResult(
+                                                  widget.user.email,
                                                 );
+                                            if (!mounted) return;
                                             setState(() {
-                                              isResendLoading =
-                                                  false;
-                                              time = 120;
-                                              startCountDownTimer();
+                                              isResendLoading = false;
                                             });
+                                            if (res.ok) {
+                                              startCountDownTimer();
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => InfoAlert(
+                                                  theme: widget.theme,
+                                                  message: res.message,
+                                                  title: 'Resend Failed',
+                                                ),
+                                              );
+                                            }
                                           }
                                         },
                                         child: Padding(
@@ -429,47 +435,44 @@ class _VerifyEmailDesktopState
         isLoading = true;
       });
       await mainLocalLog('Verification Started');
-      var res = await AuthService().verifyOtp(
+      final res = await AuthService().verifyOtpWithResult(
         context: context,
         otp: otp,
         user: widget.user,
         userId: widget.userId,
       );
       await mainLocalLog(
-        'Verification Ended: ${res == 1 ? 'Success' : 'Failed'}',
+        'Verification Ended: ${res.ok ? 'Success' : 'Failed'}',
       );
-      if (res == 1) {
+      if (!mounted) return;
+      if (res.ok) {
         await AuthService().client.auth.refreshSession();
-        if (context.mounted) {
-          await mainLocalLog('Context is Mounted');
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return BasePage();
-              },
-            ),
-          );
-        } else {
-          await mainLocalLog('Context is Not Mounted');
-        }
+        if (!mounted) return;
+        await mainLocalLog('Context is Mounted');
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BasePage(),
+          ),
+          (_) => false,
+        );
       } else {
+        setState(() {
+          isLoading = false;
+        });
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (context) {
             return InfoAlert(
               theme: widget.theme,
-              message:
-                  'The PIN you entered is Incorrect. Please request for a new PIN, and Try again.',
-              title: 'Wrong/Expired Pin',
+              message: res.message,
+              title:
+                  res.code == 'invalid_otp'
+                      ? 'Wrong/Expired Pin'
+                      : 'Verification Error',
             );
           },
         );
-        setState(() {
-          isLoading = false;
-        });
       }
     }
   }

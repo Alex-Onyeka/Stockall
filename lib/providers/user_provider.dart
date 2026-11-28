@@ -212,7 +212,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updatePinInSupabase({
+  Future<bool> updatePinInSupabase({
     required String userId,
     required String newPin,
   }) async {
@@ -222,9 +222,20 @@ class UserProvider extends ChangeNotifier {
           .update({'pin': newPin})
           .eq('user_id', userId);
 
-      await mainLocalLog("✅ Password updated on Supabase");
+      if (_currentUser != null && _currentUser!.userId == userId) {
+        _currentUser!.pin = newPin;
+        await UserFunc().insertUser(_currentUser!);
+        await LoggedInUserFunc().insertLoggedInUser(
+          LoggedInUser(loggedInUser: _currentUser),
+        );
+      }
+      _lastCurrentUserFetchedAt = null;
+      notifyListeners();
+      await mainLocalLog("✅ PIN updated on Supabase");
+      return true;
     } catch (e) {
-      await mainLocalLog("❌ Failed to update password: $e");
+      await mainLocalLog("❌ Failed to update PIN: $e");
+      return false;
     }
   }
 

@@ -1,9 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/sign_up/code_sent/platforms/code_sent_desktop.dart';
 import 'package:stockall/pages/authentication/sign_up/code_sent/platforms/code_sent_mobile.dart';
 import 'package:stockall/pages/authentication/sign_up/verify_email/verify_email_page.dart';
@@ -74,12 +75,16 @@ class _CodeSentPageState extends State<CodeSentPage> {
       ),
     ),
   ];
+  Timer? _autoNavTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.push(
+      if (!mounted) return;
+      _autoNavTimer = Timer(const Duration(seconds: 2), () {
+        if (!mounted) return;
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) {
@@ -89,15 +94,15 @@ class _CodeSentPageState extends State<CodeSentPage> {
               );
             },
           ),
-        ).then((_) {
-          if (context.mounted) {
-            Navigator.of(context).pop();
-          } else {
-            mainLocalLog('Context Not Mounted');
-          }
-        });
+        );
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _autoNavTimer?.cancel();
+    super.dispose();
   }
 
   @override

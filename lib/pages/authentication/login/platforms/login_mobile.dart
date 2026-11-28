@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -16,7 +15,6 @@ import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
 import 'package:stockall/pages/authentication/translations/general.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginMobile extends StatefulWidget {
   final ThemeProvider theme;
@@ -71,105 +69,71 @@ class _LoginMobileState extends State<LoginMobile> {
       setState(() {
         issLoading = true;
       });
-      try {
-        var res = await AuthService().signIn(
-          widget.emailController.text,
-          widget.passwordController.text,
-          // context,
-        );
-        if (res == 1 && context.mounted) {
-          setState(() {
-            issLoading = false;
-            showwSuccess = true;
-          });
+      final cleanEmail = widget.emailController.text.trim().toLowerCase();
+      final res = await AuthService().signInWithResult(
+        cleanEmail,
+        widget.passwordController.text,
+      );
+      if (!mounted) return;
+      if (res.ok) {
+        setState(() {
+          issLoading = false;
+          showwSuccess = true;
+        });
 
-          Future.delayed(Duration(seconds: 3), () {
-            if (context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/',
-                (_) => false,
-              );
-            }
-            setState(() {
-              showwSuccess = false;
-            });
-          });
-        } else {
-          setState(() {
-            issLoading = false;
-          });
+        Future.delayed(const Duration(seconds: 2), () {
+          if (!mounted) return;
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/',
+            (_) => false,
+          );
+        });
+      } else {
+        setState(() {
+          issLoading = false;
+        });
+        if (res.code == 'email_not_confirmed') {
           showDialog(
-            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (dialogCtx) {
+              return ConfirmationAlert(
+                theme: widget.theme,
+                title: 'Email Not Verified',
+                message: res.message,
+                actionButtonText: 'Resend Email',
+                action: () async {
+                  Navigator.of(dialogCtx).pop();
+                  final resend = await AuthService()
+                      .resendVerificationLinkWithResult(cleanEmail);
+                  if (!mounted) return;
+                  showDialog(
+                    context: context,
+                    builder: (c) => InfoAlert(
+                      theme: widget.theme,
+                      title: resend.ok ? 'Verification Sent' : 'Resend Failed',
+                      message:
+                          resend.ok
+                              ? 'A verification email has been sent to $cleanEmail. Please verify your email and log in again.'
+                              : resend.message,
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        } else {
+          showDialog(
             context: context,
             builder: (context) {
               return InfoAlert(
                 theme: widget.theme,
-                message:
-                    'Login Failed. Please check your email and password. Also check to see if your internet is properly connected',
+                message: res.message,
                 title: General().authenticationError,
               );
             },
           );
         }
-      } on SocketException catch (_) {
-        // No internet
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              theme: widget.theme,
-              message: General().noInternetConnection,
-              title: General().authenticationError,
-            );
-          },
-        );
-      } on AuthException catch (e) {
-        setState(() {
-          issLoading = false;
-        });
-        if (!context.mounted) return;
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              theme: widget.theme,
-              message:
-                  e.statusCode == '400'
-                      ? General().invalidEmailOrPassword
-                      : e.statusCode == '401'
-                      ? General().invalidEmailOrPassword
-                      : e.statusCode == '404'
-                      ? '${General().userNotFound}. Please check your email and try again.'
-                      : e.statusCode == '500'
-                      ? General().anErrorOccuredOnTheServer
-                      : e.statusCode == null
-                      ? General().noInternetConnection
-                      : General().anErrorOccured,
-              // 'An Error occured while tryin to create your account, please check you internet and try again.',
-              title: General().authenticationError,
-            );
-          },
-        );
-      } catch (e) {
-        setState(() {
-          issLoading = false;
-        });
-
-        if (!context.mounted) return;
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              theme: widget.theme,
-              message: e.toString(),
-              title: General().unexpectedError,
-            );
-          },
-        );
       }
     }
   }

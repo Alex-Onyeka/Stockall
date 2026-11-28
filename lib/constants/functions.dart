@@ -110,9 +110,9 @@ bool usesSystemPrintDialog() {
 
 bool isValidEmail(String email) {
   final emailRegex = RegExp(
-    r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
+    r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$",
   );
-  return emailRegex.hasMatch(email);
+  return emailRegex.hasMatch(email.trim());
 }
 
 int getDayDifference(DateTime inputDate) {

@@ -533,22 +533,51 @@ class _EditDesktopState extends State<EditDesktop> {
                                             'Are you sure you want to proceed?',
                                         title: 'Proceed?',
                                         action: () async {
+                                          final userId =
+                                              AuthService().currentUser;
+                                          Navigator.of(
+                                            safeContex,
+                                          ).pop();
+                                          if (userId == null) {
+                                            showDialog(
+                                              context: safeContex,
+                                              builder: (_) => InfoAlert(
+                                                theme: theme,
+                                                title: 'Session Error',
+                                                message:
+                                                    'No active user session found. Please log in again.',
+                                              ),
+                                            );
+                                            return;
+                                          }
                                           setState(() {
                                             isLoading =
                                                 true;
                                           });
-                                          Navigator.of(
-                                            safeContex,
-                                          ).pop();
 
-                                          await userProvider
+                                          final ok = await userProvider
                                               .updatePinInSupabase(
                                                 newPin:
                                                     value2,
-                                                userId:
-                                                    AuthService()
-                                                        .currentUser!,
+                                                userId: userId,
                                               );
+
+                                          if (!mounted) return;
+                                          if (!ok) {
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                            showDialog(
+                                              context: safeContex,
+                                              builder: (_) => InfoAlert(
+                                                theme: theme,
+                                                title: 'PIN Update Failed',
+                                                message:
+                                                    'Could not save your PIN. Please check your internet connection and try again.',
+                                              ),
+                                            );
+                                            return;
+                                          }
 
                                           setState(() {
                                             isLoading =
@@ -557,29 +586,20 @@ class _EditDesktopState extends State<EditDesktop> {
                                                 true;
                                           });
 
-                                          if (!mounted)
-                                            return;
                                           navP.verify();
 
-                                          if (safeContex
-                                              .mounted) {
-                                            if (widget
-                                                    .main !=
-                                                null) {
-                                              Navigator.pushReplacement(
+                                          if (safeContex.mounted) {
+                                            if (widget.main != null) {
+                                              Navigator.pushAndRemoveUntil(
                                                 safeContex,
                                                 MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return BasePage();
-                                                  },
+                                                  builder: (_) =>
+                                                      const BasePage(),
                                                 ),
+                                                (_) => false,
                                               );
                                             } else {
-                                              Navigator.of(
-                                                safeContex,
-                                              ).pop();
+                                              Navigator.of(safeContex).pop();
                                             }
                                           }
                                         },

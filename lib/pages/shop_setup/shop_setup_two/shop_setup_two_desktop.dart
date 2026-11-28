@@ -92,11 +92,13 @@ class _ShopSetupTwoDesktopState
                   'Are you sure you want to proceed with creating your shop?',
               title: 'Create Shop?',
               action: () async {
+                final wasFirstShop =
+                    returnShopProvider().userShops.isEmpty;
                 Navigator.of(dialogContext).pop();
                 setState(() {
                   isLoading = true;
                 });
-                await shopProvider.createShop(
+                final ok = await shopProvider.createShop(
                   TempShopClass(
                     manageCustomerAccount: false,
                     customerPercentageReward: 0,
@@ -143,12 +145,7 @@ class _ShopSetupTwoDesktopState
                             .trim()
                             .toLowerCase(),
                     language: 'en',
-                    isHeadQuarters:
-                        returnShopProvider()
-                                .userShops
-                                .isEmpty
-                            ? true
-                            : false,
+                    isHeadQuarters: wasFirstShop,
                     applyVAT: false,
                     // useGroupUnit: false,
                     wholeSale: false,
@@ -159,35 +156,52 @@ class _ShopSetupTwoDesktopState
                   ),
                   safeContext,
                 );
-                await Future.delayed(Duration(seconds: 1));
+                if (!mounted) return;
+                if (!ok) {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  showDialog(
+                    context: safeContext,
+                    builder: (_) => InfoAlert(
+                      theme: theme,
+                      title: 'Shop Creation Failed',
+                      message:
+                          'Could not create your shop. Please check your internet connection and try again.',
+                    ),
+                  );
+                  return;
+                }
+                await Future.delayed(const Duration(seconds: 1));
+                if (!mounted) return;
                 setState(() {
                   isLoading = false;
                   success = true;
                 });
 
                 if (safeContext.mounted) {
-                  if (returnShopProvider()
-                      .userShops
-                      .isEmpty) {
+                  if (wasFirstShop) {
                     await Future.delayed(
-                      Duration(seconds: 2),
+                      const Duration(seconds: 2),
                     );
-                    Navigator.pushReplacement(
-                      // ignore: use_build_context_synchronously
+                    if (!safeContext.mounted) return;
+                    Navigator.pushAndRemoveUntil(
                       safeContext,
                       MaterialPageRoute(
                         builder: (context) {
-                          return BasePage();
+                          return const BasePage();
                         },
                       ),
+                      (_) => false,
                     );
                   } else {
                     await returnShopProvider()
                         .getUserShops();
-                    // ignore: use_build_context_synchronously
+                    if (!safeContext.mounted) return;
                     Navigator.of(safeContext).pop();
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop();
+                    if (mounted) {
+                      Navigator.of(context).pop();
+                    }
                   }
                 }
               },

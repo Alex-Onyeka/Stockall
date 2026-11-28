@@ -8,13 +8,13 @@ import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/pages/authentication/components/check_agree.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/authentication/sign_up/code_sent/code_sent_page.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupDesktop extends StatefulWidget {
   final TextEditingController emailController;
@@ -50,12 +50,6 @@ class SignupDesktop extends StatefulWidget {
 class _SignupDesktopState extends State<SignupDesktop> {
   bool showSuccess = false;
   bool isLoading = false;
-  bool isValidEmail(String email) {
-    final emailRegex = RegExp(
-      r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
-    );
-    return emailRegex.hasMatch(email);
-  }
 
   void checkInputs() async {
     if (widget.emailController.text.isEmpty ||
@@ -126,137 +120,63 @@ class _SignupDesktopState extends State<SignupDesktop> {
       setState(() {
         isLoading = true;
       });
-      try {
-        var res = await AuthService().signUpAndCreateUser(
-          context: context,
-          email:
-              widget.emailController.text
-                  .toLowerCase()
-                  .trim(),
-          password: widget.passwordController.text,
-        );
+      final res = await AuthService().signUpWithResult(
+        email: widget.emailController.text.toLowerCase().trim(),
+        password: widget.passwordController.text,
+      );
+      if (!mounted) return;
+      if (res.ok && res.userId != null) {
+        setState(() {
+          isLoading = false;
+          showSuccess = true;
+        });
 
-        if (res != null) {
+        Future.delayed(const Duration(seconds: 2), () {
           if (!mounted) return;
-          setState(() {
-            isLoading = false;
-          });
-          if (res == 'exists') {
-            showDialog(
-              // ignore: use_build_context_synchronously
-              context: context,
-              builder: (context) {
-                return InfoAlert(
-                  theme: widget.theme,
-                  message:
-                      'An error occurred while creating your account. This email is already associated to an existing account..',
-                  title: 'Email Already Registered',
-                );
-              },
-            );
-          } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => CodeSentPage(
+                    user: TempUserClass(
+                      access: [],
+                      userId: res.userId,
+                      createdAt: DateTime.now(),
+                      name: widget.nameController.text.trim(),
+                      email:
+                          widget.emailController.text
+                              .toLowerCase()
+                              .trim(),
+                      phone: widget.phoneNumberController.text.trim(),
+                      role: 'Cashier',
+                      password: widget.passwordController.text,
+                      lastName: widget.lastNameController.text,
+                      departmentUuids: [],
+                    ),
+                  ),
+            ),
+          );
+          if (mounted) {
             setState(() {
               isLoading = false;
-              showSuccess = true;
-            });
-
-            Future.delayed(Duration(seconds: 2), () {
-              if (!mounted) return;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => CodeSentPage(
-                        user: TempUserClass(
-                          access: [],
-                          userId: res,
-                          createdAt: DateTime.now(),
-                          name:
-                              widget.nameController.text
-                                  .trim(),
-                          email:
-                              widget.emailController.text
-                                  .toLowerCase()
-                                  .trim(),
-                          phone:
-                              widget
-                                  .phoneNumberController
-                                  .text
-                                  .trim(),
-                          role: 'Cashier',
-                          password:
-                              widget
-                                  .passwordController
-                                  .text,
-                          lastName:
-                              widget
-                                  .lastNameController
-                                  .text,
-                          departmentUuids: [],
-                        ),
-                      ),
-                ),
-              );
-              setState(() {
-                isLoading = false;
-                showSuccess = false;
-              });
+              showSuccess = false;
             });
           }
-        } else {
-          setState(() {
-            isLoading = false;
-          });
-          // if (!context.mounted) return;
-          // showDialog(
-          //   // ignore: use_build_context_synchronously
-          //   context: context,
-          //   builder: (context) {
-          //     return InfoAlert(
-          //       theme: widget.theme,
-          //       message:
-          //           'An error occurred while creating your account. Please check your details and try again.',
-          //       title: 'An Error Occurred',
-          //     );
-          //   },
-          // );
-        }
-      } on AuthException catch (e) {
+        });
+      } else {
         setState(() {
           isLoading = false;
         });
-        // await mainLocalLog(e);
-        if (!context.mounted) return;
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (context) {
             return InfoAlert(
               theme: widget.theme,
-              message:
-                  e.statusCode == '422'
-                      ? 'User already exists. Please use a different email, or try to login.'
-                      : e.statusCode == null
-                      ? 'No internet connection. Please check your network and try again.'
-                      : 'An error occurred. Please try again later.',
-              title: 'Authentication Error',
-            );
-          },
-        );
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        if (!context.mounted) return;
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              theme: widget.theme,
-              message:
-                  "User Account Already Exists. Please Login to continue. Thank you.",
-              title: 'Account Already Exists',
+              message: res.message,
+              title:
+                  res.code == 'exists'
+                      ? 'Email Already Registered'
+                      : 'Authentication Error',
             );
           },
         );
