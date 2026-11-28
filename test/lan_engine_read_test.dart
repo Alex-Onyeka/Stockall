@@ -389,7 +389,7 @@ void main() {
     });
   });
 
-  group('department scope matches the app (D17)', () {
+  group('department scope matches the app', () {
     // The app filters on the device with
     // DepartmentProvider.departmentRecordVisible for the current
     // department; a user's devices can pick any of the user's departments.

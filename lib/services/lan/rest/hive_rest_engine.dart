@@ -186,6 +186,14 @@ class HiveRestEngine implements LanRestHandler {
     final shops = _writeShops(request);
     final others = shops.where((s) => s != own).toSet();
     if (others.isNotEmpty) {
+      // A user is only ever added to the store this server serves.
+      if (request.table == 'users') {
+        throw const PgError(
+          403,
+          'LAN03',
+          'A new user can only join this store',
+        );
+      }
       if (shops.contains(own)) {
         throw const PgError(
           400,
@@ -312,7 +320,23 @@ class HiveRestEngine implements LanRestHandler {
       });
     }
     if (owner.isNotEmpty) members.add(owner);
-    return LanStoreMembers(ownerId: owner, members: members);
+    final departments = <String>{};
+    final stored = _tables['departments'];
+    if (stored != null) {
+      stored.withRowType(<X>(LanTable<X> t) {
+        for (final row in t.rows()) {
+          if (t.shopIdOf(row) != own) continue;
+          final uuid = t.toJson(row)['uuid'];
+          if (uuid is String && uuid.isNotEmpty) departments.add(uuid);
+        }
+        return null;
+      });
+    }
+    return LanStoreMembers(
+      ownerId: owner,
+      members: members,
+      departments: departments,
+    );
   }
 
   /// The user updating their own `users` row, and only the columns the app

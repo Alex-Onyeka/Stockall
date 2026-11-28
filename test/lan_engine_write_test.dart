@@ -625,7 +625,7 @@ void main() {
     });
   });
 
-  group('delta RPCs (D15)', () {
+  group('delta RPCs', () {
     PgRequest rpc(String name, List<Map<String, dynamic>> updates) =>
         PgRequest(table: name, op: PgOp.rpc, body: {'updates': updates});
 
@@ -642,7 +642,7 @@ void main() {
         },
       ]);
 
-      // A sale's stock change (S3: under the sale permissions).
+      // A sale's stock change (under the sale permissions).
       final cashier = principal(access: [a.makeSale]);
       final first = await engine.handle(batch, cashier);
       final again = await engine.handle(batch, cashier);

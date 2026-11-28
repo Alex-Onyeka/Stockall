@@ -136,6 +136,12 @@ class LanSettingsModel {
 
   Future<String?> pairingQrPayload() => _provider.pairingQrPayload();
 
+  /// The QR code is hidden: what it shows stops working.
+  void cancelPairingQr() => _provider.cancelPairingQr();
+
+  /// Goes up each time a device pairs with the QR code (which it uses up).
+  int get qrPairings => _provider.qrPairings;
+
   /// On the server: ends the pairing session it shows.
   void cancelServerPairing() => _provider.cancelServerPairing();
 

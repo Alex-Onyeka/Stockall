@@ -250,7 +250,7 @@ void main() {
     });
 
     test('the last units: refused with what is left; the totals tell what '
-        'other tills hold (D36)', () async {
+        'other tills hold', () async {
       await stockOf('p1', 4);
       await server.reserve(
         device: 'other',
@@ -362,7 +362,7 @@ void main() {
     });
 
     test('re-sync on connect: holds what fits, reports the rest, and takes '
-        'the server\'s totals (D35)', () async {
+        'the server\'s totals', () async {
       await stockOf('p1', 3);
       carts = [
         cart('c1', [line(product('p1'), 2)]),
@@ -405,7 +405,7 @@ void main() {
 
     test('a checkout while the server is unreachable stays pending over a '
         'restart; on reconnect its holds are kept, then it is sent and '
-        'releases (D33)', () async {
+        'releases', () async {
       await stockOf('p1', 5);
       final c = cart('c1', [line(product('p1'), 2)]);
       carts = [c];
@@ -505,7 +505,7 @@ void main() {
 
     test(
       'off the LAN nothing is asked and nothing is elsewhere; with the '
-      'server unreachable a change is allowed on the cached totals (D37)',
+      'server unreachable a change is allowed on the cached totals',
       () async {
         await stockOf('p1', 1);
         await server.reserve(

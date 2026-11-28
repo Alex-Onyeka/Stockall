@@ -88,9 +88,14 @@ class QuantityUpdateProvider with ChangeNotifier {
               };
             }).toList();
 
-        final dynamic rawRes = await client.rpc(
-          'update_product_quantities',
-          params: {'updates': tempQuantityUpdates},
+        final dynamic rawRes = await LanSentMarks.send(
+          queue.quantityUpdateBoxName,
+          sentUuids,
+          to: to,
+          run: () => client.rpc(
+            'update_product_quantities',
+            params: {'updates': tempQuantityUpdates},
+          ),
         );
 
         if (rawRes is List) {

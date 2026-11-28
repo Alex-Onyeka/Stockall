@@ -322,7 +322,7 @@ void main() {
     await expectLater(login(connection), httpError(401, 'invalid_credentials'));
   });
 
-  test('without auth (P2 servers) the auth routes are 404', () async {
+  test('without auth the auth routes are 404', () async {
     final server = LanServer(
       identity: identity,
       deviceId: 'desk-1',

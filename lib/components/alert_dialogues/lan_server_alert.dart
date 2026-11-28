@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/local_server_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/lan/lan_alerts.dart';
@@ -30,6 +31,7 @@ class LanServerAlertDialog extends StatelessWidget {
     LanAlertKind.demoted => Icons.swap_horiz_rounded,
     LanAlertKind.merged => Icons.cloud_done_outlined,
     LanAlertKind.forceCleared => Icons.dns_outlined,
+    LanAlertKind.otherStoreServed => Icons.storefront_outlined,
   };
 
   @override
@@ -214,6 +216,18 @@ class LanServerAlertPresenter {
   /// Replaceable in tests.
   bool Function() mayManage = _mayManage;
   int? Function() shopId = () => ShopProvider().userShop()?.shopId;
+  Future<int?> Function() otherStoreServed = () =>
+      LocalServerProvider().otherStoreServedHere();
+  String? Function(int shopId) storeName = _storeName;
+
+  static String? _storeName(int shopId) {
+    try {
+      for (final shop in ShopProvider().userShops) {
+        if (shop.shopId == shopId) return shop.name;
+      }
+    } catch (_) {}
+    return null;
+  }
 
   /// Shows [alert]; completes when it is closed. False when there is no
   /// page to show it on yet (it stays unshown). Replaceable in tests.
@@ -270,6 +284,36 @@ class LanServerAlertPresenter {
       await Future<void>.delayed(const Duration(milliseconds: 500));
     }
     await showPending();
+    await warnOtherStoreServed();
+  }
+
+  /// After a sign-in to a store other than the one this desktop serves:
+  /// told (whatever their permissions) that its tills are without a server
+  /// until someone signs in to it here or removes the server role. The
+  /// sign-in itself goes ahead.
+  Future<void> warnOtherStoreServed() async {
+    try {
+      final other = await otherStoreServed();
+      if (other == null) return;
+      final name = storeName(other);
+      final store = name == null ? 'another store' : 'the store $name';
+      await show(
+        LanAlert(
+          id: 'other-store-served-$other',
+          shopId: other,
+          kind: LanAlertKind.otherStoreServed,
+          title: 'This Desktop Serves Another Store',
+          message:
+              'This desktop is the store server for $store. Its tills work '
+              'offline until someone signs in to that store on this desktop, '
+              'or removes the store server role there (Settings › Store '
+              'Network).',
+          createdAt: DateTime.now().toUtc(),
+        ),
+      );
+    } catch (e) {
+      await mainLocalLog('LAN: server role warning failed: $e');
+    }
   }
 
   static Route<dynamic>? _topRoute() {

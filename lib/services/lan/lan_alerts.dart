@@ -20,6 +20,10 @@ enum LanAlertKind {
 
   /// A user on this device cleared a server that stopped answering.
   forceCleared,
+
+  /// This desktop is the store server for a store other than the one
+  /// signed in to (shown after the sign-in, not kept).
+  otherStoreServed,
 }
 
 class LanAlert {

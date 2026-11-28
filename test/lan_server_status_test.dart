@@ -301,7 +301,7 @@ void main() {
     );
   });
 
-  test('after pairing (P10b): signed in on the server with the password '
+  test('after pairing: signed in on the server with the password '
       'kept here, and routed there; a password the server refuses is said',
       () async {
     await LanTransport().disconnectClient();

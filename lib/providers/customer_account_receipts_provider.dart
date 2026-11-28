@@ -610,9 +610,14 @@ class CustomerAccountReceiptsProvider
           '❌🔥❌❌🔥❌❌❌❌❌❌❌🔥Customer Updates Length: ${tempAccountUpdates.length}',
         );
 
-        await supabase.rpc(
-          'update_customer_account',
-          params: {'updates': tempAccountUpdates},
+        await LanSentMarks.send(
+          queue.customerAccountUpdateBoxName,
+          snapshot.keys,
+          to: to,
+          run: () => supabase.rpc(
+            'update_customer_account',
+            params: {'updates': tempAccountUpdates},
+          ),
         );
 
         await queue.customerAccountUpdateBox.deleteAll(snapshot.keys);

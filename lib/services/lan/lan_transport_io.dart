@@ -110,6 +110,9 @@ class LanTransport implements LanTransportApi {
   void Function()? onServerSynced;
 
   @override
+  void Function(String device, int epoch)? onFormerServerHandedOver;
+
+  @override
   void Function(Set<String>? tables)? onInvalidate;
 
   @override
@@ -591,8 +594,8 @@ class LanTransport implements LanTransportApi {
         for (final h in LanAlertsFunc().handedOver())
           {'device': h.device, 'epoch': h.epoch},
       ],
-      // Only paired devices sign in (S4).
-      admission: const LanHiveAdmission(),
+      // Only paired devices sign in.
+      admission: LanHiveAdmission(shopId: servedShop),
       acceptMoved: _acceptMoved,
       onSteppingDown: _onSteppingDown,
       onRefreshCredentials: () async {
@@ -606,6 +609,42 @@ class LanTransport implements LanTransportApi {
     );
     // Every change to a served table, batched, tells LAN clients.
     final invalidator = LanInvalidator(tables: tables, send: server.broadcast);
+    try {
+      return await _startServing(
+        server: server,
+        record: record,
+        deviceId: deviceId,
+        shopKey: shopKey,
+        engine: engine,
+        handoffStatus: handoffStatus,
+        puller: puller,
+        invalidator: invalidator,
+        stock: stock,
+        servedShop: servedShop,
+        online: online,
+      );
+    } catch (_) {
+      // Nothing started is left running, and the providers fetch from
+      // Supabase again (pullerActive off): stopServer undoes it all.
+      _server ??= server;
+      await stopServer();
+      rethrow;
+    }
+  }
+
+  Future<int> _startServing({
+    required LanServer server,
+    required LocalServerRecord record,
+    required String deviceId,
+    required String shopKey,
+    required HiveRestEngine engine,
+    required LanHandoffStatusSource handoffStatus,
+    required LanPuller puller,
+    required LanInvalidator invalidator,
+    required LanStockService stock,
+    required int Function() servedShop,
+    required bool Function() online,
+  }) async {
     _engine = engine;
     _handoffStatus = handoffStatus;
     _puller = puller;
@@ -985,7 +1024,7 @@ class LanTransport implements LanTransportApi {
     await LanPairedDevicesFunc().addFormerServer(loser.fingerprint);
   }
 
-  /// A `moved` event a till presents at login (S4): signed by a former
+  /// A `moved` event a till presents at login: signed by a former
   /// server of the shop (one this server proved it outranks, or one this
   /// device itself trusted as a client), naming this server, and listing
   /// [deviceId] as paired there.
@@ -1099,6 +1138,7 @@ class LanTransport implements LanTransportApi {
       body: body,
       serverDeviceId: serverDeviceId,
       epoch: view.epoch,
+      shopId: _clientShopId,
     );
     if (!kept) return false;
     await mainLocalLog(
@@ -1203,6 +1243,12 @@ class LanTransport implements LanTransportApi {
     server.pairing.cancel();
     onChanged?.call();
   }
+
+  @override
+  void cancelPairingQr() => _server?.revokeQrTokens();
+
+  @override
+  int get qrPairings => _server?.qrPairings ?? 0;
 
   @override
   Future<String?> pairingQrPayload() async {
@@ -1491,7 +1537,7 @@ class LanTransport implements LanTransportApi {
                 // Only a move signed with the pinned certificate's key is
                 // followed; anything else waits for a person to pair.
                 if (_movedIsVouched(decoded, from, to, pin)) {
-                  // Presented at the first login there (S4); kept on disk
+                  // Presented at the first login there; kept on disk
                   // until then.
                   unawaited(() async {
                     await LanPairedDevicesFunc().putMove(
@@ -1590,6 +1636,7 @@ class LanTransport implements LanTransportApi {
         'LAN: $device handed over; $ended stock/account changes end here',
       );
     }
+    onFormerServerHandedOver?.call(device, epoch);
   }
 
   @override
@@ -1626,6 +1673,7 @@ class LanTransport implements LanTransportApi {
       answerHeaders: response.headers,
       serverDeviceId: serverDeviceId,
       epoch: view.epoch,
+      shopId: _clientShopId,
     );
   }
 
@@ -1668,7 +1716,7 @@ class LanTransport implements LanTransportApi {
       if (connection == null) continue;
       try {
         // The secret this device got when it paired there, or the signed
-        // move it followed there (S4).
+        // move it followed there.
         final fingerprint = server.certFingerprint.toLowerCase();
         final secret = LanPairedDevicesFunc().secretFor(fingerprint);
         final moved = LanPairedDevicesFunc().moveTo(fingerprint);
@@ -1709,6 +1757,7 @@ class LanTransport implements LanTransportApi {
           user: user,
           shop: shop,
           shopKey: shopKey,
+          epoch: body['epoch'] is int ? body['epoch'] as int : null,
         );
       } on LanHttpException catch (e) {
         if (e.statusCode == 403 && e.errorCode == 'not_paired') {
@@ -1923,7 +1972,7 @@ class LanTransport implements LanTransportApi {
         'session_id': attempt.client.sessionId,
         'proof': attempt.client.proof,
       });
-      // What this device presents to sign in there (S4).
+      // What this device presents to sign in there.
       if (confirmed['pair_secret'] case final String secret) {
         await LanPairedDevicesFunc().putSecret(
           attempt.connection.pin.toLowerCase(),
@@ -2005,11 +2054,29 @@ class LanTransport implements LanTransportApi {
       await LanPairedServersFunc().put(paired);
       await LanPairedServersFunc().markPairedByPerson(paired.certFingerprint);
       return LanPairOutcome(LanPairResult.paired, server: paired);
+    } on LanHttpException catch (e) {
+      return LanPairOutcome(
+        LanPairResult.failed,
+        message: qrPairRefusal(e) ?? e.toString(),
+      );
     } catch (e) {
       return LanPairOutcome(LanPairResult.failed, message: e.toString());
     } finally {
       connection.close();
     }
+  }
+
+  /// What to tell the person when the server refused a QR scan, or null.
+  @visibleForTesting
+  static String? qrPairRefusal(LanHttpException e) {
+    if (e.statusCode == 409 && e.errorCode == 'already_paired') {
+      return 'This device is already paired with this server. '
+          'Pair it again with the code.';
+    }
+    if (e.statusCode == 429) {
+      return 'Too many pairing attempts. Wait a minute and try again.';
+    }
+    return null;
   }
 
   /// Ends this device's pairing attempt, and tells the server, so a

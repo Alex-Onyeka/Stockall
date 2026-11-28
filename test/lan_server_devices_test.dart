@@ -109,7 +109,9 @@ void main() {
         ], pin: await transport.serverFingerprint()))!;
     opened.add(connection);
     // Paired with this server (as pairing would).
-    final secret = await const LanHiveAdmission().admit(device);
+    final secret = (await LanHiveAdmission(
+      shopId: () => 7,
+    ).admit(device, byPerson: true))!;
     final login = await connection.postJson('/v1/auth/login', {
       'email': 'ada@shop.test',
       'password': 'right',

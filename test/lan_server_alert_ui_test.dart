@@ -120,7 +120,7 @@ void main() {
 
   group('LanServerAlertPresenter', () {
     setUpAll(() async {
-      final dir = Directory.systemTemp.createTempSync('stockall_p8c_alerts');
+      final dir = Directory.systemTemp.createTempSync('stockall_lan_alerts_ui');
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
             const MethodChannel('plugins.flutter.io/path_provider'),
@@ -190,6 +190,34 @@ void main() {
       expect(shown, ['Changes sent to the store server', 'Store server cleared']);
       // The other store's alert was never shown here.
       expect(LanAlerts().unshown(8), hasLength(1));
+    });
+
+    test('signed in to another store than the one this desktop serves: '
+        'warned (whatever the permissions), and the sign-in goes ahead',
+        () async {
+      final shown = <LanAlert>[];
+      final presenter = LanServerAlertPresenter()
+        ..mayManage = (() => false)
+        ..shopId = (() => 8)
+        ..storeName = ((id) => id == 7 ? 'Main Street' : null)
+        ..show = (alert) async {
+          shown.add(alert);
+          return true;
+        };
+      addTearDown(() => presenter.otherStoreServed = () async => null);
+
+      presenter.otherStoreServed = () async => null;
+      await presenter.warnOtherStoreServed();
+      expect(shown, isEmpty);
+
+      presenter.otherStoreServed = () async => 7;
+      await presenter.warnOtherStoreServed();
+      expect(shown.single.title, 'This Desktop Serves Another Store');
+      expect(shown.single.kind, LanAlertKind.otherStoreServed);
+      expect(shown.single.message, contains('the store Main Street'));
+      expect(shown.single.message, contains('offline'));
+      // Not one of the stored alerts.
+      expect(LanAlerts().all(), isEmpty);
     });
 
     test('no page to show it on yet: it stays unshown', () async {

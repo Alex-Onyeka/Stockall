@@ -17,6 +17,7 @@ class LanAlertsSection extends StatelessWidget {
     LanAlertKind.demoted => 'Stopped serving',
     LanAlertKind.merged => 'Changes handed over',
     LanAlertKind.forceCleared => 'Server cleared',
+    LanAlertKind.otherStoreServed => 'Serves another store',
   };
 
   @override

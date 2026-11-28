@@ -100,9 +100,14 @@ class ProductionItemsQuantityUpdateProvider with ChangeNotifier {
                 })
                 .toList();
 
-        await client.rpc(
-          'update_production_items_quantities',
-          params: {'updates': tempProductionItemQuantityUpdates},
+        await LanSentMarks.send(
+          queue.productionItemsQuantityUpdateBoxName,
+          sentUuids,
+          to: to,
+          run: () => client.rpc(
+            'update_production_items_quantities',
+            params: {'updates': tempProductionItemQuantityUpdates},
+          ),
         );
 
         await queue.productionItemsQuantityUpdateBox.deleteAll(sentUuids);

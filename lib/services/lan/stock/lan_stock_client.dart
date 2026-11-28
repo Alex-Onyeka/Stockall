@@ -11,6 +11,7 @@ import 'package:stockall/local_database/products/unsync_funcs/quantity_update/qu
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/sales_provider.dart';
 import 'package:stockall/services/lan/lan_constants.dart';
+import 'package:stockall/services/lan/lan_routing.dart';
 import 'package:stockall/services/lan/lan_sent_marks.dart';
 import 'package:stockall/services/lan/lan_transport.dart';
 import 'package:stockall/services/lan/stock/lan_holds.dart';
@@ -465,6 +466,7 @@ class LanStockClient {
       cartId,
       jsonEncode({
         'cart_id': cartId,
+        'shop_id': LanRoutingDeps.currentShopId(),
         'receipt_uuid': receiptUuid,
         'updates': updates,
         'holds': holds,
@@ -640,18 +642,25 @@ class LanStockClient {
     ];
     final sent = [for (final u in updates) '${u['hiveUuid']}'];
     // Without an answer, these may be applied there: they go nowhere else.
-    if (sentQueue != null) {
-      await LanSentMarks.markSending(sentQueue, sent, to: server);
+    // Not on the server's own till (in process): no answer is lost there,
+    // and its marks would keep them from its own sync to Supabase.
+    final marks = link.inProcess ? null : sentQueue;
+    if (marks != null) {
+      await LanSentMarks.markSending(marks, sent, to: server);
     }
+    Future<Map<String, dynamic>> call() => link
+        .call(LanConstants.stockCheckoutRpc, {
+          'cart_id': cartId,
+          'receipt_uuid': pending['receipt_uuid'],
+          'updates': updates,
+        })
+        .timeout(deps.callTimeout);
     final Map<String, dynamic> res;
     try {
-      res = await link
-          .call(LanConstants.stockCheckoutRpc, {
-            'cart_id': cartId,
-            'receipt_uuid': pending['receipt_uuid'],
-            'updates': updates,
-          })
-          .timeout(deps.callTimeout);
+      // A refusal ends the marks (not applied: they may go anywhere again).
+      res = marks == null
+          ? await call()
+          : await LanSentMarks.send(marks, sent, to: server, run: call);
     } catch (e) {
       await mainLocalLog('LAN stock: checkout $cartId kept pending: $e');
       return;
@@ -663,7 +672,7 @@ class LanStockClient {
     if (done.isNotEmpty) await deps.dropQueued(done);
     // Answered: applied (and dropped), or not applied (still queued, and
     // free to go anywhere).
-    if (sentQueue != null) await SentEntriesFunc().unmark(sentQueue, sent);
+    if (marks != null) await SentEntriesFunc().unmark(marks, sent);
     await _pendingStore.delete(cartId);
     _dropCart(cartId);
     _totals.addAll(_reserved(res['reserved']));

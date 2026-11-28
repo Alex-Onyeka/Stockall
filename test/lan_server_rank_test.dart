@@ -43,7 +43,7 @@ void main() {
     port: 1,
   );
 
-  group('the winner rule (D40)', () {
+  group('the winner rule', () {
     test('higher epoch, then earlier claimed_at, then lower device id', () {
       // Epoch first, whatever the rest.
       expect(
@@ -123,7 +123,7 @@ void main() {
     });
   });
 
-  group('the proof (D41)', () {
+  group('the proof', () {
     final v = view(2, 'desk', t1);
 
     test('checks out for the same nonce, certificate, claim and shop', () {
@@ -190,7 +190,7 @@ void main() {
     });
   });
 
-  group('the watch (D42)', () {
+  group('the watch', () {
     final self = view(2, 'me', t2);
 
     test('pickOutranking: the strongest outranking claim; cleared claims and '

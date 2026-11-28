@@ -63,7 +63,16 @@ class LanServerSessionsFunc {
     ]);
   }
 
-  Future<void> clearSessions() async {
-    await sessionsBox.clear();
+  /// [keep]: shops whose tills' sessions stay (a store this device
+  /// serves: they keep working when it serves again).
+  Future<void> clearSessions({Set<int> keep = const {}}) async {
+    if (keep.isEmpty) {
+      await sessionsBox.clear();
+      return;
+    }
+    await sessionsBox.deleteAll([
+      for (final s in sessionsBox.values)
+        if (!keep.contains(s.shopId)) s.tokenHash,
+    ]);
   }
 }

@@ -224,7 +224,9 @@ void main() {
   }
 
   setUpAll(() async {
-    final tillDir = Directory.systemTemp.createTempSync('stockall_p8c_till');
+    final tillDir = Directory.systemTemp.createTempSync(
+      'stockall_force_clear_till',
+    );
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(

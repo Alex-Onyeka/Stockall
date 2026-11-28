@@ -4,14 +4,21 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:stockall/local_database/lan/lan_paired_devices_func.dart';
 
-/// The devices that paired with this LAN server: each got a secret when it
-/// paired, which it presents to sign in. Only the secret's hash is kept.
+/// The devices that paired with this LAN server for the store it serves:
+/// each got a secret when it paired, which it presents to sign in. Only
+/// the secret's hash is kept.
 abstract class LanDeviceAdmission {
-  /// A new secret for [deviceId] (any earlier one stops working).
-  Future<String> admit(String deviceId);
+  /// A new secret for [deviceId] (any earlier one stops working), or null
+  /// when [deviceId] is already paired and [byPerson] isn't set: only a
+  /// person pairing it again (the code flow) replaces its secret, so a
+  /// scanned QR code or a move can't take over a paired device's id.
+  Future<String?> admit(String deviceId, {bool byPerson = false});
 
   /// Whether [secret] is the one [deviceId] was given.
   bool admitted(String deviceId, String? secret);
+
+  /// Whether [deviceId] is paired here.
+  bool isPaired(String deviceId) => deviceIds().contains(deviceId);
 
   /// The devices that paired here.
   List<String> deviceIds();
@@ -36,33 +43,44 @@ bool _same(String a, String b) {
   return diff == 0;
 }
 
-/// Kept on the server's Hive ([LanPairedDevicesFunc]).
-class LanHiveAdmission implements LanDeviceAdmission {
-  const LanHiveAdmission();
+/// Kept on the server's Hive ([LanPairedDevicesFunc]), per store: a
+/// device paired while this desktop served one store isn't paired for
+/// another.
+class LanHiveAdmission extends LanDeviceAdmission {
+  LanHiveAdmission({required this.shopId});
+
+  /// The store served now.
+  final int Function() shopId;
 
   @override
-  Future<String> admit(String deviceId) async {
+  Future<String?> admit(String deviceId, {bool byPerson = false}) async {
+    if (!byPerson && isPaired(deviceId)) return null;
     final secret = _newSecret();
-    await LanPairedDevicesFunc().putSecretHash(deviceId, _hashOf(secret));
+    await LanPairedDevicesFunc().putSecretHash(
+      shopId(),
+      deviceId,
+      _hashOf(secret),
+    );
     return secret;
   }
 
   @override
   bool admitted(String deviceId, String? secret) {
-    final hash = LanPairedDevicesFunc().secretHashOf(deviceId);
+    final hash = LanPairedDevicesFunc().secretHashOf(shopId(), deviceId);
     return hash != null && secret != null && _same(hash, _hashOf(secret));
   }
 
   @override
-  List<String> deviceIds() => LanPairedDevicesFunc().pairedDeviceIds();
+  List<String> deviceIds() => LanPairedDevicesFunc().pairedDeviceIds(shopId());
 }
 
 /// Kept in memory (tests).
-class LanMemoryAdmission implements LanDeviceAdmission {
+class LanMemoryAdmission extends LanDeviceAdmission {
   final _hashes = <String, String>{};
 
   @override
-  Future<String> admit(String deviceId) async {
+  Future<String?> admit(String deviceId, {bool byPerson = false}) async {
+    if (!byPerson && isPaired(deviceId)) return null;
     final secret = _newSecret();
     _hashes[deviceId] = _hashOf(secret);
     return secret;

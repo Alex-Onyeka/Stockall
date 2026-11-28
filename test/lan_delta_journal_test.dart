@@ -98,7 +98,7 @@ void main() {
     },
   );
 
-  group('a crash part way through a delta (D3)', () {
+  group('a crash part way through a delta', () {
     final sale = _rpc('update_product_quantities', [
       {'hiveUuid': 'q1', 'itemUuid': 'p1', 'quantity': 3, 'isIncrement': false},
     ]);
@@ -165,7 +165,7 @@ void main() {
     });
   });
 
-  group('no network call inside the stock lock (K1)', () {
+  group('no network call inside the stock lock', () {
     test('a slow Supabase lookup doesn\'t hold up a hold or a pull',
         () async {
       final answer = Completer<LanRemoteRow>();

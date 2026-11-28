@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/local_database/lan/lan_credentials_func.dart';
+import 'package:stockall/local_database/lan/lan_paired_devices_func.dart';
 import 'package:stockall/local_database/lan/lan_server_sessions_func.dart';
 import 'package:stockall/local_database/lan/lan_shop_keys_func.dart';
 import 'package:stockall/services/lan/lan_auth_server.dart';
@@ -79,7 +80,7 @@ void main() {
         .having((e) => e.errorCode, 'error', 'not_paired'),
   );
 
-  group('only paired devices sign in (S4)', () {
+  group('only paired devices sign in', () {
     test('a device that never paired is refused, whatever it sends',
         () async {
       await expectLater(login('phone-1'), notPaired());
@@ -149,6 +150,142 @@ void main() {
       );
       expect(LanPairingQr.decode(qr.encode())!.token, 'tok-1');
     });
+    Future<String> pairByCode(String device) async {
+      final client = LanPairingClient(
+        deviceId: device,
+        fingerprintSeen: connection.pin,
+      );
+      final started = await connection.postJson('/v1/pair/start', {
+        'device_id': device,
+        'commit': client.commit,
+      });
+      client.started(
+        sessionId: started['session_id'] as String,
+        ns: started['ns'] as String,
+      );
+      await connection.postJson('/v1/pair/reveal', {
+        'session_id': client.sessionId,
+        'nc': client.nc,
+      });
+      final confirmed = await connection.postJson('/v1/pair/confirm', {
+        'session_id': client.sessionId,
+        'proof': client.proof,
+      });
+      return confirmed['pair_secret'] as String;
+    }
+
+    Future<int> scan(
+      String token,
+      String device, {
+      LanConnection? from,
+    }) async {
+      try {
+        await (from ?? connection).postJson('/v1/pair/qr', {
+          'token': token,
+          'device_id': device,
+        });
+        return 200;
+      } on LanHttpException catch (e) {
+        return e.statusCode;
+      }
+    }
+
+    test('a QR code pairs one device; hidden, it pairs none', () async {
+      final token = server.issueQrToken();
+      expect(server.qrPairings, 0);
+      expect(await scan(token, 'phone-3'), 200);
+      // Counted: the screen shows a fresh code.
+      expect(server.qrPairings, 1);
+      expect(await scan(token, 'phone-4'), 403);
+      expect(server.qrPairings, 1);
+
+      final hidden = server.issueQrToken();
+      server.revokeQrTokens();
+      expect(await scan(hidden, 'phone-5'), 403);
+    });
+
+    test('a scanned QR code can\'t pair a device id that is paired already; '
+        'a person pairing it with the code can', () async {
+      final first = await pairByCode('phone-1');
+      expect(await scan(server.issueQrToken(), 'phone-1'), 409);
+      // Its pairing is untouched.
+      expect((await login('phone-1', first))['token'], isA<String>());
+
+      final again = await pairByCode('phone-1');
+      expect((await login('phone-1', again))['token'], isA<String>());
+      await expectLater(login('phone-1', first), notPaired());
+    });
+
+    test('an address that sent 10 QR tokens that pair nothing in a minute '
+        'is refused; other devices still pair with the QR code', () async {
+      // Another device: the server sees it at another address.
+      final other = (await LanConnection.open([
+        LanEndpoint('::1', server.port!),
+      ], pin: identity.fingerprint))!;
+      addTearDown(other.close);
+
+      for (var i = 0; i < 10; i++) {
+        expect(await scan('guess-$i', 'phone-$i'), 403);
+      }
+      expect(await scan(server.issueQrToken(), 'phone-x'), 429);
+      expect(await scan(server.issueQrToken(), 'phone-y', from: other), 200);
+      // Good scans don't count.
+      for (var i = 0; i < 10; i++) {
+        expect(
+          await scan(server.issueQrToken(), 'phone-z$i', from: other),
+          200,
+        );
+      }
+      expect(await scan(server.issueQrToken(), 'phone-w', from: other), 200);
+      now = now.add(const Duration(minutes: 1));
+      expect(await scan(server.issueQrToken(), 'phone-x'), 200);
+    });
+
+    test('a move can\'t take over the id of a device paired here', () async {
+      final moving = LanServer(
+        identity: identity,
+        deviceId: 'desk-2',
+        serverView: () => {'epoch': 4},
+        auth: LanAuthService(shopId: () => 7, shopJson: (_) => null),
+        admission: LanMemoryAdmission(),
+        acceptMoved: (_, _) => true,
+      );
+      await moving.start(ports: const [0]);
+      addTearDown(moving.stop);
+      final there = (await LanConnection.open([
+        LanEndpoint('127.0.0.1', moving.port!),
+      ], pin: identity.fingerprint))!;
+      addTearDown(there.close);
+      Future<Map<String, dynamic>> moved(String device) =>
+          there.postJson('/v1/auth/login', {
+            'email': 'ada@shop.test',
+            'password': 'right',
+            'device_id': device,
+            'moved': {'type': 'moved'},
+          });
+
+      // A device new here: let in, and given a secret.
+      expect((await moved('phone-7'))['pair_secret'], isA<String>());
+      // The same id again (another device claiming it): refused.
+      await expectLater(moved('phone-7'), notPaired());
+    });
+  });
+
+  test('pairing is per store: a device paired while this desktop served one '
+      'store is not paired for another', () async {
+    await LanPairedDevicesFunc().init();
+    await LanPairedDevicesFunc().devicesBox.clear();
+    final seven = LanHiveAdmission(shopId: () => 7);
+    final eight = LanHiveAdmission(shopId: () => 8);
+    final secret = (await seven.admit('phone-1'))!;
+    expect(seven.admitted('phone-1', secret), isTrue);
+    expect(seven.deviceIds(), ['phone-1']);
+    expect(eight.admitted('phone-1', secret), isFalse);
+    expect(eight.isPaired('phone-1'), isFalse);
+    expect(eight.deviceIds(), isEmpty);
+    // New to store 8: a QR code or a move may pair it there.
+    expect(await eight.admit('phone-1'), isNotNull);
+    expect(await seven.admit('phone-1'), isNull);
   });
 
   test('the failed-login record keeps at most its cap of keys, expired ones '

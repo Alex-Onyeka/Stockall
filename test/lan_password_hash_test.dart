@@ -52,7 +52,7 @@ void main() {
     expect(again.hash, a.hash);
   });
 
-  test('the default iteration count is the D9 floor', () async {
+  test('the default iteration count is at least the floor of 100,000', () async {
     expect(LanConstants.pbkdf2Iterations, greaterThanOrEqualTo(100000));
     expect(lanDummyPasswordHash.iterations, LanConstants.pbkdf2Iterations);
     expect(await verifyPassword('anything', lanDummyPasswordHash), isFalse);

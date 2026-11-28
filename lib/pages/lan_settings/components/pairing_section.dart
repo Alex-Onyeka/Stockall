@@ -41,6 +41,28 @@ class _ServerPairing extends StatefulWidget {
 class _ServerPairingState extends State<_ServerPairing> {
   Future<String?>? _qr;
 
+  /// [LanSettingsModel.qrPairings] when [_qr] was asked for.
+  int _qrPairings = 0;
+
+  void _showQr() {
+    _qrPairings = widget.model.qrPairings;
+    _qr = widget.model.pairingQrPayload();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ServerPairing oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A device paired with the code shown, which used it up: a fresh one.
+    if (_qr != null && widget.model.qrPairings != _qrPairings) _showQr();
+  }
+
+  @override
+  void dispose() {
+    // Left the page with the code shown: it stops working.
+    if (_qr != null) widget.model.cancelPairingQr();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = returnTheme(context);
@@ -91,7 +113,13 @@ class _ServerPairingState extends State<_ServerPairing> {
           icon: Icons.qr_code_2,
           outlined: true,
           onPressed: () => setState(() {
-            _qr = _qr == null ? widget.model.pairingQrPayload() : null;
+            // Hidden: the code shown stops working.
+            if (_qr != null) {
+              widget.model.cancelPairingQr();
+              _qr = null;
+            } else {
+              _showQr();
+            }
           }),
         ),
         if (_qr != null)
@@ -310,8 +338,9 @@ class _ClientPairingState extends State<_ClientPairing> {
         return 'The code doesn\'t match: this may not be your store server. '
             'Nothing was saved. Try again, and check the code on the server.';
       case LanPairResult.failed:
-        return 'Couldn\'t pair${outcome.message == null ? '' : ': '
-                  '${outcome.message}'}.';
+        final message = outcome.message;
+        if (message == null) return 'Couldn\'t pair.';
+        return 'Couldn\'t pair: $message${message.endsWith('.') ? '' : '.'}';
       case LanPairResult.awaitingCode:
       case LanPairResult.paired:
         return 'Couldn\'t pair.';

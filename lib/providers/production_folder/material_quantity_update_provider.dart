@@ -97,9 +97,14 @@ class MaterialQuantityUpdateProvider with ChangeNotifier {
                 })
                 .toList();
 
-        await client.rpc(
-          'update_materials_quantities',
-          params: {'updates': tempMaterialQuantityUpdates},
+        await LanSentMarks.send(
+          queue.materialsQuantityUpdateBoxName,
+          sentUuids,
+          to: to,
+          run: () => client.rpc(
+            'update_materials_quantities',
+            params: {'updates': tempMaterialQuantityUpdates},
+          ),
         );
 
         await queue.materialsQuantityUpdateBox.deleteAll(sentUuids);

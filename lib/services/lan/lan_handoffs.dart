@@ -5,6 +5,7 @@ import 'package:stockall/local_database/lan/lan_deleted_items_func.dart';
 import 'package:stockall/local_database/lan/lan_handoffs_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/lan/lan_constants.dart';
+import 'package:stockall/services/lan/lan_routing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Handoffs. When the LAN server acknowledges a write,
@@ -44,9 +45,13 @@ class LanHandoff {
     required this.serverTime,
     required this.handedAt,
     this.attempts = 0,
+    this.shopId,
   });
 
   final LanHandoffKind kind;
+
+  /// The store it belongs to (null: recorded before handoffs had one).
+  final int? shopId;
   final String method;
 
   /// After `/rest/v1/`: `products`, `rpc/update_product_quantities`, …
@@ -122,6 +127,7 @@ class LanHandoff {
     serverTime: serverTime,
     handedAt: handedAt,
     attempts: attempts ?? this.attempts,
+    shopId: shopId,
   );
 
   /// An insert (or upsert) without its rows [wasDeleted] names: null when
@@ -165,6 +171,7 @@ class LanHandoff {
     'server_time': serverTime,
     'handed_at': handedAt.toUtc().toIso8601String(),
     'attempts': attempts,
+    if (shopId != null) 'shop_id': shopId,
   };
 
   factory LanHandoff.fromJson(Map<String, dynamic> json) => LanHandoff(
@@ -179,6 +186,7 @@ class LanHandoff {
     serverTime: json['server_time'] as int?,
     handedAt: DateTime.parse(json['handed_at'] as String),
     attempts: json['attempts'] as int? ?? 0,
+    shopId: json['shop_id'] as int?,
   );
 }
 
@@ -315,25 +323,35 @@ class LanHandoffs {
   LanHandoffs({
     LanHandoffsFunc? store,
     bool Function(String table, String uuid)? wasDeleted,
+    int? Function()? currentShop,
   }) : _store = store ?? LanHandoffsFunc(),
-       _wasDeleted = wasDeleted ?? LanDeletedItemsFunc().contains;
+       _wasDeleted = wasDeleted ?? LanDeletedItemsFunc().contains,
+       _currentShop = currentShop ?? LanRoutingDeps.currentShopId;
 
   final LanHandoffsFunc _store;
+
+  /// The store signed in now: handoffs of another one (kept over a
+  /// logout that skipped the unsent check, or a deleted store) are left
+  /// alone until it is the current store again.
+  final int? Function() _currentShop;
 
   /// Rows deleted on this device (its record of deleted items).
   final bool Function(String table, String uuid) _wasDeleted;
 
   bool get _ready => _store.isOpen;
 
+  /// The current store's handoffs (with those recorded without one).
   List<(int, LanHandoff)> all() {
     if (!_ready) return const [];
+    final shop = _currentShop();
     final out = <(int, LanHandoff)>[];
     for (final e in _store.entries()) {
       try {
-        out.add((
-          e.key,
-          LanHandoff.fromJson(jsonDecode(e.value) as Map<String, dynamic>),
-        ));
+        final h = LanHandoff.fromJson(
+          jsonDecode(e.value) as Map<String, dynamic>,
+        );
+        if (shop != null && h.shopId != null && h.shopId != shop) continue;
+        out.add((e.key, h));
       } catch (_) {
         // Unreadable: kept, never sent.
       }
@@ -353,6 +371,7 @@ class LanHandoffs {
     required Map<String, String> answerHeaders,
     required String serverDeviceId,
     required int epoch,
+    int? shopId,
   }) async {
     if (!_ready || status < 200 || status > 299) return;
     const prefix = '/rest/v1/';
@@ -374,6 +393,7 @@ class LanHandoffs {
         answerHeaders[LanConstants.serverTimeHeader] ?? '',
       ),
       handedAt: DateTime.now().toUtc(),
+      shopId: shopId,
     );
     await _store.add(jsonEncode(handoff.toJson()));
   }
@@ -387,6 +407,7 @@ class LanHandoffs {
     required List<int> body,
     required String serverDeviceId,
     required int epoch,
+    int? shopId,
   }) async {
     if (!_ready) return false;
     const prefix = '/rest/v1/';
@@ -407,6 +428,7 @@ class LanHandoffs {
       epoch: epoch,
       serverTime: null,
       handedAt: DateTime.now().toUtc(),
+      shopId: shopId,
     );
     await _store.add(jsonEncode(handoff.toJson()));
     return true;

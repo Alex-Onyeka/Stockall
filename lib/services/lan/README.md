@@ -18,6 +18,18 @@ Decided by `LanRouting` ([`lan_routing.dart`](lan_routing.dart)) and held in `Re
 | `lanDown` | On the store's network, but the server isn't answering | A client whose every request fails as a network error, so the providers' existing offline path runs and queues wait | `false` |
 | `offLan` | A till away from the store's network | Supabase directly; each sync first replays what the server took but hasn't synced (handoffs) | A network interface is up |
 
+The store routing works for is the **current store as stored in Hive** (`CurrentShopFunc`, read by `LanRoutingDeps.currentShopId`), not `ShopProvider().userShops`, which stays empty until the shops are fetched. A LAN login writes it. Routing runs again whenever it changes. At start, a device with a LAN session for that store goes to `lanDown` straight away, so nothing reaches Supabase before the first evaluation has picked the route.
+
+## Signing in, logging out and the current store
+- **Sign-in:** a paired store server answers first ([`../auth_service.dart`](../auth_service.dart), `lanLoginStep` in [`../../providers/local_server_provider.dart`](../../providers/local_server_provider.dart)):
+  - server unreachable: the existing Supabase or offline login runs, as before;
+  - too many attempts: final;
+  - wrong password, no network interface up: final;
+  - wrong password with an interface up: the server's logins may be out of date, so Supabase decides (never the offline password check). If Supabase takes the password, the till asks the server to fetch its logins again (`POST /v1/auth/refresh`, paired devices only, once a minute). Once the server has taken the request, the till signs in there again with the typed password (after 3 s, 10 s and 30 s). That retry saves only the LAN session (with the shop key and epoch floor), never the signed-in user or the current store the Supabase sign-in saved. It stops if the user signs out, or if the current store changes or isn't the server's store.
+- **Logout on the serving desktop:** it stops serving while no one is signed in (a resume still looking for another server of the store when the logout comes doesn't start it). Its server record, and that store's key, staff logins and tills' sessions, are kept (all keys, logins and sessions are kept when the stores served here can't be worked out), so it serves again by itself when someone signs in to the same store, even offline (`resumeServerIfOwned`, run from routing when the current store changes). Its tills see **Server not answering** meanwhile.
+- **Another store on the serving desktop:** switching stores is refused until the server is removed (Settings › Store Network › Remove the store server), so its tills are told. Signing in to another store after a logout is allowed, with a warning that the first store's tills have no server until someone signs in to it here or removes the role.
+- **Unsent changes:** logout and store switch wait while handoffs or unconfirmed checkouts are held (`lanUnsentMessage` in [`lan_unsent.dart`](lan_unsent.dart)). The logouts that skip that check (password reset, account deletion), and deleting a store, keep them: each is tagged with its store and stays hidden until that store is current again.
+
 ## Trace 1: creating a product
 1. **`DataProvider.createProduct`** ([`providers/data_provider.dart`](../../providers/data_provider.dart)) writes the product to `ProductsFunc().productBox` and queues it in `CreatedProductFunc`, then calls `syncData()`. This is unchanged.
 2. **`syncData()`** checks `isConnected` (route-aware, per the table above). It runs `RemoteRouter.beforeSync` (off the LAN, this replays handoffs), then `createProductsSync()`, which calls `supabase.from('products')…`. In every provider, `supabase` is `backend()`.
@@ -37,7 +49,7 @@ Decided by `LanRouting` ([`lan_routing.dart`](lan_routing.dart)) and held in `Re
    - The server queues the change for Supabase ([`rest/lan_delta_registry.dart`](rest/lan_delta_registry.dart)).
    - When the till's own queued stock change for the same sale arrives later, it is recognised by its `hiveUuid` and not applied twice.
    - The receipt itself syncs as in Trace 1 (table `receipts`).
-3. **If the server can't be reached at checkout,** the checkout is kept on the till and sent when the server is back.
+3. **If the server can't be reached at checkout,** the checkout is kept on the till and sent when the server is back. Its stock changes count as sent to that server (see "A change the server never answered").
 4. **A till that drops** loses its holds `LanConstants.holdGrace` (20 s) after its last socket closes. They can also be released by hand under Settings › Store Network › Devices.
 
 ## Trace 3: a pull from Supabase (server only)
@@ -65,12 +77,30 @@ Which tables the server pulls, and in what order: `lanPullPlans` in [`sync/lan_p
 - `subscription` and `subscription_payments` get `user_id=eq.<this store's owner>`, and the payments RPC's answer is filtered to that owner;
 - `app_version` and `utility_constants` are read-only.
 
+## A change the server never answered
+A stock or account change (the four delta RPCs, and a checkout's stock changes) sent to the store server without an answer may already be applied there. Sending it to Supabase or to another server would apply it twice. So:
+- **Before the send,** its queue entry is marked as sent, and as sent to that server ([`../../local_database/lan/sent_entries_func.dart`](../../local_database/lan/sent_entries_func.dart), [`lan_sent_marks.dart`](lan_sent_marks.dart)).
+- **After an answer:**
+  - 2xx: the entry is removed and the marks end;
+  - 4xx (refused: not applied): the marks end, and the entry may go anywhere again;
+  - 5xx, a timeout or a network error: the marks stay.
+
+  The LAN client notes the HTTP status for the send (`LanSentMarks.noteStatus`), because a `PostgrestException` doesn't carry it. To Supabase, any HTTP answer ends the marks; only a network failure keeps them.
+- **The server's own till** sets no marks: its checkout runs in process, so no answer is lost, and its queues go to Supabase.
+- **A marked entry goes only to its server,** which skips what it already applied (by `hiveUuid`). Off the LAN, or on another server, it stays queued.
+- **If its server is force-cleared, or hands over to a new server,** the entry stays held and is listed in an alert ("Not confirmed"), so stock can be checked by hand. The new server can't tell whether the old one applied it: the old one may have sent it to Supabase itself, and it queues most changes under new uuids.
+- **Pulls** ([`sync/lan_pending_deltas.dart`](sync/lan_pending_deltas.dart)) don't add queued changes back while any entry of that table is out. They keep the stored value for items with an entry held for another server. `getProducts` also checks for a running sync again just before storing.
+
 ## Trust between devices
-- **Pairing is done by a person:** the code shown on the server, or its QR code (valid for 10 minutes). The till pins the server's certificate and gets a secret; the server keeps only its hash ([`../../local_database/lan/lan_paired_devices_func.dart`](../../local_database/lan/lan_paired_devices_func.dart)). Only paired devices may sign in (`/v1/auth/login` refuses others with `not_paired`, and the till's status then asks to pair again). Pairings from before this rule must be made again.
+- **Pairing is done by a person:** the code shown on the server, or its QR code (valid for 10 minutes, pairs one device, and replaced on screen after each; hiding it ends it). Code pairing allows 5 starts a minute. A device address that sends 10 QR tokens that pair nothing within a minute is refused (429) until a minute has passed; other devices' QR pairings go on. A till already paired that scans a QR code is told to pair again with the code. Pairings are per store. A device id already paired can be paired again only with the code, never by a QR code or a move. The till pins the server's certificate and gets a secret; the server keeps only its hash ([`../../local_database/lan/lan_paired_devices_func.dart`](../../local_database/lan/lan_paired_devices_func.dart)). Only paired devices may sign in (`/v1/auth/login` refuses others with `not_paired`, and the till's status then asks to pair again). Pairings from before this rule must be made again.
 - **A stored password goes only to a trusted certificate:** one a person paired, or one *vouched for* by a move (below). A server proven only with the shop key is never followed automatically; the status shows "Pair again".
 - **Vouched moves:** a server that steps down broadcasts a `moved` event signed with its own TLS key, naming the new server and listing the devices paired with it ([`lan_move_proof.dart`](lan_move_proof.dart)). A till follows it only if the signature matches the certificate it pinned, keeps the event until its first sign-in there, and presents it; the new server accepts it if the signer is a former server it proved it outranks (or one it trusts itself) and the event lists that till, then gives the till its own secret.
-- **Epochs** may jump at most `LocalServerRecord.maxEpochJump` (2) above the highest this device knows.
+- **Epochs** may jump at most `LocalServerRecord.maxEpochJump` (2) above the highest this device knows. Every LAN login raises this device's floor for the store to the epoch in its answer (it never lowers it), so a device new to the store has a floor before it adopts any record.
 - **The shop key** a device holds is never replaced by one a login answer carries.
+
+## Known limits
+- **A resume can be missed after a store change (narrow race).** Routing resumes the server when the current store changes (`_onShopChanged` in [`lan_routing.dart`](lan_routing.dart)), and compares with the last store it saw. `evaluate()` updates that value too. If an evaluation finishes between the write of the current store and the box event, the resume is skipped and the desktop doesn't serve until the next launch or sign-in. A separate "last store resumed" value would close it.
+- **A Supabase 5xx or 504 ends the in-flight marks** ([`lan_sent_marks.dart`](lan_sent_marks.dart), `endsMarks`), even though Supabase may have applied the change. Re-sending it is what happened before LAN sync existed. The new effect is that a pull in between can add the change back on top of a value that already includes it, until the next sync.
 
 ## Adding a table or a provider function
 1. **Do everything the app already needs:** the model, its unsynced wrappers, a Func per box registered in `initHive()`, the provider's `*Sync()` methods, and a step in `syncData()` (see `CLAUDE.md`).

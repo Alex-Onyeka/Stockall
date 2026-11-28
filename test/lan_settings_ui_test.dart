@@ -106,7 +106,20 @@ class _FakeModel extends LanSettingsModel {
   }
 
   @override
-  Future<String?> pairingQrPayload() async => 'stockall-pair:payload';
+  int qrPairings = 0;
+
+  /// How often the page asked for a QR code, and hid one.
+  int qrPayloads = 0;
+  int qrCancels = 0;
+
+  @override
+  Future<String?> pairingQrPayload() async {
+    qrPayloads++;
+    return 'stockall-pair:payload';
+  }
+
+  @override
+  void cancelPairingQr() => qrCancels++;
 
   @override
   void cancelServerPairing() {
@@ -134,10 +147,13 @@ class _FakeModel extends LanSettingsModel {
         : const LanPairOutcome(LanPairResult.codeMismatch);
   }
 
+  /// What a QR scan comes to; null: paired.
+  LanPairOutcome? qrResult;
+
   @override
   Future<LanPairOutcome> pairFromQr(String payload) async {
     calls.add('qr $payload');
-    return LanPairOutcome(LanPairResult.paired, server: _server);
+    return qrResult ?? LanPairOutcome(LanPairResult.paired, server: _server);
   }
 
   @override
@@ -249,6 +265,48 @@ void main() {
     await tester.pumpAndSettle();
     expect(model.calls, ['releaseOwn']);
     expect(find.text('Released this device\'s held stock.'), findsOneWidget);
+  });
+
+  testWidgets('the serving desktop: once a device paired with the QR code '
+      'shown (which uses it up), a fresh one replaces it; hiding it ends it',
+      (tester) async {
+    final model = _FakeModel()
+      ..status = const LanStatus(kind: LanStatusKind.server, serverOnline: true)
+      ..isDesktop = true
+      ..mayManage = true
+      ..isServing = true
+      ..record = LocalServerRecord(
+        shopId: 7,
+        epoch: 2,
+        serverDeviceId: 'this-desk',
+      );
+    await pumpPage(tester, desktop, model);
+    await tester.tap(find.text('Show QR code'));
+    await tester.pumpAndSettle();
+    expect(find.byType(BarcodeWidget), findsOneWidget);
+    expect(model.qrPayloads, 1);
+
+    // Nothing paired: the same code stays.
+    model._notifier.notifyListeners();
+    await tester.pumpAndSettle();
+    expect(model.qrPayloads, 1);
+
+    // A phone paired with it.
+    model.qrPairings = 1;
+    model._notifier.notifyListeners();
+    await tester.pumpAndSettle();
+    expect(model.qrPayloads, 2);
+    expect(find.byType(BarcodeWidget), findsOneWidget);
+
+    await tester.tap(find.text('Hide QR code'));
+    await tester.pumpAndSettle();
+    expect(model.qrCancels, 1);
+    expect(find.byType(BarcodeWidget), findsNothing);
+    // Hidden: a later pairing count asks for nothing.
+    model.qrPairings = 2;
+    model._notifier.notifyListeners();
+    await tester.pumpAndSettle();
+    expect(model.qrPayloads, 2);
   });
 
   testWidgets('the serving desktop, with Manage Local Server: remove the '
@@ -565,6 +623,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(model.calls, ['begin 192.168.1.30:47900']);
     expect(find.text('Couldn\'t pair: Server not reachable.'), findsOneWidget);
+  });
+
+  testWidgets('a QR scan the server refused shows its reason as it is',
+      (tester) async {
+    final model = _FakeModel()
+      ..canScan = true
+      ..scanned = 'stockall-pair:payload'
+      ..qrResult = const LanPairOutcome(
+        LanPairResult.failed,
+        message: 'This device is already paired with this server. '
+            'Pair it again with the code.',
+      );
+    await pumpPage(tester, phone, model);
+
+    await tester.tap(find.text('Scan QR code'));
+    await tester.pumpAndSettle();
+    expect(model.calls, ['qr stockall-pair:payload']);
+    expect(
+      find.text(
+        'Couldn\'t pair: This device is already paired with this server. '
+        'Pair it again with the code.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('on the web: no store network', (tester) async {

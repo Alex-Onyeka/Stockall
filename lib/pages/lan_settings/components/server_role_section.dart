@@ -29,8 +29,8 @@ String serverChangeMessage(LocalServerChange change, {required bool made}) {
     case LocalServerChange.notAvailable:
       return 'The store network isn\'t available on this device.';
     case LocalServerChange.serverStartFailed:
-      return 'This desktop was made the store server but couldn\'t start '
-          'serving. Restart the app to try again.';
+      return 'This desktop couldn\'t start serving, so it wasn\'t made the '
+          'store server. Try again.';
     case LocalServerChange.needsInternet:
       return 'Connect this desktop to the internet once with this store, '
           'then try again.';

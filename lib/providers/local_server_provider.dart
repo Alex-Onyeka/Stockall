@@ -261,6 +261,10 @@ class LocalServerProvider extends ChangeNotifier {
   int _highestKnownEpoch(int shopId) =>
       max(LocalServerFunc().epochFloor(shopId), record(shopId: shopId)?.epoch ?? 0);
 
+  @visibleForTesting
+  bool epochPlausibleFor(int shopId, int epoch) =>
+      _epochPlausible(shopId, epoch);
+
   bool _epochPlausible(int shopId, int epoch) {
     final known = _highestKnownEpoch(shopId);
     return known == 0 || LocalServerRecord.withinEpochCap(epoch, known);
@@ -386,6 +390,12 @@ class LocalServerProvider extends ChangeNotifier {
 
   Future<String?> pairingQrPayload() => LanTransport().pairingQrPayload();
 
+  /// The QR code was hidden: its token stops working.
+  void cancelPairingQr() => LanTransport().cancelPairingQr();
+
+  /// How many devices paired with a QR code here.
+  int get qrPairings => LanTransport().qrPairings;
+
   /// On the server: ends the pairing session it shows.
   void cancelServerPairing() => LanTransport().cancelServerPairing();
 
@@ -459,8 +469,12 @@ class LocalServerProvider extends ChangeNotifier {
         shopKey: shopKey,
       );
     } catch (e, s) {
+      // Not serving: the claim is undone, so the store has no server that
+      // never answers (its epoch floor stays raised; a later claim is
+      // higher still).
+      await _restore(shopId, current);
       await mainLocalLog(
-        'Local Server claimed but failed to start: $e',
+        'Local Server claimed but failed to start; claim undone: $e',
         error: e,
         stackTrace: s,
       );
@@ -469,18 +483,39 @@ class LocalServerProvider extends ChangeNotifier {
     return LocalServerChange.applied;
   }
 
-  /// On desktop launch: start serving again if this device holds the role.
+  /// Puts [shopId]'s record back to [previous] (none: removed).
+  Future<void> _restore(int shopId, LocalServerRecord? previous) async {
+    if (previous == null) {
+      await LocalServerFunc().deleteRecord(shopId);
+    } else {
+      await LocalServerFunc().putRecord(previous);
+    }
+    _cache[shopId] = previous;
+    notifyListeners();
+  }
+
+  /// On desktop launch, and when someone signs in to a store: start
+  /// serving again if this device holds the role for the current store
+  /// (only that one: a record of another store waits for a sign-in there).
   Future<void> resumeServerIfOwned() async {
     final transport = LanTransport();
+    final current = LanRoutingDeps.currentShopId();
+    final generation = _servingGeneration;
     if (!transport.isAvailable ||
         runningInAltWindow ||
+        current == null ||
+        (transport.isServing && transport.servingShopId == current) ||
         !ShopProvider().isDesktop()) {
       return;
     }
     try {
       final deviceId = await DeviceIdentity().deviceId();
       for (final owned in LocalServerFunc().allRecords()) {
-        if (owned.serverDeviceId != deviceId) continue;
+        if (owned.serverDeviceId != deviceId ||
+            owned.shopId != current ||
+            owned.isCleared) {
+          continue;
+        }
         _cache[owned.shopId] = owned;
         final fingerprint = await transport.serverFingerprint();
         if (owned.certFingerprint != null &&
@@ -506,6 +541,14 @@ class LocalServerProvider extends ChangeNotifier {
         );
         if (winner != null) {
           await demoteTo(winner, shopId: owned.shopId);
+          return;
+        }
+        // A logout or store switch while it looked: not for this store now.
+        if (generation != _servingGeneration ||
+            LanRoutingDeps.currentShopId() != current) {
+          await mainLocalLog(
+            'Local Server not resumed: the store changed or was signed out',
+          );
           return;
         }
         await transport.startServer(
@@ -577,10 +620,43 @@ class LocalServerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// The stores whose (not cleared) server record names this device.
+  Future<Set<int>> ownedShops() async {
+    final deviceId = await DeviceIdentity().deviceId();
+    return {
+      for (final r in LocalServerFunc().allRecords())
+        if (r.serverDeviceId == deviceId && !r.isCleared) r.shopId,
+    };
+  }
+
+  /// A store other than the current one whose server this desktop is
+  /// (its record names this device), or null: its tills are without a
+  /// server until someone signs in to it here or the role is removed.
+  Future<int?> otherStoreServedHere() async {
+    try {
+      if (!LanTransport().isAvailable || !ShopProvider().isDesktop()) {
+        return null;
+      }
+      final current = LanRoutingDeps.currentShopId();
+      for (final shop in await ownedShops()) {
+        if (shop != current) return shop;
+      }
+    } catch (e) {
+      await mainLocalLog('LAN: could not check the server role: $e');
+    }
+    return null;
+  }
+
+  /// Bumped by [stopServingAndAdverts]: a [resumeServerIfOwned] that
+  /// started before it doesn't start the server.
+  int _servingGeneration = 0;
+
   /// Stops serving and every advert from this device, leaving the stored
   /// records alone. `clearAllShopData` calls this on logout and store switch
-  /// so a desktop doesn't keep serving the previous shop until restart.
+  /// so a desktop doesn't serve while no one is signed in to its store; it
+  /// serves again when someone is ([resumeServerIfOwned]).
   Future<void> stopServingAndAdverts() async {
+    _servingGeneration++;
     final transport = LanTransport();
     await transport.stopServer();
     await transport.stopPeer();
@@ -632,9 +708,17 @@ class LocalServerProvider extends ChangeNotifier {
   /// password so offline login keeps working, the shop), plus the LAN
   /// session and the shop key. [LanAuthResult.unreachable] means "use the
   /// existing login".
+  ///
+  /// With [sessionFor] (a till already signed in, see
+  /// [refreshServerCredentials]) only the LAN session, shop key and epoch
+  /// floor are saved, never the user or the current shop, and only while
+  /// that store is current and is the one the server signed in to;
+  /// otherwise the session is ended and the result is
+  /// [LanAuthResult.failed].
   Future<LanAuthResult> loginViaLan({
     required String email,
     required String password,
+    int? sessionFor,
   }) async {
     final transport = LanTransport();
     if (!transport.isAvailable || LanPairedServersFunc().all().isEmpty) {
@@ -676,7 +760,27 @@ class LocalServerProvider extends ChangeNotifier {
       if (user.userId == null || shopId == null) {
         throw const FormatException('LAN login: no user or shop id');
       }
+      if (sessionFor != null &&
+          (shopId != sessionFor ||
+              LanRoutingDeps.currentShopId() != sessionFor)) {
+        await mainLocalLog(
+          'LAN login: the server\'s store $shopId is not the current one; '
+          'session not kept',
+        );
+        await transport.logoutFromServer(
+          serverDeviceId: outcome.serverDeviceId!,
+          token: outcome.token!,
+          deviceId: deviceId,
+        );
+        return LanAuthResult.failed;
+      }
       await _keepShopKey(shopId, outcome.shopKey!);
+      // A device new to the store knows no epoch yet: the server a person
+      // paired it with gives the floor, so a forged claim far above it is
+      // not adopted (see _epochPlausible).
+      if (outcome.epoch case final epoch?) {
+        await LocalServerFunc().raiseEpochFloor(shopId, epoch);
+      }
       await LanClientSessionFunc().put(
         LanClientSession(
           serverDeviceId: outcome.serverDeviceId!,
@@ -689,6 +793,12 @@ class LocalServerProvider extends ChangeNotifier {
           createdAt: DateTime.now().toUtc(),
         ),
       );
+      if (sessionFor != null) {
+        await mainLocalLog('✅ LAN session: ${user.email}, shop $shopId');
+        notifyListeners();
+        unawaited(LanRouting().evaluate());
+        return LanAuthResult.ok;
+      }
       await ShopFunc().insertShops([shop]);
       await UserFunc().insertUser(user);
       await LoggedInUserFunc().insertLoggedInUser(
@@ -714,19 +824,68 @@ class LocalServerProvider extends ChangeNotifier {
     }
   }
 
-  /// After the cloud took a password the store server refused (its logins
-  /// were out of date): asks the server to fetch them again. Best effort.
-  Future<void> refreshServerCredentials() async {
+  /// How long after the server took a login refresh the LAN login is
+  /// tried again (it fetches the logins from Supabase meanwhile).
+  @visibleForTesting
+  List<Duration> lanLoginRetryDelays = const [
+    Duration(seconds: 3),
+    Duration(seconds: 10),
+    Duration(seconds: 30),
+  ];
+
+  /// After the cloud took the password [email] typed that the store server
+  /// refused (its logins were out of date): asks the server to fetch them
+  /// again and, once it took the request, signs in there again with that
+  /// password, so this till gets its LAN session (only that: the user and
+  /// the current shop the cloud sign-in saved stay). Stops when the user is
+  /// no longer signed in, the current shop changed or isn't the server's
+  /// store, or at any answer but a wrong password. Null when nothing was
+  /// tried. Best effort; never throws.
+  Future<LanAuthResult?> refreshServerCredentials({
+    required String email,
+    required String password,
+  }) async {
     final transport = LanTransport();
-    if (!transport.isAvailable || LanPairedServersFunc().all().isEmpty) {
-      return;
+    final shop = LanRoutingDeps.currentShopId();
+    if (!transport.isAvailable ||
+        shop == null ||
+        LanPairedServersFunc().all().isEmpty) {
+      return null;
     }
     try {
-      await transport.requestCredentialRefresh(
+      final asked = await transport.requestCredentialRefresh(
         deviceId: await DeviceIdentity().deviceId(),
       );
+      if (!asked) return null;
+      LanAuthResult? result;
+      for (final wait in lanLoginRetryDelays) {
+        await Future<void>.delayed(wait);
+        if (!_signedInAs(email) ||
+            LanRoutingDeps.currentShopId() != shop) {
+          return result;
+        }
+        result = await loginViaLan(
+          email: email,
+          password: password,
+          sessionFor: shop,
+        );
+        if (result != LanAuthResult.invalidCredentials) break;
+      }
+      await mainLocalLog('LAN login after the refresh: ${result?.name}');
+      return result;
     } catch (e) {
-      await mainLocalLog('LAN: could not ask for a login refresh: $e');
+      await mainLocalLog('LAN: login refresh or retry failed: $e');
+      return null;
+    }
+  }
+
+  static bool _signedInAs(String email) {
+    try {
+      final user = LoggedInUserFunc().getLoggedInUser()?.loggedInUser;
+      return user != null &&
+          user.email.trim().toLowerCase() == email.trim().toLowerCase();
+    } catch (_) {
+      return false;
     }
   }
 
@@ -880,6 +1039,38 @@ class LocalServerProvider extends ChangeNotifier {
       columns: heldDeltaColumns,
       rows: heldDeltaRows(held),
     );
+  }
+
+  /// The store's server says [device]'s queue from when it served at
+  /// [epoch] is all there: the delta handoffs to it end, but not the
+  /// changes this till sent it that it never answered for. The current
+  /// server can't tell whether [device] applied them: it records only the
+  /// uuids it was sent itself, [device] may have sent them straight to
+  /// Supabase while it served, and it queues most under new uuids. So
+  /// they stay held (never sent anywhere else) and are listed now, once
+  /// per server and epoch, so stock can be checked by hand.
+  Future<void> reportHeldAtHandover(String device, int epoch) async {
+    try {
+      final held = heldQueuedFor(device);
+      final shop = LanRoutingDeps.currentShopId();
+      if (held.isEmpty || shop == null) return;
+      if (!await LanAlertsFunc().once('handover:$device|$epoch')) return;
+      await LanAlerts().raise(
+        shopId: shop,
+        kind: LanAlertKind.merged,
+        title: 'Stock changes not confirmed',
+        message:
+            'The store moved to a new server. These changes were sent from '
+            'this device to the old server (${_short(device)}), which never '
+            'confirmed them: they may or may not have been applied. They are '
+            'kept on this device and not sent again: check these items\' '
+            'stock by hand.',
+        columns: heldDeltaColumns,
+        rows: heldDeltaRows(held),
+      );
+    } catch (e) {
+      await mainLocalLog('LAN: unconfirmed changes not listed: $e');
+    }
   }
 
   /// Lets a desktop that is about to claim learn this device's epoch.

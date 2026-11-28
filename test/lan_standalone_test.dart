@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show FlutterError;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
@@ -166,6 +167,19 @@ void main() {
     expect(identical(backend(), Supabase.instance.client), isTrue);
   });
 
+  test('the connectivity watch sets aside only the plugin being '
+      'unreachable; any other error goes on', () {
+    bool dropped(Object e) => ConnectivityProvider.isPlatformChannelFailure(e);
+    expect(dropped(MissingPluginException('no plugin')), isTrue);
+    expect(dropped(PlatformException(code: 'unavailable')), isTrue);
+    expect(
+      dropped(FlutterError('Binding has not yet been initialized.')),
+      isTrue,
+    );
+    expect(dropped(StateError('a bug in a listener')), isFalse);
+    expect(dropped(FlutterError('something else')), isFalse);
+  });
+
   test('isConnected and isOnline() are the interface flag, as before',
       () async {
     final connectivity = ConnectivityProvider();
@@ -213,7 +227,7 @@ void main() {
   });
 
   test('on a serving device, while its puller is active, the providers\' '
-      'own fetches are skipped, so their box is never emptied (D29)',
+      'own fetches are skipped, so their box is never emptied',
       () async {
     ConnectivityProvider().checkConnection(true);
     await CreatedCategoriesFunc().createdCategoriesBox.clear();
@@ -249,7 +263,7 @@ void main() {
   });
 
   test('the app\'s own products pull adds back stock changes still queued, '
-      'and pulls again when one was sent meanwhile (D27)', () async {
+      'and pulls again when one was sent meanwhile', () async {
     ConnectivityProvider().checkConnection(true);
     final data = DataProvider();
     // Supabase has 10; a sale of 2 is still queued here, so 8 locally.
@@ -307,7 +321,7 @@ void main() {
 
   test('the app\'s full products fetch (getProducts) adds back stock '
       'changes still queued, and discards its rows when one was sent '
-      'meanwhile (D27)', () async {
+      'meanwhile', () async {
     ConnectivityProvider().checkConnection(true);
     final data = DataProvider();
     addTearDown(data.stopPeriodicIncrementalSync);
@@ -382,7 +396,7 @@ void main() {
   });
 
   test('the app\'s own customers pull, in full and incremental, adds back '
-      'balance and reward changes still queued (D27)', () async {
+      'balance and reward changes still queued', () async {
     ConnectivityProvider().checkConnection(true);
     final c1 = customer('c1', department: null);
     Map<String, dynamic> remote(double balance, String name) => {

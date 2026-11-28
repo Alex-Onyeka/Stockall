@@ -534,30 +534,42 @@ class MainDatabase extends ChangeNotifier {
       'PermissionFunc',
       () => PermissionFunc().clearPermission(),
     );
+    // The server stops while no one is signed in; its record, and its
+    // store's key, logins and tills' sessions, stay, so it serves again
+    // when someone signs in to that store (a store switch must step down
+    // first, see ShopProvider.selectShop).
     await _safeClear(
       'LAN server',
       () => LocalServerProvider().stopServingAndAdverts(),
     );
-    await _safeClear('LocalServerFunc', () async {
-      await LocalServerFunc().clearLocalServerRecords();
-      LocalServerProvider().clearCache();
+    // When the stores served here can't be worked out, the keys, logins
+    // and sessions all stay: clearing a served store's would leave its
+    // tills without a server until someone removes the role.
+    Set<int>? served;
+    await _safeClear('LAN served stores', () async {
+      served = await LocalServerProvider().ownedShops();
     });
-    await _safeClear(
-      'LanCredentialsFunc',
-      () => LanCredentialsFunc().clearCredentials(),
-    );
-    await _safeClear(
-      'LanServerSessionsFunc',
-      () => LanServerSessionsFunc().clearSessions(),
-    );
+    final keep = served;
+    if (keep != null) {
+      await _safeClear(
+        'LanCredentialsFunc',
+        () => LanCredentialsFunc().clearCredentials(keep: keep),
+      );
+      await _safeClear(
+        'LanServerSessionsFunc',
+        () => LanServerSessionsFunc().clearSessions(keep: keep),
+      );
+    }
     await _safeClear(
       'LanClientSessionFunc',
       () => LanClientSessionFunc().clearClientSessions(),
     );
-    await _safeClear(
-      'LanShopKeysFunc',
-      () => LanShopKeysFunc().clearShopKeys(),
-    );
+    if (keep != null) {
+      await _safeClear(
+        'LanShopKeysFunc',
+        () => LanShopKeysFunc().clearShopKeys(keep: keep),
+      );
+    }
     // LanAppliedDeltasFunc is kept: a client of the same store may still
     // retry a batch the server applied. It is cleared when this device
     // serves another store (LanAppliedDeltasFunc.forShop).
@@ -565,10 +577,11 @@ class MainDatabase extends ChangeNotifier {
       'LanDeletedItemsFunc',
       () => LanDeletedItemsFunc().clearDeletedItems(),
     );
-    await _safeClear(
-      'LanHandoffsFunc',
-      () => LanHandoffsFunc().clearHandoffs(),
-    );
+    // Handoffs and pending checkouts are kept: logout and a store switch
+    // wait until there are none, so only a logout that skips that check
+    // (password reset, account deletion) or a deleted store gets here
+    // with some. They name their store and wait until it is current again
+    // (LanHandoffs.all, LanPendingCheckoutsFunc.all).
     await _safeClear(
       'SentEntriesFunc',
       () => SentEntriesFunc().clearSentEntries(),
@@ -580,10 +593,6 @@ class MainDatabase extends ChangeNotifier {
     await _safeClear(
       'LanStockHoldsFunc',
       () => LanStockHoldsFunc().clearHolds(),
-    );
-    await _safeClear(
-      'LanPendingCheckoutsFunc',
-      () => LanPendingCheckoutsFunc().clearPending(),
     );
     await _safeClear(
       'LanOwnHoldsFunc',

@@ -120,9 +120,24 @@ class LanServer {
 
   final DateTime Function() _clock;
 
-  /// Tokens shown in the pairing QR code, until they expire.
+  /// Tokens shown in the pairing QR code, until they expire, are used
+  /// (each pairs one device) or the code is hidden.
   final Map<String, DateTime> _qrTokens = {};
   static const Duration qrTokenFor = Duration(minutes: 10);
+
+  /// When each address sent `/v1/pair/qr` a token that pairs nothing,
+  /// lately: one with [LanConstants.qrPairAttempts] in the last minute is
+  /// refused until they age out. Per address, so a device guessing tokens
+  /// doesn't block the others' QR pairings.
+  final Map<String, List<DateTime>> _qrMisses = {};
+
+  /// The QR code was hidden: no token shown so far pairs a device.
+  void revokeQrTokens() => _qrTokens.clear();
+
+  /// How many devices paired with a QR code since this server started (the
+  /// screen shows a fresh code after each).
+  int get qrPairings => _qrPairings;
+  int _qrPairings = 0;
 
   /// A token for the pairing QR code: a device that scans it may pair for
   /// [qrTokenFor].
@@ -405,7 +420,8 @@ class LanServer {
             sessionId: _string(body, 'session_id'),
             proof: _string(body, 'proof'),
           );
-          final secret = await admission?.admit(device);
+          // A person typed the code: a device paired before is paired again.
+          final secret = await admission?.admit(device, byPerson: true);
           onPairingChanged?.call();
           await _json(request, 200, {
             'ok': true,
@@ -414,18 +430,39 @@ class LanServer {
           return;
         case 'qr':
           // A device that scanned the QR code shown here.
+          final now = _clock();
+          final from = request.connectionInfo?.remoteAddress.address ?? '';
+          _qrMisses.removeWhere((_, misses) {
+            misses.removeWhere(
+              (at) => now.difference(at) >= const Duration(minutes: 1),
+            );
+            return misses.isEmpty;
+          });
+          if ((_qrMisses[from]?.length ?? 0) >= LanConstants.qrPairAttempts) {
+            await _json(request, 429, {'error': 'rate_limited'});
+            return;
+          }
           final admitted = admission;
           final token = _string(body, 'token');
           final device = _string(body, 'device_id');
           final until = _qrTokens[token];
           if (admitted == null ||
               until == null ||
-              !until.isAfter(_clock()) ||
+              !until.isAfter(now) ||
               device.length > 128) {
+            (_qrMisses[from] ??= []).add(now);
             await _json(request, 403, {'error': 'not_paired'});
             return;
           }
+          // Only a new device: one paired already pairs again with the
+          // code.
           final secret = await admitted.admit(device);
+          if (secret == null) {
+            await _json(request, 409, {'error': 'already_paired'});
+            return;
+          }
+          _qrTokens.remove(token);
+          _qrPairings++;
           onPairingChanged?.call();
           await _json(request, 200, {'ok': true, 'pair_secret': secret});
           return;
@@ -508,9 +545,11 @@ class LanServer {
         final paired =
             device is String &&
             admitted.admitted(device, secret is String ? secret : null);
+        // A move never replaces the secret of a device paired here.
         viaMove =
             !paired &&
             device is String &&
+            !admitted.isPaired(device) &&
             moved is Map &&
             (acceptMoved?.call(Map<String, dynamic>.from(moved), device) ??
                 false);
@@ -519,9 +558,19 @@ class LanServer {
           return;
         }
       }
-      final answer = await service.login(body, remoteAddress: remote);
+      var answer = await service.login(body, remoteAddress: remote);
+      // The epoch it serves at: a device signing in for the first time
+      // takes it as its floor, so a claim far above it isn't believed.
+      final epoch = serverView()['epoch'];
+      if (answer.status == 200 && epoch is int) {
+        answer = LanAuthResponse(200, {...answer.body, 'epoch': epoch});
+      }
       if (viaMove && answer.status == 200 && admitted != null) {
         final secret = await admitted.admit(device as String);
+        if (secret == null) {
+          await _json(request, 403, {'error': 'not_paired'});
+          return;
+        }
         onPairingChanged?.call();
         await _send(
           request,

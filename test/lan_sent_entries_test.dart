@@ -54,13 +54,16 @@ class DeltaServer implements LanRestHandler {
   Future<void> Function()? during;
   bool fail = false;
 
+  /// The error [fail] answers with.
+  PgError failure = const PgError(503, 'LAN06', 'not held yet');
+
   @override
   Future<PgResponse> handle(PgRequest request, LanPrincipal principal) async {
     final updates = ((request.body as Map)['updates'] as List)
         .cast<Map<String, dynamic>>();
     batches.add(updates);
     await during?.call();
-    if (fail) throw const PgError(503, 'LAN06', 'not held yet');
+    if (fail) throw failure;
     return const PgResponse(204);
   }
 }
@@ -436,6 +439,28 @@ void main() {
         deltas.batches.last.map((u) => (u['hiveUuid'], u['quantity'])),
         unorderedEquals([('a', 2.0), ('b', 3.0)]),
       );
+      expect(queued(), isEmpty);
+      expect(SentEntriesFunc().sentEntriesBox.isEmpty, isTrue);
+    });
+
+    test('a refusal (4xx) through the LAN client: not applied, so the marks '
+        'end; a server error (5xx) keeps them', () async {
+      final queue = materials.materialsQuantityUpdateBoxName;
+      await materials.createMaterialsQuantityUpdate(materialDelta('a', 2));
+      deltas
+        ..fail = true
+        ..failure = const PgError(400, '22P02', 'bad batch');
+      await MaterialQuantityUpdateProvider().materialsQuantityUpdateSync();
+      expect(SentEntriesFunc().isSent(queue, 'a'), isFalse);
+      expect(SentEntriesFunc().serverOf(queue, 'a'), isNull);
+
+      deltas.failure = const PgError(503, 'LAN01', 'needs internet');
+      await MaterialQuantityUpdateProvider().materialsQuantityUpdateSync();
+      expect(SentEntriesFunc().isSent(queue, 'a'), isTrue);
+      expect(SentEntriesFunc().serverOf(queue, 'a'), isNotNull);
+
+      deltas.fail = false;
+      await MaterialQuantityUpdateProvider().materialsQuantityUpdateSync();
       expect(queued(), isEmpty);
       expect(SentEntriesFunc().sentEntriesBox.isEmpty, isTrue);
     });

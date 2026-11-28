@@ -1,4 +1,4 @@
--- supabase/migrations/<ts>_shops_lan_key.sql
+-- supabase/migrations/20261125170711_shops_lan_key.sql
 -- 1. Check first: shops.shop_id exists, lan_key does not yet.
 SELECT column_name, data_type
   FROM information_schema.columns

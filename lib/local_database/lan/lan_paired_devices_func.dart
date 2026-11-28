@@ -7,8 +7,8 @@ import 'package:stockall/main.dart';
 /// Who may sign in on this device's LAN server, and how a till proves it
 /// was paired. No adapters: plain boxes. Device data (pairing is between
 /// devices): not cleared on logout.
-/// - [devicesBox] (server): each paired device's id → the SHA-256 (hex) of
-///   the secret it was given when it paired.
+/// - [devicesBox] (server): `shopId|deviceId` of each device paired for a
+///   store → the SHA-256 (hex) of the secret it was given when it paired.
 /// - [formerServersBox] (server): certificate fingerprints of servers of
 ///   the shop this one proved it outranks → when (ms since epoch). A move
 ///   one of them signed lets its paired tills sign in here.
@@ -50,15 +50,24 @@ class LanPairedDevicesFunc {
   bool get _serverOpen =>
       Hive.isBoxOpen(devicesBoxName) && Hive.isBoxOpen(formerServersBoxName);
 
-  String? secretHashOf(String deviceId) =>
-      _serverOpen ? devicesBox.get(deviceId) : null;
+  static String _deviceKey(int shopId, String deviceId) => '$shopId|$deviceId';
 
-  Future<void> putSecretHash(String deviceId, String hash) async {
-    if (_serverOpen) await devicesBox.put(deviceId, hash);
+  String? secretHashOf(int shopId, String deviceId) =>
+      _serverOpen ? devicesBox.get(_deviceKey(shopId, deviceId)) : null;
+
+  Future<void> putSecretHash(int shopId, String deviceId, String hash) async {
+    if (_serverOpen) await devicesBox.put(_deviceKey(shopId, deviceId), hash);
   }
 
-  List<String> pairedDeviceIds() =>
-      _serverOpen ? [for (final k in devicesBox.keys) '$k'] : const [];
+  /// The devices paired for [shopId].
+  List<String> pairedDeviceIds(int shopId) {
+    if (!_serverOpen) return const [];
+    final prefix = '$shopId|';
+    return [
+      for (final k in devicesBox.keys)
+        if ('$k'.startsWith(prefix)) '$k'.substring(prefix.length),
+    ];
+  }
 
   bool isFormerServer(String fingerprint) =>
       _serverOpen && formerServersBox.containsKey(fingerprint);

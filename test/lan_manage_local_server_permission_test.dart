@@ -8,10 +8,16 @@ void main() {
     expect(Authorizations().manageLocalServer, 'Manage Local Server');
   });
 
-  test('the migration grants that exact string to Owner and General Manager',
-      () {
+  test('the backfill grants that exact string to Owner and General Manager '
+      '(a data change: a backfill, not a migration)', () {
+    expect(
+      Directory('supabase/migrations').listSync().where(
+        (f) => f.path.endsWith('_manage_local_server_permission.sql'),
+      ),
+      isEmpty,
+    );
     final migrations =
-        Directory('supabase/migrations')
+        Directory('supabase/backfills')
             .listSync()
             .whereType<File>()
             .where(

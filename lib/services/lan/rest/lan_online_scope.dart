@@ -4,13 +4,20 @@ import 'package:stockall/services/lan/rest/postgrest_response.dart';
 
 /// Who belongs to the store the server serves.
 class LanStoreMembers {
-  const LanStoreMembers({required this.ownerId, required this.members});
+  const LanStoreMembers({
+    required this.ownerId,
+    required this.members,
+    this.departments = const {},
+  });
 
   /// The store's owner (may be empty when unknown).
   final String ownerId;
 
   /// Every member, the owner included.
   final Set<String> members;
+
+  /// The uuids of the store's departments.
+  final Set<String> departments;
 }
 
 /// Narrows a request the LAN server forwards to Supabase to rows of the
@@ -19,8 +26,10 @@ class LanStoreMembers {
 /// the till: every forwarded read or write is limited here to what that
 /// person may reach in the app.
 ///
-/// - `users` writes: an update or delete names exactly one member of this
-///   store by `user_id=eq.`; the owner's row only by the owner; no upsert.
+/// - `users` writes: an insert links only to this store (no other
+///   store's `shop_id`, only this store's departments) and never makes an
+///   `Owner`; an update or delete names exactly one member of this store
+///   by `user_id=eq.`; the owner's row only by the owner; no upsert.
 /// - `notifications`: forced to this store's `shop_id`.
 /// - `subscription`, `subscription_payments`: forced to the store owner's
 ///   `user_id` (they have no `shop_id`).
@@ -52,7 +61,9 @@ class LanOnlineScope {
         request.op == PgOp.delete;
     if (request.op == PgOp.rpc) return _scopeRpc(request, shopId);
     if (table == 'users') {
-      return isWrite ? _scopeUserWrite(request, principal, store) : request;
+      return isWrite
+          ? _scopeUserWrite(request, principal, store, shopId)
+          : request;
     }
     if (_globalReadOnly.contains(table)) {
       if (isWrite) throw _denied('$table is read only over the store network');
@@ -99,14 +110,46 @@ class LanOnlineScope {
     return request;
   }
 
+  /// Every row an insert sends: not an owner, and tied to no other store.
+  static PgRequest _scopeUserInsert(
+    PgRequest request,
+    int shopId,
+    LanStoreMembers store,
+  ) {
+    final body = request.body;
+    final rows = body is List ? body : [body];
+    for (final row in rows) {
+      if (row is! Map) throw _denied('A new user must be a row');
+      final role = row['role'];
+      if (role is String && role.trim().toLowerCase() == 'owner') {
+        throw _denied('A store owner can\'t be added over the store network');
+      }
+      if (row.containsKey('shop_id') && '${row['shop_id']}' != '$shopId') {
+        throw _denied('A new user can only join this store');
+      }
+      final departments = <Object?>[
+        row['department_uuid'],
+        ...?(row['department_uuids'] as List?),
+      ];
+      for (final d in departments) {
+        if (d == null || (d is String && d.isEmpty)) continue;
+        if (!store.departments.contains('$d')) {
+          throw _denied('A new user can only join this store\'s departments');
+        }
+      }
+    }
+    return request;
+  }
+
   static PgRequest _scopeUserWrite(
     PgRequest request,
     LanPrincipal principal,
     LanStoreMembers store,
+    int shopId,
   ) {
     switch (request.op) {
       case PgOp.insert:
-        return request;
+        return _scopeUserInsert(request, shopId, store);
       case PgOp.upsert:
         throw _denied('Users can\'t be upserted over the store network');
       default:

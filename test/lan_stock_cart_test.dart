@@ -187,7 +187,7 @@ void main() {
   });
 
   testWidgets('add a line: held before it is saved; refused with the '
-      'server\'s amount, then what is left shows as available (D36)', (
+      'server\'s amount, then what is left shows as available', (
     tester,
   ) async {
     final context = await host(tester);

@@ -1,10 +1,11 @@
 import 'package:stockall/local_database/lan/lan_pending_checkouts_func.dart';
 import 'package:stockall/services/lan/lan_handoffs.dart';
 
-/// Changes made on the store network that this device still holds and that
-/// clearing the store's data (logout, store switch) would lose: handoffs
-/// not yet sent to the store server or Supabase, and checkouts the store
-/// server hasn't confirmed. Null when there are none.
+/// Changes made on the store network that this device still holds:
+/// handoffs not yet sent to the store server or Supabase, and checkouts
+/// the store server hasn't confirmed. A logout or store switch waits for
+/// them (kept over it, they would wait unsent until this store is signed
+/// in again). Null when there are none.
 String? lanUnsentMessage({
   required String before,
   int Function()? handoffs,

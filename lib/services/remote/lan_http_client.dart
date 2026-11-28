@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:stockall/services/lan/lan_connection.dart';
 import 'package:stockall/services/lan/lan_constants.dart';
+import 'package:stockall/services/lan/lan_sent_marks.dart';
 
 /// The `http.Client` a LAN `SupabaseClient` uses: every request goes to
 /// the paired server over its pinned TLS connection (`connectionFactory`,
@@ -131,6 +132,8 @@ class LanHttpClient extends http.BaseClient {
       Future<http.StreamedResponse> pending,
     ) async {
       final response = await pending;
+      // Tells a stock or account send whether the server answered, and how.
+      LanSentMarks.noteStatus(response.statusCode);
       await onAnswer?.call(request, bytes, response);
       return _refusedOrAccepted(request, bytes, response);
     }

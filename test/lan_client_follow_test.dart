@@ -406,7 +406,7 @@ void main() {
     expect(LanPairedServersFunc().get('new-desk'), isNotNull);
     // Trusted because old-desk, which a person paired, signed the move.
     expect(LanPairedServersFunc().isTrusted(winner.fingerprint), isTrue);
-    // It signed in there presenting that move, then dropped it (S4).
+    // It signed in there presenting that move, then dropped it.
     expect((await winner.state())['moved_logins'], 1);
     expect(LanPairedDevicesFunc().moveTo(winner.fingerprint), isNull);
 

@@ -290,10 +290,14 @@ class LanLoginOutcome {
     this.user,
     this.shop,
     this.shopKey,
+    this.epoch,
     this.notPairedBy = const [],
   });
 
   final LanAuthResult result;
+
+  /// The epoch the server serves at, when it said.
+  final int? epoch;
 
   /// Servers that refused this device as not paired with them (it must
   /// pair again): with [LanAuthResult.unreachable] when none other
@@ -336,6 +340,10 @@ abstract class LanTransportApi {
 
   /// The connected server says its queues reached Supabase (handoffs).
   abstract void Function()? onServerSynced;
+
+  /// The connected server says the queue of a former server (its device
+  /// id and epoch) is all there now.
+  abstract void Function(String device, int epoch)? onFormerServerHandedOver;
 
   /// The connected server says these tables changed; null after
   /// the connection came back: every table (changes may have been missed).
@@ -456,6 +464,12 @@ abstract class LanTransportApi {
   Future<void> updateServerRecord(LocalServerRecord record);
   Future<void> stopServer();
   Future<String?> pairingQrPayload();
+
+  /// The QR code shown is hidden: its token stops working.
+  void cancelPairingQr();
+
+  /// How many devices paired here with a QR code (each uses up the code).
+  int get qrPairings;
 
   /// Ends the pairing session this server shows (its Cancel button).
   void cancelServerPairing();

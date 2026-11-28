@@ -35,7 +35,15 @@ class LanShopKeysFunc {
     await shopKeysBox.put('$shopId', key);
   }
 
-  Future<void> clearShopKeys() async {
-    await shopKeysBox.clear();
+  /// [keep]: shops whose key stays (a store this device serves).
+  Future<void> clearShopKeys({Set<int> keep = const {}}) async {
+    if (keep.isEmpty) {
+      await shopKeysBox.clear();
+      return;
+    }
+    await shopKeysBox.deleteAll([
+      for (final k in shopKeysBox.keys)
+        if (!keep.contains(int.tryParse('$k'))) k,
+    ]);
   }
 }

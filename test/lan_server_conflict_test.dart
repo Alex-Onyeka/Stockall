@@ -295,7 +295,9 @@ void main() {
         ], pin: await transport.serverFingerprint()))!;
     addTearDown(connection.close);
     // Paired with this server (as pairing would).
-    final secret = await const LanHiveAdmission().admit('phone-1');
+    final secret = (await LanHiveAdmission(
+      shopId: () => 7,
+    ).admit('phone-1', byPerson: true))!;
     final login = await connection.postJson('/v1/auth/login', {
       'email': 'ada@shop.test',
       'password': 'right',
@@ -496,7 +498,9 @@ void main() {
         ], pin: await transport.serverFingerprint()))!;
     addTearDown(connection.close);
     // Paired with this server (as pairing would).
-    final secret = await const LanHiveAdmission().admit('phone-1');
+    final secret = (await LanHiveAdmission(
+      shopId: () => 7,
+    ).admit('phone-1', byPerson: true))!;
     final login = await connection.postJson('/v1/auth/login', {
       'email': 'ada@shop.test',
       'password': 'right',
@@ -554,6 +558,8 @@ void main() {
     await eventually(
       () => events.any((e) => e['type'] == 'server' && e['cleared'] == true),
     );
+    // Raised after the server stopped.
+    await eventually(() => alerts().isNotEmpty);
     expect(alerts().map((a) => a.kind), [LanAlertKind.forceCleared]);
     await ws.close();
   });
@@ -569,7 +575,9 @@ void main() {
         ], pin: await transport.serverFingerprint()))!;
     addTearDown(connection.close);
     // Paired with this server (as pairing would).
-    final secret = await const LanHiveAdmission().admit('phone-1');
+    final secret = (await LanHiveAdmission(
+      shopId: () => 7,
+    ).admit('phone-1', byPerson: true))!;
     final login = await connection.postJson('/v1/auth/login', {
       'email': 'ada@shop.test',
       'password': 'right',
@@ -609,7 +617,7 @@ void main() {
     await ws.close();
   });
 
-  test('a former server that pushed its whole queue says so (D49): this '
+  test('a former server that pushed its whole queue says so: this '
       'server keeps it, tells its tills and lists it in the handoff status; '
       'only that device can say it', () async {
     await becomeServer();
@@ -620,7 +628,9 @@ void main() {
             LanEndpoint('127.0.0.1', transport.serverPort!),
           ], pin: await transport.serverFingerprint()))!;
       addTearDown(c.close);
-      final secret = await const LanHiveAdmission().admit(device);
+      final secret = (await LanHiveAdmission(
+        shopId: () => 7,
+      ).admit(device, byPerson: true))!;
       final login = await c.postJson('/v1/auth/login', {
         'email': 'ada@shop.test',
         'password': 'right',
@@ -683,7 +693,7 @@ void main() {
     expect(alerts().map((a) => a.kind), [LanAlertKind.conflict]);
   });
 
-  test('only paired devices sign in (S4): a stranger is refused before its '
+  test('only paired devices sign in: a stranger is refused before its '
       'password is checked; a till of a former server signs in once with the '
       'move that server signed, then with the secret it is given here',
       () async {
@@ -773,6 +783,6 @@ void main() {
     final secret = first['pair_secret'] as String;
     final again = await login('till-9', {'pair_secret': secret});
     expect(again['token'], isA<String>());
-    expect(LanPairedDevicesFunc().pairedDeviceIds(), contains('till-9'));
+    expect(LanPairedDevicesFunc().pairedDeviceIds(7), contains('till-9'));
   });
 }

@@ -283,9 +283,14 @@ class AuthService extends ChangeNotifier {
           "✅ User signed in and saved locally: ${tempUser.email}",
         );
         // The store server refused this password: it fetches its logins
-        // again.
+        // again, then this till signs in there with it.
         if (cloudOnly) {
-          unawaited(LocalServerProvider().refreshServerCredentials());
+          unawaited(
+            LocalServerProvider().refreshServerCredentials(
+              email: email,
+              password: password,
+            ),
+          );
         }
 
         return 1;

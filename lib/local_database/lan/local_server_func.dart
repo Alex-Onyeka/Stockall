@@ -41,6 +41,10 @@ class LocalServerFunc {
     await localServerRecordBox.put(record.shopId, record);
   }
 
+  Future<void> deleteRecord(int shopId) async {
+    await localServerRecordBox.delete(shopId);
+  }
+
   List<LocalServerRecord> allRecords() {
     return localServerRecordBox.values.toList();
   }

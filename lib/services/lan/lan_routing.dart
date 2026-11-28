@@ -114,7 +114,12 @@ class LanRoutingDeps {
     this.lanTarget,
     this.reportHandedOver,
     this.hasCloudSession,
+    this.resume,
   });
+
+  /// Someone signed in to a store: this desktop serves it again if it
+  /// holds the role there.
+  final Future<void> Function()? resume;
 
   /// Whether this device holds a Supabase session. A device signed in only
   /// through the store server has none: away from the store's network it
@@ -189,6 +194,7 @@ class LanRoutingDeps {
         return lan == null ? null : LanHandoffTarget.lan(lan);
       },
       reportHandedOver: transport.reportHandedOver,
+      resume: () => LocalServerProvider().resumeServerIfOwned(),
       hasCloudSession: () {
         try {
           return Supabase.instance.client.auth.currentSession != null;
@@ -291,6 +297,9 @@ class LanRouting {
     RemoteRouter.onAfterSync = afterSync;
     if (LanTransport().isAvailable) {
       LanTransport().onServerSynced = () => unawaited(confirm());
+      LanTransport().onFormerServerHandedOver = (device, epoch) => unawaited(
+        LocalServerProvider().reportHeldAtHandover(device, epoch),
+      );
       LanTransport().onInvalidate = (tables) => tables == null
           ? LanInvalidations().receiveAll()
           : LanInvalidations().receive(tables);
@@ -310,6 +319,7 @@ class LanRouting {
       ConnectivityProvider().removeListener(_onConnectivity);
       LocalServerProvider().removeListener(_onLanChanged);
       LanTransport().onServerSynced = null;
+      LanTransport().onFormerServerHandedOver = null;
       LanTransport().onInvalidate = null;
     }
     _started = false;
@@ -317,12 +327,23 @@ class LanRouting {
     RemoteRouter.onAfterSync = null;
   }
 
-  /// The current shop changed (a login, a store switch, a logout).
+  /// The current shop changed (a login, a store switch, a logout): a
+  /// desktop that serves the new one starts again, then the route.
   void _onShopChanged() {
     final shop = deps.shopId();
     if (shop == _lastShop) return;
     _lastShop = shop;
-    unawaited(evaluate());
+    final resume = deps.resume;
+    unawaited(() async {
+      if (shop != null && resume != null) {
+        try {
+          await resume();
+        } catch (e) {
+          await mainLocalLog('LAN: server not resumed: $e');
+        }
+      }
+      await evaluate();
+    }());
   }
 
   void _onConnectivity() {
@@ -649,5 +670,8 @@ class LanRouting {
     if (status == null) return;
     final done = await _handoffs.confirm(status);
     if (done > 0) await mainLocalLog('LAN handoffs confirmed: $done');
+    for (final h in status.handedOver) {
+      await LocalServerProvider().reportHeldAtHandover(h.device, h.epoch);
+    }
   }
 }

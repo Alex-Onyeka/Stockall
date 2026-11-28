@@ -2,6 +2,7 @@ import 'dart:async';
 // import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/remote/remote_client.dart';
 
@@ -10,13 +11,26 @@ class ConnectivityProvider extends ChangeNotifier {
       ConnectivityProvider._internal();
   factory ConnectivityProvider() => _instance;
   ConnectivityProvider._internal() {
-    // Listening needs the platform channels; where there are none (a test
-    // without the Flutter binding) that error is dropped here instead of
-    // failing whoever first touched this provider.
-    runZonedGuarded(init, (e, s) => debugPrint('Connectivity: $e'));
+    // Listening needs the platform channels. Where there are none (a test
+    // without the Flutter binding) that failure is logged instead of
+    // failing whoever first touched this provider; any other error goes
+    // on as it would have.
+    runZonedGuarded(init, (e, s) {
+      if (!isPlatformChannelFailure(e)) Error.throwWithStackTrace(e, s);
+      unawaited(mainLocalLog('Connectivity not watched: $e'));
+    });
     // A LAN route change (server found or lost) changes [isConnected].
     RemoteRouter.addListener(notifyListeners);
   }
+
+  /// The connectivity plugin can't be reached: no plugin, a platform
+  /// error, or no Flutter binding for its channel.
+  @visibleForTesting
+  static bool isPlatformChannelFailure(Object e) =>
+      e is MissingPluginException ||
+      e is PlatformException ||
+      (e is FlutterError &&
+          e.message.contains('Binding has not yet been initialized'));
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> subscription;
 

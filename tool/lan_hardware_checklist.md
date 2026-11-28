@@ -1,9 +1,9 @@
 # LAN sync: hardware checklist
 
-These rows cover what the in-process tests can't: real mDNS, real network interfaces, OS prompts and firewalls, cameras, and pulling plugs. Each row is driven from the app, mostly from **Settings › Store Network**. This file replaces `lan_p2_hardware_checklist.md`, which held the P2 and P3 rows; the rows from P6, P7, P8 and P10 are merged in here.
+These rows cover what the in-process tests can't: real mDNS, real network interfaces, OS prompts and firewalls, cameras, and pulling plugs. Each row is driven from the app, mostly from **Settings › Store Network**.
 
 ## Before you start
-- **Supabase (test project):** run both migrations in `supabase/migrations/`: `*_manage_local_server_permission.sql` and `*_shops_lan_key.sql`.
+- **Supabase (test project):** run the migration `supabase/migrations/*_shops_lan_key.sql`, then the backfill `supabase/backfills/*_manage_local_server_permission.sql` (it changes data only).
 - **The tester:** give them the **Manage Local Server** permission. Keep a second user without it for the rows that check permission.
 - **Builds:** from `feat/lan-sync`. Use `flutter run -d <device>` unless a row says Release or MSIX.
 - **The store server:** a desktop. While it is online, open Settings › Store Network › **Make this desktop the store server** and type your password. This also loads staff sign-ins from the cloud.
@@ -42,11 +42,15 @@ These rows cover what the in-process tests can't: real mDNS, real network interf
 | 2.2 | Typed code, one character wrong | "The code doesn't match…"; nothing saved; the server's code goes **at once** | |
 | 2.3 | Right after 2.2, a second till starts pairing | It isn't told "busy": it gets its own code straight away | |
 | 2.4 | A till is pairing; tap **Cancel this pairing** on the server | The code goes; typing it on the till doesn't pair; the till can start again | |
-| 2.5 | QR code scanned on Android and on iPhone | Paired and signed in without typing | Camera prompt text |
+| 2.5 | QR code scanned on an Android phone and an iPhone that were never paired with this server (not the till from 2.1), one after the other | Each is paired and signed in without typing. After the first scan the server shows a new QR code by itself, and the second phone scans that one | Camera prompt text |
 | 2.6 | A till signed in with a password the server doesn't know (changed elsewhere) | After pairing it asks for the password; the right one signs in | |
 | 2.7 | Six pairing starts within a minute | The sixth is refused (rate limited) | |
 | 2.8 | Pair a Mac laptop by code as a second till | As 2.1 | |
 | 2.9 | A second till starts while another is mid-pairing (code shown, not typed yet) | The second is told the server is busy until the first finishes, mistypes, or is cancelled | |
+| 2.10 | Take a photo of the server's QR code; pair a new phone with the live code; then scan the photo on another new phone | The photo is refused (its code was used); the second phone pairs with the new code on the screen | |
+| 2.11 | Take a photo of the QR code, tap **Hide**, then scan the photo on a new phone | Refused: a hidden code stops working | |
+| 2.12 | On one phone, scan old or hidden QR codes (2.10, 2.11) ten times within a minute, then scan the live code with it | The last scan says "Too many pairing attempts. Wait a minute and try again." Another new phone pairs with the live code meanwhile. After a minute the first phone pairs too | |
+| 2.13 | The till paired by code in 2.1 scans the server's QR code | "This device is already paired with this server. Pair it again with the code." Its pairing is unchanged: it still signs in | |
 
 ## 3. Signing in on the store network
 | # | Setup | Expected | Also record |
@@ -57,6 +61,7 @@ These rows cover what the in-process tests can't: real mDNS, real network interf
 | 3.4 | Employee removed in Supabase, then the server restarts while online | Their login fails and their existing session stops working | |
 | 3.5 | Password changed in the app, then the server restarts while online | The new password works on the store network and the old one fails | |
 | 3.6 | Paired server switched off | Login falls back to the normal (online) flow within about 6 s | Seconds before the fallback |
+| 3.7 | Change an employee's password on another device (straight to Supabase) while the server is running; then, before the server refreshes its logins, sign in on a paired till that has internet with the new password | Signed in (the cloud took the password). Within about 45 s the till shows **Connected** without signing in again, and the store and user on screen don't change | Seconds until **Connected** |
 
 ## 4. Status, the server's internet, online-only screens
 | # | Setup | Expected | Also record |
@@ -104,6 +109,9 @@ These rows cover what the in-process tests can't: real mDNS, real network interf
 | 8.7 | Restart a desktop that stopped serving (8.4 or 8.6) | It stays a till | |
 | 8.8 | Store Network › alerts, as a manager | Each alert is listed, newest first, and opens with its table (a table on desktop, cards on a phone) | |
 | 8.9 | The same pages as a user without Manage Local Server | No server role, devices or alerts; pairing and their own held stock only | |
+| 8.10 | Log out on the serving desktop; sell on a till; then log in again on the desktop to the same store, once online and once with the internet unplugged | While logged out, tills show **Server not answering** and keep selling. After the login it serves again by itself, with the same epoch, and tills reconnect without signing in again | Seconds until tills reconnect |
+| 8.11 | On the serving desktop, switch to another store | A warning says to remove the store server first; the store doesn't switch. After **Remove the store server**, the switch works and its tills go to working on their own | |
+| 8.12 | With ports 47811 to 47815 taken by another program (e.g. five `nc -l <port>`), **Make this desktop the store server** | The start fails with a message; nothing serves, and the Store Network page offers **Make this desktop the store server** again (the claim was undone). Free the ports and make it the server: it works | The message shown |
 
 ## 9. Windows firewall and MSIX
 | # | Setup | Expected | Also record |

@@ -143,7 +143,7 @@ void main() {
     ),
   );
 
-  test('Alex\'s rule, as a table', () {
+  test('the routing rule, as a table', () {
     LanRoute route({
       bool serving = false,
       bool session = true,

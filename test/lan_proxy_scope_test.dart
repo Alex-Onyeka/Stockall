@@ -81,6 +81,7 @@ void main() {
       storeMembers: () => const LanStoreMembers(
         ownerId: 'owner',
         members: {'owner', 'staff-1', 'staff-2'},
+        departments: {'dep-7'},
       ),
     );
   });
@@ -149,6 +150,49 @@ void main() {
         );
       }
       expect(proxy.forwarded, isEmpty);
+    });
+    test('a new user: forwarded when it joins only this store, as anything '
+        'but an owner', () async {
+      final adder = _who('staff-1', access: [a.addEmployee]);
+      await engine.handle(
+        _http('POST', 'users', '', body: {
+          'name': 'Bo',
+          'role': 'Cashier',
+          'department_uuids': ['dep-7'],
+        }),
+        adder,
+      );
+      expect(proxy.forwarded, hasLength(1));
+
+      for (final row in <Map<String, dynamic>>[
+        {'name': 'Bo', 'role': 'Owner'},
+        {'name': 'Bo', 'role': ' owner '},
+        {'name': 'Bo', 'role': 'Cashier', 'shop_id': 8},
+        {'name': 'Bo', 'role': 'Cashier', 'department_uuid': 'dep-8'},
+        {
+          'name': 'Bo',
+          'role': 'Cashier',
+          'department_uuids': ['dep-7', 'dep-8'],
+        },
+      ]) {
+        await expectLater(
+          engine.handle(_http('POST', 'users', '', body: row), adder),
+          denied(),
+          reason: '$row',
+        );
+      }
+      // One bad row in a batch refuses the batch.
+      await expectLater(
+        engine.handle(
+          _http('POST', 'users', '', body: [
+            {'name': 'Bo', 'role': 'Cashier'},
+            {'name': 'Cy', 'role': 'Owner'},
+          ]),
+          adder,
+        ),
+        denied(),
+      );
+      expect(proxy.forwarded, hasLength(1));
     });
   });
 

@@ -116,6 +116,10 @@ class LanConstants {
   static const Duration credentialsEvery = Duration(minutes: 15);
   static const Duration pullAfterSyncDelay = Duration(seconds: 2);
 
+  /// How many QR tokens that pair nothing (`/v1/pair/qr`) a server takes
+  /// from one address a minute.
+  static const int qrPairAttempts = 10;
+
   /// The least time between two refreshes of the logins a till asks for
   /// (after the cloud took a password the server didn't).
   static const Duration credentialRefreshGap = Duration(seconds: 60);

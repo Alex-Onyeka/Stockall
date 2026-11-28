@@ -376,7 +376,7 @@ void main() {
     });
 
     test('an insert of a row deleted here since is never sent again; a '
-        'batch insert sends only the rows still there (D7)', () async {
+        'batch insert sends only the rows still there', () async {
       final deleted = {'products:p-gone', 'products:b-gone'};
       final handoffs = LanHandoffs(
         wasDeleted: (table, uuid) => deleted.contains('$table:$uuid'),
@@ -419,7 +419,7 @@ void main() {
       expect(handoffs.all(), isEmpty);
     });
 
-    test('writes refused for permission (P8): never ended by a LAN '
+    test('writes refused for permission: never ended by a LAN '
         'server\'s status; a refused-only run sends just them', () async {
       await hold(held('POST', 'products', body: {'uuid': 'acked'}));
       await hold(
@@ -457,7 +457,7 @@ void main() {
       expect(LanHandoffs().all(), hasLength(1));
     });
 
-    test('a server the shop moved away from (P8b): only its REST writes go '
+    test('a server the shop moved away from: only its REST writes go '
         'to the current server, guarded with a bare timestamp; its deltas '
         'end when it hands over', () async {
       await hold(
@@ -514,7 +514,7 @@ void main() {
       );
     });
 
-    test('P8c: the status\'s handed-over servers end their deltas; the '
+    test('the status\'s handed-over servers end their deltas; the '
         'held changes are listed by item, change, sale or entry, never sent',
         () async {
       await hold(

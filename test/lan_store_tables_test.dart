@@ -511,9 +511,16 @@ void main() {
         storage: logos,
       );
       await server.start(ports: const [0]);
-      connection = (await LanConnection.open([
-        LanEndpoint('127.0.0.1', server.port!),
-      ], pin: identity.fingerprint))!;
+      // Under a loaded machine (the whole suite at once) one TLS handshake
+      // can outlast the connect timeout: a few tries, then a clear failure.
+      LanConnection? opened;
+      for (var i = 0; i < 5 && opened == null; i++) {
+        opened = await LanConnection.open([
+          LanEndpoint('127.0.0.1', server.port!),
+        ], pin: identity.fingerprint);
+      }
+      if (opened == null) fail('could not connect to the test server');
+      connection = opened;
       final login = await connection.postJson('/v1/auth/login', {
         'email': 'ada@shop.test',
         'password': 'right',

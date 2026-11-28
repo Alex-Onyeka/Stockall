@@ -26,6 +26,9 @@ class LanTransport implements LanTransportApi {
   void Function()? onServerSynced;
 
   @override
+  void Function(String device, int epoch)? onFormerServerHandedOver;
+
+  @override
   void Function(Set<String>? tables)? onInvalidate;
 
   @override
@@ -156,6 +159,12 @@ class LanTransport implements LanTransportApi {
 
   @override
   Future<String?> pairingQrPayload() async => null;
+
+  @override
+  void cancelPairingQr() {}
+
+  @override
+  int get qrPairings => 0;
 
   @override
   void cancelServerPairing() {}

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/lan/lan_paired_server.dart';
+import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/local_database/lan/lan_client_session_func.dart';
@@ -26,6 +27,7 @@ import 'package:stockall/services/lan/lan_connection.dart';
 import 'package:stockall/services/lan/lan_constants.dart';
 import 'package:stockall/services/lan/lan_device_admission.dart';
 import 'package:stockall/services/lan/lan_discovery.dart';
+import 'package:stockall/services/lan/lan_pairing.dart';
 import 'package:stockall/services/lan/lan_routing.dart';
 import 'package:stockall/services/lan/lan_server.dart';
 import 'package:stockall/services/lan/lan_tls.dart';
@@ -438,6 +440,31 @@ void main() {
     expect(ShopProvider().userShops, isEmpty);
   });
 
+  test('a device new to the store takes its first epoch floor from the '
+      'login answer: a claim far above it is not believed', () async {
+    await LocalServerFunc().epochFloorBox.clear();
+    await LocalServerFunc().clearLocalServerRecords();
+    LocalServerProvider().clearCache();
+    final provider = LocalServerProvider();
+    // Nothing known yet: no cap.
+    expect(provider.epochPlausibleFor(7, 50), isTrue);
+    await pairWith(port: server.port!);
+    addTearDown(() async {
+      await provider.disconnectFromServer();
+      await LanClientSessionFunc().clearClientSessions();
+      await LocalServerFunc().epochFloorBox.clear();
+    });
+
+    expect(
+      await provider.loginViaLan(email: 'ada@shop.test', password: 'right'),
+      LanAuthResult.ok,
+    );
+    // The server serves at epoch 3.
+    expect(LocalServerFunc().epochFloor(7), 3);
+    expect(provider.epochPlausibleFor(7, 5), isTrue);
+    expect(provider.epochPlausibleFor(7, 50), isFalse);
+  });
+
   test('a login answer never replaces the shop key this device holds',
       () async {
     // A server that answers with another key (as a rogue one would).
@@ -493,7 +520,7 @@ void main() {
 
   test('a server that says this device is not paired with it: no session, '
       'and the status asks to pair again', () async {
-    // A server that only lets paired devices in (S4).
+    // A server that only lets paired devices in.
     final strict = LanServer(
       identity: identity,
       deviceId: 'desk-1',
@@ -570,7 +597,7 @@ void main() {
     );
     await refreshing.start(ports: const [0]);
     addTearDown(refreshing.stop);
-    final secret = await admission.admit('phone-1');
+    final secret = (await admission.admit('phone-1'))!;
     final connection = (await LanConnection.open([
       LanEndpoint('127.0.0.1', refreshing.port!),
     ], pin: identity.fingerprint))!;
@@ -625,7 +652,7 @@ void main() {
     );
     await LanPairedDevicesFunc().putSecret(
       identity.fingerprint.toLowerCase(),
-      await admission.admit('this-till'),
+      (await admission.admit('this-till'))!,
     );
     expect(
       await LanTransport().requestCredentialRefresh(deviceId: 'this-till'),
@@ -633,6 +660,276 @@ void main() {
     );
     await Future<void>.delayed(Duration.zero);
     expect(refreshed, 1);
+  });
+  test('the cloud took a password the server refused: once the server took '
+      'the refresh, the till signs in there again with it and gets its LAN '
+      'session', () async {
+    TempUserClass ada(String password) => TempUserClass(
+      userId: 'cashier',
+      name: 'Ada',
+      email: 'ada@shop.test',
+      password: password,
+      role: 'Cashier',
+      pin: '4321',
+      departmentUuids: const [],
+      access: const ['Make Sale'],
+    );
+    final admission = LanMemoryAdmission();
+    // Fetching the logins brings the password changed on Supabase.
+    final refreshing = LanServer(
+      identity: identity,
+      deviceId: 'desk-1',
+      serverView: () => {
+        'shop_tag': shopTag(shopKey),
+        'epoch': 3,
+        'server_device_id': 'desk-1',
+        'cleared': false,
+        'claimed_at': null,
+      },
+      auth: LanAuthService(shopId: () => 7, shopJson: (_) => servedShop),
+      admission: admission,
+      onRefreshCredentials: () => LanUserBackfill().apply(
+        7,
+        const LanBackfillShop(ownerId: 'owner', employees: ['cashier']),
+        [ada('changed')],
+        iterations: 1000,
+      ),
+    );
+    await refreshing.start(ports: const [0]);
+    final provider = LocalServerProvider();
+    addTearDown(() async {
+      provider.lanLoginRetryDelays = const [
+        Duration(seconds: 3),
+        Duration(seconds: 10),
+        Duration(seconds: 30),
+      ];
+      await provider.disconnectFromServer();
+      await refreshing.stop();
+      await LanPairedDevicesFunc().secretsBox.clear();
+      await LanClientSessionFunc().clearClientSessions();
+      // The other tests' logins.
+      await LanUserBackfill().apply(
+        7,
+        const LanBackfillShop(ownerId: 'owner', employees: ['cashier']),
+        [ada('right')],
+        iterations: 1000,
+      );
+    });
+    await pairWith(port: refreshing.port!);
+    await LanPairedDevicesFunc().putSecret(
+      identity.fingerprint.toLowerCase(),
+      (await admission.admit(await DeviceIdentity().deviceId()))!,
+    );
+    provider.lanLoginRetryDelays = const [
+      Duration(milliseconds: 50),
+      Duration(milliseconds: 200),
+    ];
+
+    // The server still has the old password.
+    expect(
+      await provider.loginViaLan(email: 'ada@shop.test', password: 'changed'),
+      LanAuthResult.invalidCredentials,
+    );
+    // The cloud took it (as AuthService's sign-in saves it).
+    await LoggedInUserFunc().insertLoggedInUser(
+      LoggedInUser(loggedInUser: ada('changed')),
+    );
+    await CurrentShopFunc().createCurrentShop(
+      TempCurrentShop(currentShopId: 7),
+    );
+
+    expect(
+      await provider.refreshServerCredentials(
+        email: 'ada@shop.test',
+        password: 'changed',
+      ),
+      LanAuthResult.ok,
+    );
+    expect(LanClientSessionFunc().get(7)?.serverDeviceId, 'desk-1');
+  });
+
+  test('the retry keeps only the LAN session: not when the current shop '
+      'changed while it waited, or isn\'t the server\'s store', () async {
+    var now = DateTime.now().toUtc();
+    final admission = LanMemoryAdmission();
+    final refreshing = LanServer(
+      identity: identity,
+      deviceId: 'desk-1',
+      serverView: () => {
+        'shop_tag': shopTag(shopKey),
+        'epoch': 3,
+        'server_device_id': 'desk-1',
+        'cleared': false,
+        'claimed_at': null,
+      },
+      auth: LanAuthService(shopId: () => 7, shopJson: (_) => servedShop),
+      admission: admission,
+      onRefreshCredentials: () async {},
+      clock: () => now,
+    );
+    await refreshing.start(ports: const [0]);
+    final provider = LocalServerProvider();
+    addTearDown(() async {
+      provider.lanLoginRetryDelays = const [
+        Duration(seconds: 3),
+        Duration(seconds: 10),
+        Duration(seconds: 30),
+      ];
+      await provider.disconnectFromServer();
+      await refreshing.stop();
+      await LanPairedDevicesFunc().secretsBox.clear();
+      await LanClientSessionFunc().clearClientSessions();
+    });
+    await pairWith(port: refreshing.port!);
+    await LanPairedDevicesFunc().putSecret(
+      identity.fingerprint.toLowerCase(),
+      (await admission.admit(await DeviceIdentity().deviceId()))!,
+    );
+    provider.lanLoginRetryDelays = const [Duration(milliseconds: 50)];
+    // Signed in through the cloud: its user stays as it saved it.
+    await LoggedInUserFunc().insertLoggedInUser(
+      LoggedInUser(
+        loggedInUser: TempUserClass(
+          userId: 'cashier',
+          name: 'Ada (cloud)',
+          email: 'ada@shop.test',
+          password: 'right',
+          role: 'Cashier',
+          pin: '4321',
+          departmentUuids: const [],
+          access: const ['Make Sale'],
+        ),
+      ),
+    );
+    Future<LanAuthResult?> retry() => provider.refreshServerCredentials(
+      email: 'ada@shop.test',
+      password: 'right',
+    );
+    String? userName() =>
+        LoggedInUserFunc().getLoggedInUser()?.loggedInUser?.name;
+    int? current() => CurrentShopFunc().getCurrentShop()?.currentShopId;
+
+    // Another store is current (the server serves 7): nothing is kept.
+    await CurrentShopFunc().createCurrentShop(
+      TempCurrentShop(currentShopId: 8),
+    );
+    expect(await retry(), LanAuthResult.failed);
+    expect(LanClientSessionFunc().all(), isEmpty);
+    expect(current(), 8);
+    expect(userName(), 'Ada (cloud)');
+
+    // The store changed while it waited: no LAN login at all.
+    now = now.add(LanConstants.credentialRefreshGap);
+    await CurrentShopFunc().createCurrentShop(
+      TempCurrentShop(currentShopId: 7),
+    );
+    final waiting = retry();
+    await CurrentShopFunc().createCurrentShop(
+      TempCurrentShop(currentShopId: 8),
+    );
+    expect(await waiting, isNull);
+    expect(LanClientSessionFunc().all(), isEmpty);
+    expect(current(), 8);
+
+    // The server's store, unchanged: the session, and only that.
+    now = now.add(LanConstants.credentialRefreshGap);
+    await CurrentShopFunc().createCurrentShop(
+      TempCurrentShop(currentShopId: 7),
+    );
+    expect(await retry(), LanAuthResult.ok);
+    expect(LanClientSessionFunc().get(7)?.serverDeviceId, 'desk-1');
+    expect(current(), 7);
+    expect(userName(), 'Ada (cloud)');
+  });
+
+  test('no retry once the user signed out meanwhile', () async {
+    final admission = LanMemoryAdmission();
+    var refreshed = 0;
+    final refreshing = LanServer(
+      identity: identity,
+      deviceId: 'desk-1',
+      serverView: () => {'epoch': 3},
+      auth: LanAuthService(shopId: () => 7, shopJson: (_) => servedShop),
+      admission: admission,
+      onRefreshCredentials: () async => refreshed++,
+    );
+    await refreshing.start(ports: const [0]);
+    final provider = LocalServerProvider();
+    addTearDown(() async {
+      provider.lanLoginRetryDelays = const [
+        Duration(seconds: 3),
+        Duration(seconds: 10),
+        Duration(seconds: 30),
+      ];
+      await refreshing.stop();
+      await LanPairedDevicesFunc().secretsBox.clear();
+    });
+    await pairWith(port: refreshing.port!);
+    await LanPairedDevicesFunc().putSecret(
+      identity.fingerprint.toLowerCase(),
+      (await admission.admit(await DeviceIdentity().deviceId()))!,
+    );
+    provider.lanLoginRetryDelays = const [Duration(milliseconds: 20)];
+    await CurrentShopFunc().createCurrentShop(
+      TempCurrentShop(currentShopId: 7),
+    );
+
+    expect(
+      await provider.refreshServerCredentials(
+        email: 'ada@shop.test',
+        password: 'right',
+      ),
+      isNull,
+    );
+    await Future<void>.delayed(Duration.zero);
+    expect(refreshed, 1);
+    expect(LanClientSessionFunc().all(), isEmpty);
+  });
+
+  test('a till already paired with the server that scans its QR code is told '
+      'to pair with the code; too many tries are explained too', () async {
+    final admission = LanMemoryAdmission();
+    final qrServer = LanServer(
+      identity: identity,
+      deviceId: 'desk-1',
+      serverView: () => {'epoch': 3},
+      auth: LanAuthService(shopId: () => 7, shopJson: (_) => servedShop),
+      admission: admission,
+    );
+    await qrServer.start(ports: const [0]);
+    addTearDown(qrServer.stop);
+    String payload(String token) => LanPairingQr(
+      fingerprint: identity.fingerprint,
+      port: qrServer.port!,
+      addresses: const ['127.0.0.1'],
+      deviceId: 'desk-1',
+      token: token,
+    ).encode();
+
+    // Paired before (with the code).
+    await admission.admit(await DeviceIdentity().deviceId());
+    final already = await LanTransport().pairFromQr(
+      payload(qrServer.issueQrToken()),
+    );
+    expect(already.result, LanPairResult.failed);
+    expect(
+      already.message,
+      'This device is already paired with this server. '
+      'Pair it again with the code.',
+    );
+    expect(LanPairedServersFunc().all(), isEmpty);
+
+    for (var i = 0; i < LanConstants.qrPairAttempts; i++) {
+      await LanTransport().pairFromQr(payload('guess-$i'));
+    }
+    final limited = await LanTransport().pairFromQr(
+      payload(qrServer.issueQrToken()),
+    );
+    expect(limited.result, LanPairResult.failed);
+    expect(
+      limited.message,
+      'Too many pairing attempts. Wait a minute and try again.',
+    );
   });
 }
 

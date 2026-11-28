@@ -560,7 +560,7 @@ void main() {
   });
 
   test('incremental pages by (updated_at, uuid): a row updated while paging '
-      'shifts nothing out of a page (D6)', () async {
+      'shifts nothing out of a page', () async {
     puller = make(pageSize: 2);
     await LanPullCursorsFunc().setCursor('products', at(1));
     supabase.tables['products'] = [
@@ -594,7 +594,7 @@ void main() {
   });
 
   test('a row the server\'s own till changes while its page is out is not '
-      'overwritten; it is pulled again next time (D5)', () async {
+      'overwritten; it is pulled again next time', () async {
     await LanPullCursorsFunc().setCursor('products', at(1));
     await ProductsFunc().productBox.put('p1', product('p1')..quantity = 10);
     supabase.tables['products'] = [

@@ -4,8 +4,9 @@ import 'package:stockall/main.dart';
 
 /// The LanHandoff box: writes the LAN server acknowledged that may not have
 /// reached Supabase yet (each a JSON `LanHandoff`), in the order they were
-/// sent. No adapter: a plain `Box<String>` with auto-increment keys. Shop
-/// data: cleared by `clearAllShopData`, like the queues it continues.
+/// sent. No adapter: a plain `Box<String>` with auto-increment keys. Kept
+/// over a logout or a store switch (each handoff names its store; see
+/// `LanHandoffs.all`).
 class LanHandoffsFunc {
   static final LanHandoffsFunc instance = LanHandoffsFunc._internal();
   factory LanHandoffsFunc() => instance;

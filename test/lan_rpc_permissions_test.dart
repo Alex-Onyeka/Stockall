@@ -50,7 +50,7 @@ void main() {
     LanConstants.stockCheckoutRpc: (a.makeSale, a.addExpense),
   };
 
-  group('each RPC needs one of the permissions whose screen sends it (S3)', () {
+  group('each RPC needs one of the permissions whose screen sends it', () {
     for (final MapEntry(key: name, value: (allowed, unrelated))
         in cases.entries) {
       test(name, () {

@@ -63,7 +63,15 @@ class LanCredentialsFunc {
     });
   }
 
-  Future<void> clearCredentials() async {
-    await credentialsBox.clear();
+  /// [keep]: shops whose credentials stay (a store this device serves).
+  Future<void> clearCredentials({Set<int> keep = const {}}) async {
+    if (keep.isEmpty) {
+      await credentialsBox.clear();
+      return;
+    }
+    await credentialsBox.deleteAll([
+      for (final e in credentialsBox.toMap().entries)
+        if (!keep.contains(e.value.shopId)) e.key,
+    ]);
   }
 }
