@@ -9,6 +9,8 @@ import 'package:stockall/local_database/category/unsync_funcs/deleted_categories
 import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CategoriesProvider extends ChangeNotifier {
@@ -16,7 +18,7 @@ class CategoriesProvider extends ChangeNotifier {
       CategoriesProvider._internal();
   factory CategoriesProvider() => _instance;
   CategoriesProvider._internal();
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
@@ -83,7 +85,7 @@ class CategoriesProvider extends ChangeNotifier {
   }) async {
     bool isOnline = await connectivity.isOnline();
     await getCategoriesOffline(shopId);
-    if (isOnline && CategoryFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && CategoryFunc().isSynced()) {
       try {
         if (!forceRefresh &&
             _lastSyncAt != null &&

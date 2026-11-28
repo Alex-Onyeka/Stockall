@@ -20,6 +20,8 @@ import 'package:stockall/local_database/productions/unsync_funcs/deleted/deleted
 import 'package:stockall/local_database/productions/unsync_funcs/updated/updated_production_records_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductionRecordsProvider extends ChangeNotifier {
@@ -39,7 +41,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   // ignore: prefer_final_fields
@@ -654,7 +656,7 @@ class ProductionRecordsProvider extends ChangeNotifier {
     bool forceRefresh = false,
   }) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline &&
+    if (isOnline && !LanServerSync.pullerActive &&
         ProductionRecordsFunc().isSynced() &&
         authorization(
           authorized: Authorizations().viewProductions,

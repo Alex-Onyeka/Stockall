@@ -5,6 +5,7 @@ import 'package:stockall/local_database/materials/unsync_funcs/created_materials
 import 'package:stockall/local_database/materials/unsync_funcs/materials_quantity_update/materials_quantity_update_func.dart';
 import 'package:stockall/local_database/materials/unsync_funcs/deleted_materials/deleted_materials_func.dart';
 import 'package:stockall/local_database/materials/unsync_funcs/updated_materials/updated_materials_func.dart';
+import 'package:stockall/local_database/lan/lan_deleted_items_func.dart';
 import 'package:stockall/main.dart';
 
 class MaterialsFunc {
@@ -155,6 +156,8 @@ class MaterialsFunc {
   Future<int> deleteMaterial(String uuid) async {
     try {
       await materialBox.delete(uuid);
+      // Lets the LAN server drop deltas for it (not "not held yet").
+      await LanDeletedItemsFunc().add('production_materials', uuid);
       await mainLocalLog(
         'Offline Material Deleted Success',
       );

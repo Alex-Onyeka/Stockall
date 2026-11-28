@@ -92,6 +92,10 @@ dependencies:
   csv: ^8.0.0
   archive: ^4.5.1
   xml: ^7.0.1
+  bonsoir: ^7.1.5
+  basic_utils: ^5.8.2
+  pointycastle: ^4.0.0
+  crypto: ^3.0.8
 
 
 dev_dependencies:
@@ -126,7 +130,7 @@ msix_config:
   logo_path: assets/images/logos/fav_icon.png
   start_menu_icon_path: assets/images/logos/fav_icon.png
   tile_icon_path: assets/images/logos/fav_icon.png
-  capabilities: internetClient
+  capabilities: internetClient,privateNetworkClientServer,internetClientServer
   publisher: CN=C30F1185-CC3C-46C0-BCF0-18DA02C31DC5
   certificate_path: windows/certificates/stockallsolutions.pfx
   certificate_password: myuzician

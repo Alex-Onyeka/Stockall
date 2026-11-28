@@ -25,6 +25,8 @@ import 'package:stockall/local_database/storage_product/storage_products_func.da
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PurchaseProvider extends ChangeNotifier {
@@ -44,7 +46,7 @@ class PurchaseProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<TempPurchase> _purchases = [];
@@ -418,7 +420,7 @@ class PurchaseProvider extends ChangeNotifier {
     bool forceRefresh = false,
   }) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && PurchaseFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && PurchaseFunc().isSynced()) {
       final effectiveStart =
           startDate ??
           dateSet ??

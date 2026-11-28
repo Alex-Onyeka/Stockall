@@ -15,6 +15,8 @@ import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/d
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {
@@ -22,7 +24,7 @@ class ExpensesProvider extends ChangeNotifier {
       ExpensesProvider._internal();
   factory ExpensesProvider() => _instance;
   ExpensesProvider._internal();
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
@@ -166,7 +168,7 @@ class ExpensesProvider extends ChangeNotifier {
     final windowEnd = fourAmNextDay(effectiveEnd);
 
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && ExpensesFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && ExpensesFunc().isSynced()) {
       if (!forceRefresh &&
           !fetchAll &&
           _isRangeFetched(
@@ -853,7 +855,7 @@ class ExpensesProvider extends ChangeNotifier {
     notifyListeners();
 
     final isOnline = await connectivity.isOnline();
-    if (isOnline && ExpenseCategoriesFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && ExpenseCategoriesFunc().isSynced()) {
       try {
         final response = await supabase
             .from('expense_categories')

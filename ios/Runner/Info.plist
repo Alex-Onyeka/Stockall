@@ -7,7 +7,12 @@
 		<key>NSBluetoothPeripheralUsageDescription</key>
 		<string>Stockall uses Bluetooth to print receipts on your POS printer.</string>
 		<key>NSLocalNetworkUsageDescription</key>
-		<string>Stockall connects to your network POS printer to print receipts.</string>
+		<string>Stockall connects to your network POS printer and to your shop's Stockall server on the local network.</string>
+		<key>NSBonjourServices</key>
+		<array>
+			<string>_stockall._tcp</string>
+			<string>_stockall-peer._tcp</string>
+		</array>
 		<key>NSCameraUsageDescription</key>
 		<string>We need your permission to use the camera for barcode scanning</string>
 		<!-- Permissions for saving, printing, sharing PDFs -->

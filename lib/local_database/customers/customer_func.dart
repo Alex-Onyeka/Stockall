@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
+import 'package:stockall/local_database/lan/lan_deleted_items_func.dart';
 import 'package:stockall/main.dart';
 
 class CustomerFunc {
@@ -119,6 +120,8 @@ class CustomerFunc {
   Future<int> deleteCustomer(String uuid) async {
     try {
       await customerBox.delete(uuid);
+      // Lets the LAN server drop deltas for it (not "not held yet").
+      await LanDeletedItemsFunc().add('customers', uuid);
       await mainLocalLog('Offline Customer Deleted');
       return 1;
     } catch (e) {

@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/components/online_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/subscription_page/subscription_page.dart';
 
@@ -147,7 +148,9 @@ class ExpirySubPopUpDesktop extends StatelessWidget {
                                 child: Column(
                                   spacing: 10,
                                   children: [
-                                    MainButtonP(
+                                    // Hidden while the store server can't reach the internet.
+                                    OnlineOnly.withNote(
+                                      child: MainButtonP(
                                       themeProvider: theme,
                                       action: () {
                                         returnSubcsription(
@@ -169,6 +172,7 @@ class ExpirySubPopUpDesktop extends StatelessWidget {
                                       },
                                       text:
                                           'Renew Subscription',
+                                      ),
                                     ),
                                     MainButtonTransparent(
                                       themeProvider: theme,

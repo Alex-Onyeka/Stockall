@@ -6,6 +6,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/components/online_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/profile/change_email/enter_new_email/enter_new_email.dart';
@@ -277,7 +278,9 @@ class _ProfilePageMobileState
                             text: 'Edit Profile Info',
                             constraints: BoxConstraints(),
                           ),
-                          MainButtonTransparent(
+                          // Hidden while the store server can't reach the internet.
+                          OnlineOnly(
+                            child: MainButtonTransparent(
                             themeProvider: theme,
                             action: () {
                               if (returnConnectivityProvider()
@@ -313,6 +316,7 @@ class _ProfilePageMobileState
                             },
                             text: 'Change Password',
                             constraints: BoxConstraints(),
+                            ),
                           ),
                           MainButtonTransparent(
                             themeProvider: theme,

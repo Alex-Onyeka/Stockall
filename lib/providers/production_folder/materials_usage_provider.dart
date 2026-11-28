@@ -15,6 +15,8 @@ import 'package:stockall/local_database/materials_usage/unsync_funcs/deleted/del
 import 'package:stockall/local_database/materials_usage/unsync_funcs/updated/updated_production_materials_usage_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MaterialsUsageProvider extends ChangeNotifier {
@@ -34,7 +36,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<ProductionMaterialsUsage> _productionMaterialsUsage =
@@ -379,7 +381,7 @@ class MaterialsUsageProvider extends ChangeNotifier {
     bool forceRefresh = false,
   }) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline &&
+    if (isOnline && !LanServerSync.pullerActive &&
         ProductionMaterialsUsageFunc().isSynced() &&
         returnShopProvider()
                 .userShop()

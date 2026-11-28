@@ -23,6 +23,7 @@ import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/duplicate_cart_item_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/alert_dialogues/stock_conflict_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -38,6 +39,9 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/stock/lan_holds.dart';
+import 'package:stockall/services/lan/stock/lan_stock_client.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {
@@ -61,6 +65,83 @@ class SalesProvider extends ChangeNotifier {
   void toggleCategory() {
     openCategory = !openCategory;
     notifyListeners();
+  }
+
+  // LAN cart stock holds: other tills' holds changed, so what
+  // can be sold here changed too.
+  void lanStockChanged() => notifyListeners();
+
+  // Stock other tills on the store's LAN hold for their carts (0 off
+  // the LAN): not available here.
+  double reservedElsewhere(String? productUuid) {
+    if (productUuid == null) return 0;
+    return LanStockClient().reservedElsewhere(productUuid);
+  }
+
+  // Before a change to [line]'s product in the current cart is saved,
+  // the store server holds what the cart will need of it: its lines
+  // without [without], plus [plus]. On refusal, shows "Quantity
+  // Limit Reached" when [context] is given and returns false. Always
+  // true off the LAN or with the server unreachable.
+  Future<bool> holdInCart({
+    required TempCartItem line,
+    TempCartItem? without,
+    required double plus,
+    BuildContext? context,
+  }) async {
+    final productUuid = lineProduct(line);
+    if (productUuid == null) return true;
+    final cart = currentCart();
+    final check = await LanStockClient().hold(
+      cart,
+      productUuid,
+      cartNeedOf(
+        cart,
+        productUuid,
+        without: without,
+        plus: plus,
+      ),
+    );
+    if (check.ok) return true;
+    await mainLocalLog(
+      'Cannot add — other tills hold the stock of $productUuid; '
+      '${check.available} available to this cart.',
+    );
+    final ctx = context;
+    if (ctx == null || !ctx.mounted) return false;
+    final available = check.available ?? 0;
+    showDialog(
+      context: ctx,
+      builder:
+          (_) => InfoAlert(
+            title: "Quantity Limit Reached",
+            message:
+                "Only ${formatDimension(available < 0 ? 0 : available)} "
+                "available in stock. Other tills hold the rest.",
+            theme: returnTheme(ctx, listen: false),
+          ),
+    );
+    return false;
+  }
+
+  // A receipt or invoice checkout on the store's LAN: its
+  // stock changes go to the server with the cart's holds, in one
+  // step; kept and sent again later if the server can't be reached.
+  // Waits at most a few seconds; never fails the checkout.
+  Future<void> _lanCheckout({
+    required String? receiptUuid,
+    required Set<String> queueBefore,
+  }) async {
+    try {
+      final cart = currentCart();
+      await LanStockClient().checkout(
+        cart: cart,
+        receiptUuid: receiptUuid ?? cart.id ?? '',
+        queueBefore: queueBefore,
+      );
+    } catch (e) {
+      await mainLocalLog('LAN checkout not sent: $e');
+    }
   }
 
   // List<TempCart> cartQueue = [];
@@ -837,7 +918,8 @@ class SalesProvider extends ChangeNotifier {
       }
 
       final availableQuantity =
-          product.getActualQuantity() ?? 0;
+          (product.getActualQuantity() ?? 0) -
+          reservedElsewhere(product.uuid);
 
       if (conflict.quantity > availableQuantity) {
         final existsInCurrentCart = currentCart()
@@ -923,7 +1005,34 @@ class SalesProvider extends ChangeNotifier {
       }
     }
 
-    void performAction() {
+    Future<void> performAction() async {
+      // To a receipt or invoice: every line held by the store server
+      // at once, or no switch.
+      if (isStockFreeCartType(currentCart().cartItemTypeIndex) &&
+          (value == 1 || value == 2)) {
+        final cart = currentCart();
+        final refused = await LanStockClient().holdMany(
+          cart,
+          stockByProduct(cart.cartItems),
+          atomic: true,
+          asHolding: true,
+        );
+        if (refused.isNotEmpty) {
+          if (!context.mounted) return;
+          unawaited(
+            showStockConflicts(
+              context,
+              refused,
+              title: 'Insufficient Stock',
+              message:
+                  'Other tills hold some of the stock this cart '
+                  'needs. Please reduce the quantity or remove these '
+                  'items before switching Sale Type.',
+            ),
+          );
+          return;
+        }
+      }
       currentCart().cartItemTypeIndex = value;
       CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
@@ -940,7 +1049,7 @@ class SalesProvider extends ChangeNotifier {
         action: performAction,
       );
     } else {
-      performAction();
+      unawaited(performAction());
     }
   }
 
@@ -1162,7 +1271,7 @@ class SalesProvider extends ChangeNotifier {
     CartFunc().updateMainCart(currentMainCart());
   }
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
@@ -1673,6 +1782,10 @@ class SalesProvider extends ChangeNotifier {
       );
       return null;
     }
+
+    // The stock changes queued from here on are this sale's: sent to
+    // the store server with its checkout.
+    final lanQueueBefore = LanStockClient().queuedKeys();
 
     final createdAt = currentCart().returnDate();
     final breakdown = PaymentBreakdown(payments);
@@ -2243,6 +2356,12 @@ class SalesProvider extends ChangeNotifier {
               }
               // Step 5: Reset state
               // resetPaymentMethod();
+              // The sale to the store server with its cart's
+              // holds, before the cart goes.
+              await _lanCheckout(
+                receiptUuid: receipt.uuid,
+                queueBefore: lanQueueBefore,
+              );
               try {
                 await deleteCart(
                   cartId: cartIdCache,
@@ -2970,6 +3089,12 @@ class SalesProvider extends ChangeNotifier {
               }
               // Step 5: Reset state
               // resetPaymentMethod();
+              // The sale to the store server with its cart's
+              // holds, before the cart goes.
+              await _lanCheckout(
+                receiptUuid: invoice.uuid,
+                queueBefore: lanQueueBefore,
+              );
               try {
                 await deleteCart(
                   cartId: cartIdCache,
@@ -3881,6 +4006,32 @@ class SalesProvider extends ChangeNotifier {
   //   return totalInAllCarts;
   // }
 
+  // Stock a receipt or invoice edit's original lines of [itemUuid]
+  // already took out (the same lines checkoutStockConflict credits):
+  // it is available again to that cart's lines.
+  double editCredit(TempCart cart, String? itemUuid) {
+    if (itemUuid == null ||
+        isStockFreeCartType(cart.cartItemTypeIndex) ||
+        (cart.receiptUuidEdit == null &&
+            cart.invoiceUuidEdit == null)) {
+      return 0;
+    }
+    double total = 0;
+    for (final line in cart.tempCartItems ?? <TempCartItem>[]) {
+      if (line.isVoid == true) continue;
+      if ((line.itemUuid ?? line.item.uuid) != itemUuid) {
+        continue;
+      }
+      total += line.getStockQuantity();
+    }
+    return total;
+  }
+
+  // Stock the carts need of [newCartItem]'s item, without the line
+  // being added or edited. A receipt or invoice edit is credited its
+  // original lines (editCredit): in full for the current cart (the
+  // one being changed, as in checkoutStockConflict), so the result
+  // can be negative; another edit cart counts only what it adds.
   double totalInAllCarts({
     required TempCartItem newCartItem,
     required bool isEdit,
@@ -3895,6 +4046,8 @@ class SalesProvider extends ChangeNotifier {
         (item) =>
             !isStockFreeCartType(item.cartItemTypeIndex),
       )) {
+        final credit = editCredit(cart, itemUuid);
+        final before = totalInAllCarts;
         for (final cartItem in cart.getCartItems()) {
           final cartItemUuid =
               cartItem.itemUuid ?? cartItem.item.uuid;
@@ -3924,6 +4077,14 @@ class SalesProvider extends ChangeNotifier {
             // }
           }
         }
+        if (credit > 0) {
+          final inCart = totalInAllCarts - before;
+          totalInAllCarts =
+              before +
+              (cart.id == cartIdCache
+                  ? inCart - credit
+                  : (inCart > credit ? inCart - credit : 0));
+        }
       }
     }
 
@@ -3939,8 +4100,12 @@ class SalesProvider extends ChangeNotifier {
           item.uuid ==
           (newCartItem.itemUuid ?? newCartItem.item.uuid),
     );
+    final elsewhere = reservedElsewhere(
+      newCartItem.itemUuid ?? newCartItem.item.uuid,
+    );
     if (tempList.isNotEmpty) {
       return (tempList.first.getActualQuantity() ?? 0) -
+          elsewhere -
           totalInAllCarts(
             newCartItem: newCartItem,
             isEdit: isEdit,
@@ -3948,6 +4113,7 @@ class SalesProvider extends ChangeNotifier {
     } else {
       return (newCartItem.getItem()?.getActualQuantity() ??
               0) -
+          elsewhere -
           totalInAllCarts(
             newCartItem: newCartItem,
             isEdit: isEdit,
@@ -3955,6 +4121,10 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  // Stock the carts need of [product] (the product cards). Edits are
+  // credited as in totalInAllCarts: the on-screen edit cart gets its
+  // original lines back in full; another edit cart counts only what it
+  // adds.
   double totalItemQuantityInAllCarts({
     required TempProductClass product,
   }) {
@@ -3964,10 +4134,20 @@ class SalesProvider extends ChangeNotifier {
         (item) =>
             !isStockFreeCartType(item.cartItemTypeIndex),
       )) {
+        final credit = editCredit(cart, product.uuid);
+        final before = totalInAllCarts;
         for (final cartItem in cart.getCartItems().where(
           (item) => item.getItem()?.uuid == product.uuid,
         )) {
           totalInAllCarts += cartItem.getStockQuantity();
+        }
+        if (credit > 0) {
+          final inCart = totalInAllCarts - before;
+          totalInAllCarts =
+              before +
+              (cart.id == cartIdCache
+                  ? inCart - credit
+                  : (inCart > credit ? inCart - credit : 0));
         }
       }
     }
@@ -3980,11 +4160,14 @@ class SalesProvider extends ChangeNotifier {
     var tempList = returnData().productListMain.where(
       (item) => item.uuid == (product.uuid ?? item.uuid),
     );
+    final elsewhere = reservedElsewhere(product.uuid);
     if (tempList.isNotEmpty) {
       return (tempList.first.getActualQuantity() ?? 0) -
+          elsewhere -
           totalItemQuantityInAllCarts(product: product);
     } else {
       return (product.getActualQuantity() ?? 0) -
+          elsewhere -
           totalItemQuantityInAllCarts(product: product);
     }
   }
@@ -4093,8 +4276,10 @@ class SalesProvider extends ChangeNotifier {
         itemUuid,
       );
       // Editing restores the old lines before deducting the new.
+      // Other tills' holds aren't available.
       final available =
-          (product.getActualQuantity() ?? 0) +
+          (product.getActualQuantity() ?? 0) -
+          reservedElsewhere(itemUuid) +
           (isEdit
               ? quantityByItem(
                 cart.tempCartItems ?? [],
@@ -4180,8 +4365,10 @@ class SalesProvider extends ChangeNotifier {
     // - It is managed.
     // Therefore stock restrictions apply.
 
+    // Other tills' holds aren't available here.
     final availableQuantity =
-        product.getActualQuantity() ?? 0;
+        (product.getActualQuantity() ?? 0) -
+        reservedElsewhere(itemUuid);
 
     final currentQuantity = totalInAllCarts(
       newCartItem: newCartItem,
@@ -4354,7 +4541,26 @@ class SalesProvider extends ChangeNotifier {
   Future<void> addMultipleItemsToCart({
     required BuildContext context,
   }) async {
+    // One batch for every product: the store server holds what
+    // it can; the rest are skipped and listed (with the items the
+    // local check skips) for the conflict dialog.
+    final cart = currentCart();
+    final needed = <String, double>{};
+    for (final item in tempCartItems) {
+      final productUuid = lineProduct(item);
+      if (productUuid == null) continue;
+      needed[productUuid] =
+          (needed[productUuid] ?? cartNeedOf(cart, productUuid)) +
+          item.getStockQuantity();
+    }
+    final refused = await LanStockClient().holdMany(cart, needed);
+    final refusedProducts = {
+      for (final c in refused) c.productUuid,
+    };
+    final skipped = <LanStockConflict>[...refused];
     for (var newItem in tempCartItems) {
+      final productUuid = lineProduct(newItem);
+      if (refusedProducts.contains(productUuid)) continue;
       if (canAddProductToCart(
         newCartItem: newItem,
         quantityToAdd: newItem.getStockQuantity(),
@@ -4416,7 +4622,39 @@ class SalesProvider extends ChangeNotifier {
         await CartFunc().updateMainCart(currentMainCart());
 
         notifyListeners();
-      } else {}
+      } else if (productUuid != null && _lanReportsSkips()) {
+        // Off the store's network the local check's skips stay silent,
+        // as before LAN sync.
+        final left = remainingQttyInAllCarts(
+          newCartItem: newItem,
+          isEdit: false,
+        );
+        skipped.add(
+          LanStockConflict(
+            cartId: cart.id ?? '',
+            productUuid: productUuid,
+            wanted: newItem.getStockQuantity(),
+            held: 0,
+            available: left < 0 ? 0 : left,
+          ),
+        );
+      }
+    }
+    LanStockClient().report(skipped);
+  }
+
+  /// Whether items the local stock check skips are listed in the stock
+  /// conflict dialog: only on the store's network (a till whose server
+  /// answers or not, and the server itself).
+  bool _lanReportsSkips() {
+    switch (RemoteRouter.route) {
+      case LanRoute.lanUp:
+      case LanRoute.lanDown:
+      case LanRoute.server:
+        return true;
+      case LanRoute.standalone:
+      case LanRoute.offLan:
+        return false;
     }
   }
 
@@ -4757,6 +4995,16 @@ class SalesProvider extends ChangeNotifier {
           }
         }
 
+        // The line's new size, held by the store server.
+        if (!await holdInCart(
+          context: context.mounted ? context : null,
+          line: existingLine,
+          without: existingLine,
+          plus: newItem.getStockQuantity(),
+        )) {
+          return "Quantity Limit Exceeded";
+        }
+
         return await replaceCartItem(
           existingLine: existingLine,
           newItem: newItem,
@@ -4798,6 +5046,15 @@ class SalesProvider extends ChangeNotifier {
           }
         }
 
+        // The added quantity, held by the store server.
+        if (!await holdInCart(
+          context: context.mounted ? context : null,
+          line: existingLine,
+          plus: newItem.getStockQuantity(),
+        )) {
+          return "Quantity Limit Exceeded";
+        }
+
         return await addToCartItemQuantity(
           existingLine: existingLine,
           addedQuantityInOldUnit: addedQuantityInOldUnit,
@@ -4810,6 +5067,14 @@ class SalesProvider extends ChangeNotifier {
         newCartItem: newItem,
         quantityToAdd: newItem.getStockQuantity(),
       )) {
+        // The new line, held by the store server.
+        if (!await holdInCart(
+          context: context,
+          line: newItem,
+          plus: newItem.getStockQuantity(),
+        )) {
+          return "Quantity Limit Exceeded";
+        }
         currentCart().cartItems.add(newItem);
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
@@ -4877,11 +5142,18 @@ class SalesProvider extends ChangeNotifier {
     final double quantityToAdd =
         cartItem.getStockQuantity();
 
+    // The line's new quantity, held by the store server; the
+    // caller shows "Quantity Limit Reached" on false.
     if (canAddProductToCart(
-      isEdit: true,
-      newCartItem: cartItem,
-      quantityToAdd: quantityToAdd,
-    )) {
+          isEdit: true,
+          newCartItem: cartItem,
+          quantityToAdd: quantityToAdd,
+        ) &&
+        await holdInCart(
+          line: cartItem,
+          without: cartItem,
+          plus: quantityToAdd,
+        )) {
       if (returnShopProvider().userShop()!.trackCart ==
               true &&
           oldQuantity > number) {

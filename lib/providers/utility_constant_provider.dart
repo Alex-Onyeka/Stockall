@@ -5,6 +5,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/utility_constants/utility_constants_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UtilityConstantProvider extends ChangeNotifier {
@@ -13,7 +14,7 @@ class UtilityConstantProvider extends ChangeNotifier {
   factory UtilityConstantProvider() => _instance;
   UtilityConstantProvider._internal();
 
-  final SupabaseClient _client = Supabase.instance.client;
+  SupabaseClient get _client => backend();
 
   final String tableName = 'utility_constants';
 

@@ -8,6 +8,7 @@ import 'package:stockall/local_database/products/unsync_funcs/quantity_update/qu
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
+import 'package:stockall/local_database/lan/lan_deleted_items_func.dart';
 import 'package:stockall/main.dart';
 
 class ProductsFunc {
@@ -266,6 +267,8 @@ class ProductsFunc {
   Future<int> deleteProduct(String uuid) async {
     try {
       await productBox.delete(uuid);
+      // Lets the LAN server drop deltas for it (not "not held yet").
+      await LanDeletedItemsFunc().add('products', uuid);
       await mainLocalLog('Offline Product Deleted Success');
       return 1;
     } catch (e) {

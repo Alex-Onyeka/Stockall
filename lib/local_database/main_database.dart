@@ -27,6 +27,23 @@ import 'package:stockall/local_database/inventory_updates/inventory_updates_func
 import 'package:stockall/local_database/invoices/invoices_func.dart';
 import 'package:stockall/local_database/item_history/item_histories_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
+import 'package:stockall/local_database/lan/lan_applied_deltas_func.dart';
+import 'package:stockall/local_database/lan/lan_client_session_func.dart';
+import 'package:stockall/local_database/lan/lan_credentials_func.dart';
+import 'package:stockall/local_database/lan/lan_deleted_items_func.dart';
+import 'package:stockall/local_database/lan/lan_delta_journal_func.dart';
+import 'package:stockall/local_database/lan/lan_paired_devices_func.dart';
+import 'package:stockall/local_database/lan/lan_handoffs_func.dart';
+import 'package:stockall/local_database/lan/lan_paired_servers_func.dart';
+import 'package:stockall/local_database/lan/lan_pull_cursors_func.dart';
+import 'package:stockall/local_database/lan/lan_stock_holds_func.dart';
+import 'package:stockall/local_database/lan/lan_pending_checkouts_func.dart';
+import 'package:stockall/local_database/lan/lan_own_holds_func.dart';
+import 'package:stockall/local_database/lan/lan_alerts_func.dart';
+import 'package:stockall/local_database/lan/lan_server_sessions_func.dart';
+import 'package:stockall/local_database/lan/lan_shop_keys_func.dart';
+import 'package:stockall/local_database/lan/local_server_func.dart';
+import 'package:stockall/local_database/lan/sent_entries_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/materials/materials_func.dart';
@@ -62,6 +79,9 @@ import 'package:stockall/local_database/utility_constants/utility_constants_func
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/local_database/waybills/waybills_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/local_server_provider.dart';
+import 'package:stockall/services/lan/device_identity.dart';
+import 'package:stockall/services/lan/rest/lan_delta_registry.dart';
 
 class MainDatabase extends ChangeNotifier {
   static final MainDatabase _instance =
@@ -315,6 +335,86 @@ class MainDatabase extends ChangeNotifier {
         'StorageItemHistoriesFunc',
         () => StorageItemHistoriesFunc().init(),
       );
+      await _safeInit(
+        'DeviceIdentity',
+        () => DeviceIdentity().init(),
+      );
+      await _safeInit(
+        'LocalServerFunc',
+        () => LocalServerFunc().init(),
+      );
+      await _safeInit(
+        'LanPairedServersFunc',
+        () => LanPairedServersFunc().init(),
+      );
+      await _safeInit(
+        'LanCredentialsFunc',
+        () => LanCredentialsFunc().init(),
+      );
+      await _safeInit(
+        'LanServerSessionsFunc',
+        () => LanServerSessionsFunc().init(),
+      );
+      await _safeInit(
+        'LanClientSessionFunc',
+        () => LanClientSessionFunc().init(),
+      );
+      await _safeInit(
+        'LanShopKeysFunc',
+        () => LanShopKeysFunc().init(),
+      );
+      await _safeInit(
+        'LanAppliedDeltasFunc',
+        () => LanAppliedDeltasFunc().init(),
+      );
+      await _safeInit(
+        'LanDeletedItemsFunc',
+        () => LanDeletedItemsFunc().init(),
+      );
+      await _safeInit(
+        'LanHandoffsFunc',
+        () => LanHandoffsFunc().init(),
+      );
+      await _safeInit(
+        'SentEntriesFunc',
+        () => SentEntriesFunc().init(),
+      );
+      await _safeInit(
+        'LanPullCursorsFunc',
+        () => LanPullCursorsFunc().init(),
+      );
+      await _safeInit(
+        'LanStockHoldsFunc',
+        () => LanStockHoldsFunc().init(),
+      );
+      await _safeInit(
+        'LanPendingCheckoutsFunc',
+        () => LanPendingCheckoutsFunc().init(),
+      );
+      await _safeInit(
+        'LanOwnHoldsFunc',
+        () => LanOwnHoldsFunc().init(),
+      );
+      await _safeInit(
+        'LanAlertsFunc',
+        () => LanAlertsFunc().init(),
+      );
+      await _safeInit(
+        'LanDeltaJournalFunc',
+        () => LanDeltaJournalFunc().init(),
+      );
+      await _safeInit(
+        'LanPairedDevicesFunc',
+        () => LanPairedDevicesFunc().init(),
+      );
+      // Delta entries a crash cut off on the LAN server: finished before
+      // the app can change the same rows.
+      await _safeInit('LAN delta journal', () async {
+        final finished = await recoverLanDeltaJournal();
+        if (finished > 0) {
+          await mainLocalLog('LAN server: finished $finished cut-off deltas');
+        }
+      });
       await mainLocalLog('init Complete');
     } catch (e, s) {
       await mainLocalLog(
@@ -434,6 +534,65 @@ class MainDatabase extends ChangeNotifier {
       'PermissionFunc',
       () => PermissionFunc().clearPermission(),
     );
+    await _safeClear(
+      'LAN server',
+      () => LocalServerProvider().stopServingAndAdverts(),
+    );
+    await _safeClear('LocalServerFunc', () async {
+      await LocalServerFunc().clearLocalServerRecords();
+      LocalServerProvider().clearCache();
+    });
+    await _safeClear(
+      'LanCredentialsFunc',
+      () => LanCredentialsFunc().clearCredentials(),
+    );
+    await _safeClear(
+      'LanServerSessionsFunc',
+      () => LanServerSessionsFunc().clearSessions(),
+    );
+    await _safeClear(
+      'LanClientSessionFunc',
+      () => LanClientSessionFunc().clearClientSessions(),
+    );
+    await _safeClear(
+      'LanShopKeysFunc',
+      () => LanShopKeysFunc().clearShopKeys(),
+    );
+    // LanAppliedDeltasFunc is kept: a client of the same store may still
+    // retry a batch the server applied. It is cleared when this device
+    // serves another store (LanAppliedDeltasFunc.forShop).
+    await _safeClear(
+      'LanDeletedItemsFunc',
+      () => LanDeletedItemsFunc().clearDeletedItems(),
+    );
+    await _safeClear(
+      'LanHandoffsFunc',
+      () => LanHandoffsFunc().clearHandoffs(),
+    );
+    await _safeClear(
+      'SentEntriesFunc',
+      () => SentEntriesFunc().clearSentEntries(),
+    );
+    await _safeClear(
+      'LanPullCursorsFunc',
+      () => LanPullCursorsFunc().clearPullCursors(),
+    );
+    await _safeClear(
+      'LanStockHoldsFunc',
+      () => LanStockHoldsFunc().clearHolds(),
+    );
+    await _safeClear(
+      'LanPendingCheckoutsFunc',
+      () => LanPendingCheckoutsFunc().clearPending(),
+    );
+    await _safeClear(
+      'LanOwnHoldsFunc',
+      () => LanOwnHoldsFunc().clearOwnHolds(),
+    );
+    await _safeClear(
+      'LanAlertsFunc',
+      () => LanAlertsFunc().clearAlerts(),
+    );
     if (includeAuthAndShop) {
       await _safeClear('ShopFunc', () => ShopFunc().clearShop());
       await _safeClear('ShopOwnerFunc', () => ShopOwnerFunc().clearShopOwner());
@@ -442,4 +601,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 159;
+int highestHiveClassIndex = 164;

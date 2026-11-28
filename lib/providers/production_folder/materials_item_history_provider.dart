@@ -10,10 +10,12 @@ import 'package:stockall/local_database/materials_item_history/materials_item_hi
 import 'package:stockall/local_database/materials_item_history/unsync_funcs/created_materials_item_histories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MaterialsItemHistoryProvider with ChangeNotifier {
-  final SupabaseClient client = Supabase.instance.client;
+  SupabaseClient get client => backend();
   final String tableName =
       'production_materials_item_history';
   static final MaterialsItemHistoryProvider _instance =
@@ -105,7 +107,7 @@ class MaterialsItemHistoryProvider with ChangeNotifier {
     bool isOnline = await ConnectivityProvider().isOnline();
     var shop = returnShopProvider().userShop()!;
     var shopId = shop.shopId!;
-    if (isOnline &&
+    if (isOnline && !LanServerSync.pullerActive &&
         MaterialsItemHistoriesFunc().isSynced() &&
         ItemsAuthAction().trackItemHistoryAction(
           context: null,

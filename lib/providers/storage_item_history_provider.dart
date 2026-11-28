@@ -9,10 +9,12 @@ import 'package:stockall/local_database/storage_item_history/storage_item_histor
 import 'package:stockall/local_database/storage_item_history/unsync_funcs/created_item_histories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StorageItemHistoryProvider with ChangeNotifier {
-  final SupabaseClient client = Supabase.instance.client;
+  SupabaseClient get client => backend();
   final String tableName = 'storage_item_history';
   static final StorageItemHistoryProvider _instance =
       StorageItemHistoryProvider._internal();
@@ -140,7 +142,7 @@ class StorageItemHistoryProvider with ChangeNotifier {
     bool isOnline = await ConnectivityProvider().isOnline();
     var shop = returnShopProvider().userShop()!;
     var shopId = shop.shopId!;
-    if (isOnline &&
+    if (isOnline && !LanServerSync.pullerActive &&
         StorageItemHistoriesFunc().isSynced() &&
         ItemsAuthAction().trackItemHistoryAction(
           context: null,

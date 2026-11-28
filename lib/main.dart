@@ -40,6 +40,11 @@ import 'package:stockall/providers/inventory_updates_provider.dart';
 import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/country_provider.dart';
 import 'package:stockall/providers/item_history_provider.dart';
+import 'package:stockall/providers/local_server_provider.dart';
+import 'package:stockall/services/lan/lan_routing.dart';
+import 'package:stockall/services/lan/stock/lan_stock_client.dart';
+import 'package:stockall/components/alert_dialogues/stock_conflict_alert.dart';
+import 'package:stockall/components/alert_dialogues/lan_server_alert.dart';
 import 'package:stockall/providers/orders_action_provider.dart';
 import 'package:stockall/providers/orders_provider.dart';
 import 'package:stockall/providers/drafts_provider.dart';
@@ -84,6 +89,10 @@ import 'package:stockall/services/payment_result_page.dart/payment_result_page.d
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 
+/// True in the secondary customer-display window. The LAN server must never
+/// start there.
+bool runningInAltWindow = false;
+
 // Stopwatch stopwatch = Stopwatch();
 void main(List<String> args) async {
   try {
@@ -99,6 +108,7 @@ void main(List<String> args) async {
       try {
         final decoded = jsonDecode(argument);
         if (decoded['type'] == 'alt') {
+          runningInAltWindow = true;
           runApp(
             MyAppAlt(
               home: AltDisplay(
@@ -135,7 +145,16 @@ void main(List<String> args) async {
         await windowManager.ensureInitialized();
         maxWindow();
         await mainLocalLog("Maximize In Main Dot Dart");
+        unawaited(LocalServerProvider().resumeServerIfOwned());
       }
+      // LAN server, LAN offline or Supabase; never in the alt window.
+      LanRouting().start();
+      // Cart stock holds on the store's LAN, and the dialog for
+      // what the server couldn't hold.
+      LanStockClient().start();
+      StockConflictPresenter().start();
+      // Store server alerts for Manage Local Server users.
+      LanServerAlertPresenter().start();
       await DeviceService.init();
       runApp(MyApp(home: BasePage()));
     }
@@ -792,6 +811,20 @@ PermissionProvider returnPermissionProvider({
   }
 }
 
+LocalServerProvider returnLocalServerProvider({
+  BuildContext? context,
+  bool listen = true,
+}) {
+  if (context == null) {
+    return LocalServerProvider();
+  } else {
+    return Provider.of<LocalServerProvider>(
+      context,
+      listen: listen,
+    );
+  }
+}
+
 CustomersProvider returnCustomers(
   BuildContext context, {
   bool listen = true,
@@ -1440,6 +1473,9 @@ class _MyAppState extends State<MyApp>
         ),
         ChangeNotifierProvider(
           create: (_) => PermissionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocalServerProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => CategoriesProvider(),

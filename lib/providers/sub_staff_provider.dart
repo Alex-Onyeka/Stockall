@@ -10,6 +10,8 @@ import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_s
 import 'package:stockall/local_database/sub_staff/unsync_funcs/updated/updated_sub_staff_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubStaffProvider extends ChangeNotifier {
@@ -17,7 +19,7 @@ class SubStaffProvider extends ChangeNotifier {
       SubStaffProvider._internal();
   factory SubStaffProvider() => _instance;
   SubStaffProvider._internal();
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
@@ -78,7 +80,7 @@ class SubStaffProvider extends ChangeNotifier {
   Future<List<TempSubStaff>> getSubStaffs() async {
     await getSubStaffsOffline();
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && SubStaffFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && SubStaffFunc().isSynced()) {
       final response = await supabase
           .from(tableName)
           .select()

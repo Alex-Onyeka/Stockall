@@ -264,6 +264,7 @@ class Authorizations {
   String addOrders = 'Add Orders';
   String updateOrders = 'Update Orders';
   String deleteOrders = 'Delete Orders';
+  String manageLocalServer = 'Manage Local Server';
 }
 
 bool authorization({required String authorized}) {

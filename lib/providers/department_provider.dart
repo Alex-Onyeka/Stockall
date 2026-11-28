@@ -13,6 +13,8 @@ import 'package:stockall/local_database/department_func/unsync_funcs/deleted_dep
 import 'package:stockall/local_database/department_func/unsync_funcs/updated_department/updated_department_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DepartmentProvider with ChangeNotifier {
@@ -23,7 +25,7 @@ class DepartmentProvider with ChangeNotifier {
   factory DepartmentProvider() => _instance;
   DepartmentProvider._internal();
   final String tableName = 'departments';
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
 
   List<DepartmentClass> departments = [];
   DateTime? _lastSyncAt;
@@ -240,7 +242,7 @@ class DepartmentProvider with ChangeNotifier {
     await getDepartmentsOffline();
     bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline && DepartmentsFunc().isSynced()) {
+      if (isOnline && !LanServerSync.pullerActive && DepartmentsFunc().isSynced()) {
         final currentShopId = shopId();
         if (!forceRefresh &&
             _lastSyncAt != null &&

@@ -2,12 +2,16 @@ import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
+import 'package:stockall/local_database/lan/pending_creates.dart';
+import 'package:stockall/local_database/lan/sent_entries_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/lan_sent_marks.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class QuantityUpdateProvider with ChangeNotifier {
-  final SupabaseClient client = Supabase.instance.client;
+  SupabaseClient get client => backend();
   static final QuantityUpdateProvider _instance =
       QuantityUpdateProvider._internal();
   factory QuantityUpdateProvider() => _instance;
@@ -46,8 +50,35 @@ class QuantityUpdateProvider with ChangeNotifier {
     try {
       bool isOnline = await ConnectivityProvider().isOnline();
       if (QuantityUpdateFunc().getQuantitiesUpdate().isNotEmpty && isOnline) {
+        // Not yet for a product whose create is still queued here: it stays
+        // queued for a later run (see PendingCreates).
+        final notCreated = PendingCreates.products();
+        final queue = QuantityUpdateFunc();
+        // Not an entry sent to a LAN server without an answer, except to
+        // that server (see LanSentMarks).
+        final to = LanSentMarks.target();
+        final ready = queue
+            .getQuantitiesUpdate()
+            .where(
+              (q) =>
+                  !notCreated.contains(q.productUuid) &&
+                  LanSentMarks.maySend(
+                    queue.quantityUpdateBoxName,
+                    q.uuid,
+                    to: to,
+                  ),
+            )
+            .toList();
+        if (ready.isEmpty) return;
+        final sentUuids = [for (final q in ready) q.uuid];
+        // Out until the answer: a pull adds none of these back meanwhile.
+        await LanSentMarks.markSending(
+          queue.quantityUpdateBoxName,
+          sentUuids,
+          to: to,
+        );
         final tempQuantityUpdates =
-            QuantityUpdateFunc().getQuantitiesUpdate().toList().map((item) {
+            ready.map((item) {
               return {
                 'hiveUuid': item.uuid,
                 "itemUuid": item.productUuid,
@@ -92,6 +123,8 @@ class QuantityUpdateProvider with ChangeNotifier {
             }
           }
         }
+
+        await SentEntriesFunc().unmark(queue.quantityUpdateBoxName, sentUuids);
 
         // Reconcile local products with server so this device immediately
         // reflects server state and any sales made by other staff.

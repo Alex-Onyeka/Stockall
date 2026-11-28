@@ -8,6 +8,7 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DepartmentsDashboardProvider extends ChangeNotifier {
@@ -16,7 +17,7 @@ class DepartmentsDashboardProvider extends ChangeNotifier {
   factory DepartmentsDashboardProvider() => _instance;
   DepartmentsDashboardProvider._internal();
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
 
   List<TempMainReceipt> allReceipts = [];
   List<TempExpensesClass> allExpenses = [];

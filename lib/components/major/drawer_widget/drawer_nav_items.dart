@@ -6,6 +6,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/components/online_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/calculator_page/calculator_page.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
@@ -353,11 +354,14 @@ class DrawerNavItems extends StatelessWidget {
         ),
         Visibility(
           visible: !isStoreKeeper(),
-          child: _buildNotificationsTile(
-            context: context,
-            isCompactTablet: isCompactTablet,
-            unreadCount: unreadCount,
-            isMobile: isMobile,
+          // Hidden while the store server can't reach the internet.
+          child: OnlineOnly(
+            child: _buildNotificationsTile(
+              context: context,
+              isCompactTablet: isCompactTablet,
+              unreadCount: unreadCount,
+              isMobile: isMobile,
+            ),
           ),
         ),
         buildTile(

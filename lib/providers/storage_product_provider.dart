@@ -12,6 +12,8 @@ import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/del
 import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StorageProductProvider extends ChangeNotifier {
@@ -47,7 +49,7 @@ class StorageProductProvider extends ChangeNotifier {
 
   final String tableName = 'storage_products';
 
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
 
   Future<void> createStorageProduct({
     required TempStorageProducts product,
@@ -347,7 +349,7 @@ class StorageProductProvider extends ChangeNotifier {
     await getStorageProductsOffline(shopId);
     bool isOnline = await connectivity.isOnline();
     await mainLocalLog('✅✅ Products List Cleared');
-    if (isOnline && StorageProductsFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && StorageProductsFunc().isSynced()) {
       if (!forceRefresh &&
           _lastSyncAt != null &&
           _lastSyncShopId == shopId &&

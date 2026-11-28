@@ -8,6 +8,7 @@ import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/cart_queue/cart_queue_mobile.dart';
 import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
+import 'package:stockall/components/lan_stock_banner.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/my_calculator.dart';
@@ -1081,7 +1082,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               ),
             ),
           ),
-          body: SafeArea(
+          body: LanStockBanner(
+            child: SafeArea(
             child: Stack(
               children: [
               Builder(
@@ -2824,6 +2826,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             ],
           ),
         ),
+          ),
       ),
       ),
     );

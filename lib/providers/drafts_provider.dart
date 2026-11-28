@@ -15,6 +15,8 @@ import 'package:stockall/local_database/drafts_func/unsync_funcs/updated/updated
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DraftsProvider extends ChangeNotifier {
@@ -22,7 +24,7 @@ class DraftsProvider extends ChangeNotifier {
   factory DraftsProvider() => _instance;
   DraftsProvider._internal();
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity = ConnectivityProvider();
   List<Drafts> _drafts = [];
   List<Drafts> get drafts => _drafts.where((draft) {
@@ -121,7 +123,7 @@ class DraftsProvider extends ChangeNotifier {
   Future<List<Drafts>> loadDrafts(int shopId) async {
     await loadDraftsOffline(shopId);
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && DraftsFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && DraftsFunc().isSynced()) {
       try {
         final data = await supabase
             .from(tableName)

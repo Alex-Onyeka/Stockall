@@ -11,6 +11,9 @@ import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_c
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_pending_deltas.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {
@@ -23,7 +26,7 @@ class CustomersProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<TempCustomersClass> customers = [];
@@ -55,7 +58,7 @@ class CustomersProvider extends ChangeNotifier {
   }) async {
     await fetchCustomersOffline();
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && CustomerFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && CustomerFunc().isSynced()) {
       if (!forceRefresh &&
           _lastSyncAt != null &&
           _lastSyncShopId == shopId &&
@@ -65,12 +68,18 @@ class CustomersProvider extends ChangeNotifier {
               _lastSyncAt!
                   .subtract(const Duration(seconds: 5))
                   .toUtc();
+          final deltasBefore = PendingDeltas.queueKeys('customers');
           final res = await supabase
               .from('customers')
               .select()
               .eq('shop_id', shopId)
               .gt('updated_at', safeSince.toIso8601String())
               .order('updated_at', ascending: true);
+          // A queued account change sent meanwhile may already be in these
+          // rows: keep what is stored, pull them again next time.
+          if (!PendingDeltas.stillQueued('customers', deltasBefore)) {
+            return customers;
+          }
           if (res.isNotEmpty) {
             final pendingUuids = {
               ...UpdatedCustomersFunc().getCustomers().map(
@@ -89,6 +98,9 @@ class CustomersProvider extends ChangeNotifier {
                       (c) => !pendingUuids.contains(c.uuid),
                     )
                     .toList();
+            // Balance and reward changes still queued here are not on
+            // Supabase yet: add them back.
+            PendingDeltas.reapply('customers', updated);
             for (final item in updated) {
               final idx = customers.indexWhere(
                 (c) => c.uuid == item.uuid,
@@ -120,12 +132,18 @@ class CustomersProvider extends ChangeNotifier {
         }
       }
 
+      final deltasBefore = PendingDeltas.queueKeys('customers');
       final data = await supabase
           .from('customers')
           .select()
           .eq('shop_id', shopId)
           .order('name', ascending: true);
       await mainLocalLog(data.length.toString());
+      // As above: keep what is stored, pull again next time.
+      if (!PendingDeltas.stillQueued('customers', deltasBefore)) {
+        notifyListeners();
+        return customers;
+      }
 
       customers =
           (data as List)
@@ -133,6 +151,7 @@ class CustomersProvider extends ChangeNotifier {
                 (json) => TempCustomersClass.fromJson(json),
               )
               .toList();
+      PendingDeltas.reapply('customers', customers);
 
       await CustomerFunc().insertAllCustomers(customers);
       _lastSyncAt = DateTime.now().toUtc();

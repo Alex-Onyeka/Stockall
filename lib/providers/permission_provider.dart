@@ -3,13 +3,15 @@ import 'package:stockall/classes/temp_permission/temp_permission_class.dart';
 import 'package:stockall/local_database/permission/permission_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PermissionProvider extends ChangeNotifier {
   static final PermissionProvider _instance = PermissionProvider._internal();
   factory PermissionProvider() => _instance;
   PermissionProvider._internal();
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity = ConnectivityProvider();
 
   List<PermissionModel> permissionsCache = [];
@@ -54,7 +56,7 @@ class PermissionProvider extends ChangeNotifier {
     permissionsCache = PermissionFunc().getPermissionModel();
     notifyListeners();
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && !LanServerSync.pullerActive) {
       final response = await supabase.from(tableName).select();
       await mainLocalLog('Permissions Gotten: ${response.length}');
 

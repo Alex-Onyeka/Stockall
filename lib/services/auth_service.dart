@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/alert_dialogues/lan_server_alert.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -10,7 +13,9 @@ import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/local_server_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
+import 'package:stockall/services/lan/lan_unsent.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier {
@@ -195,10 +200,47 @@ class AuthService extends ChangeNotifier {
   Future<int> signIn(
     String email,
     String password,
+  ) async {
+    final result = await _signIn(email, password);
+    // Store server alerts waiting for a user with Manage Local Server are
+    // shown once the app opens.
+    if (result == 1) unawaited(LanServerAlertPresenter().signedIn());
+    return result;
+  }
+
+  Future<int> _signIn(
+    String email,
+    String password,
     // BuildContext context,
   ) async {
     NavProvider navProvider = NavProvider();
-    bool isOnline = ConnectivityProvider().isConnected;
+    // A paired LAN server answers first. When it can't be reached, the
+    // existing Supabase / offline login runs. When it refuses the password,
+    // the cloud decides if it can be reached (the server's logins may be
+    // out of date), else its answer is final.
+    final lan = await LocalServerProvider().loginViaLan(
+      email: email,
+      password: password,
+    );
+    final step = lanLoginStep(
+      lan,
+      interfaceUp: ConnectivityProvider().interfaceUp,
+    );
+    switch (step) {
+      case LanLoginStep.signedIn:
+        navProvider.verify();
+        navProvider.offLoading();
+        return 1;
+      case LanLoginStep.refused:
+        return 0;
+      case LanLoginStep.rateLimited:
+        return 2;
+      case LanLoginStep.cloudOnly:
+      case LanLoginStep.fallback:
+        break;
+    }
+    final cloudOnly = step == LanLoginStep.cloudOnly;
+    bool isOnline = cloudOnly || ConnectivityProvider().isConnected;
     if (isOnline) {
       try {
         final authResponse = await _client.auth
@@ -240,6 +282,11 @@ class AuthService extends ChangeNotifier {
         await mainLocalLog(
           "✅ User signed in and saved locally: ${tempUser.email}",
         );
+        // The store server refused this password: it fetches its logins
+        // again.
+        if (cloudOnly) {
+          unawaited(LocalServerProvider().refreshServerCredentials());
+        }
 
         return 1;
       } catch (e) {
@@ -292,6 +339,20 @@ class AuthService extends ChangeNotifier {
               message:
                   'You currently have some records that have not been backed up to the cloud. Please Proceed to Synchronize, before Logging out.',
               title: 'Unsyned Records Detected',
+            );
+          },
+        );
+        return 0;
+      } else if (!allowLogout &&
+          lanUnsentMessage(before: 'logging out') != null) {
+        // Logout clears them: they must reach the server or Supabase first.
+        showDialog(
+          context: context,
+          builder: (errorContext) {
+            return InfoAlert(
+              theme: returnTheme(context, listen: false),
+              message: lanUnsentMessage(before: 'logging out')!,
+              title: 'Unsent Store Network Changes',
             );
           },
         );
@@ -387,6 +448,7 @@ class AuthService extends ChangeNotifier {
           (_) => false,
         );
 
+        unawaited(LocalServerProvider().logoutFromLan());
         await returnShopProvider().clearAll(
           navContext,
           includeAuthAndShop: true,

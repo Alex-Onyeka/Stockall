@@ -204,7 +204,13 @@ class RightSideBar extends StatelessWidget {
               height: 50,
             ),
             Visibility(
-              visible: !isStoreKeeper(),
+              // Notifications are hidden while the store server can't reach
+              // the internet.
+              visible:
+                  !isStoreKeeper() &&
+                  returnLocalServerProvider(
+                    context: context,
+                  ).onlineFeaturesAvailable,
               child: Expanded(
                 child: SizedBox(
                   child: Column(

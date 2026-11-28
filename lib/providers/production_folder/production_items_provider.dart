@@ -18,6 +18,8 @@ import 'package:stockall/local_database/production_items/unsync_funcs/updated/up
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductionItemsProvider extends ChangeNotifier {
@@ -53,7 +55,7 @@ class ProductionItemsProvider extends ChangeNotifier {
 
   final String tableName = 'production_items';
 
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
 
   //
   //
@@ -398,7 +400,7 @@ class ProductionItemsProvider extends ChangeNotifier {
     try {
       bool isOnline = await connectivity.isOnline();
       await mainLocalLog('✅✅ ProductionItems List Cleared');
-      if (isOnline &&
+      if (isOnline && !LanServerSync.pullerActive &&
           ProductionItemsFunc().isSynced() &&
           returnShopProvider()
                   .userShop()

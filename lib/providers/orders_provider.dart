@@ -26,6 +26,8 @@ import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // // //
@@ -47,7 +49,7 @@ class OrdersProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<Orders> _orders = [];
@@ -230,7 +232,7 @@ class OrdersProvider extends ChangeNotifier {
 
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
-    if (isOnline && OrdersFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && OrdersFunc().isSynced()) {
       if (!forceRefresh &&
           !fetchAll &&
           _isRangeFetched(shopId, effectiveStart, effectiveEnd)) {

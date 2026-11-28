@@ -8,6 +8,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
 import 'package:stockall/components/cart_queue/cart_queue_desktop.dart';
 import 'package:stockall/components/drafts/drafts_list_sheet.dart';
+import 'package:stockall/components/lan_stock_banner.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -154,7 +155,8 @@ class _MakeSalesDesktopTwoState
                 ],
               ),
               child: Scaffold(
-                body: Row(
+                body: LanStockBanner(
+                  child: Row(
                   children: [
                     Visibility(
                       visible:
@@ -1069,6 +1071,7 @@ class _MakeSalesDesktopTwoState
                       ),
                     ),
                   ],
+                ),
                 ),
               ),
             ),

@@ -10,10 +10,12 @@ import 'package:stockall/local_database/production_item_history/production_item_
 import 'package:stockall/local_database/production_item_history/unsync_funcs/created_production_item_histories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductionItemHistoryProvider with ChangeNotifier {
-  final SupabaseClient client = Supabase.instance.client;
+  SupabaseClient get client => backend();
   final String tableName = 'production_item_history';
   static final ProductionItemHistoryProvider _instance =
       ProductionItemHistoryProvider._internal();
@@ -126,7 +128,7 @@ class ProductionItemHistoryProvider with ChangeNotifier {
     bool isOnline = await ConnectivityProvider().isOnline();
     var shop = returnShopProvider().userShop()!;
     var shopId = shop.shopId!;
-    if (isOnline &&
+    if (isOnline && !LanServerSync.pullerActive &&
         ProductionItemHistoriesFunc().isSynced() &&
         ItemsAuthAction().trackItemHistoryAction(
           context: null,

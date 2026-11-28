@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:popover/popover.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/lan_status_indicator.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -627,6 +628,8 @@ class _TopNavBarState extends State<TopNavBar> {
                         ? 3
                         : 2,
                 children: [
+                  // Where this device stands with the store server.
+                  const LanStatusIndicator(),
                   Visibility(
                     visible:
                         screenWidth(context) > mobileScreen,
@@ -961,11 +964,17 @@ class _TopNavBarState extends State<TopNavBar> {
                   Stack(
                     children: [
                       Visibility(
-                        visible: authorization(
-                          authorized:
-                              Authorizations()
-                                  .notificationsPage,
-                        ),
+                        // Hidden while the store server can't reach the
+                        // internet.
+                        visible:
+                            authorization(
+                              authorized:
+                                  Authorizations()
+                                      .notificationsPage,
+                            ) &&
+                            returnLocalServerProvider(
+                              context: context,
+                            ).onlineFeaturesAvailable,
                         child: Stack(
                           alignment: Alignment(1.2, -1.8),
                           children: [

@@ -9,6 +9,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubscriptionProvider extends ChangeNotifier {
@@ -18,7 +19,7 @@ class SubscriptionProvider extends ChangeNotifier {
   SubscriptionProvider._internal();
 
   final ConnectivityProvider connectivity = ConnectivityProvider();
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final NavProvider navProvider = NavProvider();
 
   SubscriptionClass? subscription;

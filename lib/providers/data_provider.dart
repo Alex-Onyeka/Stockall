@@ -102,6 +102,9 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
+import 'package:stockall/services/lan/sync/lan_pending_deltas.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -160,7 +163,7 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
 
   Future<void> createProduct({
     required TempProductClass product,
@@ -657,6 +660,8 @@ class DataProvider extends ChangeNotifier {
       try {
         bool isOnline = await connectivity.isOnline();
         if (isOnline) {
+          // Off the shop's LAN: held LAN handoffs go to Supabase first.
+          await RemoteRouter.beforeSync();
           final shopProvider = returnShopProvider();
           List<TempShopClass> shop =
               shopProvider.userShops.isNotEmpty
@@ -1504,6 +1509,8 @@ class DataProvider extends ChangeNotifier {
         await mainLocalLog('Error during syncData: $e');
       } finally {
         toggleSyncing(false);
+        // On the LAN: confirm handoffs; on the server: tell its clients.
+        unawaited(RemoteRouter.afterSync());
       }
     }
   }
@@ -2569,7 +2576,8 @@ class DataProvider extends ChangeNotifier {
   }) async {
     bool isOnline = await connectivity.isOnline();
     await getProductsOffline(shopId);
-    if (isOnline && !isSyncing) {
+    if (isOnline && !LanServerSync.pullerActive && !isSyncing) {
+      final deltasBefore = PendingDeltas.queueKeys('products');
       final data = await supabase
           .from('products')
           .select()
@@ -2658,6 +2666,15 @@ class DataProvider extends ChangeNotifier {
         }
         notifyListeners();
       }
+      // A queued stock change sent meanwhile (or a sync now sending one)
+      // may already be in these rows: keep what is stored and pull again
+      // later.
+      if (_productsPullStale(deltasBefore)) {
+        return _discardProductsPull();
+      }
+      // Stock changes still queued here are not on Supabase yet: add them
+      // back, so stock never rolls back over a queued sale.
+      PendingDeltas.reapply('products', productListMain);
       notifyListeners();
       if (returnShopProvider()
               .userShop()
@@ -2700,6 +2717,10 @@ class DataProvider extends ChangeNotifier {
         }
       }
 
+      // Checked again just before storing: a sync may have started since.
+      if (_productsPullStale(deltasBefore)) {
+        return _discardProductsPull();
+      }
       await ProductsFunc().insertAllProducts(
         productListMain,
       );
@@ -2724,6 +2745,22 @@ class DataProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+    return productListMain;
+  }
+
+  /// Whether a products pull begun when the queue held [deltasBefore]
+  /// must not be stored: a sync is running, or a queued stock change was
+  /// sent (or is out) since.
+  bool _productsPullStale(Set<Object?> deltasBefore) =>
+      isSyncing || !PendingDeltas.stillQueued('products', deltasBefore);
+
+  Future<List<TempProductClass>> _discardProductsPull() async {
+    await mainLocalLog(
+      'Products pull discarded: a queued stock change was sent meanwhile',
+    );
+    productListMain = ProductsFunc().getProducts();
+    notifyListeners();
+    startPeriodicIncrementalSync();
     return productListMain;
   }
 
@@ -2766,6 +2803,8 @@ class DataProvider extends ChangeNotifier {
     int? shopId,
   }) async {
     if (_isIncrementalSyncing) return;
+    // The LAN server's puller keeps products current.
+    if (LanServerSync.pullerActive) return;
     try {
       final targetShopId =
           shopId ?? returnShopProvider().userShop()?.shopId;
@@ -2781,10 +2820,9 @@ class DataProvider extends ChangeNotifier {
           ProductsFunc().getLatestProductUpdatedAt();
 
       if (lastSync == null || productListMain.isEmpty) {
+        // getProducts records the sync time itself once its rows are
+        // stored (not when it was skipped or its rows were discarded).
         await getProducts(targetShopId);
-        await ProductsFunc().setLastSyncTime(
-          DateTime.now().toUtc(),
-        );
         return;
       }
 
@@ -2793,12 +2831,17 @@ class DataProvider extends ChangeNotifier {
               .subtract(const Duration(seconds: 5))
               .toUtc();
 
+      final deltasBefore = PendingDeltas.queueKeys('products');
       final res = await supabase
           .from('products')
           .select()
           .eq('shop_id', targetShopId)
           .gt('updated_at', safeSince.toIso8601String())
           .order('updated_at', ascending: true);
+
+      // A queued stock change sent meanwhile may already be in these rows:
+      // pull them again next time.
+      if (!PendingDeltas.stillQueued('products', deltasBefore)) return;
 
       if (res.isNotEmpty) {
         final List<TempProductClass> allUpdatedItems =
@@ -2824,6 +2867,9 @@ class DataProvider extends ChangeNotifier {
                       !pendingUuids.contains(item.uuid),
                 )
                 .toList();
+        // Stock changes still queued here are not on Supabase yet: add them
+        // back, so stock never rolls back over a queued sale.
+        PendingDeltas.reapply('products', updatedItems);
 
         if (updatedItems.isNotEmpty) {
           await ProductsFunc().patchProducts(updatedItems);

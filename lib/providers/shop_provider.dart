@@ -45,12 +45,14 @@ import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/lan/lan_unsent.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 class ShopProvider extends ChangeNotifier {
-  final supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   static final ShopProvider _instance =
@@ -781,6 +783,23 @@ class ShopProvider extends ChangeNotifier {
     TempShopClass shopC,
   ) async {
     var isOnline = await connectivity.isOnline();
+    // The switch clears them: they must reach the server or Supabase first.
+    final lanUnsent = lanUnsentMessage(before: 'switching stores');
+    if (lanUnsent != null) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context, listen: false),
+            message: lanUnsent,
+            title: 'Unsent Store Network Changes',
+          );
+        },
+      );
+      returnData().syncData();
+      return;
+    }
     // ignore: use_build_context_synchronously
     if (returnData().isSynced() == 0 && isOnline) {
       showDialog(

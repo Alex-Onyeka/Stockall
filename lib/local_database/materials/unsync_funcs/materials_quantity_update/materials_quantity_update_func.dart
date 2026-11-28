@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/local_database/hive_box_helper.dart';
 import 'package:stockall/classes/temp_production_folder/temp_material_class/unsynced/material_quantity_update/material_quantity_update.dart';
+import 'package:stockall/local_database/lan/sent_entries_func.dart';
 import 'package:stockall/main.dart';
 
 class MaterialsQuantityUpdateFunc {
@@ -53,7 +54,12 @@ class MaterialsQuantityUpdateFunc {
           .where(
             (item) =>
                 item.materialUuid ==
-                materialsQuantityUpdate.materialUuid,
+                    materialsQuantityUpdate.materialUuid &&
+                // Never into an entry already sent: see SentEntriesFunc.
+                !SentEntriesFunc().isSent(
+                  materialsQuantityUpdateBoxName,
+                  item.uuid,
+                ),
           );
 
       if (existingLogs.isEmpty) {

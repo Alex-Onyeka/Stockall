@@ -11,6 +11,8 @@ import 'package:stockall/local_database/suppliers_func/unsync_funcs/deleted/dele
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/updated/updated_supplier_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SuppliersProvider extends ChangeNotifier {
@@ -23,7 +25,7 @@ class SuppliersProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<SuppliersClass> suppliers = [];
@@ -57,7 +59,7 @@ class SuppliersProvider extends ChangeNotifier {
     suppliers = SuppliersFunc().getSuppliers();
     notifyListeners();
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && SuppliersFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && SuppliersFunc().isSynced()) {
       if (!forceRefresh &&
           _lastSyncAt != null &&
           _lastSyncShopId == shopId &&

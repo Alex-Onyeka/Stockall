@@ -11,6 +11,7 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/components/online_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/subscription_page/subscription_page.dart';
 
@@ -639,22 +640,25 @@ class SubscribeAlertDialog extends StatelessWidget {
                       constraints: BoxConstraints(
                         maxWidth: 400,
                       ),
-                      child: MainButtonP(
-                        themeProvider: theme,
-                        action: () async {
-                          // await launchUrlMain(
-                          //   'https://www.stockallapp.com/#/subscription',
-                          // );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return SubscriptionPage();
-                              },
-                            ),
-                          );
-                        },
-                        text: 'Upgrade Subscription Plan',
+                      // Hidden while the store server can't reach the internet.
+                      child: OnlineOnly.withNote(
+                        child: MainButtonP(
+                          themeProvider: theme,
+                          action: () async {
+                            // await launchUrlMain(
+                            //   'https://www.stockallapp.com/#/subscription',
+                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SubscriptionPage();
+                                },
+                              ),
+                            );
+                          },
+                          text: 'Upgrade Subscription Plan',
+                        ),
                       ),
                     ),
                     SizedBox(height: 30),

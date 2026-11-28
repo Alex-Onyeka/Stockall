@@ -6,10 +6,12 @@ import 'package:stockall/local_database/error_log/error_log_func.dart';
 import 'package:stockall/local_database/error_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ErrorLogProvider with ChangeNotifier {
-  final SupabaseClient client = Supabase.instance.client;
+  SupabaseClient get client => backend();
   final String tableName = 'error_logs';
   static final ErrorLogProvider _instance =
       ErrorLogProvider._internal();
@@ -170,7 +172,7 @@ class ErrorLogProvider with ChangeNotifier {
   }) async {
     bool isOnline = await ConnectivityProvider().isOnline();
     var shopId = returnShopProvider().userShop()!.shopId!;
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && !LanServerSync.pullerActive && returnData().isSynced() == 1) {
       final effectiveStart =
           startDate ??
           dateSet ??

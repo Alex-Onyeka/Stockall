@@ -24,6 +24,7 @@ import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart'
 import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/custom_printing_page/custom_printing_page.dart';
 import 'package:stockall/pages/departments/departments_dashboard.dart';
+import 'package:stockall/pages/lan_settings/lan_settings_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
 import 'package:stockall/pages/settings/components/view_app_logs_widget.dart';
@@ -130,6 +131,23 @@ class _SettingsItemsListState
             },
             title: 'Payment Methods & Bank Accounts',
             icon: Icons.account_balance_outlined,
+          ),
+        ),
+        // The store server: status, role, pairing, devices, alerts.
+        Visibility(
+          visible: !kIsWeb,
+          child: NavListTileDesktopAlt(
+            height: 18,
+            action: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LanSettingsPage(),
+                ),
+              );
+            },
+            title: 'Store Network',
+            icon: Icons.lan_outlined,
           ),
         ),
         Visibility(
@@ -1169,9 +1187,12 @@ class _SettingsItemsListState
         //           .earbuds_battery_outlined,
         // ),
         Visibility(
-          visible: authorization(
-            authorized: Authorizations().manageShop,
-          ),
+          // Hidden while the store server can't reach the internet.
+          visible:
+              authorization(authorized: Authorizations().manageShop) &&
+              returnLocalServerProvider(
+                context: context,
+              ).onlineFeaturesAvailable,
           child: NavListTileDesktopAlt(
             height: 18,
             action: () async {

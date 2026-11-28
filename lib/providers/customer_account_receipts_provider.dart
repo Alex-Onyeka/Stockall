@@ -13,8 +13,13 @@ import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/c
 import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/created/created_customer_account_receipts_func.dart';
 import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/deleted/deleted_customer_account_receipts_func.dart';
 import 'package:stockall/local_database/customer_account_receipts/unsync_funcs/updated/updated_customer_account_receipts_func.dart';
+import 'package:stockall/local_database/lan/pending_creates.dart';
+import 'package:stockall/local_database/lan/sent_entries_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/lan_sent_marks.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomerAccountReceiptsProvider
@@ -35,7 +40,7 @@ class CustomerAccountReceiptsProvider
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
@@ -214,7 +219,7 @@ class CustomerAccountReceiptsProvider
   getCustomerAccountReceipts(int shopId) async {
     await getCustomerAccountReceiptsOffline();
     bool isOnline = await connectivity.isOnline();
-    if (isOnline &&
+    if (isOnline && !LanServerSync.pullerActive &&
         CustomerAccountReceiptsFunc().isSynced() &&
         authorization(
           authorized: Authorizations().viewCustomersAccount,
@@ -561,12 +566,39 @@ class CustomerAccountReceiptsProvider
               .getQuantitiesUpdate()
               .isNotEmpty &&
           isOnline) {
+        // The entries as they are now, by their queue keys (their uuids):
+        // only these are removed after the answer, so a change queued while
+        // the batch is out is still sent next time.
+        final queue = CustomerAccountUpdateFunc();
+        final snapshot = Map.of(queue.customerAccountUpdateBox.toMap());
+        // Not yet for an item whose create is still queued here: it stays
+        // queued for a later run (see PendingCreates).
+        final notCreated = PendingCreates.customers();
+        snapshot.removeWhere((_, u) => notCreated.contains(u.customerUuid));
+        // Not an entry sent to a LAN server without an answer, except to
+        // that server (see LanSentMarks).
+        final to = LanSentMarks.target();
+        snapshot.removeWhere(
+          (key, _) => !LanSentMarks.maySend(
+            queue.customerAccountUpdateBoxName,
+            key,
+            to: to,
+          ),
+        );
+        if (snapshot.isEmpty) return;
+        // Out until the answer: a pull adds none of these back meanwhile.
+        await LanSentMarks.markSending(
+          queue.customerAccountUpdateBoxName,
+          snapshot.keys,
+          to: to,
+        );
         final tempAccountUpdates =
-            CustomerAccountUpdateFunc()
-                .getQuantitiesUpdate()
-                .toList()
+            snapshot.values
                 .map((item) {
                   return {
+                    // The LAN server skips an entry it already applied
+                    // (a retry after a lost answer); Supabase never gets it.
+                    if (RemoteRouter.usingLan) 'hiveUuid': item.uuid,
                     "customerUuid": item.customerUuid,
                     "amount": item.amount,
                     "isIncrement": item.isIncrement,
@@ -583,8 +615,11 @@ class CustomerAccountReceiptsProvider
           params: {'updates': tempAccountUpdates},
         );
 
-        await CustomerAccountUpdateFunc()
-            .clearQuantitiesUpdate();
+        await queue.customerAccountUpdateBox.deleteAll(snapshot.keys);
+        await SentEntriesFunc().unmark(
+          queue.customerAccountUpdateBoxName,
+          snapshot.keys,
+        );
 
         await mainLocalLog(
           'Unsynced Customer Account Updates Cleared',

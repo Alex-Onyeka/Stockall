@@ -6,10 +6,12 @@ import 'package:stockall/local_database/inventory_updates/inventory_updates_func
 import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_inventory_updates_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InventoryUpdatesProvider with ChangeNotifier {
-  final SupabaseClient client = Supabase.instance.client;
+  SupabaseClient get client => backend();
   final String tableName = 'inventory_updates';
   static final InventoryUpdatesProvider _instance =
       InventoryUpdatesProvider._internal();
@@ -162,7 +164,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
     await getInventoryUpdatesOffline();
     bool isOnline = await ConnectivityProvider().isOnline();
     var shopId = returnShopProvider().userShop()!.shopId!;
-    if (isOnline && InventoryUpdatesFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && InventoryUpdatesFunc().isSynced()) {
       final effectiveStart =
           startDate ??
           dateSet ??

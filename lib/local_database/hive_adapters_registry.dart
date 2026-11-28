@@ -1,5 +1,10 @@
 import 'package:stockall/classes/app_version/app_version.dart';
 import 'package:stockall/classes/continuous_print_docket/continuous_print_docket.dart';
+import 'package:stockall/classes/lan/lan_client_session.dart';
+import 'package:stockall/classes/lan/lan_paired_server.dart';
+import 'package:stockall/classes/lan/lan_server_session.dart';
+import 'package:stockall/classes/lan/lan_user_credential.dart';
+import 'package:stockall/classes/lan/local_server_record.dart';
 import 'package:stockall/classes/locations/country_model.dart';
 import 'package:stockall/classes/on_screen_keyboard_pin/on_screen_keyboard_pin_class.dart';
 import 'package:stockall/classes/payment_entry/payment_entry.dart';
@@ -300,4 +305,9 @@ void registerAllHiveAdapters() {
   safeRegisterAdapter(TempUserClassAdapter());
   safeRegisterAdapter(UtilityConstantsAdapter());
   safeRegisterAdapter(NewFeaturePopUpClassAdapter());
+  safeRegisterAdapter(LocalServerRecordAdapter());
+  safeRegisterAdapter(LanPairedServerAdapter());
+  safeRegisterAdapter(LanUserCredentialAdapter());
+  safeRegisterAdapter(LanServerSessionAdapter());
+  safeRegisterAdapter(LanClientSessionAdapter());
 }

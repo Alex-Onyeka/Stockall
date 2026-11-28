@@ -6,6 +6,7 @@ import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 // import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -49,7 +50,7 @@ class UserProvider extends ChangeNotifier {
           await shopProvider.getUserShops();
         }
         var employees = shopProvider.userShop()?.employees ?? [];
-        final data = await _supabase.client
+        final data = await backend()
             .from('users')
             .select()
             .inFilter('user_id', employees);
@@ -126,7 +127,7 @@ class UserProvider extends ChangeNotifier {
           return null;
         }
         final data =
-            await _supabase.client
+            await backend()
                 .from('users')
                 .select()
                 .eq('user_id', authUser)
@@ -148,7 +149,7 @@ class UserProvider extends ChangeNotifier {
           return null;
         }
         final data =
-            await _supabase.client
+            await backend()
                 .from('users')
                 .select()
                 .eq('user_id', authUser)
@@ -182,7 +183,7 @@ class UserProvider extends ChangeNotifier {
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       final data =
-          await _supabase.client
+          await backend()
               .from('users')
               .select()
               .eq('user_id', userId)
@@ -201,7 +202,7 @@ class UserProvider extends ChangeNotifier {
     required String newPassword,
   }) async {
     try {
-      await _supabase.client
+      await backend()
           .from('users')
           .update({'password': newPassword})
           .eq('user_id', userId);
@@ -217,7 +218,7 @@ class UserProvider extends ChangeNotifier {
     required String newPin,
   }) async {
     try {
-      await _supabase.client
+      await backend()
           .from('users')
           .update({'pin': newPin})
           .eq('user_id', userId);
@@ -236,7 +237,7 @@ class UserProvider extends ChangeNotifier {
     if (isOnline) {
       try {
         final data =
-            await _supabase.client
+            await backend()
                 .from('users')
                 .select()
                 .eq('email', email.toLowerCase())
@@ -269,7 +270,7 @@ class UserProvider extends ChangeNotifier {
     }
 
     final updatedRows =
-        await _supabase.client
+        await backend()
             .from('users')
             .update({
               'name': user.name,
@@ -295,7 +296,7 @@ class UserProvider extends ChangeNotifier {
     try {
       final updatedAccess = newAccess.toSet().toList();
 
-      await _supabase.client
+      await backend()
           .from('users')
           .update({'access': updatedAccess})
           .eq('user_id', user.userId!);
@@ -314,7 +315,7 @@ class UserProvider extends ChangeNotifier {
     try {
       final updatedDepartments = newDepartments.toSet().toList();
 
-      await _supabase.client
+      await backend()
           .from('users')
           .update({'department_uuids': updatedDepartments})
           .eq('user_id', user.userId!);
@@ -340,7 +341,7 @@ class UserProvider extends ChangeNotifier {
 
       // Check if auth user exists
       final authUserResponse =
-          await _supabase.client
+          await backend()
               .from('users')
               .select('user_id')
               .eq('user_id', userId)
@@ -352,7 +353,7 @@ class UserProvider extends ChangeNotifier {
       }
 
       // Proceed with updating the role
-      await _supabase.client
+      await backend()
           .from('users')
           .update({'role': newRole, 'auth_user_id': authUserId})
           .eq('user_id', userId);
@@ -366,7 +367,7 @@ class UserProvider extends ChangeNotifier {
 
       if (newRole == 'Owner') {
         final response =
-            await _supabase.client
+            await backend()
                 .from('shops')
                 .select('employees')
                 .eq('shop_id', returnShopProvider().userShop()?.shopId! ?? 0)
@@ -390,7 +391,7 @@ class UserProvider extends ChangeNotifier {
         }
 
         // Step 3: Update the shop's employees field
-        final updateResponse = await _supabase.client
+        final updateResponse = await backend()
             .from('shops')
             .update({'employees': currentEmployees})
             .eq('shop_id', returnShopProvider().userShop()?.shopId! ?? 0);
@@ -412,7 +413,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> deleteUser(String userId) async {
     try {
-      await _supabase.client.from('users').delete().eq('user_id', userId);
+      await backend().from('users').delete().eq('user_id', userId);
       await mainLocalLog('User Row Deleted Successfully');
     } catch (e) {
       await mainLocalLog("User Row Deletiong Failed: ${e.toString()}");

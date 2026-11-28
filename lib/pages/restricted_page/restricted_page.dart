@@ -7,6 +7,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/components/online_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -369,7 +370,9 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                   ],
                                 ),
                                 SizedBox(height: 30),
-                                MainButtonP(
+                                // Hidden while the store server can't reach the internet.
+                                OnlineOnly.withNote(
+                                  child: MainButtonP(
                                   themeProvider: theme,
                                   action: () async {
                                     // await launchUrlMain(
@@ -386,6 +389,7 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                   },
                                   text:
                                       'Explore Subscription Plans',
+                                  ),
                                 ),
                                 SizedBox(height: 10),
                                 MainButtonTransparent(

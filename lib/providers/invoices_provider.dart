@@ -25,6 +25,8 @@ import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class InvoicesProvider extends ChangeNotifier {
@@ -44,7 +46,7 @@ class InvoicesProvider extends ChangeNotifier {
   //
   //
 
-  SupabaseClient get supabase => Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<TempInvoice> _invoices = [];
@@ -208,7 +210,7 @@ class InvoicesProvider extends ChangeNotifier {
     final windowEnd = fourAmNextDay(effectiveEnd);
 
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && InvoicesFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && InvoicesFunc().isSynced()) {
       if (!forceRefresh &&
           !fetchAll &&
           _isRangeFetched(

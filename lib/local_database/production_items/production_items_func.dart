@@ -5,6 +5,7 @@ import 'package:stockall/local_database/production_items/unsync_funcs/created/cr
 import 'package:stockall/local_database/production_items/unsync_funcs/deleted/deleted_production_items_func.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/production_items_quantity_update/production_items_quantity_update_func.dart';
 import 'package:stockall/local_database/production_items/unsync_funcs/updated/updated_production_items_func.dart';
+import 'package:stockall/local_database/lan/lan_deleted_items_func.dart';
 import 'package:stockall/main.dart';
 
 class ProductionItemsFunc {
@@ -174,6 +175,8 @@ class ProductionItemsFunc {
   Future<int> deleteProductionItem(String uuid) async {
     try {
       await productionItemsBox.delete(uuid);
+      // Lets the LAN server drop deltas for it (not "not held yet").
+      await LanDeletedItemsFunc().add('production_items', uuid);
       await mainLocalLog(
         'Offline ProductionItem Deleted Success',
       );

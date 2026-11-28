@@ -11,6 +11,7 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/text_fields/pin_code.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/components/online_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
@@ -1123,6 +1124,8 @@ class _EmpAuthState extends State<EmpAuth> {
                                         .center,
                                 children: [
                                   Expanded(
+                                    // Hidden while the store server can't reach the internet.
+                                    child: OnlineOnly(
                                     child: Material(
                                       color:
                                           Colors
@@ -1219,6 +1222,7 @@ class _EmpAuthState extends State<EmpAuth> {
                                                 'Forgot Password?',
                                               ),
                                             ],
+                                            ),
                                           ),
                                         ),
                                       ),

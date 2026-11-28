@@ -109,7 +109,7 @@ class _LoginDesktopState extends State<LoginDesktop> {
                 return InfoAlert(
                   theme: widget.theme,
                   message:
-                      'Login Failed. Please check your email and password. Also check to see if your internet is properly connected',
+                      res == 2 ? 'Too many sign-in attempts. Wait a few minutes and try again.' : 'Login Failed. Please check your email and password. Also check to see if your internet is properly connected',
                   title: General().authenticationError,
                 );
               },

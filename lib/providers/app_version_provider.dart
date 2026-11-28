@@ -6,10 +6,12 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/local_server_provider.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppVersionProvider extends ChangeNotifier {
-  final SupabaseClient _client = Supabase.instance.client;
+  SupabaseClient get _client => backend();
 
   final String tableName = 'app_version';
 
@@ -134,6 +136,9 @@ class AppVersionProvider extends ChangeNotifier {
   /// running app version for this screen size.
   bool hasAvailableUpdate(BuildContext context) {
     if (appVersion == null) return false;
+    // No update prompt while the store server can't reach the internet:
+    // it couldn't be downloaded.
+    if (!LocalServerProvider().onlineFeaturesAvailable) return false;
     if (screenWidth(context) <= mobileScreen) {
       return appVersion!.mobileVersion != appVersionMobile;
     } else {
@@ -161,7 +166,11 @@ class AppVersionProvider extends ChangeNotifier {
       );
       return appVersion;
     }
-    bool isOnline = await ConnectivityProvider().isOnline();
+    // On the store's network the server forwards this only while it
+    // reaches the internet: else the copy kept here.
+    bool isOnline =
+        await ConnectivityProvider().isOnline() &&
+        LocalServerProvider().onlineFeaturesAvailable;
     if (isOnline) {
       try {
         var res =

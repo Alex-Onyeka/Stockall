@@ -3,6 +3,7 @@ import 'package:stockall/classes/subscription_payment_model.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubPaymentProvider extends ChangeNotifier {
@@ -12,7 +13,7 @@ class SubPaymentProvider extends ChangeNotifier {
   SubPaymentProvider._internal();
 
   final String tableName = 'subscription_payments';
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
 
   int currentDuration = 6;
   double? discount;

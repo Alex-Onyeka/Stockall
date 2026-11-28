@@ -3,13 +3,19 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
   static final ConnectivityProvider _instance =
       ConnectivityProvider._internal();
   factory ConnectivityProvider() => _instance;
   ConnectivityProvider._internal() {
-    init();
+    // Listening needs the platform channels; where there are none (a test
+    // without the Flutter binding) that error is dropped here instead of
+    // failing whoever first touched this provider.
+    runZonedGuarded(init, (e, s) => debugPrint('Connectivity: $e'));
+    // A LAN route change (server found or lost) changes [isConnected].
+    RemoteRouter.addListener(notifyListeners);
   }
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> subscription;
@@ -18,7 +24,16 @@ class ConnectivityProvider extends ChangeNotifier {
   //   init();
   // }
 
-  bool isConnected = false;
+  /// Whether a network interface is up (what [isConnected] meant before
+  /// LAN sync).
+  bool interfaceUp = false;
+
+  /// Whether this device can reach its backend: on the LAN, whether the
+  /// shop's server answers; otherwise, whether an interface is up. Every
+  /// "online" check in the app reads this, so on the LAN with the server
+  /// down the app works offline and queues.
+  bool get isConnected => RemoteRouter.reachable(interfaceUp);
+  set isConnected(bool value) => interfaceUp = value;
 
   void checkConnection(bool value) async {
     isConnected = value;

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:stockall/local_database/products/products_func.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_item_history/item_history.dart';
 import 'package:stockall/classes/temp_item_history/item_history_event_class.dart';
@@ -547,14 +547,14 @@ class ProductLinkingHelper {
 
       if (isBranchTransfer) {
         // Insert remotely into destination shop
-        await Supabase.instance.client
+        await backend()
             .from('products')
             .insert(
               newProduct.toJson(isIncludeQuantity: true),
             );
 
         try {
-          await Supabase.instance.client
+          await backend()
               .from('item_history')
               .insert(history.toJson());
         } catch (e) {

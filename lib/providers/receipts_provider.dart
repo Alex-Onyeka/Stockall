@@ -22,6 +22,8 @@ import 'package:stockall/pages/report/general_report/class/general_report_class.
 import 'package:stockall/pages/report/sales_report_/receipt_sales_report/platforms/receipt_sales_report_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/lan/sync/lan_server_sync.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // // //
@@ -49,7 +51,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   List<TempMainReceipt> _receipts = [];
@@ -373,7 +375,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
-    if (isOnline && MainReceiptFunc().isSynced()) {
+    if (isOnline && !LanServerSync.pullerActive && MainReceiptFunc().isSynced()) {
       if (!forceRefresh &&
           !fetchAll &&
           _isRangeFetched(

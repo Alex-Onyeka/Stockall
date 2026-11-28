@@ -5,10 +5,11 @@ import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/services/remote/remote_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationProvider with ChangeNotifier {
-  final SupabaseClient supabase = Supabase.instance.client;
+  SupabaseClient get supabase => backend();
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
